@@ -36,12 +36,10 @@ const messaging = firebase.messaging();
 
 // ============================================================
 //  📬 استقبال الإشعارات في الخلفية (التطبيق مغلق أو في الخلفية)
-//  هذه الدالة الأهم — تعمل حتى لو التطبيق مغلق تماماً
 // ============================================================
 messaging.onBackgroundMessage((payload) => {
     console.log('📬 [SW] رسالة في الخلفية:', payload);
 
-    // استخراج البيانات من payload
     const n = payload.notification || {};
     const d = payload.data || {};
 
@@ -51,7 +49,6 @@ messaging.onBackgroundMessage((payload) => {
     const url   = d.url   || APP_URL;
     const type  = d.type  || 'general';
 
-    // إضافة رمز تعبيري بادئ حسب نوع الإشعار
     let emojiPrefix = '';
     if (type === 'dm') emojiPrefix = '💌 ';
     else if (type === 'chat') emojiPrefix = '💬 ';
@@ -60,7 +57,6 @@ messaging.onBackgroundMessage((payload) => {
     else if (type === 'report') emojiPrefix = '🚩 ';
     else emojiPrefix = '🔔 ';
 
-    // خيارات الإشعار
     const options = {
         body: body,
         icon: icon,
@@ -86,7 +82,6 @@ messaging.onBackgroundMessage((payload) => {
         ]
     };
 
-    // عرض الإشعار — يظهر في شريط التنبيهات العلوي
     return self.registration.showNotification(emojiPrefix + title, options);
 });
 
@@ -96,69 +91,24 @@ messaging.onBackgroundMessage((payload) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
-    // إذا ضغط على زر "إغلاق" — فقط أغلق الإشعار
     if (event.action === 'close') return;
 
     const data = event.notification.data || {};
     let targetUrl = data.url || APP_URL;
 
-    // إضافة باراميتر لفتح القسم المناسب داخل التطبيق
-    if (data.type === 'dm' && data.fromUid) {
-        targetUrl += (targetUrl.includes('?') ? '&' : '?') + 'open_dm=' + data.fromUid;
-    } else if (data.type === 'new_status') {
-        targetUrl += (targetUrl.includes('?') ? '&' : '?') + 'open_tab=status';
-    } else if (data.type === 'chat') {
-        targetUrl += (targetUrl.includes('?') ? '&' : '?') + 'open_tab=chat';
-    }
-
     event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-            // إذا كان التطبيق مفتوح في تبويب — ركّز عليه وأرسل رسالة
-            for (const client of clientList) {
-                if (client.url.includes('fisi-pro.vercel.app') && 'focus' in client) {
-                    client.postMessage({
-                        type: 'NOTIFICATION_CLICKED',
-                        data: data
-                    });
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+            // البحث عن نافذة مفتوحة مسبقاً وتوجيهها
+            for (let i = 0; i < windowClients.length; i++) {
+                const client = windowClients[i];
+                if (client.url === targetUrl && 'focus' in client) {
                     return client.focus();
                 }
             }
-            // وإلا افتح تبويب جديد على الرابط
+            // إذا لم تكن مفتوحة، افتح نافذة جديدة
             if (clients.openWindow) {
                 return clients.openWindow(targetUrl);
             }
         })
     );
-});
-
-// ============================================================
-//  🔄 عند إغلاق الإشعار (بدون ضغط) — لا نفعل شيء
-// ============================================================
-self.addEventListener('notificationclose', (event) => {
-    console.log('🔕 تم إغلاق الإشعار:', event.notification.tag);
-});
-
-// ============================================================
-//  ⚡ تفعيل فوري للـ Service Worker (بدون انتظار)
-// ============================================================
-self.addEventListener('install', (event) => {
-    console.log('✅ Service Worker قيد التثبيت...');
-    self.skipWaiting();
-});
-
-// السيطرة على جميع النوافذ بمجرد التفعيل
-self.addEventListener('activate', (event) => {
-    console.log('✅ Service Worker مُفعّل');
-    event.waitUntil(clients.claim());
-});
-
-// ============================================================
-//  📨 التعامل مع الرسائل الواردة من التطبيق (اختياري)
-// ============================================================
-self.addEventListener('message', (event) => {
-    console.log('📨 [SW] رسالة من التطبيق:', event.data);
-    
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
 });
