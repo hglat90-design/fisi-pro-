@@ -806,11 +806,9 @@
     const db = firebase.database();
 
     // ============================================================
-    //  🔔 FCM — ضع مفتاح VAPID هنا
-    //  احصل عليه من: Firebase Console → Project Settings → Cloud Messaging
-    //  → Web Push certificates → Generate key pair
+    //  🔔 FCM — مفتاح VAPID الخاص بك
     // ============================================================
-    const VAPID_KEY = 'ضع_مفتاح_VAPID_هنا';
+    const VAPID_KEY = 'BDfPDyXH10O6avY5v2zHHmcEswMuxyOPWvBz048dp78RmeQM4Mit_TEE2cdxoAuKrujLT_3Ft_upy1K93zXT3kQ';
 
     let myFP = localStorage.getItem("fp") || 'fp_' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem("fp", myFP);
@@ -1055,11 +1053,6 @@
             console.warn('⚠️ Firebase Messaging غير محمل');
             return false;
         }
-        if (!VAPID_KEY || VAPID_KEY === 'ضع_مفتاح_VAPID_هنا') {
-            console.warn('⚠️ لم يتم تعيين VAPID_KEY — الإشعارات لن تعمل');
-            updateFCMButton();
-            return false;
-        }
         try {
             swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
             console.log('✅ تم تسجيل Service Worker');
@@ -1093,9 +1086,6 @@
         if (!('Notification' in window)) {
             return alert('⚠️ المتصفح لا يدعم الإشعارات');
         }
-        if (!VAPID_KEY || VAPID_KEY === 'ضع_مفتاح_VAPID_هنا') {
-            return alert('⚠️ مفتاح VAPID غير مُعدّ. يرجى التواصل مع المطور.');
-        }
         if (Notification.permission === 'granted') {
             await saveFCMToken();
             updateFCMButton();
@@ -1119,6 +1109,7 @@
             if (token && token !== fcmToken) {
                 fcmToken = token;
                 localStorage.setItem('fcm_token', token);
+                console.log('🎫 FCM Token:', token.substring(0, 30) + '...');
             }
             if (fcmToken && myFP && myName) {
                 await db.ref('fcm_tokens/' + myFP).update({
