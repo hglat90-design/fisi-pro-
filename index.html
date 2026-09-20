@@ -970,15 +970,10 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // 🔑 مفتاح VAPID (لا يتغير)
     const VAPID_KEY = 'BDfPDyXH10O6avY5v2zHHmcEswMuxyOPWvBz048dp78RmeQM4Mit_TEE2cdxoAuKrujLT_3Ft_upy1K93zXT3kQ';
-
     const APP_URL = 'https://fisi-pro.vercel.app';
     const DEFAULT_ICON = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
 
-    // ============================================================
-    //  🕵️ كشف بيئة التشغيل
-    // ============================================================
     function detectEnvironment() {
         const ua = (navigator.userAgent || '').toLowerCase();
         const isAndroid = /android/i.test(ua);
@@ -1033,11 +1028,9 @@
     let fontSettingsListener = null;
     const roleHierarchy = { user: 1, trusted: 2, mod: 3, manager: 4, owner: 5 };
 
-    // ====== نظام الكلمات الممنوعة ======
     let badWordsList = [];
     let badWordsListener = null;
 
-    // ====== نظام الحضور ======
     const HEARTBEAT_INTERVAL = 5000;
     const OFFLINE_THRESHOLD = 30000;
     const PRESENCE_CHECK_INTERVAL = 5000;
@@ -1046,20 +1039,17 @@
     let isPageVisible = true;
     let isHidden = false;
 
-    // ====== FCM ======
     let messaging = null;
     let swRegistration = null;
     let fcmToken = null;
     let notificationMode = ENV.mode;
 
-    // ====== تفضيلات الإشعارات والأصوات ======
     let currentNotificationPrefs = {
         dm: true, chat: true, status: true, seen: true,
         sound: true, soundSend: true, soundReceive: true
     };
     let notifPrefsListener = null;
 
-    // ====== In-App Notifications ======
     let inAppNotifListeners = {
         messages: null,
         dms: null,
@@ -1122,7 +1112,7 @@
     function getYouTubeThumbnail(v) { return 'https://img.youtube.com/vi/' + v + '/hqdefault.jpg' }
 
     // ============================================================
-    //  🔊 نظام الأصوات المتعدد
+    //  🔊 نظام الأصوات
     // ============================================================
     let audioContext = null;
     let audioUnlocked = false;
@@ -1142,12 +1132,10 @@
         } catch (e) {}
     }
 
-    // تفعيل الصوت عند أول تفاعل من المستخدم
     ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
         document.addEventListener(evt, unlockAudio, { once: true, passive: true });
     });
 
-    // تشغيل نغمة مخصصة
     function playTone(freq, duration, type, delay, volume) {
         try {
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1167,43 +1155,37 @@
         } catch (e) {}
     }
 
-    // 🔊 صوت إرسال رسالة — نقرة سريعة حادة
     function playSendSound() {
         if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundSend) return;
-        playTone(1318, 0.08, 'sine', 0, 0.25);       // E6
-        playTone(1568, 0.06, 'sine', 0.04, 0.20);    // G6
+        playTone(1318, 0.08, 'sine', 0, 0.25);
+        playTone(1568, 0.06, 'sine', 0.04, 0.20);
     }
 
-    // 📥 صوت استقبال رسالة عامة — نغمة ناعمة
     function playReceiveChatSound() {
         if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundReceive) return;
-        playTone(880, 0.12, 'sine', 0, 0.28);        // A5
-        playTone(1174, 0.14, 'sine', 0.10, 0.28);    // D6
+        playTone(880, 0.12, 'sine', 0, 0.28);
+        playTone(1174, 0.14, 'sine', 0.10, 0.28);
     }
 
-    // 💌 صوت رسالة خاصة — نغمة مميزة
     function playReceiveDMSound() {
         if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundReceive) return;
-        playTone(784, 0.10, 'sine', 0, 0.30);        // G5
-        playTone(988, 0.10, 'sine', 0.09, 0.30);     // B5
-        playTone(1318, 0.18, 'sine', 0.18, 0.32);    // E6
+        playTone(784, 0.10, 'sine', 0, 0.30);
+        playTone(988, 0.10, 'sine', 0.09, 0.30);
+        playTone(1318, 0.18, 'sine', 0.18, 0.32);
     }
 
-    // 📸 صوت حالة جديدة — تنبيه
     function playStatusSound() {
         if (!currentNotificationPrefs.sound) return;
-        playTone(1046, 0.10, 'triangle', 0, 0.28);   // C6
+        playTone(1046, 0.10, 'triangle', 0, 0.28);
         playTone(1318, 0.14, 'triangle', 0.10, 0.28);
     }
 
-    // 👁️ صوت مشاهدة الحالة — نغمة خفيفة
     function playSeenSound() {
         if (!currentNotificationPrefs.sound) return;
-        playTone(659, 0.10, 'sine', 0, 0.22);        // E5
-        playTone(880, 0.14, 'sine', 0.08, 0.22);     // A5
+        playTone(659, 0.10, 'sine', 0, 0.22);
+        playTone(880, 0.14, 'sine', 0.08, 0.22);
     }
 
-    // 🔔 صوت إشعار عام
     function playNotificationSound() {
         if (!currentNotificationPrefs.sound) return;
         playTone(1046, 0.12, 'sine', 0, 0.30);
@@ -1216,7 +1198,6 @@
         }
     }
 
-    // دالة موحدة لتشغيل الصوت حسب النوع
     function playSoundForType(type) {
         switch (type) {
             case 'dm': playReceiveDMSound(); break;
@@ -1230,7 +1211,7 @@
     }
 
     // ============================================================
-    //  📱 إشعار داخل التطبيق
+    //  📱 إشعار داخل التطبيق — مع دعم skipSound
     // ============================================================
     function showInAppNotification(opts) {
         const container = document.getElementById('inapp-notif-container');
@@ -1242,7 +1223,6 @@
         const emoji = opts.emoji || '🔔';
         const onClick = opts.onClick;
         const skipSound = opts.skipSound === true;
-
         const notif = document.createElement('div');
         notif.className = 'inapp-notif ' + type;
         const img = document.createElement('img');
@@ -1291,9 +1271,9 @@
     }
 
     // ============================================================
-    //  🎯 notifyUser موحدة
+    //  🎯 notifyUser — مع تمرير skipSound
     // ============================================================
-    function notifyUser(title, body, icon, type, onClick) {
+    function notifyUser(title, body, icon, type, onClick, skipSound) {
         const prefMap = { dm: 'dm', chat: 'chat', status: 'status', status_seen: 'seen', new_status: 'status', report: 'chat', media: 'chat' };
         const prefKey = prefMap[type];
         if (prefKey && currentNotificationPrefs[prefKey] === false) {
@@ -1302,11 +1282,11 @@
         }
         if (notificationMode === 'fcm') {
             if (!document.hidden) {
-                showInAppNotification({ title, body, icon, type, emoji: getEmojiForType(type), onClick });
+                showInAppNotification({ title, body, icon, type, emoji: getEmojiForType(type), onClick, skipSound: skipSound === true });
             }
             return;
         }
-        showInAppNotification({ title, body, icon, type, emoji: getEmojiForType(type), onClick });
+        showInAppNotification({ title, body, icon, type, emoji: getEmojiForType(type), onClick, skipSound: skipSound === true });
         if (notificationMode === 'webview' && 'Notification' in window && Notification.permission === 'granted') {
             try {
                 const n = new Notification(title, {
@@ -1327,29 +1307,42 @@
     }
 
     // ============================================================
-    //  🔔 مستمعو الإشعارات داخل التطبيق
+    //  🔔 مستمعو الإشعارات — الصوت يعمل دائماً
     // ============================================================
     function startInAppNotificationListeners() {
         console.log('🚀 بدء مستمعي الإشعارات داخل التطبيق');
 
-        // 1️⃣ رسائل خاصة
+        // 1️⃣ رسائل خاصة — الصوت يعمل دائماً
         if (inAppNotifListeners.dms) db.ref('dm_inbox/' + myFP).off('child_changed', inAppNotifListeners.dms);
+        let lastPlayedDMTime = 0;
         inAppNotifListeners.dms = db.ref('dm_inbox/' + myFP).on('child_changed', snap => {
             const uid = snap.key;
             const d = snap.val();
             if (!d || !d.count || Number(d.count) <= 0) return;
+
+            const msgTime = Number(d.lastTime) || Date.now();
+            if (msgTime > lastPlayedDMTime) {
+                lastPlayedDMTime = msgTime;
+                if (currentNotificationPrefs.sound && currentNotificationPrefs.soundReceive) {
+                    playReceiveDMSound();
+                    vibrateDevice();
+                }
+            }
+
             if (currentDMChat && currentDMChat.uid === uid) return;
             if (document.hidden && notificationMode === 'fcm') return;
+
             notifyUser(
                 '💌 ' + (d.fromName || 'مجهول'),
                 d.lastMessage || 'رسالة جديدة',
                 d.fromAvatar || DEFAULT_ICON,
                 'dm',
-                () => openDMChat(uid)
+                () => openDMChat(uid),
+                true
             );
         });
 
-        // 2️⃣ رسائل عامة
+        // 2️⃣ رسائل عامة — الصوت يعمل دائماً
         if (inAppNotifListeners.messages) db.ref('messages').off('child_added', inAppNotifListeners.messages);
         inAppNotifListeners.messages = db.ref('messages').limitToLast(1).on('child_added', snap => {
             const m = snap.val();
@@ -1357,16 +1350,19 @@
             if (m.uid === myFP) return;
             const t = Number(m.time) || Date.now();
             if (t <= lastSeenTimestamps.messages) return;
-            if (currentTab === 'chat' && !document.hidden) {
-                lastSeenTimestamps.messages = t;
-                localStorage.setItem('lst_msg', t);
-                return;
-            }
-            if (document.hidden && notificationMode === 'fcm') return;
-            const preview = (m.text || '📎 وسائط').substring(0, 60);
-            notifyUser('💬 ' + (m.sender || 'مجهول'), preview, m.avatar || DEFAULT_ICON, 'chat', () => switchTab('chat'));
             lastSeenTimestamps.messages = t;
             localStorage.setItem('lst_msg', t);
+
+            if (currentNotificationPrefs.sound && currentNotificationPrefs.soundReceive) {
+                playReceiveChatSound();
+                vibrateDevice();
+            }
+
+            if (currentTab === 'chat' && !document.hidden) return;
+            if (document.hidden && notificationMode === 'fcm') return;
+
+            const preview = (m.text || '📎 وسائط').substring(0, 60);
+            notifyUser('💬 ' + (m.sender || 'مجهول'), preview, m.avatar || DEFAULT_ICON, 'chat', () => switchTab('chat'), true);
         });
 
         // 3️⃣ حالات جديدة
@@ -1377,11 +1373,17 @@
             if (s.uid === myFP) return;
             const t = Number(s.time) || Date.now();
             if (t <= lastSeenTimestamps.statuses) return;
-            if (document.hidden && notificationMode === 'fcm') return;
-            const preview = (s.text || '📸 حالة جديدة').substring(0, 60);
-            notifyUser('📸 ' + (s.sender || 'مجهول') + ' نشر حالة', preview, s.avatar || DEFAULT_ICON, 'status', () => { switchTab('status'); });
             lastSeenTimestamps.statuses = t;
             localStorage.setItem('lst_st', t);
+
+            if (currentNotificationPrefs.sound) {
+                playStatusSound();
+                vibrateDevice();
+            }
+
+            if (document.hidden && notificationMode === 'fcm') return;
+            const preview = (s.text || '📸 حالة جديدة').substring(0, 60);
+            notifyUser('📸 ' + (s.sender || 'مجهول') + ' نشر حالة', preview, s.avatar || DEFAULT_ICON, 'status', () => { switchTab('status'); }, true);
         });
 
         // 4️⃣ إشعارات المنظومة
@@ -1391,15 +1393,24 @@
             if (!n) return;
             const t = Number(n.time) || Date.now();
             if (t <= lastSeenTimestamps.notifications) return;
-            if (n.type === 'new_report') {
-                if (myRole === 'owner' && document.hidden && notificationMode === 'fcm') return;
-                notifyUser('🚩 بلاغ جديد', 'على: ' + (n.targetName || 'مجهول'), n.fromAvatar || DEFAULT_ICON, 'report', () => { if (myRole === 'owner') { closeAllModals(); toggleReportsModal(); } });
-            } else if (n.statusKey) {
-                if (document.hidden && notificationMode === 'fcm') return;
-                notifyUser('👁️ ' + (n.from || 'مجهول') + ' شاهد حالتك', 'اضغط للاطلاع', n.fromAvatar || DEFAULT_ICON, 'status_seen', () => { switchTab('status'); });
-            }
             lastSeenTimestamps.notifications = t;
             localStorage.setItem('lst_nt', t);
+
+            if (n.type === 'new_report') {
+                if (currentNotificationPrefs.sound) {
+                    playStatusSound();
+                    vibrateDevice();
+                }
+                if (myRole === 'owner' && document.hidden && notificationMode === 'fcm') return;
+                notifyUser('🚩 بلاغ جديد', 'على: ' + (n.targetName || 'مجهول'), n.fromAvatar || DEFAULT_ICON, 'report', () => { if (myRole === 'owner') { closeAllModals(); toggleReportsModal(); } }, true);
+            } else if (n.statusKey) {
+                if (currentNotificationPrefs.sound) {
+                    playSeenSound();
+                    vibrateDevice();
+                }
+                if (document.hidden && notificationMode === 'fcm') return;
+                notifyUser('👁️ ' + (n.from || 'مجهول') + ' شاهد حالتك', 'اضغط للاطلاع', n.fromAvatar || DEFAULT_ICON, 'status_seen', () => { switchTab('status'); }, true);
+            }
         });
 
         console.log('✅ مستمعو الإشعارات جاهزون');
@@ -1995,7 +2006,6 @@
         listenDMInbox();
         listenNotificationPrefs();
 
-        // معالجة النقر على إشعار من Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', (event) => {
                 if (event.data && event.data.type === 'NOTIFICATION_CLICKED') {
@@ -2277,8 +2287,6 @@
                     box.scrollTop = box.scrollHeight;
                     if (m.to === myFP) {
                         db.ref('dm_inbox/' + myFP + '/' + m.from + '/count').set(0);
-                        // 🔊 صوت استقبال رسالة خاصة أثناء فتح المحادثة
-                        playReceiveDMSound();
                     }
                 });
             });
@@ -2306,7 +2314,6 @@
         const chatId = getChatId(myFP, toUid);
         const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, text: text, time: firebase.database.ServerValue.TIMESTAMP };
         input.value = '';
-        // 🔊 صوت الإرسال
         playSendSound();
         try {
             await db.ref('private_chats/' + chatId + '/messages').push(msgData);
@@ -2784,10 +2791,6 @@
     function previewYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), p = document.getElementById('yt-preview'), img = document.getElementById('yt-preview-img'), t = document.getElementById('yt-preview-title'), sb = document.getElementById('yt-send-btn'), wb = document.getElementById('yt-watch-btn'), vid = extractYouTubeId(l); if (vid) { img.src = getYouTubeThumbnail(vid); t.textContent = 'https://youtu.be/' + vid; p.style.display = 'block'; sb.disabled = false; wb.disabled = false; } else { p.style.display = 'none'; sb.disabled = true; wb.disabled = true; } }
     function sendYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return alert("رابط غير صحيح!"); const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: l, type: 'youtube', youtubeId: vid, avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); document.getElementById('yt-link-input').value = ''; document.getElementById('yt-preview').style.display = 'none'; document.getElementById('yt-send-btn').disabled = true; document.getElementById('yt-watch-btn').disabled = true; document.getElementById('youtube-modal').classList.remove('active'); }
     function watchYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return; openViewer('https://www.youtube.com/embed/' + vid + '?autoplay=1', 'youtube', myName); }
-
-    // ============================================================
-    //  💬 sendMessage — صوت الإرسال مضاف
-    // ============================================================
     function sendMessage(e) {
         e.preventDefault();
         if (isMuted) return alert("🔇");
@@ -2799,12 +2802,10 @@
         if (isYouTubeUrl(t)) { const y = extractYouTubeId(t); if (y) { d.media = t; d.type = 'youtube'; d.youtubeId = y; if (t === t.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}(?:[^\s]*)?/)?.[0]) d.text = ''; } }
         if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 100), role: replyTo.role }; cancelReply(); }
         db.ref('messages').push(d);
-        // 🔊 صوت الإرسال
         playSendSound();
         input.value = '';
         input.focus();
     }
-
     async function handleFile(i) { if (myRole === 'user') { alert("⛔"); i.value = ''; return; } if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير!"); i.value = ''; return; } const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true; try { const u = await uploadCloudinary(f); if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); } else alert("فشل الرفع"); } catch (e) { alert("خطأ: " + e.message); } sb.textContent = "➤"; sb.disabled = false; i.value = ''; }
     async function uploadCloudinary(f) { const cn = 'nfg03aku', up = 'daufafvn', url = 'https://api.cloudinary.com/v1_1/' + cn + '/' + (f.type.startsWith('video') ? 'video' : 'image') + '/upload'; const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', up); const r = await fetch(url, { method: 'POST', body: fd }); if (!r.ok) throw new Error('HTTP ' + r.status); const d = await r.json(); return d.secure_url || null; }
     function clearAllChat() { if (!['mod', 'manager', 'owner'].includes(myRole)) return alert("⛔"); if (confirm("⚠️ حذف كل الرسائل؟")) { db.ref('messages').remove(); messagesCache = {}; renderMessages(); } }
