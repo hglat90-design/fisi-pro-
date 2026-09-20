@@ -792,6 +792,9 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 
 <script>
+    // ============================================================
+    //  ⚙️ الإعدادات الأساسية
+    // ============================================================
     const firebaseConfig = {
         apiKey: "AIzaSyB5qXJOOIMs3rWwxRjDai2enpCC4UUfyR4",
         authDomain: "kiot-1ea8c.firebaseapp.com",
@@ -806,14 +809,21 @@
     const db = firebase.database();
 
     // ============================================================
-    //  🔔 FCM — مفتاح VAPID الخاص بك
+    //  🔑 مفاتيح FCM
     // ============================================================
     const VAPID_KEY = 'BDfPDyXH10O6avY5v2zHHmcEswMuxyOPWvBz048dp78RmeQM4Mit_TEE2cdxoAuKrujLT_3Ft_upy1K93zXT3kQ';
+
+    // ⚠️ ضع هنا Server Key من Firebase Console
+    // Project Settings → Cloud Messaging → Server key (يبدأ بـ AAAA)
+    const FCM_SERVER_KEY = 'ضع_Server_Key_هنا';
+
+    const APP_URL = 'https://fisi-pro.vercel.app';
+    const DEFAULT_ICON = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
 
     let myFP = localStorage.getItem("fp") || 'fp_' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem("fp", myFP);
     let myName = localStorage.getItem("name") || "";
-    let myAvatar = localStorage.getItem("avatar") || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+    let myAvatar = localStorage.getItem("avatar") || DEFAULT_ICON;
     let myRole = "user";
     let isBanned = false, isMuted = false, muteEndTime = 0;
     let replyTo = null, targetUserForAction = {};
@@ -1042,7 +1052,129 @@
     }
 
     // ============================================================
-    //  🔔 Firebase Cloud Messaging - الإشعارات في الخلفية
+    //  🔔 Firebase Cloud Messaging — دالة إرسال الإشعارات
+    // ============================================================
+
+    // 📤 دالة إرسال إشعار عبر FCM Legacy HTTP API
+    async function sendNotificationToUser(targetToken, title, body, icon, extraData) {
+        if (!targetToken) { console.warn('⚠️ لا يوجد Token للإرسال'); return false; }
+        if (!FCM_SERVER_KEY || FCM_SERVER_KEY === 'ضع_Server_Key_هنا') {
+            console.warn('⚠️ FCM_SERVER_KEY غير مُعدّ — لن يتم إرسال الإشعار');
+            return false;
+        }
+        try {
+            const payload = {
+                to: targetToken,
+                notification: {
+                    title: title || 'فيسي برو',
+                    body: body || '',
+                    icon: icon || DEFAULT_ICON,
+                    sound: 'default',
+                    badge: DEFAULT_ICON
+                },
+                data: Object.assign({
+                    title: title || 'فيسي برو',
+                    body: body || '',
+                    icon: icon || DEFAULT_ICON,
+                    url: APP_URL,
+                    type: 'general'
+                }, extraData || {}),
+                webpush: {
+                    headers: { Urgency: 'high' },
+                    notification: {
+                        title: title || 'فيسي برو',
+                        body: body || '',
+                        icon: icon || DEFAULT_ICON,
+                        badge: DEFAULT_ICON,
+                        dir: 'rtl',
+                        lang: 'ar',
+                        vibrate: [200, 100, 200],
+                        requireInteraction: false
+                    },
+                    fcm_options: { link: APP_URL }
+                }
+            };
+
+            const r = await fetch('https://fcm.googleapis.com/fcm/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'key=' + FCM_SERVER_KEY
+                },
+                body: JSON.stringify(payload)
+            });
+            const result = await r.json();
+            console.log('📤 نتيجة إرسال الإشعار:', result);
+            return r.ok;
+        } catch (e) {
+            console.error('❌ فشل إرسال الإشعار:', e);
+            return false;
+        }
+    }
+
+    // 🔍 جلب توكن مستخدم من قاعدة البيانات
+    async function getUserFCMToken(uid) {
+        if (!uid) return null;
+        try {
+            const snap = await db.ref('fcm_tokens/' + uid + '/token').once('value');
+            return snap.val() || null;
+        } catch (e) {
+            console.warn('⚠️ فشل جلب التوكن:', e);
+            return null;
+        }
+    }
+
+    // 📢 إرسال إشعار لجميع المستخدمين (عدا المستثنى)
+    async function notifyAllUsers(title, body, icon, extraData, excludeUid) {
+        try {
+            const snap = await db.ref('fcm_tokens').once('value');
+            if (!snap.exists()) return;
+            const promises = [];
+            snap.forEach(child => {
+                const uid = child.key;
+                if (uid === excludeUid) return;
+                const token = child.val().token;
+                if (token) promises.push(sendNotificationToUser(token, title, body, icon, extraData));
+            });
+            await Promise.all(promises);
+        } catch (e) {
+            console.warn('⚠️ فشل إرسال الإشعارات الجماعية:', e);
+        }
+    }
+
+    // ============================================================
+    //  🎫 حفظ التوكن في Firebase
+    // ============================================================
+    async function saveFCMToken() {
+        if (!messaging) return null;
+        try {
+            const token = await messaging.getToken({ vapidKey: VAPID_KEY });
+            if (token && token !== fcmToken) {
+                fcmToken = token;
+                localStorage.setItem('fcm_token', token);
+                console.log('🎫 FCM Token:', token.substring(0, 30) + '...');
+            }
+            if (fcmToken && myFP && myName) {
+                await db.ref('fcm_tokens/' + myFP).update({
+                    token: fcmToken,
+                    name: myName || '',
+                    avatar: myAvatar || '',
+                    role: myRole || 'user',
+                    updatedAt: Date.now(),
+                    platform: 'web',
+                    ua: navigator.userAgent.substring(0, 120)
+                });
+                console.log('✅ تم حفظ FCM Token في Firebase');
+            }
+            return fcmToken;
+        } catch (e) {
+            console.error('❌ خطأ في الحصول على Token:', e);
+            return null;
+        }
+    }
+
+    // ============================================================
+    //  🚀 تهيئة FCM
     // ============================================================
     async function initFCM() {
         if (!('serviceWorker' in navigator) || !('Notification' in window)) {
@@ -1082,6 +1214,9 @@
         }
     }
 
+    // ============================================================
+    //  🎯 طلب إذن الإشعارات
+    // ============================================================
     async function requestNotificationPermission() {
         if (!('Notification' in window)) {
             return alert('⚠️ المتصفح لا يدعم الإشعارات');
@@ -1102,34 +1237,32 @@
         }
     }
 
-    async function saveFCMToken() {
-        if (!messaging) return null;
-        try {
-            const token = await messaging.getToken({ vapidKey: VAPID_KEY });
-            if (token && token !== fcmToken) {
-                fcmToken = token;
-                localStorage.setItem('fcm_token', token);
-                console.log('🎫 FCM Token:', token.substring(0, 30) + '...');
-            }
-            if (fcmToken && myFP && myName) {
-                await db.ref('fcm_tokens/' + myFP).update({
-                    token: fcmToken,
-                    name: myName || '',
-                    avatar: myAvatar || '',
-                    role: myRole || 'user',
-                    updatedAt: Date.now(),
-                    platform: 'web',
-                    ua: navigator.userAgent.substring(0, 120)
-                });
-                console.log('✅ تم حفظ FCM Token في Firebase');
-            }
-            return fcmToken;
-        } catch (e) {
-            console.error('❌ خطأ في الحصول على Token:', e);
-            return null;
+    // ============================================================
+    //  📲 طلب إذن الإشعارات التلقائي
+    // ============================================================
+    async function autoRequestNotificationPermission() {
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'default') {
+            // طلب تلقائي هادئ بعد 3 ثوانٍ من فتح التطبيق
+            setTimeout(async () => {
+                try {
+                    const p = await Notification.requestPermission();
+                    if (p === 'granted') {
+                        if (!messaging) await initFCM();
+                        await saveFCMToken();
+                        updateFCMButton();
+                        console.log('✅ تم تفعيل الإشعارات تلقائياً');
+                    }
+                } catch (e) { console.warn('Auto permission error:', e); }
+            }, 3000);
+        } else if (Notification.permission === 'granted') {
+            await saveFCMToken();
         }
     }
 
+    // ============================================================
+    //  🔔 إشعارات في المقدمة (التطبيق مفتوح)
+    // ============================================================
     function showForegroundNotification(payload) {
         const n = payload.notification || {};
         const d = payload.data || {};
@@ -1139,8 +1272,8 @@
             try {
                 const notif = new Notification(title, {
                     body: body,
-                    icon: d.icon || 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
-                    badge: 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
+                    icon: d.icon || DEFAULT_ICON,
+                    badge: DEFAULT_ICON,
                     tag: d.tag || 'vissypro-fg-' + Date.now(),
                     dir: 'rtl',
                     lang: 'ar'
@@ -1150,6 +1283,9 @@
         }
     }
 
+    // ============================================================
+    //  🔘 تحديث زر FCM
+    // ============================================================
     function updateFCMButton() {
         const btn = document.getElementById('fcm-btn');
         if (!btn) return;
@@ -1369,8 +1505,10 @@
         listenMyDMPermission();
         listenDMInbox();
 
-        // 🔔 تفعيل FCM بعد الدخول
-        setTimeout(() => initFCM(), 1500);
+        // 🔔 تهيئة FCM + طلب إذن تلقائي
+        setTimeout(() => {
+            initFCM().then(() => autoRequestNotificationPermission());
+        }, 1500);
     }
 
     function listenMaintenance() {
@@ -1631,7 +1769,7 @@
             card.className = 'dm-user-card' + (isDMOn ? '' : ' closed');
             card.dataset.uid = u.uid;
             card.dataset.name = (u.name || '').toLowerCase();
-            const avatar = u.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+            const avatar = u.avatar || DEFAULT_ICON;
             let roleBadge = '';
             if (u.role === 'owner') roleBadge = '<span class="role-badge owner">مالك</span>';
             else if (u.role === 'manager') roleBadge = '<span class="role-badge manager">مدير</span>';
@@ -1681,7 +1819,7 @@
             return alert('🔒 هذا المستخدم ليس لديه صلاحية في الخاص - مغلق من قبل المالك');
         }
         closeDMList();
-        currentDMChat = { uid, name: u.name || 'مجهول', avatar: u.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png", role: u.role || 'user' };
+        currentDMChat = { uid, name: u.name || 'مجهول', avatar: u.avatar || DEFAULT_ICON, role: u.role || 'user' };
         document.getElementById('dm-chat-avatar').src = currentDMChat.avatar;
         document.getElementById('dm-chat-name').textContent = currentDMChat.name;
         let roleText = 'مستخدم عادي';
@@ -1768,6 +1906,9 @@
         box.appendChild(div);
     }
 
+    // ============================================================
+    //  💌 إرسال رسالة خاصة + إشعار FCM
+    // ============================================================
     async function sendDMMessage(e) {
         e.preventDefault();
         if (!currentDMChat) return;
@@ -1798,6 +1939,19 @@
                 lastMessage: text, lastTime: firebase.database.ServerValue.TIMESTAMP,
                 count: 0
             });
+
+            // 🔔 إرسال إشعار FCM للمستقبل
+            const targetToken = await getUserFCMToken(toUid);
+            if (targetToken) {
+                const msgPreview = text.length > 60 ? text.substring(0, 60) + '...' : text;
+                sendNotificationToUser(
+                    targetToken,
+                    '💌 ' + myName,
+                    msgPreview,
+                    myAvatar,
+                    { type: 'dm', fromUid: myFP, tag: 'dm-' + Date.now(), url: APP_URL }
+                );
+            }
         } catch (err) { alert('خطأ في الإرسال: ' + err.message); }
     }
 
@@ -1927,7 +2081,7 @@
         const dk = ks.slice(-300);
         dk.forEach(k => {
             const m = messagesCache[k]; if (!m) return;
-            const isMine = m.uid === myFP, ud = allUsersData[m.uid] || {}, da = ud.avatar || m.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png", dn = ud.name || m.sender || 'مجهول', dr = ud.role || m.role || 'user';
+            const isMine = m.uid === myFP, ud = allUsersData[m.uid] || {}, da = ud.avatar || m.avatar || DEFAULT_ICON, dn = ud.name || m.sender || 'مجهول', dr = ud.role || m.role || 'user';
             const div = document.createElement('div'); div.className = 'msg-row ' + (isMine ? 'mine' : 'others'); div.id = 'msg-' + k;
             let bc = '', bs = '', snc = '', gc = '';
             if (dr === 'owner') { bc = 'bubble-owner'; snc = '#5d4a00'; gc = 'owner-glow'; }
@@ -2031,7 +2185,7 @@
             else if (u.role === 'manager') roleBadge = '<span class="role-badge manager">مدير</span>';
             else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">مشرف</span>';
             else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">موثوق</span>';
-            const avatar = u.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+            const avatar = u.avatar || DEFAULT_ICON;
             let hiddenBadge = ''; if (u.uid === myFP && isHidden && myRole === 'owner') { hiddenBadge = '<span class="hidden-owner-badge">🙈 مخفي</span>'; }
 
             if (existing) {
@@ -2175,20 +2329,31 @@
 
     function switchTab(t) { currentTab = t; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); if (t === 'chat') { document.getElementById('nav-chat').classList.add('active'); document.getElementById('status-screen').classList.remove('active'); document.getElementById('chat-messages').style.display = 'flex'; document.getElementById('chat-form').style.display = 'flex'; document.getElementById('add-status-btn').classList.remove('active'); } else { document.getElementById('nav-status').classList.add('active'); document.getElementById('status-screen').classList.add('active'); document.getElementById('chat-messages').style.display = 'none'; document.getElementById('chat-form').style.display = 'none'; document.getElementById('add-status-btn').classList.add('active'); renderStatuses(); } }
     function closeStatusScreen() { switchTab('chat'); }
-    function renderStatuses() { const l = document.getElementById('status-list'); l.innerHTML = ''; const n = Date.now(), exp = 864e5; const um = {}; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (n - s.time > exp) { db.ref('statuses/' + k).remove(); return; } const uid = s.uid; if (!allUsersData[uid]) return; if (!um[uid]) um[uid] = { user: s, statuses: [] }; um[uid].statuses.push({ key: k, ...s }); }); const su = Object.keys(um).sort((a, b) => { const al = um[a].statuses.reduce((m, s) => s.time > m ? s.time : m, 0), bl = um[b].statuses.reduce((m, s) => s.time > m ? s.time : m, 0); return bl - al; }); if (su.length === 0) { l.innerHTML = '<div style="text-align:center;padding:30px 0;color:#999;font-size:14px;font-family:var(--font-main);">📭 لا توجد حالات</div>'; return; } su.forEach(uid => { const d = um[uid], ls = d.statuses.reduce((a, b) => a.time > b.time ? a : b), ud = allUsersData[uid] || {}, dn = ud.name || d.user.sender || 'مجهول', da = ud.avatar || d.user.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png", isMine = uid === myFP; let hasUnseen = false, ts = d.statuses.length; d.statuses.forEach(s => { const sb = s.seenBy || {}; if (!sb[myFP] && s.uid !== myFP) hasUnseen = true; }); const c = document.createElement('div'); c.className = 'status-user-card ' + (hasUnseen ? 'unseen' : 'seen'); c.onclick = () => viewUserStatuses(uid, d.statuses); c.innerHTML = '<div class="status-avatar-wrapper"><img src="' + da + '" class="status-avatar" onclick="event.stopPropagation();openViewer(\'' + da + '\',\'image\',\'' + dn + '\')"><div class="status-ring"></div></div><div class="status-user-info"><div class="status-username">' + escapeHtml(dn) + (isMine ? '<span style="font-size:10px;color:#999;font-family:var(--font-main);">(حالتي)</span>' : '') + '</div><div class="status-time">' + formatDateShort(ls.time) + '</div><div class="status-preview">' + (ls.text || '📸') + '</div></div>' + (ts > 1 ? '<div class="status-count ' + (hasUnseen ? '' : 'seen') + '">' + ts + '</div>' : ''); l.appendChild(c); }); }
+    function renderStatuses() { const l = document.getElementById('status-list'); l.innerHTML = ''; const n = Date.now(), exp = 864e5; const um = {}; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (n - s.time > exp) { db.ref('statuses/' + k).remove(); return; } const uid = s.uid; if (!allUsersData[uid]) return; if (!um[uid]) um[uid] = { user: s, statuses: [] }; um[uid].statuses.push({ key: k, ...s }); }); const su = Object.keys(um).sort((a, b) => { const al = um[a].statuses.reduce((m, s) => s.time > m ? s.time : m, 0), bl = um[b].statuses.reduce((m, s) => s.time > m ? s.time : m, 0); return bl - al; }); if (su.length === 0) { l.innerHTML = '<div style="text-align:center;padding:30px 0;color:#999;font-size:14px;font-family:var(--font-main);">📭 لا توجد حالات</div>'; return; } su.forEach(uid => { const d = um[uid], ls = d.statuses.reduce((a, b) => a.time > b.time ? a : b), ud = allUsersData[uid] || {}, dn = ud.name || d.user.sender || 'مجهول', da = ud.avatar || d.user.avatar || DEFAULT_ICON, isMine = uid === myFP; let hasUnseen = false, ts = d.statuses.length; d.statuses.forEach(s => { const sb = s.seenBy || {}; if (!sb[myFP] && s.uid !== myFP) hasUnseen = true; }); const c = document.createElement('div'); c.className = 'status-user-card ' + (hasUnseen ? 'unseen' : 'seen'); c.onclick = () => viewUserStatuses(uid, d.statuses); c.innerHTML = '<div class="status-avatar-wrapper"><img src="' + da + '" class="status-avatar" onclick="event.stopPropagation();openViewer(\'' + da + '\',\'image\',\'' + dn + '\')"><div class="status-ring"></div></div><div class="status-user-info"><div class="status-username">' + escapeHtml(dn) + (isMine ? '<span style="font-size:10px;color:#999;font-family:var(--font-main);">(حالتي)</span>' : '') + '</div><div class="status-time">' + formatDateShort(ls.time) + '</div><div class="status-preview">' + (ls.text || '📸') + '</div></div>' + (ts > 1 ? '<div class="status-count ' + (hasUnseen ? '' : 'seen') + '">' + ts + '</div>' : ''); l.appendChild(c); }); }
 
     function viewUserStatuses(uid, statuses) { if (!statuses || statuses.length === 0) return; statuses.sort((a, b) => a.time - b.time); viewerStatuses = statuses; viewerCurrentIndex = 0; viewerCurrentUid = uid; showStatusAtIndex(0); }
     function showStatusAtIndex(i) {
         if (i >= viewerStatuses.length || i < 0) { closeStatusViewer(null); return; }
         const s = viewerStatuses[i], ud = allUsersData[viewerCurrentUid] || {}, dn = ud.name || s.sender || 'مجهول';
-        if (s.uid !== myFP) { const sb = s.seenBy || {}; if (!sb[myFP]) { sb[myFP] = { name: myName, avatar: myAvatar, time: Date.now() }; db.ref('statuses/' + s.key + '/seenBy').set(sb); db.ref('notifications/' + viewerCurrentUid + '/' + myFP).set({ from: myName, fromAvatar: myAvatar, statusKey: s.key, time: Date.now(), seen: true }); } }
+        if (s.uid !== myFP) {
+            const sb = s.seenBy || {};
+            if (!sb[myFP]) {
+                sb[myFP] = { name: myName, avatar: myAvatar, time: Date.now() };
+                db.ref('statuses/' + s.key + '/seenBy').set(sb);
+                db.ref('notifications/' + viewerCurrentUid + '/' + myFP).set({ from: myName, fromAvatar: myAvatar, statusKey: s.key, time: Date.now(), seen: true });
+                // 🔔 إشعار FCM لصاحب الحالة
+                getUserFCMToken(viewerCurrentUid).then(tk => {
+                    if (tk) sendNotificationToUser(tk, '👁️ ' + myName + ' شاهد حالتك', (s.text || '📸 حالة'), myAvatar, { type: 'status_seen', fromUid: myFP, tag: 'seen-' + Date.now(), url: APP_URL });
+                });
+            }
+        }
         const v = document.getElementById('status-viewer'), c = document.getElementById('status-viewer-content'), ne = document.getElementById('status-viewer-name'), se = document.getElementById('status-viewer-seen'), db2 = document.getElementById('status-delete-btn');
         ne.innerHTML = '📸 ' + escapeHtml(dn) + ' <span style="font-size:11px;color:#aaa;font-weight:400;">(' + (i + 1) + '/' + viewerStatuses.length + ')</span>';
         c.innerHTML = '';
         if (s.media) { if (s.type === 'video') c.innerHTML = '<video src="' + s.media + '" controls autoplay playsinline></video>'; else c.innerHTML = '<img src="' + s.media + '">'; }
         else c.innerHTML = '<div style="color:#fff;font-size:18px;text-align:center;padding:20px;min-width:120px;min-height:60px;display:flex;align-items:center;justify-content:center;font-family:var(--font-main);">' + (s.text || '📸') + '</div>';
         const sb = s.seenBy || {}, vw = Object.keys(sb);
-        if (vw.length > 0) { const ns = vw.map(id => { const d = sb[id]; return '<span class="seen-user" onclick="event.stopPropagation();openViewer(\'' + (d.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png") + '\',\'image\',\'' + (d.name || 'مجهول') + '\')">' + (d.name || 'مجهول') + '</span>'; }).join('، '); se.innerHTML = '👁️ شاهدها: ' + ns; } else se.textContent = '👁️ لا مشاهدات';
+        if (vw.length > 0) { const ns = vw.map(id => { const d = sb[id]; return '<span class="seen-user" onclick="event.stopPropagation();openViewer(\'' + (d.avatar || DEFAULT_ICON) + '\',\'image\',\'' + (d.name || 'مجهول') + '\')">' + (d.name || 'مجهول') + '</span>'; }).join('، '); se.innerHTML = '👁️ شاهدها: ' + ns; } else se.textContent = '👁️ لا مشاهدات';
         if (canDeleteStatus(s.uid)) { db2.style.display = 'inline-block'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف؟")) { db.ref('statuses/' + s.key).remove(); if (viewerStatuses.length <= 1) closeStatusViewer(null); else { const ni = i < viewerStatuses.length - 1 ? i : i - 1; viewerStatuses.splice(i, 1); showStatusAtIndex(ni >= viewerStatuses.length ? viewerStatuses.length - 1 : ni); } } }; } else db2.style.display = 'none';
         viewerCurrentIndex = i; v.classList.add('active');
         v.onclick = (e) => { if (e.target === v || e.target.closest('.viewer-close') || e.target.closest('.viewer-info')) return; if (i < viewerStatuses.length - 1) showStatusAtIndex(i + 1); };
@@ -2204,6 +2369,10 @@
     function selectStatusType(t) { selectedStatusType = t; document.querySelectorAll('.status-options button').forEach(b => b.classList.remove('active')); if (t === 'text') { document.getElementById('status-type-text').classList.add('active'); document.getElementById('status-text-area').classList.add('active'); document.getElementById('status-media-area').classList.remove('active'); } else { document.getElementById('status-type-media').classList.add('active'); document.getElementById('status-media-area').classList.add('active'); document.getElementById('status-text-area').classList.remove('active'); } }
     document.getElementById('status-text-input')?.addEventListener('input', function() { document.getElementById('text-counter').textContent = this.value.length + ' / 500'; });
     function handleStatusFile(i) { if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير! الحد 100 ميجا."); i.value = ''; return; } statusFileData = f; statusFileType = f.type.startsWith('video') ? 'video' : 'image'; document.getElementById('selected-filename').textContent = '📎 ' + f.name; document.getElementById('selected-filename').classList.add('active'); document.getElementById('publish-status-btn').disabled = false; }
+
+    // ============================================================
+    //  📸 نشر حالة + إشعار FCM لكل المستخدمين
+    // ============================================================
     async function publishStatus() {
         if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه نشر الحالات!"); return; }
         if (isMuted) { alert("🔇 أنت مكتوم!"); return; }
@@ -2220,13 +2389,17 @@
             db.ref('statuses').push(data);
             alert("✅ تم النشر!");
             closeAddStatus();
+
+            // 🔔 إشعار FCM لجميع المستخدمين
+            const preview = statusText ? (statusText.length > 60 ? statusText.substring(0, 60) + '...' : statusText) : '📸 حالة جديدة';
+            notifyAllUsers('📸 ' + myName + ' نشر حالة جديدة', preview, myAvatar, { type: 'new_status', fromUid: myFP, tag: 'status-' + Date.now(), url: APP_URL }, myFP);
         } catch (e) { alert("❌ فشل: " + e.message); }
         pb.disabled = false; pb.textContent = '📤 نشر';
     }
 
     function openNotifications() { document.getElementById('notifications-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); renderNotifications(); }
     function closeNotifications() { document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); }
-    function renderNotifications() { const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png", sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
+    function renderNotifications() { const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
     function clearAllNotifications() { if (confirm("مسح الكل؟")) db.ref('notifications/' + myFP).remove(); }
     function updateNotifBadge() { const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
 
@@ -2235,6 +2408,9 @@
     function sendYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return alert("رابط غير صحيح!"); const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: l, type: 'youtube', youtubeId: vid, avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); document.getElementById('yt-link-input').value = ''; document.getElementById('yt-preview').style.display = 'none'; document.getElementById('yt-send-btn').disabled = true; document.getElementById('yt-watch-btn').disabled = true; document.getElementById('youtube-modal').classList.remove('active'); }
     function watchYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return; openViewer('https://www.youtube.com/embed/' + vid + '?autoplay=1', 'youtube', myName); }
 
+    // ============================================================
+    //  💬 إرسال رسالة عامة + إشعار FCM للجميع
+    // ============================================================
     function sendMessage(e) {
         e.preventDefault();
         if (isMuted) return alert("🔇 مكتوم!");
@@ -2250,9 +2426,13 @@
         db.ref('messages').push(d);
         input.value = '';
         input.focus();
+
+        // 🔔 إشعار FCM لجميع المستخدمين (عدا المرسل)
+        const preview = t.length > 60 ? t.substring(0, 60) + '...' : t;
+        notifyAllUsers('💬 ' + myName, preview, myAvatar, { type: 'chat', fromUid: myFP, tag: 'chat-' + Date.now(), url: APP_URL }, myFP);
     }
 
-    async function handleFile(i) { if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه إرسال صور أو فيديو!"); i.value = ''; return; } if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير! الحد 100 ميجا."); i.value = ''; return; } const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true; try { const u = await uploadCloudinary(f); if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); } else alert("فشل الرفع"); } catch (e) { alert("خطأ: " + e.message); } sb.textContent = "➤"; sb.disabled = false; i.value = ''; }
+    async function handleFile(i) { if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه إرسال صور أو فيديو!"); i.value = ''; return; } if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير! الحد 100 ميجا."); i.value = ''; return; } const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true; try { const u = await uploadCloudinary(f); if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); notifyAllUsers('📎 ' + myName, f.type.startsWith('video') ? '🎥 أرسل مقطع فيديو' : '🖼️ أرسل صورة', myAvatar, { type: 'media', fromUid: myFP, tag: 'media-' + Date.now(), url: APP_URL }, myFP); } else alert("فشل الرفع"); } catch (e) { alert("خطأ: " + e.message); } sb.textContent = "➤"; sb.disabled = false; i.value = ''; }
 
     async function uploadCloudinary(f) { const cn = 'nfg03aku', up = 'daufafvn', url = 'https://api.cloudinary.com/v1_1/' + cn + '/' + (f.type.startsWith('video') ? 'video' : 'image') + '/upload'; const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', up); const r = await fetch(url, { method: 'POST', body: fd }); if (!r.ok) throw new Error('HTTP ' + r.status); const d = await r.json(); return d.secure_url || null; }
 
@@ -2273,7 +2453,7 @@
     async function resolveReport(action) { const reportId = resolveTargetReportId; if (!reportId) return; const comment = document.getElementById('resolve-comment-input').value.trim(); const report = reportsCache[reportId]; if (!report) return alert('البلاغ غير موجود'); const updates = { status: action === 'none' ? 'rejected' : 'resolved', actionTaken: action, ownerComment: comment || null, resolvedAt: Date.now() }; try { await db.ref('reports/' + reportId).update(updates); if (action !== 'none') { const targetUid = report.targetId; if (action === 'ban') { await db.ref('bans/' + targetUid).set(true); if (report.targetName) await db.ref('banned_names/' + report.targetName.toLowerCase()).set(true); } else if (action === 'mute') { const et = Date.now() + 3600000; const data = { endTime: et, by: myName, at: Date.now() }; await db.ref('mutes/' + targetUid).set(data); if (report.targetName) await db.ref('muted_names/' + report.targetName.toLowerCase()).set(data); } else if (action === 'kick') { const et = Date.now() + 3600000; await db.ref('ignores/' + targetUid).set({ endTime: et, by: myName, at: Date.now() }); } else if (action === 'ignore') { await db.ref('ignores/' + targetUid).set({ endTime: 9999999999999, by: myName, at: Date.now() }); } if (report.reporterId) { db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_resolved', reportId: reportId, targetName: report.targetName, action: action, comment: comment || '', time: Date.now(), seen: false }); } } else { if (report.reporterId) { db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_rejected', reportId: reportId, targetName: report.targetName, comment: comment || 'تم رفض البلاغ', time: Date.now(), seen: false }); } } document.getElementById('resolve-modal').classList.remove('active'); alert('✅ تم حل البلاغ بنجاح'); renderReports(); updateReportsBadge(); } catch (e) { alert('❌ خطأ: ' + e.message); } }
 
     let colorTargetUid = null, selectedGlow = 'none';
-    function openColorControl(uid) { if (!isOwner()) return alert("⛔ فقط المالك!"); colorTargetUid = uid; const u = allUsersData[uid] || {}, n = u.name || 'مجهول', av = u.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png", r = u.role || 'user'; document.getElementById('color-target-avatar').src = av; document.getElementById('color-target-name').textContent = n; document.getElementById('color-target-role').textContent = 'رتبة: ' + r; const cc = getColor(uid), cg = getGlow(uid); selectedGlow = cg; document.getElementById('color-name-picker').value = cc.name || '#333333'; const g = document.getElementById('color-grid'); g.innerHTML = ''; COLORS.forEach((c, i) => { const d = document.createElement('div'); d.className = 'color-option'; d.style.background = c.bg; if (cc && cc.bg === c.bg) d.classList.add('selected'); d.innerHTML = '<span class="check">✓</span><span class="color-label">' + (i + 1) + '</span>'; d.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); d.classList.add('selected'); updatePreview(); }; g.appendChild(d); }); document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === cg); }); document.getElementById('color-name-picker').oninput = updatePreview; updatePreview(); document.getElementById('color-control-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); }
+    function openColorControl(uid) { if (!isOwner()) return alert("⛔ فقط المالك!"); colorTargetUid = uid; const u = allUsersData[uid] || {}, n = u.name || 'مجهول', av = u.avatar || DEFAULT_ICON, r = u.role || 'user'; document.getElementById('color-target-avatar').src = av; document.getElementById('color-target-name').textContent = n; document.getElementById('color-target-role').textContent = 'رتبة: ' + r; const cc = getColor(uid), cg = getGlow(uid); selectedGlow = cg; document.getElementById('color-name-picker').value = cc.name || '#333333'; const g = document.getElementById('color-grid'); g.innerHTML = ''; COLORS.forEach((c, i) => { const d = document.createElement('div'); d.className = 'color-option'; d.style.background = c.bg; if (cc && cc.bg === c.bg) d.classList.add('selected'); d.innerHTML = '<span class="check">✓</span><span class="color-label">' + (i + 1) + '</span>'; d.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); d.classList.add('selected'); updatePreview(); }; g.appendChild(d); }); document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === cg); }); document.getElementById('color-name-picker').oninput = updatePreview; updatePreview(); document.getElementById('color-control-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); }
     function selectGlow(g) { selectedGlow = g; document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === g); }); updatePreview(); }
     function updatePreview() { const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; let bg = 'linear-gradient(135deg, #e0e0e0, #bdbdbd)', tc = '#333'; if (s) { const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx >= 0 && idx < COLORS.length) { const c = COLORS[idx]; bg = c.bg; tc = c.text; } } const pb = document.getElementById('preview-bubble'), pn = document.getElementById('preview-name'), pg = document.getElementById('preview-glow-label'); pb.style.background = bg; pb.style.color = tc; pb.textContent = '📝 نص'; pn.style.color = nc; pn.textContent = document.getElementById('color-target-name').textContent; pn.className = 'preview-name'; if (selectedGlow !== 'none') pn.classList.add('glow', selectedGlow); const gn = { none: '✨ بدون', glow: '✨ توهج', 'glow-fast': '⚡ سريع', 'glow-slow': '🌊 بطيء', 'glow-rainbow': '🌈 قوس قزح', 'glow-neon': '💡 نيون', 'glow-fire': '🔥 نار', 'owner-glow': '👑 ملكي' }; pg.textContent = gn[selectedGlow] || '✨ بدون'; }
     function applyUserColor() { if (!colorTargetUid) return; const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; if (!s) { alert("اختر لون!"); return; } const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx < 0 || idx >= COLORS.length) return; const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc }; saveUserColor(colorTargetUid, cd, selectedGlow); closeColorControl(); alert("✅ تم التغيير!"); }
