@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>فيسي برو - نظام البلاغات</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#008069">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3.4.2/dist/fp.min.js"></script>
     <style>
@@ -316,7 +318,6 @@
         .toggle-switch input:checked + .toggle-slider { background: var(--primary); }
         .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
 
-        /* ====== نظام الإشعارات داخل التطبيق (In-App) ====== */
         #inapp-notif-container {
             position: fixed;
             top: 8px;
@@ -921,7 +922,6 @@
 
 </div>
 
-<!-- 🆕 حاوية الإشعارات داخل التطبيق -->
 <div id="inapp-notif-container"></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -958,37 +958,20 @@
         const ua = (navigator.userAgent || '').toLowerCase();
         const isAndroid = /android/i.test(ua);
         const isIOS = /iphone|ipad|ipod/i.test(ua);
-
-        // كشف WebView في Android
         const isAndroidWebView = isAndroid && (
             /wv\)/.test(ua) ||
             /version\/[\d.]+.*chrome/.test(ua) ||
             (!/chrome\/[6-9][\d]/.test(ua) && /safari/.test(ua))
         );
-
-        // كشف Cordova/Capacitor
         const isCordova = typeof window.cordova !== 'undefined' || typeof window.Capacitor !== 'undefined';
-
-        // كشف APK wrapper (Kodular, Thunkable, WebIntoApp, etc.)
         const isAPKWrapper = /apk|kodular|thunkable|webintoapp|median/i.test(ua);
-
-        // حالة الـ APIs
         const hasServiceWorker = 'serviceWorker' in navigator;
         const hasNotification = 'Notification' in window;
         const hasVibrate = 'vibrate' in navigator;
-
         const isWebView = isAndroidWebView || isCordova || isAPKWrapper;
-
         return {
-            isAndroid,
-            isIOS,
-            isWebView,
-            isCordova,
-            isAPKWrapper,
-            hasServiceWorker,
-            hasNotification,
-            hasVibrate,
-            // الوضع المختار
+            isAndroid, isIOS, isWebView, isCordova, isAPKWrapper,
+            hasServiceWorker, hasNotification, hasVibrate,
             mode: (!isWebView && hasServiceWorker && hasNotification) ? 'fcm' :
                   (hasNotification) ? 'webview' : 'inapp'
         };
@@ -1042,7 +1025,7 @@
     let messaging = null;
     let swRegistration = null;
     let fcmToken = null;
-    let notificationMode = ENV.mode; // 'fcm' | 'webview' | 'inapp'
+    let notificationMode = ENV.mode;
 
     // ====== تفضيلات الإشعارات ======
     let currentNotificationPrefs = {
@@ -1130,7 +1113,6 @@
             gain1.gain.exponentialRampToValueAtTime(0.3, now + 0.02);
             gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
             osc1.start(now); osc1.stop(now + 0.3);
-
             const osc2 = audioContext.createOscillator();
             const gain2 = audioContext.createGain();
             osc2.connect(gain2); gain2.connect(audioContext.destination);
@@ -1150,44 +1132,35 @@
     }
 
     // ============================================================
-    //  📱 إشعار داخل التطبيق (يعمل في كل الأماكن — حتى APK بدون Notification API)
+    //  📱 إشعار داخل التطبيق
     // ============================================================
     function showInAppNotification(opts) {
         const container = document.getElementById('inapp-notif-container');
         if (!container) return;
-
         const title = opts.title || 'فيسي برو';
         const body = opts.body || '';
         const icon = opts.icon || DEFAULT_ICON;
-        const type = opts.type || 'chat'; // dm | chat | status | seen
+        const type = opts.type || 'chat';
         const emoji = opts.emoji || '🔔';
         const onClick = opts.onClick;
-
         const notif = document.createElement('div');
         notif.className = 'inapp-notif ' + type;
-
         const img = document.createElement('img');
         img.src = icon;
         img.onerror = () => { img.src = DEFAULT_ICON; };
-
         const textWrap = document.createElement('div');
         textWrap.className = 'ni-text';
-
         const titleEl = document.createElement('div');
         titleEl.className = 'ni-title';
         titleEl.textContent = title;
-
         const bodyEl = document.createElement('div');
         bodyEl.className = 'ni-body';
         bodyEl.textContent = body;
-
         textWrap.appendChild(titleEl);
         textWrap.appendChild(bodyEl);
-
         const iconEl = document.createElement('div');
         iconEl.className = 'ni-icon';
         iconEl.textContent = emoji;
-
         const closeBtn = document.createElement('button');
         closeBtn.className = 'ni-close';
         closeBtn.textContent = '✕';
@@ -1196,22 +1169,17 @@
             notif.style.animation = 'fadeIn .2s reverse';
             setTimeout(() => notif.remove(), 200);
         };
-
         notif.appendChild(img);
         notif.appendChild(textWrap);
         notif.appendChild(iconEl);
         notif.appendChild(closeBtn);
-
         notif.onclick = () => {
             if (typeof onClick === 'function') onClick();
             notif.remove();
         };
-
         container.appendChild(notif);
         playNotificationSound();
         vibrateDevice();
-
-        // إزالة تلقائية بعد 5 ثوانٍ
         setTimeout(() => {
             if (notif.parentNode) {
                 notif.style.animation = 'fadeIn .3s reverse';
@@ -1221,77 +1189,52 @@
     }
 
     // ============================================================
-    //  🎯 إظهار إشعار موحد (Native أو In-App حسب البيئة)
+    //  🎯 إظهار إشعار موحد
     // ============================================================
     function notifyUser(title, body, icon, type, onClick) {
-        // إذا كان المستخدم عطّل هذا النوع → تجاهل
         const prefMap = { dm: 'dm', chat: 'chat', status: 'status', status_seen: 'seen', new_status: 'status', report: 'chat', media: 'chat' };
         const prefKey = prefMap[type];
         if (prefKey && currentNotificationPrefs[prefKey] === false) {
             console.log('🔕 تم تجاهل إشعار لأن المستخدم عطّله:', type);
             return;
         }
-
-        // إذا كان في وضع FCM → Cloud Functions سترسل الإشعار
-        // هنا نعرض الإشعار داخل التطبيق فقط إذا كنا في الويب
         if (notificationMode === 'fcm') {
-            // الإشعارات ستأتي من FCM تلقائياً — لكن نعرض أيضاً In-App للتفاعل الفوري
-            // (لا نعرضها فقط إذا كانت الصفحة مخفية لأن FCM سيُظهرها)
             if (!document.hidden) {
                 showInAppNotification({ title, body, icon, type, emoji: getEmojiForType(type), onClick });
             }
             return;
         }
-
-        // وضع WebView / In-App: نعرض داخل التطبيق دائماً
         showInAppNotification({ title, body, icon, type, emoji: getEmojiForType(type), onClick });
-
-        // محاولة إظهار إشعار النظام إذا كان مدعوماً
         if (notificationMode === 'webview' && 'Notification' in window && Notification.permission === 'granted') {
             try {
                 const n = new Notification(title, {
-                    body: body,
-                    icon: icon || DEFAULT_ICON,
-                    badge: DEFAULT_ICON,
-                    dir: 'rtl',
-                    lang: 'ar',
-                    tag: 'vissypro-' + type + '-' + Date.now()
+                    body: body, icon: icon || DEFAULT_ICON, badge: DEFAULT_ICON,
+                    dir: 'rtl', lang: 'ar', tag: 'vissypro-' + type + '-' + Date.now()
                 });
-                if (typeof onClick === 'function') {
-                    n.onclick = () => { window.focus(); n.close(); onClick(); };
-                }
+                if (typeof onClick === 'function') n.onclick = () => { window.focus(); n.close(); onClick(); };
             } catch (e) { /* صامت */ }
         }
     }
 
     function getEmojiForType(type) {
         return {
-            dm: '💌',
-            chat: '💬',
-            status: '📸',
-            status_seen: '👁️',
-            new_status: '📸',
-            report: '🚩',
-            media: '📎',
-            general: '🔔'
+            dm: '💌', chat: '💬', status: '📸', status_seen: '👁️',
+            new_status: '📸', report: '🚩', media: '📎', general: '🔔'
         }[type] || '🔔';
     }
 
     // ============================================================
-    //  🔔 نظام In-App Notifications (يعتمد على Firebase Realtime)
-    //  هذا النظام هو الذي يعمل في APK حتى لو لم يدعم Notification API
+    //  🔔 نظام In-App Notifications
     // ============================================================
     function startInAppNotificationListeners() {
         console.log('🚀 بدء مستمعي الإشعارات داخل التطبيق');
-
-        // 1️⃣ رسائل خاصة جديدة
         if (inAppNotifListeners.dms) db.ref('dm_inbox/' + myFP).off('child_changed', inAppNotifListeners.dms);
         inAppNotifListeners.dms = db.ref('dm_inbox/' + myFP).on('child_changed', snap => {
             const uid = snap.key;
             const d = snap.val();
             if (!d || !d.count || Number(d.count) <= 0) return;
             if (currentDMChat && currentDMChat.uid === uid) return;
-            if (document.hidden && notificationMode === 'fcm') return; // FCM سيتولى الأمر
+            if (document.hidden && notificationMode === 'fcm') return;
             notifyUser(
                 '💌 ' + (d.fromName || 'مجهول'),
                 d.lastMessage || 'رسالة جديدة',
@@ -1300,8 +1243,6 @@
                 () => openDMChat(uid)
             );
         });
-
-        // 2️⃣ رسائل دردشة عامة
         if (inAppNotifListeners.messages) db.ref('messages').off('child_added', inAppNotifListeners.messages);
         inAppNotifListeners.messages = db.ref('messages').limitToLast(1).on('child_added', snap => {
             const m = snap.val();
@@ -1310,25 +1251,16 @@
             const t = Number(m.time) || Date.now();
             if (t <= lastSeenTimestamps.messages) return;
             if (currentTab === 'chat' && !document.hidden) {
-                // المستخدم يشاهد الدردشة → لا حاجة لإشعار
                 lastSeenTimestamps.messages = t;
                 localStorage.setItem('lst_msg', t);
                 return;
             }
             if (document.hidden && notificationMode === 'fcm') return;
             const preview = (m.text || '📎 وسائط').substring(0, 60);
-            notifyUser(
-                '💬 ' + (m.sender || 'مجهول'),
-                preview,
-                m.avatar || DEFAULT_ICON,
-                'chat',
-                () => switchTab('chat')
-            );
+            notifyUser('💬 ' + (m.sender || 'مجهول'), preview, m.avatar || DEFAULT_ICON, 'chat', () => switchTab('chat'));
             lastSeenTimestamps.messages = t;
             localStorage.setItem('lst_msg', t);
         });
-
-        // 3️⃣ حالات جديدة
         if (inAppNotifListeners.statuses) db.ref('statuses').off('child_added', inAppNotifListeners.statuses);
         inAppNotifListeners.statuses = db.ref('statuses').limitToLast(1).on('child_added', snap => {
             const s = snap.val();
@@ -1338,18 +1270,10 @@
             if (t <= lastSeenTimestamps.statuses) return;
             if (document.hidden && notificationMode === 'fcm') return;
             const preview = (s.text || '📸 حالة جديدة').substring(0, 60);
-            notifyUser(
-                '📸 ' + (s.sender || 'مجهول') + ' نشر حالة',
-                preview,
-                s.avatar || DEFAULT_ICON,
-                'status',
-                () => { switchTab('status'); }
-            );
+            notifyUser('📸 ' + (s.sender || 'مجهول') + ' نشر حالة', preview, s.avatar || DEFAULT_ICON, 'status', () => { switchTab('status'); });
             lastSeenTimestamps.statuses = t;
             localStorage.setItem('lst_st', t);
         });
-
-        // 4️⃣ إشعارات المنظومة (مشاهدة حالتك، بلاغات...)
         if (inAppNotifListeners.notifications) db.ref('notifications/' + myFP).off('child_added', inAppNotifListeners.notifications);
         inAppNotifListeners.notifications = db.ref('notifications/' + myFP).limitToLast(1).on('child_added', snap => {
             const n = snap.val();
@@ -1357,29 +1281,15 @@
             const t = Number(n.time) || Date.now();
             if (t <= lastSeenTimestamps.notifications) return;
             if (n.type === 'new_report') {
-                // يظهر للمالك فقط
                 if (myRole === 'owner' && document.hidden && notificationMode === 'fcm') return;
-                notifyUser(
-                    '🚩 بلاغ جديد',
-                    'على: ' + (n.targetName || 'مجهول'),
-                    n.fromAvatar || DEFAULT_ICON,
-                    'report',
-                    () => { if (myRole === 'owner') { closeAllModals(); toggleReportsModal(); } }
-                );
+                notifyUser('🚩 بلاغ جديد', 'على: ' + (n.targetName || 'مجهول'), n.fromAvatar || DEFAULT_ICON, 'report', () => { if (myRole === 'owner') { closeAllModals(); toggleReportsModal(); } });
             } else if (n.statusKey) {
                 if (document.hidden && notificationMode === 'fcm') return;
-                notifyUser(
-                    '👁️ ' + (n.from || 'مجهول') + ' شاهد حالتك',
-                    'اضغط للاطلاع',
-                    n.fromAvatar || DEFAULT_ICON,
-                    'status_seen',
-                    () => { switchTab('status'); }
-                );
+                notifyUser('👁️ ' + (n.from || 'مجهول') + ' شاهد حالتك', 'اضغط للاطلاع', n.fromAvatar || DEFAULT_ICON, 'status_seen', () => { switchTab('status'); });
             }
             lastSeenTimestamps.notifications = t;
             localStorage.setItem('lst_nt', t);
         });
-
         console.log('✅ مستمعو الإشعارات داخل التطبيق جاهزون');
     }
 
@@ -1532,9 +1442,7 @@
     function updateNotifStatusBadge() {
         const badge = document.getElementById('prof-notif-status');
         if (!badge) return;
-
         if (notificationMode === 'inapp' || ENV.isWebView) {
-            // داخل APK → نعتمد على إشعارات داخلية
             badge.textContent = '📱 إشعارات داخلية (APK)';
             badge.className = 'notif-status-badge inapp';
             return;
@@ -1558,8 +1466,6 @@
         const permBadge = document.getElementById('notif-perm-badge');
         const permText = document.getElementById('notif-perm-text');
         const enableBtn = document.getElementById('enable-notif-btn');
-
-        // الحالة داخل APK
         if (notificationMode === 'inapp' || ENV.isWebView) {
             permBadge.textContent = '📱 الإشعارات داخل التطبيق مفعلة';
             permBadge.className = 'notif-status-badge inapp';
@@ -1594,41 +1500,33 @@
             enableBtn.textContent = '📲 تفعيل الإشعارات';
             enableBtn.disabled = false;
         }
-
         document.getElementById('notif-dm-toggle').checked = currentNotificationPrefs.dm;
         document.getElementById('notif-chat-toggle').checked = currentNotificationPrefs.chat;
         document.getElementById('notif-status-toggle').checked = currentNotificationPrefs.status;
         document.getElementById('notif-seen-toggle').checked = currentNotificationPrefs.seen;
-
         document.getElementById('notification-settings-modal').classList.add('active');
     }
 
     // ============================================================
-    //  🎯 طلب الإذن (بدون رسالة "المتصفح لا يدعم")
+    //  🎯 طلب الإذن
     // ============================================================
     async function requestNotificationPermission() {
-        // داخل APK / WebView
         if (ENV.isWebView || notificationMode === 'inapp') {
             alert('📱 الإشعارات داخل التطبيق مفعلة تلقائياً.\nستصلك إشعارات للرسائل الخاصة والعامة والحالات.');
             openNotificationSettings();
             return;
         }
-
-        // المتصفح لا يدعم Notification API
         if (!ENV.hasNotification) {
-            // لا نظهر رسالة خطأ — نستخدم الإشعارات الداخلية بدلاً منها
             console.log('ℹ️ Notification API غير مدعوم — استخدام الإشعارات داخل التطبيق');
             notificationMode = 'inapp';
             startInAppNotificationListeners();
             alert('📱 سيتم استخدام إشعارات داخل التطبيق (متصفحك لا يدعم إشعارات النظام)');
             return;
         }
-
         if (Notification.permission === 'denied') {
             alert('🔕 الإشعارات مرفوضة من المتصفح.\n\nChrome: الإعدادات → الخصوصية → إعدادات الموقع → الإشعارات\n\nSafari: الإعدادات → Safari → إشعارات');
             return;
         }
-
         if (Notification.permission === 'granted') {
             if (!messaging && ENV.hasServiceWorker) await initFCM();
             await saveFCMToken();
@@ -1638,7 +1536,6 @@
             alert('✅ الإشعارات مفعلة مسبقاً');
             return;
         }
-
         try {
             const p = await Notification.requestPermission();
             if (p === 'granted') {
@@ -1652,7 +1549,6 @@
                 alert('⚠️ لم يتم تفعيل الإشعارات. يمكنك تفعيلها لاحقاً');
             }
         } catch (e) {
-            // فشل طلب الإذن → نستخدم الإشعارات الداخلية
             console.warn('⚠️ فشل طلب الإذن:', e);
             notificationMode = 'inapp';
             startInAppNotificationListeners();
@@ -1678,10 +1574,8 @@
         try {
             swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
             console.log('✅ تم تسجيل Service Worker');
-
             messaging = firebase.messaging();
             try { messaging.useServiceWorker(swRegistration); } catch (e) {}
-
             messaging.onMessage((payload) => {
                 console.log('📬 FCM foreground:', payload);
                 const n = payload.notification || {};
@@ -1690,16 +1584,13 @@
                 const body = n.body || d.body || '';
                 const icon = n.icon || d.icon || DEFAULT_ICON;
                 const type = d.type || 'general';
-                // عرض كإشعار داخل التطبيق حتى في المقدمة
                 notifyUser(title, body, icon, type, () => { window.focus(); });
             });
-
             messaging.onTokenRefresh(async () => {
                 console.log('🔄 تحديث FCM Token');
                 fcmToken = null;
                 await saveFCMToken();
             });
-
             if (Notification.permission === 'granted') {
                 await saveFCMToken();
             }
@@ -1745,12 +1636,7 @@
     function updateFCMButton() {
         const btn = document.getElementById('fcm-btn');
         if (!btn) return;
-
-        // داخل APK → مخفي (الإشعارات تعمل تلقائياً)
-        if (ENV.isWebView || notificationMode === 'inapp') {
-            btn.style.display = 'none';
-            return;
-        }
+        if (ENV.isWebView || notificationMode === 'inapp') { btn.style.display = 'none'; return; }
         if (!ENV.hasNotification) { btn.style.display = 'none'; return; }
         if (Notification.permission === 'granted') {
             btn.style.display = 'none';
@@ -1761,11 +1647,7 @@
         updateNotifStatusBadge();
     }
 
-    // ============================================================
-    //  طلب إذن تلقائي
-    // ============================================================
     async function autoRequestNotificationPermission() {
-        // داخل APK / WebView → استخدم الإشعارات الداخلية مباشرة
         if (ENV.isWebView || notificationMode === 'inapp') {
             startInAppNotificationListeners();
             return;
@@ -1794,7 +1676,6 @@
             await saveFCMToken();
             updateNotifStatusBadge();
         } else {
-            // مرفوض → استخدم الإشعارات الداخلية كحل بديل
             notificationMode = 'inapp';
             startInAppNotificationListeners();
         }
@@ -1951,7 +1832,6 @@
         startPresenceChecker();
         db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
         db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
-
         db.ref('users/' + myFP).on('value', snap => {
             if (myName && !snap.exists()) {
                 alert("⚠️ تم حذف حسابك!");
@@ -1960,7 +1840,6 @@
                 location.reload();
             }
         });
-
         db.ref('users/' + myFP + '/role').on('value', s => {
             myRole = s.val() || "user";
             updateUI();
@@ -1976,36 +1855,26 @@
             }
             saveFCMToken();
         });
-
         db.ref('users/' + myFP + '/hidden').on('value', snap => { isHidden = snap.val() || false; updateHiddenButton(); updateUsersList(); updateOnlineBadge(); });
         db.ref('bans/' + myFP).on('value', s => { if (s.exists() && !isBanned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; } else if (!s.exists() && isBanned) { isBanned = false; document.getElementById('ban-screen').style.display = 'none'; } });
         db.ref('mutes/' + myFP).on('value', s => { if (s.exists()) { const d = s.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { isMuted = true; muteEndTime = d.endTime; } else { isMuted = false; muteEndTime = 0; } } else { isMuted = false; muteEndTime = 0; } updateMuteUI(); });
-
         startListeners();
         loadColorSettings();
         listenMaintenance();
         listenMyDMPermission();
         listenDMInbox();
         listenNotificationPrefs();
-
-        // 🎯 نظام الإشعارات
         setTimeout(() => {
-            // بدء مستمعي الإشعارات داخل التطبيق (يعمل دائماً)
             startInAppNotificationListeners();
-
-            // محاولة FCM إذا كان مدعوماً
             if (ENV.hasServiceWorker && ENV.hasNotification && !ENV.isWebView) {
                 initFCM().then(() => autoRequestNotificationPermission());
             } else {
-                // وضع APK أو WebView
                 console.log('📱 وضع APK/WebView — الإشعارات الداخلية مفعلة');
                 updateFCMButton();
                 updateNotifStatusBadge();
             }
         }, 1500);
     }
-
-    // ... (تابع باقي الدوال كما كانت سابقاً - سأضعها مضغوطة هنا للحفاظ على الحجم)
 
     function listenMaintenance() {
         if (maintenanceListener) db.ref('maintenance').off('value', maintenanceListener);
