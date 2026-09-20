@@ -1,7 +1,7 @@
 // ============================================================
 //  🔔 firebase-messaging-sw.js
 //  Service Worker لاستقبال الإشعارات في الخلفية حتى لو التطبيق مغلق
-//  ⚠️ يجب أن يكون في جذر الموقع (root)
+//  فتح الرابط: https://fisi-pro.vercel.app
 // ============================================================
 
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
@@ -18,34 +18,40 @@ const firebaseConfig = {
     measurementId: "G-JG8KVD2F86"
 };
 
+const APP_URL = 'https://fisi-pro.vercel.app';
+const DEFAULT_ICON = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
+
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // ============================================================
-//  استقبال الرسائل في الخلفية (التطبيق مغلق أو في الخلفية)
+//  📬 استقبال الإشعارات في الخلفية (التطبيق مغلق/خلفية)
 // ============================================================
 messaging.onBackgroundMessage((payload) => {
     console.log('📬 [SW] رسالة في الخلفية:', payload);
 
     const n = payload.notification || {};
     const d = payload.data || {};
+
     const title = n.title || d.title || 'فيسي برو';
     const body  = n.body  || d.body  || 'لديك إشعار جديد';
-    const icon  = d.icon  || 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
+    const icon  = n.icon  || d.icon  || DEFAULT_ICON;
+    const url   = d.url   || APP_URL;
 
     const options = {
         body: body,
         icon: icon,
-        badge: 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
+        badge: DEFAULT_ICON,
         dir: 'rtl',
         lang: 'ar',
-        tag: d.tag || 'vissypro-' + Date.now(),
+        tag: d.tag || ('vissypro-' + (d.type || 'general') + '-' + Date.now()),
         renotify: true,
         requireInteraction: false,
         vibrate: [200, 100, 200],
         data: {
-            url: d.url || '/',
+            url: url,
             type: d.type || 'general',
+            fromUid: d.fromUid || '',
             ...d
         }
     };
@@ -54,16 +60,16 @@ messaging.onBackgroundMessage((payload) => {
 });
 
 // ============================================================
-//  عند الضغط على الإشعار
+//  🖱️ عند الضغط على الإشعار
 // ============================================================
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-    const targetUrl = (event.notification.data && event.notification.data.url) || '/';
+    const targetUrl = (event.notification.data && event.notification.data.url) || APP_URL;
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
             for (const client of clientList) {
-                if (client.url.includes(self.location.origin) && 'focus' in client) {
+                if (client.url.includes('fisi-pro.vercel.app') && 'focus' in client) {
                     return client.focus();
                 }
             }
@@ -75,12 +81,7 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 // ============================================================
-//  تفعيل فوري للـ Service Worker
+//  ⚡ تفعيل فوري
 // ============================================================
-self.addEventListener('install', (event) => {
-    self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-    event.waitUntil(clients.claim());
-});
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (event) => event.waitUntil(clients.claim()));
