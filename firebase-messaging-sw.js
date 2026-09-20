@@ -1,7 +1,7 @@
 // ============================================================
 //  🔔 firebase-messaging-sw.js
 //  Service Worker لاستقبال الإشعارات في الخلفية حتى لو التطبيق مغلق
-//  فتح الرابط: https://fisi-pro.vercel.app
+//  يفتح https://fisi-pro.vercel.app عند الضغط على الإشعار
 // ============================================================
 
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
@@ -60,7 +60,7 @@ messaging.onBackgroundMessage((payload) => {
 });
 
 // ============================================================
-//  🖱️ عند الضغط على الإشعار
+//  🖱️ عند الضغط على الإشعار — فتح رابط التطبيق
 // ============================================================
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
