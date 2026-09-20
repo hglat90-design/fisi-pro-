@@ -1,0 +1,2305 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>فيسي برو - نظام البلاغات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3.4.2/dist/fp.min.js"></script>
+    <style>
+        @font-face {
+            font-family: 'alfont_com_سلطان-بلاك';
+            src: url('https://alfont.com/wp-content/fonts/sultan-black.woff2') format('woff2'),
+                 url('https://alfont.com/wp-content/fonts/sultan-black.woff') format('woff'),
+                 url('https://alfont.com/wp-content/fonts/sultan-black.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        :root { --primary: #008069; --bg-chat: #efe7dd; --msg-mine: #d9fdd3; --msg-other: #fff; --gold: #FFD700; --font-main: 'alfont_com_سلطان-بلاك', 'Cairo', sans-serif; }
+        html, body { height: 100%; overflow: hidden; touch-action: manipulation; }
+        body { background: #d1d7db; display: flex; justify-content: center; height: 100vh; overflow: hidden; position: fixed; width: 100%; top: 0; left: 0; font-family: var(--font-main); }
+        .app-container { width: 100%; max-width: 600px; height: 100%; max-height: 100vh; background: #f0f2f5; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0, 0, 0, 0.3); overflow: hidden; height: 100dvh; }
+        #login-screen, #ban-screen, #loading-screen, #maintenance-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 200; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: #fff; }
+        #loading-screen { display: flex; }
+        #ban-screen { background: linear-gradient(135deg, #1a1a1a, #4a0000); color: #fff; z-index: 999; display: none; text-align: center; }
+        #maintenance-screen { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; z-index: 999; text-align: center; }
+        #maintenance-screen h1 { font-size: 28px; margin: 16px 0 8px; font-weight: 900; color: #f9a825; }
+        #maintenance-screen p { font-size: 15px; color: #ddd; max-width: 300px; line-height: 1.6; }
+        .login-input { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 15px; text-align: center; outline: 0; font-size: 18px; font-family: var(--font-main); transition: border .3s; }
+        .login-input:focus { border-color: var(--primary); }
+        .login-btn { width: 100%; padding: 15px; background: var(--primary); color: #fff; border: 0; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 18px; font-family: var(--font-main); transition: transform .2s; }
+        .login-btn:active { transform: scale(.97); }
+        header { background: var(--primary); color: #fff; padding: 4px 10px; display: flex; justify-content: space-between; align-items: center; z-index: 10; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); min-height: 38px; flex-shrink: 0; }
+        .header-title { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px; }
+        .header-title button { background: rgba(255, 255, 255, 0.15); border: 0; color: #fff; padding: 2px 8px; border-radius: 8px; font-size: 10px; cursor: pointer; display: none; font-family: var(--font-main); }
+        .header-actions { display: flex; gap: 4px; align-items: center; }
+        .icon-btn { background: 0; border: 0; color: #fff; font-size: 17px; cursor: pointer; padding: 3px 6px; border-radius: 5px; transition: background .2s; position: relative; }
+        .icon-btn:active { background: rgba(255, 255, 255, 0.15); }
+        #reports-btn .notif-badge, #dm-btn .notif-badge { background: #ff3b30; }
+        #dm-btn { display: none; }
+        #fcm-btn { display: none; }
+        #maintenance-badge { display: none; background: linear-gradient(135deg, #f9a825, #f57c00); color: #fff; padding: 5px 10px; text-align: center; font-size: 11px; font-weight: 700; flex-shrink: 0; font-family: var(--font-main); }
+        #maintenance-badge.tester { background: linear-gradient(135deg, #9c27b0, #6a1b9a); }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; background: #efe7dd; background-image: url("https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png"); background-blend-mode: overlay; position: relative; min-height: 0; height: 100%; -webkit-overflow-scrolling: touch; }
+        #loading-more { text-align: center; padding: 6px; color: #999; font-size: 12px; display: none; font-family: var(--font-main); }
+        #loading-more.active { display: block; }
+        .msg-row { display: flex; flex-direction: column; max-width: 92%; margin-bottom: 2px; position: relative; animation: fadeIn .15s; }
+        .msg-row.mine { align-self: flex-end; }
+        .msg-row.others { align-self: flex-start; }
+        .bubble { padding: 6px 10px; border-radius: 12px; position: relative; font-size: 14px; line-height: 1.5; max-width: 100%; overflow: hidden; word-wrap: break-word; font-family: var(--font-main); font-weight: 400; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
+        .bubble-owner { background: linear-gradient(135deg, #FFD700, #F9A825) !important; color: #1a1a1a !important; border-bottom-left-radius: 3px; box-shadow: 0 2px 12px rgba(255, 215, 0, 0.4) !important; border: 1px solid rgba(255, 215, 0, 0.3); }
+        .bubble-owner .sender-name { color: #5d4a00 !important; }
+        .bubble-owner .sender-name .role-badge.owner { background: #5d4a00 !important; color: #FFD700 !important; }
+        .bubble-manager { background: linear-gradient(135deg, #9C27B0, #6A1B9A) !important; color: #fff !important; border-bottom-left-radius: 3px; box-shadow: 0 2px 12px rgba(156, 39, 176, 0.3) !important; }
+        .bubble-manager .sender-name { color: #E1BEE7 !important; }
+        .bubble-manager .sender-name .role-badge.manager { background: #E1BEE7 !important; color: #6A1B9A !important; }
+        .bubble-mod { background: linear-gradient(135deg, #1E88E5, #0D47A1) !important; color: #fff !important; border-bottom-left-radius: 3px; box-shadow: 0 2px 12px rgba(30, 136, 229, 0.3) !important; }
+        .bubble-mod .sender-name { color: #BBDEFB !important; }
+        .bubble-mod .sender-name .role-badge.mod { background: #BBDEFB !important; color: #0D47A1 !important; }
+        .bubble-user { border-bottom-left-radius: 3px; }
+        .bubble-user .sender-name { color: #333 !important; }
+        .mine .bubble { border-bottom-left-radius: 3px; }
+        .others .bubble { border-bottom-right-radius: 3px; }
+        .sender-info { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
+        .sender-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid rgba(0, 0, 0, 0.06); cursor: pointer; flex-shrink: 0; }
+        .sender-name { font-size: 12px; font-weight: 700; color: #555; display: flex; align-items: center; gap: 3px; flex-wrap: wrap; font-family: var(--font-main); }
+        .sender-name.mine-name { color: #005c4b; }
+        .role-badge { font-size: 8px; padding: 1px 5px; border-radius: 5px; color: #fff; font-weight: 700; }
+        .role-badge.owner { background: #FFD700; color: #5d4a00; }
+        .role-badge.manager { background: #9c27b0; }
+        .role-badge.mod { background: #2196f3; }
+        .role-badge.trusted { background: #ff9800; }
+        .msg-time { font-size: 9px; text-align: left; opacity: .5; margin-top: 2px; font-family: var(--font-main); font-weight: 300; }
+        .media-container { margin-top: 3px; border-radius: 6px; overflow: hidden; cursor: pointer; position: relative; background: #000; }
+        .media-container img, .media-container video { width: 100%; display: block; max-height: 200px; object-fit: cover; }
+        .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: #fff; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); pointer-events: none; }
+        .youtube-container { margin-top: 3px; border-radius: 6px; overflow: hidden; position: relative; width: 100%; aspect-ratio: 16/9; background: #000; cursor: pointer; }
+        .youtube-container iframe { width: 100%; height: 100%; border: 0; }
+        .youtube-thumbnail { width: 100%; height: 100%; object-fit: cover; }
+        .youtube-play-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 44px; height: 30px; background: rgba(255, 0, 0, 0.85); border-radius: 8px; display: flex; justify-content: center; align-items: center; box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4); }
+        .youtube-play-overlay::after { content: ''; width: 0; height: 0; border-left: 13px solid #fff; border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
+        .youtube-label { position: absolute; top: 4px; right: 4px; background: rgba(255, 0, 0, 0.9); color: #fff; padding: 2px 7px; border-radius: 3px; font-size: 9px; font-weight: 700; }
+        #reply-bar { display: none; background: #fff; border-right: 3px solid var(--primary); padding: 4px 10px; margin: 0 4px; border-radius: 6px 6px 0 0; }
+        #reply-bar.active { display: block; }
+        .reply-header { display: flex; justify-content: space-between; align-items: center; }
+        .reply-sender { font-size: 11px; font-weight: 700; color: var(--primary); font-family: var(--font-main); }
+        .reply-close { background: 0; border: 0; font-size: 15px; color: #999; cursor: pointer; }
+        .reply-content { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-main); }
+        #chat-form { background: #f0f2f5; padding: 4px 8px; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid #ddd; flex-shrink: 0; }
+        #chat-form-row { display: flex; align-items: center; gap: 4px; }
+        #message-input { flex: 1; padding: 8px 12px; border-radius: 20px; border: 0; outline: 0; font-size: 14px; background: #fff; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06); min-height: 34px; max-height: 60px; font-family: var(--font-main); }
+        #message-input:disabled { background: #e8e8e8; color: #999; }
+        .action-btn { width: 34px; height: 34px; border-radius: 50%; border: 0; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 15px; flex-shrink: 0; transition: transform .15s; }
+        .action-btn:active { transform: scale(.9); }
+        #send-btn { background: var(--primary); color: #fff; }
+        #media-btn { background: #fff; color: #555; border: 1px solid #ddd; display: none; }
+        #youtube-btn { background: #ff0000; color: #fff; display: none; font-size: 13px; }
+        #file-input { display: none; }
+        #mute-banner { display: none; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; padding: 3px 10px; text-align: center; font-size: 11px; font-weight: 700; flex-shrink: 0; font-family: var(--font-main); }
+        #mute-banner.active { display: block; }
+        .msg-actions { display: none; margin-top: 2px; gap: 3px; padding: 0 3px; flex-wrap: wrap; }
+        .msg-row:hover .msg-actions, .msg-row:active .msg-actions { display: flex; }
+        .action-sm { font-size: 8px; padding: 2px 6px; border: 0; border-radius: 3px; color: #fff; cursor: pointer; font-family: var(--font-main); font-weight: 600; }
+        .action-sm:active { transform: scale(.9); }
+        .action-sm.del { background: #ef5350; }
+        .action-sm.ban { background: #d32f2f; }
+        .action-sm.mute { background: #ff9800; }
+        .action-sm.reply { background: #2196f3; }
+        .action-sm.promote { background: #607d8b; }
+        .action-sm.report { background: #e74c3c; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 2px; font-size: 9px; box-shadow: 0 1px 3px rgba(231, 76, 60, 0.3); }
+        .action-sm.report::before { content: "⚑"; font-size: 11px; }
+        .action-sm.report:hover { background: #c0392b; transform: scale(1.02); }
+        .action-sm.dm { background: #9c27b0; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+        .action-sm.dm.locked { background: #757575; }
+        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 140; display: none; }
+        .modal-overlay.show { display: block; }
+        .modal-slide { position: absolute; top: 0; right: -100%; width: 100%; height: 100%; background: #fff; z-index: 150; transition: .3s; display: flex; flex-direction: column; }
+        .modal-slide.active { right: 0; }
+        .modal-popup { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; display: none; justify-content: center; align-items: center; padding: 20px; background: rgba(0, 0, 0, 0.5); }
+        .modal-popup.active { display: flex; }
+        .popup-box { background: #fff; width: 100%; max-width: 350px; border-radius: 16px; padding: 20px; text-align: center; max-height: 80vh; overflow-y: auto; animation: slideUp .3s; font-family: var(--font-main); font-size: 14px; }
+        .modal-header { background: #f5f5f5; padding: 10px 14px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .modal-header h3 { font-size: 15px; font-family: var(--font-main); font-weight: 700; }
+        .modal-close { background: 0; border: 0; font-size: 18px; cursor: pointer; color: #666; }
+        .modal-body { flex: 1; overflow-y: auto; padding: 10px; }
+        #users-list { flex: 1; overflow-y: auto; padding: 10px; }
+        .user-card { padding: 8px 10px; border-radius: 6px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #eee; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03); }
+        .user-card .user-info { display: flex; align-items: center; gap: 8px; }
+        .user-card .user-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; cursor: pointer; flex-shrink: 0; }
+        .user-card .user-details h4 { font-size: 12px; display: flex; align-items: center; gap: 4px; font-family: var(--font-main); }
+        .user-card .user-status { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-left: 3px; flex-shrink: 0; }
+        .user-card .user-status.online { background: #25D366; box-shadow: 0 0 6px rgba(37, 211, 102, 0.4); }
+        .user-card .user-status.offline { background: #ccc; }
+        .user-card .user-status.away { background: #ff9800; box-shadow: 0 0 6px rgba(255, 152, 0, 0.4); }
+        .user-card .user-details .last-seen { font-size: 10px; color: #999; font-family: var(--font-main); }
+        .user-card .user-actions { display: flex; gap: 3px; flex-wrap: wrap; }
+        .ctrl-btn { width: 24px; height: 24px; border-radius: 50%; border: 0; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 11px; }
+        .ctrl-btn:active { transform: scale(.85); }
+        .ctrl-btn.ban { background: #d32f2f; }
+        .ctrl-btn.unban { background: #2e7d32; }
+        .ctrl-btn.mute { background: #ff9800; }
+        .ctrl-btn.unmute { background: #4caf50; }
+        .ctrl-btn.role { background: #1976d2; }
+        .ctrl-btn.color { background: #e91e63; }
+        .ctrl-btn.dm { background: #9c27b0; }
+        .ctrl-btn.dm-off { background: #616161; }
+        .search-box { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; outline: 0; font-size: 13px; margin-bottom: 8px; font-family: var(--font-main); }
+        #color-control-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 400; display: none; justify-content: center; align-items: center; padding: 16px; }
+        #color-control-modal.active { display: flex; animation: fadeIn .3s; }
+        .color-control-box { background: #fff; width: 100%; max-width: 420px; border-radius: 16px; padding: 18px; max-height: 90vh; overflow-y: auto; animation: slideUp .3s; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); font-family: var(--font-main); font-size: 14px; }
+        .color-control-box h3 { text-align: center; font-size: 18px; margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .color-control-box .target-user { background: #f5f5f5; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .color-control-box .target-user img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+        .color-control-box .target-user .name { font-weight: 700; font-size: 15px; }
+        .color-control-box .target-user .role { font-size: 12px; color: #999; }
+        .color-preview { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 10px; margin-bottom: 12px; border: 2px solid #eee; min-height: 60px; flex-wrap: wrap; background: #fafafa; }
+        .color-preview .preview-label { font-size: 12px; color: #999; font-weight: 600; }
+        .color-preview .preview-bubble { padding: 6px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; flex: 1; text-align: center; min-width: 70px; }
+        .color-preview .preview-name-wrapper { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 70px; }
+        .color-preview .preview-name { font-size: 14px; font-weight: 700; }
+        .color-preview .preview-glow-label { font-size: 9px; color: #999; font-weight: 600; }
+        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; max-height: 180px; overflow-y: auto; padding: 4px; }
+        .color-grid .color-option { aspect-ratio: 1; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all .2s; position: relative; display: flex; align-items: center; justify-content: center; min-height: 44px; }
+        .color-grid .color-option:active { transform: scale(.92); }
+        .color-grid .color-option.selected { border-color: #333; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333; }
+        .color-grid .color-option .check { display: none; color: #fff; font-size: 18px; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); }
+        .color-grid .color-option.selected .check { display: block; }
+        .color-grid .color-option .color-label { font-size: 7px; color: rgba(0, 0, 0, 0.3); position: absolute; bottom: 2px; right: 4px; }
+        .color-control-box .form-group { margin-bottom: 10px; }
+        .color-control-box .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #555; }
+        .color-control-box .form-group input[type="color"] { width: 100%; height: 40px; border: 2px solid #eee; border-radius: 8px; padding: 2px; cursor: pointer; }
+        .glow-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; }
+        .glow-options .glow-btn { padding: 5px 3px; border: 2px solid #eee; border-radius: 8px; background: #fff; cursor: pointer; font-size: 9px; font-weight: 600; transition: all .2s; font-family: var(--font-main); text-align: center; }
+        .glow-options .glow-btn:active { transform: scale(.95); }
+        .glow-options .glow-btn.selected { border-color: var(--primary); background: #e8f5e9; color: var(--primary); }
+        .glow-options .glow-btn .glow-demo { display: block; font-size: 14px; margin-bottom: 2px; }
+        .glow-options .glow-btn .glow-label { font-size: 8px; color: #666; }
+        .color-control-box .actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+        .color-control-box .actions button { flex: 1; padding: 8px; border: 0; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font-main); min-width: 55px; }
+        .color-control-box .actions .btn-apply { background: var(--primary); color: #fff; }
+        .color-control-box .actions .btn-reset { background: #f0f0f0; color: #555; }
+        .color-control-box .actions .btn-cancel { background: #ef5350; color: #fff; }
+        #media-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 3000; display: none; flex-direction: column; }
+        #media-viewer.active { display: flex; animation: fadeIn .2s; }
+        .viewer-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; color: #fff; background: rgba(0, 0, 0, 0.3); position: absolute; top: 0; width: 100%; z-index: 10; font-family: var(--font-main); font-size: 14px; }
+        .viewer-body { flex: 1; display: flex; justify-content: center; align-items: center; overflow: auto; padding: 14px; }
+        .viewer-body img, .viewer-body video { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 8px; }
+        .spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #status-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; z-index: 50; display: none; flex-direction: column; }
+        #status-screen.active { display: flex; animation: slideUp .3s; }
+        .status-header { background: var(--primary); color: #fff; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; min-height: 38px; }
+        .status-header h3 { font-size: 15px; display: flex; align-items: center; gap: 6px; font-family: var(--font-main); font-weight: 700; }
+        .status-list { flex: 1; overflow-y: auto; padding: 10px 14px; background: #f0f2f5; }
+        .status-user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border-radius: 8px; margin-bottom: 6px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); cursor: pointer; transition: transform .12s; border: 1px solid #eee; position: relative; }
+        .status-user-card:active { transform: scale(.97); }
+        .status-user-card .status-avatar-wrapper { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+        .status-user-card .status-avatar-wrapper .status-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .status-user-card .status-avatar-wrapper .status-ring { position: absolute; top: -2px; left: -2px; width: 48px; height: 48px; border-radius: 50%; border: 2.5px solid #25D366; display: none; }
+        .status-user-card.unseen .status-avatar-wrapper .status-ring { display: block; }
+        .status-user-card.seen .status-avatar-wrapper .status-ring { display: block; border-color: #ccc; }
+        .status-user-card .status-user-info { flex: 1; min-width: 0; }
+        .status-user-card .status-user-info .status-username { font-weight: 700; font-size: 14px; color: #1a1a1a; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; font-family: var(--font-main); }
+        .status-user-card .status-user-info .status-time { font-size: 11px; color: #999; font-family: var(--font-main); }
+        .status-user-card .status-user-info .status-preview { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; font-family: var(--font-main); }
+        .status-user-card .status-count { background: var(--primary); color: #fff; border-radius: 50%; width: 22px; height: 22px; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: 700; flex-shrink: 0; font-family: var(--font-main); }
+        .status-user-card .status-count.seen { background: #ccc; }
+        .add-status-fab { position: absolute; bottom: 16px; right: 16px; width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: #fff; border: 0; font-size: 24px; box-shadow: 0 3px 16px rgba(0, 0, 0, 0.3); cursor: pointer; z-index: 60; display: none; justify-content: center; align-items: center; transition: transform .2s; }
+        .add-status-fab:active { transform: scale(.9); }
+        .add-status-fab.active { display: flex; }
+        #add-status-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 500; display: none; justify-content: center; align-items: center; padding: 16px; }
+        #add-status-modal.active { display: flex; animation: fadeIn .3s; }
+        .add-status-box { background: #fff; width: 100%; max-width: 360px; border-radius: 16px; padding: 18px; animation: slideUp .3s; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); font-family: var(--font-main); }
+        .add-status-box h3 { text-align: center; font-size: 17px; margin-bottom: 12px; color: #1a1a1a; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; }
+        .add-status-box .status-options { display: flex; gap: 8px; margin-bottom: 12px; }
+        .add-status-box .status-options button { flex: 1; padding: 8px; border: 2px solid #eee; border-radius: 8px; background: #fff; cursor: pointer; font-size: 13px; font-weight: 700; transition: all .3s; font-family: var(--font-main); }
+        .add-status-box .status-options button:active { transform: scale(.95); }
+        .add-status-box .status-options button.active { border-color: var(--primary); background: #e8f5e9; color: var(--primary); }
+        .add-status-box .status-options button .icon { font-size: 18px; display: block; margin-bottom: 2px; }
+        .add-status-box .status-input-area { display: none; margin-top: 8px; }
+        .add-status-box .status-input-area.active { display: block; animation: fadeIn .3s; }
+        .add-status-box .status-input-area textarea { width: 100%; padding: 8px; border: 2px solid #eee; border-radius: 8px; outline: 0; font-size: 15px; font-family: var(--font-main); resize: vertical; min-height: 70px; transition: border .3s; }
+        .add-status-box .status-input-area textarea:focus { border-color: var(--primary); }
+        .add-status-box .status-input-area .file-upload-area { border: 2px dashed #ddd; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all .3s; margin-bottom: 8px; }
+        .add-status-box .status-input-area .file-upload-area:active { transform: scale(.97); }
+        .add-status-box .status-input-area .file-upload-area .icon { font-size: 28px; display: block; margin-bottom: 4px; }
+        .add-status-box .status-input-area .file-upload-area .text { color: #666; font-size: 12px; font-family: var(--font-main); }
+        .add-status-box .status-input-area .file-upload-area .filename { color: var(--primary); font-weight: 700; margin-top: 3px; display: none; font-family: var(--font-main); }
+        .add-status-box .status-input-area .file-upload-area .filename.active { display: block; }
+        .add-status-box .status-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .add-status-box .status-actions button { flex: 1; padding: 8px; border: 0; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font-main); transition: transform .15s; }
+        .add-status-box .status-actions .btn-publish { background: var(--primary); color: #fff; }
+        .add-status-box .status-actions .btn-publish:disabled { opacity: .5; cursor: not-allowed; }
+        .add-status-box .status-actions .btn-cancel { background: #f0f0f0; color: #555; }
+        #status-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.92); z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 14px; }
+        #status-viewer.active { display: flex; animation: fadeIn .3s; }
+        #status-viewer .viewer-content { max-width: 100%; max-height: 75vh; border-radius: 10px; overflow: hidden; background: #000; }
+        #status-viewer .viewer-content img, #status-viewer .viewer-content video { max-width: 100%; max-height: 70vh; border-radius: 10px; object-fit: contain; display: block; }
+        #status-viewer .viewer-close { position: absolute; top: 14px; right: 14px; background: rgba(255, 255, 255, 0.12); border: 0; color: #fff; font-size: 20px; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: background .2s; }
+        #status-viewer .viewer-close:active { background: rgba(255, 255, 255, 0.25); }
+        #status-viewer .viewer-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.08); border: 0; color: #fff; font-size: 22px; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; }
+        #status-viewer .viewer-nav:active { background: rgba(255, 255, 255, 0.18); }
+        #status-viewer .viewer-nav.prev { left: 8px; }
+        #status-viewer .viewer-nav.next { right: 8px; }
+        #status-viewer .viewer-info { color: #fff; text-align: center; margin-top: 10px; font-size: 13px; max-width: 90%; font-family: var(--font-main); }
+        #status-viewer .viewer-info .seen-by { font-size: 11px; color: #aaa; margin-top: 4px; }
+        #status-viewer .viewer-info .seen-by .seen-user { color: #fff; cursor: pointer; display: inline-block; margin: 0 2px; padding: 2px 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.06); font-weight: 600; }
+        #status-viewer .viewer-info .seen-by .seen-user:active { background: rgba(255, 255, 255, 0.15); }
+        .notif-badge { position: absolute; top: -1px; right: -1px; background: #ff3b30; color: #fff; font-size: 8px; padding: 0 5px; border-radius: 8px; min-width: 16px; text-align: center; font-weight: 700; display: none; line-height: 16px; font-family: var(--font-main); }
+        .notif-badge.active { display: block; }
+        .bottom-nav { display: flex; justify-content: space-around; align-items: center; background: #fff; padding: 4px 0; border-top: 1px solid #e0e0e0; flex-shrink: 0; box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.04); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 1px; cursor: pointer; padding: 3px 12px; border-radius: 6px; transition: background .2s; position: relative; background: 0; border: 0; font-family: var(--font-main); }
+        .nav-item:active { background: rgba(0, 0, 0, 0.04); }
+        .nav-item .nav-icon { font-size: 20px; line-height: 1; }
+        .nav-item .nav-label { font-size: 9px; color: #666; font-family: var(--font-main); font-weight: 600; }
+        .nav-item.active .nav-label { color: var(--primary); }
+        .nav-item .nav-badge { position: absolute; top: 0; right: 2px; background: #ff3b30; color: #fff; font-size: 8px; padding: 0 5px; border-radius: 8px; min-width: 16px; text-align: center; font-weight: 700; display: none; line-height: 16px; font-family: var(--font-main); }
+        .nav-item .nav-badge.active { display: block; }
+        #dm-chat-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #efe7dd; z-index: 160; display: none; flex-direction: column; }
+        #dm-chat-modal.active { display: flex; }
+        #dm-chat-header { background: #9c27b0; color: #fff; padding: 8px 12px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+        #dm-chat-header .back-btn { background: 0; border: 0; color: #fff; font-size: 22px; cursor: pointer; padding: 0 4px; }
+        #dm-chat-header img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.3); }
+        #dm-chat-header .dm-name { font-weight: 700; font-size: 14px; font-family: var(--font-main); }
+        #dm-chat-header .dm-role { font-size: 10px; opacity: .8; font-family: var(--font-main); }
+        #dm-chat-header .dm-clear-btn { background: rgba(255,255,255,0.15); border: 0; color: #fff; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: auto; }
+        #dm-chat-header .dm-clear-btn:active { background: rgba(255,255,255,0.3); }
+        #dm-chat-messages { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+        #dm-chat-form { background: #f0f2f5; padding: 6px 8px; border-top: 1px solid #ddd; display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+        #dm-message-input { flex: 1; padding: 8px 12px; border-radius: 20px; border: 0; outline: 0; font-size: 14px; background: #fff; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06); font-family: var(--font-main); min-height: 34px; }
+        #dm-send-btn { width: 34px; height: 34px; border-radius: 50%; background: #9c27b0; color: #fff; border: 0; font-size: 15px; cursor: pointer; }
+        .dm-msg-row { display: flex; flex-direction: column; max-width: 85%; margin-bottom: 3px; }
+        .dm-msg-row.mine { align-self: flex-end; }
+        .dm-msg-row.others { align-self: flex-start; }
+        .dm-bubble { padding: 7px 11px; border-radius: 12px; font-size: 14px; line-height: 1.4; word-wrap: break-word; font-family: var(--font-main); }
+        .dm-bubble.mine { background: #d9fdd3; color: #111; border-bottom-left-radius: 3px; }
+        .dm-bubble.others { background: #fff; color: #111; border-bottom-right-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+        .dm-time { font-size: 9px; opacity: .5; text-align: left; margin-top: 1px; }
+        .dm-toast { position: fixed; top: 50px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #9c27b0, #6a1b9a); color: #fff; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-family: var(--font-main); font-weight: 600; box-shadow: 0 4px 20px rgba(156, 39, 176, 0.5); z-index: 9999; cursor: pointer; animation: slideDown 0.4s ease; max-width: 90%; text-align: center; }
+        .dm-toast strong { color: #FFD700; }
+        @keyframes slideDown { from { transform: translate(-50%, -100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        .dm-user-card { padding: 10px; background: #fff; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; }
+        .dm-user-card:active { background: #f5f5f5; }
+        .dm-user-card img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .dm-user-card .dm-info { flex: 1; min-width: 0; }
+        .dm-user-card .dm-info .dm-name { font-weight: 700; font-size: 14px; color: #111; display: flex; align-items: center; gap: 4px; }
+        .dm-user-card .dm-info .dm-last { font-size: 12px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+        .dm-user-card .dm-unread { background: #ff3b30; color: #fff; border-radius: 50%; min-width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: 700; padding: 0 5px; flex-shrink: 0; }
+        .dm-user-card .dm-settings-btn { background: #f0f0f0; border: 0; color: #333; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: auto; }
+        .dm-user-card .dm-settings-btn:active { background: #e0e0e0; }
+        .dm-user-card .dm-lock-badge { font-size: 16px; flex-shrink: 0; }
+        .dm-user-card.closed { opacity: 0.65; }
+        .dm-user-card.closed .dm-info .dm-name { color: #999; }
+        .tester-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+        .tester-item:hover { background: #fafafa; }
+        .tester-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #9c27b0; }
+        .tester-item .tester-info { flex: 1; }
+        .tester-item .tester-name { font-weight: 600; font-size: 13px; color: #333; }
+        .tester-item .tester-role { font-size: 10px; color: #999; }
+        .font-preview { background: #f5f5f5; border: 2px dashed #ccc; border-radius: 12px; padding: 16px; text-align: center; margin: 12px 0; }
+        .font-preview .fp-text { font-size: 20px; font-weight: 700; color: #333; margin-bottom: 6px; }
+        .font-preview .fp-info { font-size: 11px; color: #888; }
+        @keyframes pulseFCM { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        @media(max-width:480px) {
+            .bubble { font-size: 13px; padding: 5px 8px; }
+            .sender-name { font-size: 11px; }
+            .header-title { font-size: 14px; }
+            .nav-item { padding: 2px 8px; }
+            .nav-item .nav-icon { font-size: 18px; }
+            .status-user-card .status-avatar-wrapper { width: 38px; height: 38px; }
+            .status-user-card .status-avatar-wrapper .status-avatar { width: 38px; height: 38px; }
+            .status-user-card .status-avatar-wrapper .status-ring { width: 42px; height: 42px; }
+            .add-status-fab { width: 42px; height: 42px; font-size: 20px; bottom: 14px; right: 14px; }
+            .add-status-box .status-options button { font-size: 12px; padding: 8px; }
+            #status-viewer .viewer-nav { width: 30px; height: 30px; font-size: 18px; }
+            #status-viewer .viewer-nav.prev { left: 4px; }
+            #status-viewer .viewer-nav.next { right: 4px; }
+            .sender-avatar { width: 18px; height: 18px; }
+            .media-container img, .media-container video { max-height: 120px; }
+            .action-btn { width: 30px; height: 30px; font-size: 13px; }
+            #message-input { font-size: 13px; padding: 6px 10px; min-height: 30px; }
+            header { min-height: 34px; padding: 2px 8px; }
+            .icon-btn { font-size: 15px; padding: 2px 5px; }
+            .color-grid { grid-template-columns: repeat(4, 1fr); }
+            .color-control-box { padding: 12px; }
+            .glow-options { grid-template-columns: repeat(3, 1fr); }
+        }
+        @supports(height:100dvh) { .app-container { height: 100dvh; max-height: 100dvh; } }
+        #chat-messages::-webkit-scrollbar, #dm-chat-messages::-webkit-scrollbar { width: 3px; }
+        #chat-messages::-webkit-scrollbar-track, #dm-chat-messages::-webkit-scrollbar-track { background: transparent; }
+        #chat-messages::-webkit-scrollbar-thumb, #dm-chat-messages::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.12); border-radius: 3px; }
+        .hidden-owner-badge { background: #e91e63; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-right: 6px; font-weight: 700; display: inline-block; }
+        .report-card { background: #fff; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; border: 1px solid #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.04); position: relative; }
+        .report-card .report-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; }
+        .report-card .report-header .reporter { font-weight: 700; color: var(--primary); }
+        .report-card .report-header .target { font-weight: 700; color: #d32f2f; }
+        .report-card .report-reason { font-size: 13px; color: #333; margin: 4px 0; }
+        .report-card .report-msg { font-size: 12px; color: #777; background: #f5f5f5; padding: 4px 8px; border-radius: 4px; margin-top: 4px; }
+        .report-card .report-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+        .report-card .report-actions .action-btn-sm { padding: 3px 10px; border: 0; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: var(--font-main); }
+        .report-card .report-actions .action-btn-sm:active { transform: scale(.95); }
+        .action-ban { background: #d32f2f; color: #fff; }
+        .action-mute { background: #ff9800; color: #fff; }
+        .action-kick { background: #795548; color: #fff; }
+        .action-ignore { background: #9e9e9e; color: #fff; }
+        .action-none { background: #607d8b; color: #fff; }
+        .action-resolved { background: #4caf50; color: #fff; cursor: default; }
+        .action-delete { background: #e53935; color: #fff; }
+        .action-delete:hover { background: #b71c1c; }
+        .report-status { font-size: 11px; padding: 2px 10px; border-radius: 12px; color: #fff; }
+        .status-pending { background: #ff9800; }
+        .status-resolved { background: #4caf50; }
+        .status-rejected { background: #9e9e9e; }
+        #reports-modal .modal-body { padding: 10px; overflow-y: auto; }
+        #reports-modal .filter-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+        #reports-modal .filter-tabs button { padding: 4px 12px; border: 1px solid #ddd; border-radius: 16px; background: #fff; font-size: 12px; cursor: pointer; font-family: var(--font-main); }
+        #reports-modal .filter-tabs button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .report-comment { font-size: 12px; color: #555; background: #f0f0f0; padding: 4px 8px; border-radius: 4px; margin-top: 4px; }
+        .report-comment strong { color: var(--primary); }
+        .btn-delete-account { width: 100%; padding: 10px; background: #d32f2f; color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; }
+        .btn-delete-account:active { transform: scale(.95); }
+        .btn-maintenance { width: 100%; padding: 10px; background: #f9a825; color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; }
+        .btn-maintenance.on { background: #4caf50; }
+        .btn-maintenance:active { transform: scale(.95); }
+        .btn-dm-toggle { width: 100%; padding: 10px; background: #9c27b0; color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; }
+        .btn-dm-toggle.on { background: #4caf50; }
+        .btn-dm-toggle:active { transform: scale(.95); }
+        .btn-advanced { width: 100%; padding: 10px; background: #1976d2; color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; }
+        .btn-advanced:active { transform: scale(.95); }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <p style="margin-top:12px;color:#666;font-size:14px;font-family:var(--font-main);">جاري التحقق...</p>
+    </div>
+
+    <div id="login-screen">
+        <h2 style="color:var(--primary);margin-bottom:16px;font-weight:900;font-family:var(--font-main);font-size:22px;">💬 فيسي برو</h2>
+        <input type="text" id="username-input" class="login-input" placeholder="اسمك..." autocomplete="off">
+        <button id="login-btn" class="login-btn">🚀 دخول</button>
+        <p style="margin-top:8px;font-size:11px;color:#999;font-family:var(--font-main);">سيتم حفظ جلستك</p>
+    </div>
+
+    <div id="ban-screen">
+        <div style="font-size:60px;">⛔</div>
+        <h1 style="font-size:22px;font-family:var(--font-main);font-weight:900;">تم حظرك</h1>
+        <p style="font-size:14px;font-family:var(--font-main);">جهازك محظور</p>
+    </div>
+
+    <div id="maintenance-screen">
+        <div style="font-size:80px;">🔧</div>
+        <h1>التطبيق في صيانة</h1>
+        <p id="maintenance-text">التطبيق تحت الصيانة المؤقتة، يرجى المحاولة لاحقاً.</p>
+    </div>
+
+    <header>
+        <div class="header-title">
+            <span>💬 الغرفة</span>
+            <button id="clear-chat-btn" onclick="clearAllChat()">🗑️</button>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn" id="reports-btn" onclick="toggleReportsModal()" style="display:none;" title="لوحة البلاغات">
+                📋 <span class="notif-badge" id="reports-badge">0</span>
+            </button>
+            <button class="icon-btn" id="dm-btn" onclick="openDMList()" title="الرسائل الخاصة" style="display:none;">
+                💌 <span class="notif-badge" id="dm-badge">0</span>
+            </button>
+            <button class="icon-btn" id="fcm-btn" onclick="requestNotificationPermission()" title="تفعيل الإشعارات">📲</button>
+            <button class="icon-btn" onclick="openNotifications()" id="notif-btn">🔔<span class="notif-badge" id="notif-badge">0</span></button>
+            <button class="icon-btn" onclick="openProfile()">👤</button>
+            <button id="btn-users" class="icon-btn" onclick="toggleUsers()" style="display:none;">👥<span id="online-badge" class="notif-badge" style="position:relative;top:auto;right:auto;display:none;min-width:auto;padding:0 4px;line-height:14px;font-size:8px;">0</span></button>
+        </div>
+    </header>
+
+    <div id="maintenance-badge"></div>
+
+    <div id="mute-banner">🔇 مكتوم | <span id="mute-countdown">--:--</span></div>
+
+    <div id="status-screen">
+        <div class="status-header">
+            <h3>📸 الحالات</h3>
+            <button class="modal-close" onclick="closeStatusScreen()" style="color:#fff;font-size:18px;">✕</button>
+        </div>
+        <div class="status-list" id="status-list">
+            <div style="text-align:center;padding:30px 0;color:#999;font-size:14px;font-family:var(--font-main);">📭 لا توجد حالات</div>
+        </div>
+        <button class="add-status-fab" id="add-status-btn" onclick="openAddStatus()">➕</button>
+    </div>
+
+    <div id="add-status-modal" onclick="if(event.target===this) closeAddStatus()">
+        <div class="add-status-box">
+            <h3>📸 إضافة حالة</h3>
+            <div class="status-options">
+                <button id="status-type-text" class="active" onclick="selectStatusType('text')"><span class="icon">📝</span>نص</button>
+                <button id="status-type-media" onclick="selectStatusType('media')"><span class="icon">🖼️</span>وسائط</button>
+            </div>
+            <div id="status-text-area" class="status-input-area active">
+                <textarea id="status-text-input" placeholder="اكتب حالتك..." maxlength="500"></textarea>
+                <div style="text-align:left;font-size:10px;color:#999;margin-top:3px;font-family:var(--font-main);" id="text-counter">0 / 500</div>
+            </div>
+            <div id="status-media-area" class="status-input-area">
+                <div class="file-upload-area" id="file-upload-area" onclick="document.getElementById('status-file-input').click()">
+                    <span class="icon">📤</span>
+                    <div class="text">اختر صورة أو فيديو</div>
+                    <div class="filename" id="selected-filename">📎 الملف</div>
+                </div>
+                <input type="file" id="status-file-input" accept="image/*,video/*" style="display:none" onchange="handleStatusFile(this)">
+            </div>
+            <div class="status-actions">
+                <button class="btn-cancel" onclick="closeAddStatus()">إلغاء</button>
+                <button class="btn-publish" id="publish-status-btn" onclick="publishStatus()">📤 نشر</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-messages">
+        <div id="loading-more">⏳ جاري التحميل...</div>
+    </div>
+
+    <form id="chat-form" onsubmit="sendMessage(event)">
+        <div id="reply-bar">
+            <div class="reply-header">
+                <span class="reply-sender" id="reply-sender-name">رد على...</span>
+                <button type="button" class="reply-close" onclick="cancelReply()">✕</button>
+            </div>
+            <div class="reply-content" id="reply-content-text">...</div>
+        </div>
+        <div id="chat-form-row">
+            <label for="file-input" id="media-btn" title="صورة/فيديو">📎</label>
+            <button type="button" id="youtube-btn" onclick="openYouTubeModal()">▶</button>
+            <input type="file" id="file-input" accept="image/*,video/*" onchange="handleFile(this)">
+            <input type="text" id="message-input" placeholder="اكتب رسالة..." autocomplete="off">
+            <button type="submit" id="send-btn">➤</button>
+        </div>
+    </form>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" id="nav-chat" onclick="switchTab('chat')">
+            <span class="nav-icon">💬</span>
+            <span class="nav-label">دردشة</span>
+        </button>
+        <button class="nav-item" id="nav-status" onclick="switchTab('status')">
+            <span class="nav-icon">📸</span>
+            <span class="nav-label">حالات</span>
+            <span class="nav-badge" id="status-unseen-count">0</span>
+        </button>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay" onclick="closeAllModals()"></div>
+
+    <div class="modal-slide" id="users-modal">
+        <div class="modal-header">
+            <h3>👥 الأعضاء</h3>
+            <button class="modal-close" onclick="toggleUsers()">✕</button>
+        </div>
+        <div style="padding:8px;">
+            <input type="text" id="user-search" class="search-box" placeholder="🔍 بحث..." onkeyup="filterUsers()">
+        </div>
+        <div id="users-list"></div>
+    </div>
+
+    <div class="modal-slide" id="dm-list-modal">
+        <div class="modal-header" style="background:#9c27b0;color:#fff;">
+            <h3 style="color:#fff;">💌 الرسائل الخاصة</h3>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <button onclick="clearAllDMs()" style="background:#ef5350;color:#fff;border:0;padding:3px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:var(--font-main);font-weight:600;">مسح الكل</button>
+                <button class="modal-close" onclick="closeDMList()" style="color:#fff;">✕</button>
+            </div>
+        </div>
+        <div style="padding:8px;">
+            <input type="text" id="dm-search" class="search-box" placeholder="🔍 بحث..." onkeyup="filterDMUsers()">
+        </div>
+        <div id="dm-users-list" style="flex:1;overflow-y:auto;"></div>
+    </div>
+
+    <div id="dm-chat-modal">
+        <div id="dm-chat-header">
+            <button class="back-btn" onclick="closeDMChat()">←</button>
+            <img id="dm-chat-avatar" src="">
+            <div style="flex:1;">
+                <div class="dm-name" id="dm-chat-name">...</div>
+                <div class="dm-role" id="dm-chat-role"></div>
+            </div>
+            <button class="dm-clear-btn" onclick="clearCurrentDMChat()" title="مسح المحادثة">🗑️</button>
+        </div>
+        <div id="dm-chat-messages"></div>
+        <form id="dm-chat-form" onsubmit="sendDMMessage(event)">
+            <input type="text" id="dm-message-input" placeholder="اكتب رسالة خاصة..." autocomplete="off">
+            <button type="submit" id="dm-send-btn">➤</button>
+        </form>
+    </div>
+
+    <div class="modal-slide" id="notifications-modal">
+        <div class="modal-header">
+            <h3>🔔 الإشعارات</h3>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <button onclick="clearAllNotifications()" style="background:#ef5350;color:#fff;border:0;padding:3px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:var(--font-main);font-weight:600;">مسح الكل</button>
+                <button class="modal-close" onclick="closeNotifications()">✕</button>
+            </div>
+        </div>
+        <div class="modal-body" id="notifications-list">
+            <div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>
+        </div>
+    </div>
+
+    <div class="modal-slide" id="reports-modal">
+        <div class="modal-header">
+            <h3>📋 البلاغات</h3>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <span id="reports-count" style="font-size:12px;color:#666;">(0)</span>
+                <button class="modal-close" onclick="toggleReportsModal()">✕</button>
+            </div>
+        </div>
+        <div style="padding:6px 10px;">
+            <div class="filter-tabs">
+                <button class="active" data-filter="pending" onclick="filterReports('pending',this)">⏳ معلقة</button>
+                <button data-filter="resolved" onclick="filterReports('resolved',this)">✅ محلولة</button>
+                <button data-filter="rejected" onclick="filterReports('rejected',this)">❌ مرفوضة</button>
+                <button data-filter="all" onclick="filterReports('all',this)">📊 الكل</button>
+            </div>
+        </div>
+        <div class="modal-body" id="reports-list">
+            <div style="text-align:center;color:#999;padding:20px 0;font-size:14px;">لا توجد بلاغات</div>
+        </div>
+    </div>
+
+    <div class="modal-popup" id="role-modal">
+        <div class="popup-box">
+            <h3 style="font-size:16px;font-weight:700;">⚙️ الرتبة</h3>
+            <p id="role-target-name" style="color:#777;margin:8px 0;font-size:14px;"></p>
+            <div style="display:flex;flex-direction:column;gap:5px;margin:10px 0;">
+                <button onclick="setRole('user')" class="login-btn" style="background:#9e9e9e;padding:8px;font-size:13px;">عادي</button>
+                <button onclick="setRole('trusted')" class="login-btn" style="background:#ff9800;padding:8px;font-size:13px;">موثوق ✅</button>
+                <button onclick="setRole('mod')" class="login-btn" style="background:#2196f3;padding:8px;font-size:13px;">مشرف 🛡️</button>
+                <button onclick="setRole('manager')" class="login-btn" style="background:#9c27b0;padding:8px;font-size:13px;">مدير 💎</button>
+                <button onclick="setRole('owner')" class="login-btn" style="background:#FFD700;color:#333;padding:8px;font-size:13px;font-weight:700;">مالك 👑</button>
+            </div>
+            <button onclick="document.getElementById('role-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;">إلغاء</button>
+        </div>
+    </div>
+
+    <div class="modal-popup" id="mute-modal">
+        <div class="popup-box">
+            <h3 style="font-size:16px;font-weight:700;">🔇 كتم</h3>
+            <p id="mute-target-name" style="color:#777;margin:8px 0;font-size:14px;"></p>
+            <div style="display:flex;flex-direction:column;gap:5px;margin:10px 0;">
+                <button onclick="applyMute(10)" class="login-btn" style="background:#ff9800;padding:8px;font-size:13px;">10 دقائق</button>
+                <button onclick="applyMute(60)" class="login-btn" style="background:#f57c00;padding:8px;font-size:13px;">ساعة</button>
+                <button onclick="applyMute(1440)" class="login-btn" style="background:#d32f2f;padding:8px;font-size:13px;">يوم</button>
+                <button onclick="applyMute(10080)" class="login-btn" style="background:#c62828;padding:8px;font-size:13px;">أسبوع</button>
+                <button onclick="applyMute(999999)" class="login-btn" style="background:#b71c1c;padding:8px;font-size:13px;">دائم ⛔</button>
+            </div>
+            <button onclick="document.getElementById('mute-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;">إلغاء</button>
+        </div>
+    </div>
+
+    <div class="modal-popup" id="report-modal">
+        <div class="popup-box">
+            <h3 style="font-size:16px;font-weight:700;">🚩 إبلاغ</h3>
+            <p id="report-target-info" style="color:#777;margin:6px 0;font-size:14px;">تبليغ عن: <strong id="report-target-name"></strong></p>
+            <input type="hidden" id="report-target-uid">
+            <input type="hidden" id="report-message-key">
+            <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin:8px 0 4px;">سبب البلاغ:</label>
+            <textarea id="report-reason-input" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:var(--font-main);resize:vertical;" placeholder="اكتب سبب الإبلاغ..."></textarea>
+            <div style="margin-top:8px;display:flex;gap:6px;">
+                <button onclick="submitReport()" class="login-btn" style="background:#e74c3c;padding:8px;font-size:13px;">📤 إرسال البلاغ</button>
+                <button onclick="document.getElementById('report-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-popup" id="resolve-modal">
+        <div class="popup-box">
+            <h3 style="font-size:16px;font-weight:700;">⚙️ حل البلاغ</h3>
+            <p id="resolve-report-id" style="display:none;"></p>
+            <p style="color:#777;margin:6px 0;font-size:14px;">اختر الإجراء للمستخدم <strong id="resolve-target-name"></strong></p>
+            <div style="display:flex;flex-direction:column;gap:5px;margin:10px 0;">
+                <button onclick="resolveReport('ban')" class="login-btn" style="background:#d32f2f;padding:8px;font-size:13px;">🚫 حضر (Ban)</button>
+                <button onclick="resolveReport('mute')" class="login-btn" style="background:#ff9800;padding:8px;font-size:13px;">🔇 كتم (Mute)</button>
+                <button onclick="resolveReport('kick')" class="login-btn" style="background:#795548;padding:8px;font-size:13px;">👢 طرد (Kick)</button>
+                <button onclick="resolveReport('ignore')" class="login-btn" style="background:#9e9e9e;padding:8px;font-size:13px;">👁️ تجاهل (Ignore)</button>
+                <button onclick="resolveReport('none')" class="login-btn" style="background:#607d8b;padding:8px;font-size:13px;">❌ رفض (رفض)</button>
+            </div>
+            <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin:6px 0 4px;">تعليق المالك (اختياري):</label>
+            <textarea id="resolve-comment-input" rows="2" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:var(--font-main);resize:vertical;" placeholder="أضف تعليقاً..."></textarea>
+            <button onclick="document.getElementById('resolve-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;margin-top:8px;">إلغاء</button>
+        </div>
+    </div>
+
+    <div class="modal-popup" id="maintenance-modal">
+        <div class="popup-box" style="max-width:450px;">
+            <h3 style="font-size:16px;font-weight:700;">🔧 إعدادات الصيانة</h3>
+            <div style="margin:12px 0;">
+                <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin-bottom:6px;color:#555;">حالة الصيانة:</label>
+                <button id="maintenance-toggle-btn" onclick="toggleMaintenanceStatus()" class="login-btn" style="padding:10px;font-size:14px;background:#f9a825;">🔧 تفعيل وضع الصيانة</button>
+            </div>
+            <div style="margin:12px 0;">
+                <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin-bottom:6px;color:#555;">رسالة الصيانة:</label>
+                <textarea id="maintenance-msg-input" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:var(--font-main);resize:vertical;" placeholder="التطبيق تحت الصيانة..."></textarea>
+            </div>
+            <div style="margin:12px 0;">
+                <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin-bottom:6px;color:#555;">🧪 المختبرون (يدخلون أثناء الصيانة):</label>
+                <div id="testers-list" style="max-height:200px;overflow-y:auto;border:1px solid #eee;border-radius:8px;padding:2px;background:#fafafa;"></div>
+            </div>
+            <div style="display:flex;gap:6px;">
+                <button onclick="saveMaintenanceSettings()" class="login-btn" style="background:var(--primary);padding:8px;font-size:13px;">💾 حفظ</button>
+                <button onclick="document.getElementById('maintenance-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-popup" id="advanced-modal">
+        <div class="popup-box" style="max-width:450px;">
+            <h3 style="font-size:16px;font-weight:700;">⚙️ الإعدادات المتقدمة</h3>
+            <div style="margin:12px 0;text-align:right;">
+                <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#555;">📁 ملف الخط الحالي:</label>
+                <div style="background:#f0f0f0;padding:8px 12px;border-radius:6px;font-size:12px;color:#555;word-break:break-all;" id="current-font-name">الخط الافتراضي</div>
+            </div>
+            <div class="font-preview" id="font-preview-box">
+                <div class="fp-text" id="fp-text">مرحباً بكم في فيسي برو 👋</div>
+                <div class="fp-info" id="fp-info">معاينة الخط الحالي</div>
+            </div>
+            <div style="margin:12px 0;">
+                <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin-bottom:6px;color:#555;">📤 رفع ملف خط جديد (.ttf):</label>
+                <input type="file" id="font-file-input" accept=".ttf,.otf,.woff,.woff2,font/*" style="display:none" onchange="handleFontFile(this)">
+                <button onclick="document.getElementById('font-file-input').click()" class="login-btn" style="background:#1976d2;padding:10px;font-size:14px;">📂 اختيار ملف الخط</button>
+                <div style="margin-top:8px;font-size:12px;color:#666;" id="selected-font-info"></div>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:12px;">
+                <button id="upload-font-btn" onclick="uploadAndApplyFont()" class="login-btn" style="background:var(--primary);padding:10px;font-size:13px;" disabled>💾 رفع وتطبيق</button>
+                <button onclick="resetFontToDefault()" class="login-btn" style="background:#ef5350;color:#fff;padding:10px;font-size:13px;">↺ إعادة تعيين</button>
+            </div>
+            <button onclick="document.getElementById('advanced-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;margin-top:8px;">إغلاق</button>
+        </div>
+    </div>
+
+    <div class="modal-popup" id="profile-modal">
+        <div class="popup-box">
+            <h3 style="font-size:16px;font-weight:700;">👤 الملف</h3>
+            <img id="prof-img" src="" class="user-avatar" style="width:65px;height:65px;margin:12px auto;display:block;border:3px solid var(--primary);cursor:pointer;" onclick="onAvatarClick()">
+            <label for="avatar-in" id="avatar-change-label" style="display:inline-block;padding:4px 12px;background:#f0f0f0;border-radius:14px;cursor:pointer;font-size:11px;border:1px solid #ddd;margin-bottom:8px;font-family:var(--font-main);">📷 تغيير</label>
+            <input type="file" id="avatar-in" accept="image/*" style="display:none" onchange="previewProf(this)">
+            <input type="text" id="prof-name" class="login-input" placeholder="الاسم الجديد" style="margin-bottom:8px;padding:8px;font-size:14px;">
+            <div id="hidden-owner-control" style="display:none;margin-bottom:8px;">
+                <button id="toggle-hidden-btn" onclick="toggleOwnerHidden()" class="login-btn" style="padding:8px;font-size:14px;background:#e91e63;">🙈 إخفاء نفسي</button>
+                <p style="font-size:11px;color:#999;margin-top:4px;">عند الإخفاء، لن يراك أي مستخدم نهائياً، لكن حالاتك تبقى ظاهرة.</p>
+                <button id="owner-dm-toggle-btn" class="btn-dm-toggle" onclick="toggleOwnerSelfDM()">💌 فتح الخاص لنفسي</button>
+                <button id="open-maintenance-btn" class="btn-maintenance" onclick="openMaintenanceSettings()">🔧 إعدادات الصيانة</button>
+                <button id="open-advanced-btn" class="btn-advanced" onclick="openAdvancedSettings()">⚙️ إعدادات متقدمة (الخط)</button>
+            </div>
+            <button onclick="saveProfile()" class="login-btn" style="padding:8px;font-size:14px;">💾 حفظ</button>
+            <button class="btn-delete-account" onclick="deleteMyAccount()">🗑️ حذف حسابي نهائياً</button>
+            <button onclick="document.getElementById('profile-modal').classList.remove('active')" style="margin-top:6px;background:0;border:0;color:#777;cursor:pointer;font-size:13px;font-family:var(--font-main);">إلغاء</button>
+        </div>
+    </div>
+
+    <div class="modal-popup" id="youtube-modal">
+        <div class="popup-box">
+            <h3 style="font-size:16px;font-weight:700;">▶ YouTube</h3>
+            <input type="text" id="yt-link-input" class="login-input" placeholder="رابط يوتيوب..." oninput="previewYouTubeLink()" style="padding:8px;font-size:14px;">
+            <div id="yt-preview" style="display:none;margin:8px 0;border-radius:6px;overflow:hidden;position:relative;aspect-ratio:16/9;background:#000;">
+                <img id="yt-preview-img" style="width:100%;height:100%;object-fit:cover;">
+                <div id="yt-preview-title" style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.8));color:#fff;padding:6px;font-size:11px;text-align:center;font-family:var(--font-main);"></div>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:8px;">
+                <button id="yt-send-btn" onclick="sendYouTubeLink()" class="login-btn" style="background:#ff0000;flex:1;padding:8px;font-size:13px;" disabled>📤 إرسال</button>
+                <button id="yt-watch-btn" onclick="watchYouTubeLink()" class="login-btn" style="background:#333;flex:1;padding:8px;font-size:13px;" disabled>👁️ مشاهدة</button>
+            </div>
+            <button onclick="document.getElementById('youtube-modal').classList.remove('active')" style="margin-top:6px;background:0;border:0;color:#777;cursor:pointer;font-size:13px;font-family:var(--font-main);">إلغاء</button>
+        </div>
+    </div>
+
+    <div id="color-control-modal" onclick="if(event.target===this) closeColorControl()">
+        <div class="color-control-box">
+            <h3>🎨 الألوان</h3>
+            <div class="target-user" id="color-target-user">
+                <img id="color-target-avatar" src="">
+                <div>
+                    <div class="name" id="color-target-name">المستخدم</div>
+                    <div class="role" id="color-target-role">رتبة</div>
+                </div>
+            </div>
+            <div class="color-preview" id="color-preview">
+                <span class="preview-label">معاينة:</span>
+                <div class="preview-bubble" id="preview-bubble">📝 نص</div>
+                <div class="preview-name-wrapper">
+                    <span class="preview-name" id="preview-name">اسم</span>
+                    <span class="preview-glow-label" id="preview-glow-label">✨ بدون</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>🎨 لون الفقاعة:</label>
+                <div class="color-grid" id="color-grid"></div>
+            </div>
+            <div class="form-group">
+                <label>✏️ لون الاسم:</label>
+                <input type="color" id="color-name-picker" value="#333333">
+            </div>
+            <div class="form-group">
+                <label>✨ التوهج:</label>
+                <div class="glow-options" id="glow-options">
+                    <button class="glow-btn selected" data-glow="none" onclick="selectGlow('none')"><span class="glow-demo">📝</span><span class="glow-label">بدون</span></button>
+                    <button class="glow-btn" data-glow="glow" onclick="selectGlow('glow')"><span class="glow-demo" style="text-shadow:0 0 10px currentColor;">✨</span><span class="glow-label">توهج</span></button>
+                    <button class="glow-btn" data-glow="glow-fast" onclick="selectGlow('glow-fast')"><span class="glow-demo" style="text-shadow:0 0 10px currentColor;">⚡</span><span class="glow-label">سريع</span></button>
+                    <button class="glow-btn" data-glow="glow-slow" onclick="selectGlow('glow-slow')"><span class="glow-demo" style="text-shadow:0 0 10px currentColor;">🌊</span><span class="glow-label">بطيء</span></button>
+                    <button class="glow-btn" data-glow="glow-rainbow" onclick="selectGlow('glow-rainbow')"><span class="glow-demo">🌈</span><span class="glow-label">قوس قزح</span></button>
+                    <button class="glow-btn" data-glow="glow-neon" onclick="selectGlow('glow-neon')"><span class="glow-demo">💡</span><span class="glow-label">نيون</span></button>
+                    <button class="glow-btn" data-glow="glow-fire" onclick="selectGlow('glow-fire')"><span class="glow-demo">🔥</span><span class="glow-label">نار</span></button>
+                    <button class="glow-btn" data-glow="owner-glow" onclick="selectGlow('owner-glow')" style="border-color:#FFD700;"><span class="glow-demo">👑</span><span class="glow-label">ملكي</span></button>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn-reset" onclick="resetUserColorHandler()">↺ إعادة</button>
+                <button class="btn-apply" onclick="applyUserColor()">✅ تطبيق</button>
+                <button class="btn-cancel" onclick="closeColorControl()">✕ إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="media-viewer" onclick="closeViewer(event)">
+        <div class="viewer-header">
+            <span id="viewer-sender" style="font-size:14px;font-family:var(--font-main);">📸</span>
+            <button onclick="closeViewer(event)" style="background:rgba(255,255,255,0.12);border:0;color:#fff;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;">✕</button>
+        </div>
+        <div class="viewer-body" id="viewer-content"></div>
+    </div>
+
+    <div id="status-viewer" onclick="closeStatusViewer(event)">
+        <button class="viewer-close" onclick="closeStatusViewer(event)">✕</button>
+        <button class="viewer-nav prev" onclick="event.stopPropagation();navigateStatus(-1)">‹</button>
+        <button class="viewer-nav next" onclick="event.stopPropagation();navigateStatus(1)">›</button>
+        <div class="viewer-content" id="status-viewer-content"></div>
+        <div class="viewer-info" id="status-viewer-info">
+            <div id="status-viewer-name" style="font-weight:700;font-size:14px;font-family:var(--font-main);"></div>
+            <div class="seen-by" id="status-viewer-seen"></div>
+            <div style="margin-top:6px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+                <button id="status-delete-btn" onclick="event.stopPropagation();deleteCurrentStatus()" style="background:#ef5350;border:0;color:#fff;padding:4px 12px;border-radius:5px;cursor:pointer;font-size:12px;font-family:var(--font-main);font-weight:600;display:none;">🗑️ حذف</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyB5qXJOOIMs3rWwxRjDai2enpCC4UUfyR4",
+        authDomain: "kiot-1ea8c.firebaseapp.com",
+        databaseURL: "https://kiot-1ea8c-default-rtdb.firebaseio.com",
+        projectId: "kiot-1ea8c",
+        storageBucket: "kiot-1ea8c.firebasestorage.app",
+        messagingSenderId: "986566989634",
+        appId: "1:986566989634:web:4717e394006ba957da5adb",
+        measurementId: "G-JG8KVD2F86"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ============================================================
+    //  🔔 FCM — ضع مفتاح VAPID هنا
+    //  احصل عليه من: Firebase Console → Project Settings → Cloud Messaging
+    //  → Web Push certificates → Generate key pair
+    // ============================================================
+    const VAPID_KEY = 'ضع_مفتاح_VAPID_هنا';
+
+    let myFP = localStorage.getItem("fp") || 'fp_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem("fp", myFP);
+    let myName = localStorage.getItem("name") || "";
+    let myAvatar = localStorage.getItem("avatar") || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+    let myRole = "user";
+    let isBanned = false, isMuted = false, muteEndTime = 0;
+    let replyTo = null, targetUserForAction = {};
+    let allUsersData = {}, messagesCache = {}, statusesCache = {}, myNotifications = {};
+    let currentTab = 'chat', countdownInterval = null;
+    let viewerStatuses = [], viewerCurrentIndex = 0, viewerCurrentUid = '';
+    let allDMUsersData = {};
+    let myDMEnabled = false;
+    let dmUnreadCounts = {};
+    let currentDMChat = null;
+    let dmChatMessagesListener = null;
+    let maintenanceData = { status: false, message: '', testers: {} };
+    let isTester = false;
+    let maintenanceListener = null;
+    let dmInboxListener = null;
+    let myDMPermissionListener = null;
+    let pendingTesters = null;
+    let currentDMClearedAt = 0;
+    let currentFontUrl = null;
+    let currentFontName = '';
+    let pendingFontFile = null;
+    let fontSettingsListener = null;
+    const roleHierarchy = { user: 1, trusted: 2, mod: 3, manager: 4, owner: 5 };
+
+    // ====== نظام الكلمات الممنوعة ======
+    let badWordsList = [];
+    let badWordsListener = null;
+
+    // ====== نظام الحضور الاحترافي (Presence) ======
+    const HEARTBEAT_INTERVAL = 5000;
+    const OFFLINE_THRESHOLD = 30000;
+    const PRESENCE_CHECK_INTERVAL = 5000;
+    let heartbeatInterval = null;
+    let presenceCheckInterval = null;
+    let isPageVisible = true;
+    let isHidden = false;
+
+    // ====== FCM ======
+    let messaging = null;
+    let swRegistration = null;
+    let fcmToken = null;
+
+    let reportsCache = {};
+    let currentReportFilter = 'pending';
+    let resolveTargetReportId = null;
+
+    const COLORS = [
+        { bg: 'linear-gradient(135deg,#E3F2FD,#64B5F6)', text: '#0D47A1', name: '#0D47A1' },
+        { bg: 'linear-gradient(135deg,#F3E5F5,#BA68C8)', text: '#4A148C', name: '#4A148C' },
+        { bg: 'linear-gradient(135deg,#E8F5E9,#66BB6A)', text: '#1B5E20', name: '#1B5E20' },
+        { bg: 'linear-gradient(135deg,#FFF3E0,#FFA726)', text: '#E65100', name: '#E65100' },
+        { bg: 'linear-gradient(135deg,#FCE4EC,#EC407A)', text: '#880E4F', name: '#880E4F' },
+        { bg: 'linear-gradient(135deg,#E0F7FA,#26C6DA)', text: '#006064', name: '#006064' },
+        { bg: 'linear-gradient(135deg,#F1F8E9,#9CCC65)', text: '#33691E', name: '#33691E' },
+        { bg: 'linear-gradient(135deg,#FFF8E1,#FFEE58)', text: '#F57F17', name: '#F57F17' },
+        { bg: 'linear-gradient(135deg,#EFEBE9,#A1887F)', text: '#4E342E', name: '#4E342E' },
+        { bg: 'linear-gradient(135deg,#E8EAF6,#7986CB)', text: '#1A237E', name: '#1A237E' },
+        { bg: 'linear-gradient(135deg,#FBE9E7,#FF7043)', text: '#BF360C', name: '#BF360C' },
+        { bg: 'linear-gradient(135deg,#E0F2F1,#4DB6AC)', text: '#004D40', name: '#004D40' },
+        { bg: 'linear-gradient(135deg,#F3E5F5,#AB47BC)', text: '#311B92', name: '#311B92' },
+        { bg: 'linear-gradient(135deg,#E8F5E9,#81C784)', text: '#1B5E20', name: '#1B5E20' },
+        { bg: 'linear-gradient(135deg,#FFF8E1,#FFD54F)', text: '#F57F17', name: '#F57F17' },
+        { bg: 'linear-gradient(135deg,#FCE4EC,#F06292)', text: '#880E4F', name: '#880E4F' },
+        { bg: 'linear-gradient(135deg,#E0F7FA,#4DD0E1)', text: '#006064', name: '#006064' },
+        { bg: 'linear-gradient(135deg,#EFEBE9,#BCAAA4)', text: '#4E342E', name: '#4E342E' },
+        { bg: 'linear-gradient(135deg,#E8EAF6,#9FA8DA)', text: '#1A237E', name: '#1A237E' },
+        { bg: 'linear-gradient(135deg,#FBE9E7,#FF8A65)', text: '#BF360C', name: '#BF360C' }
+    ];
+    let userColors = {}, colorIndex = 0, userGlow = {};
+    const colorSettingsRef = db.ref('color_settings'), glowSettingsRef = db.ref('glow_settings');
+
+    function getColor(uid) { if (!userColors[uid]) { userColors[uid] = COLORS[colorIndex % COLORS.length]; colorIndex++; } return userColors[uid]; }
+    function getGlow(uid) { return userGlow[uid] || (uid === myFP && myRole === 'owner' ? 'owner-glow' : 'none'); }
+    function saveUserColor(uid, c, g) { userColors[uid] = c; colorSettingsRef.child(uid).set(c); if (g) { userGlow[uid] = g; glowSettingsRef.child(uid).set(g) } renderMessages(); }
+    function resetUserColor(uid) { if (userColors[uid]) { delete userColors[uid]; colorSettingsRef.child(uid).remove() } if (userGlow[uid]) { delete userGlow[uid]; glowSettingsRef.child(uid).remove() } renderMessages(); }
+
+    function canBan(a, b) { if (a === 'owner') return b !== 'owner'; if (a === 'manager') return ['user', 'trusted', 'mod'].includes(b); return false; }
+    function canMute(a, b) { if (a === 'owner') return b !== 'owner'; if (a === 'manager') return ['user', 'trusted', 'mod'].includes(b); if (a === 'mod') return ['user', 'trusted'].includes(b); return false; }
+    function canDeleteMessage(a, b) { if (a === 'owner') return b !== 'owner'; if (a === 'manager') return ['user', 'trusted', 'mod'].includes(b); if (a === 'mod') return ['user', 'trusted'].includes(b); if (a === 'trusted') return ['user'].includes(b); return false; }
+    function canAssignRole(actor, targetRole) { if (actor === 'owner') return targetRole !== 'owner'; if (actor === 'manager') return ['user', 'trusted', 'mod'].includes(targetRole); if (actor === 'mod') return ['user', 'trusted'].includes(targetRole); return false; }
+    function isOwner() { return myRole === 'owner' }
+    function canDeleteStatus(u) { return u === myFP || ['owner', 'manager'].includes(myRole) }
+    function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML }
+    function formatTime(t) { return new Date(t).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) }
+    function formatDate(t) { return new Date(t).toLocaleString('ar-EG', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) }
+    function formatDateShort(t) { const d = Date.now() - t; if (d < 6e4) return 'الآن'; if (d < 36e5) return Math.floor(d / 6e4) + ' دقيقة'; if (d < 864e5) return Math.floor(d / 36e5) + ' ساعة'; return new Date(t).toLocaleDateString('ar-EG', { day: '2-digit', month: 'short' }) }
+    function extractYouTubeId(u) { if (!u) return null; const p = [/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/, /^([a-zA-Z0-9_-]{11})$/]; for (let r of p) { const m = u.match(r); if (m) return m[1] } return null }
+    function isYouTubeUrl(t) { return /(?:youtube\.com|youtu\.be)/i.test(t) }
+    function getYouTubeThumbnail(v) { return 'https://img.youtube.com/vi/' + v + '/hqdefault.jpg' }
+
+    // ============================================================
+    //  🌐 نظام الحضور الاحترافي (Presence)
+    // ============================================================
+    function getUserEffectiveStatus(user) {
+        if (!user) return 'offline';
+        const lastSeen = Number(user.lastSeen) || 0;
+        if (!lastSeen) return 'offline';
+        const timeSince = Date.now() - lastSeen;
+        if (timeSince > OFFLINE_THRESHOLD) return 'offline';
+        const status = user.status || 'offline';
+        if (status === 'online' || status === 'away') return status;
+        return 'offline';
+    }
+
+    function isUserOnline(user) {
+        const st = getUserEffectiveStatus(user);
+        return st === 'online' || st === 'away';
+    }
+
+    function startHeartbeat() {
+        const sendHeartbeat = () => {
+            if (!myFP) return;
+            if (document.hidden) return;
+            db.ref('users/' + myFP).update({
+                status: 'online',
+                lastSeen: Date.now()
+            }).catch(err => console.warn('Heartbeat error:', err));
+        };
+
+        const goOffline = () => {
+            if (!myFP) return;
+            db.ref('users/' + myFP).update({
+                status: 'offline',
+                lastSeen: Date.now()
+            }).catch(err => console.warn('Offline update error:', err));
+        };
+
+        const startInterval = () => {
+            if (heartbeatInterval) clearInterval(heartbeatInterval);
+            sendHeartbeat();
+            heartbeatInterval = setInterval(sendHeartbeat, HEARTBEAT_INTERVAL);
+        };
+
+        const stopInterval = () => {
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
+            }
+        };
+
+        db.ref('users/' + myFP).onDisconnect().update({
+            status: 'offline',
+            lastSeen: Date.now()
+        }).catch(err => console.warn('onDisconnect error:', err));
+
+        document.addEventListener('visibilitychange', () => {
+            isPageVisible = !document.hidden;
+            if (isPageVisible) {
+                startInterval();
+            } else {
+                stopInterval();
+                goOffline();
+            }
+        });
+
+        const setOffline = () => {
+            db.ref('users/' + myFP).update({
+                status: 'offline',
+                lastSeen: Date.now()
+            }).catch(() => {});
+        };
+        window.addEventListener('beforeunload', setOffline);
+        window.addEventListener('pagehide', setOffline);
+
+        if (!document.hidden) {
+            startInterval();
+        } else {
+            goOffline();
+        }
+    }
+
+    function startPresenceChecker() {
+        if (presenceCheckInterval) clearInterval(presenceCheckInterval);
+        presenceCheckInterval = setInterval(() => {
+            if (Object.keys(allUsersData).length > 0) {
+                updateUsersList();
+                updateOnlineBadge();
+                if (document.getElementById('dm-list-modal').classList.contains('active')) {
+                    renderDMList();
+                }
+            }
+        }, PRESENCE_CHECK_INTERVAL);
+    }
+
+    // ============================================================
+    //  🚫 نظام الكلمات الممنوعة — منع صامت
+    // ============================================================
+    function listenBadWords() {
+        if (badWordsListener) db.ref('settings/bad_words').off('value', badWordsListener);
+        badWordsListener = db.ref('settings/bad_words').on('value', snap => {
+            badWordsList = [];
+            if (snap.exists()) {
+                const v = snap.val();
+                if (Array.isArray(v)) {
+                    badWordsList = v.filter(x => x && String(x).trim());
+                } else if (typeof v === 'object') {
+                    Object.values(v).forEach(x => { if (x && String(x).trim()) badWordsList.push(x); });
+                } else if (typeof v === 'string') {
+                    if (v.trim()) badWordsList.push(v);
+                }
+            }
+            console.log('🚫 تم تحميل الكلمات الممنوعة:', badWordsList.length);
+        });
+    }
+
+    function findBadWord(text) {
+        if (!text || badWordsList.length === 0) return null;
+        const lower = String(text).toLowerCase();
+        for (const w of badWordsList) {
+            if (!w) continue;
+            const wLower = String(w).toLowerCase().trim();
+            if (!wLower) continue;
+            if (lower.includes(wLower)) return w;
+        }
+        return null;
+    }
+
+    function blockIfBadWord(text, options) {
+        if (!text) return false;
+        const w = findBadWord(text);
+        if (w) {
+            console.log('🚫 منع صامت — كلمة ممنوعة مكتشفة');
+            return true;
+        }
+        return false;
+    }
+
+    // ============================================================
+    //  🔔 Firebase Cloud Messaging - الإشعارات في الخلفية
+    // ============================================================
+    async function initFCM() {
+        if (!('serviceWorker' in navigator) || !('Notification' in window)) {
+            console.warn('⚠️ المتصفح لا يدعم الإشعارات');
+            return false;
+        }
+        if (typeof firebase.messaging !== 'function') {
+            console.warn('⚠️ Firebase Messaging غير محمل');
+            return false;
+        }
+        if (!VAPID_KEY || VAPID_KEY === 'ضع_مفتاح_VAPID_هنا') {
+            console.warn('⚠️ لم يتم تعيين VAPID_KEY — الإشعارات لن تعمل');
+            updateFCMButton();
+            return false;
+        }
+        try {
+            swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+            console.log('✅ تم تسجيل Service Worker');
+
+            messaging = firebase.messaging();
+            try { messaging.useServiceWorker(swRegistration); } catch(e) {}
+
+            messaging.onMessage((payload) => {
+                console.log('📬 رسالة في المقدمة:', payload);
+                showForegroundNotification(payload);
+            });
+
+            messaging.onTokenRefresh(async () => {
+                console.log('🔄 تم تحديث FCM Token');
+                fcmToken = null;
+                await saveFCMToken();
+            });
+
+            if (Notification.permission === 'granted') {
+                await saveFCMToken();
+            }
+            updateFCMButton();
+            return true;
+        } catch (e) {
+            console.error('❌ خطأ في FCM:', e);
+            return false;
+        }
+    }
+
+    async function requestNotificationPermission() {
+        if (!('Notification' in window)) {
+            return alert('⚠️ المتصفح لا يدعم الإشعارات');
+        }
+        if (!VAPID_KEY || VAPID_KEY === 'ضع_مفتاح_VAPID_هنا') {
+            return alert('⚠️ مفتاح VAPID غير مُعدّ. يرجى التواصل مع المطور.');
+        }
+        if (Notification.permission === 'granted') {
+            await saveFCMToken();
+            updateFCMButton();
+            return alert('✅ الإشعارات مفعلة مسبقاً');
+        }
+        const p = await Notification.requestPermission();
+        if (p === 'granted') {
+            if (!messaging) await initFCM();
+            await saveFCMToken();
+            updateFCMButton();
+            alert('✅ تم تفعيل الإشعارات! ستصلك حتى لو التطبيق مغلق.');
+        } else {
+            alert('⚠️ لم يتم تفعيل الإشعارات. يمكنك تفعيلها لاحقاً من زر 📲');
+        }
+    }
+
+    async function saveFCMToken() {
+        if (!messaging) return null;
+        try {
+            const token = await messaging.getToken({ vapidKey: VAPID_KEY });
+            if (token && token !== fcmToken) {
+                fcmToken = token;
+                localStorage.setItem('fcm_token', token);
+            }
+            if (fcmToken && myFP && myName) {
+                await db.ref('fcm_tokens/' + myFP).update({
+                    token: fcmToken,
+                    name: myName || '',
+                    avatar: myAvatar || '',
+                    role: myRole || 'user',
+                    updatedAt: Date.now(),
+                    platform: 'web',
+                    ua: navigator.userAgent.substring(0, 120)
+                });
+                console.log('✅ تم حفظ FCM Token في Firebase');
+            }
+            return fcmToken;
+        } catch (e) {
+            console.error('❌ خطأ في الحصول على Token:', e);
+            return null;
+        }
+    }
+
+    function showForegroundNotification(payload) {
+        const n = payload.notification || {};
+        const d = payload.data || {};
+        const title = n.title || d.title || 'فيسي برو';
+        const body  = n.body  || d.body  || '';
+        if (Notification.permission === 'granted') {
+            try {
+                const notif = new Notification(title, {
+                    body: body,
+                    icon: d.icon || 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
+                    badge: 'https://cdn-icons-png.flaticon.com/512/847/847969.png',
+                    tag: d.tag || 'vissypro-fg-' + Date.now(),
+                    dir: 'rtl',
+                    lang: 'ar'
+                });
+                notif.onclick = () => { window.focus(); notif.close(); };
+            } catch (e) { console.warn('Notification error:', e); }
+        }
+    }
+
+    function updateFCMButton() {
+        const btn = document.getElementById('fcm-btn');
+        if (!btn) return;
+        if (!('Notification' in window)) { btn.style.display = 'none'; return; }
+        if (Notification.permission === 'granted') {
+            btn.style.display = 'none';
+        } else {
+            btn.style.display = 'inline-block';
+            btn.style.animation = 'pulseFCM 1.5s infinite';
+        }
+    }
+
+    // ============================================================
+    //  نظام الخط المخصص
+    // ============================================================
+    function applyCustomFont(url, name) {
+        let styleTag = document.getElementById('custom-app-font-style');
+        if (!styleTag) {
+            styleTag = document.createElement('style');
+            styleTag.id = 'custom-app-font-style';
+            document.head.appendChild(styleTag);
+        }
+        if (!url) {
+            styleTag.textContent = '';
+            document.documentElement.style.setProperty('--font-main', "'alfont_com_سلطان-بلاك', 'Cairo', sans-serif");
+        } else {
+            styleTag.textContent = `
+                @font-face {
+                    font-family: 'CustomAppFont';
+                    src: url('${url}') format('truetype'),
+                         url('${url}') format('opentype'),
+                         url('${url}') format('woff'),
+                         url('${url}') format('woff2');
+                    font-weight: normal;
+                    font-style: normal;
+                    font-display: swap;
+                }
+            `;
+            document.documentElement.style.setProperty('--font-main', "'CustomAppFont', 'alfont_com_سلطان-بلاك', 'Cairo', sans-serif");
+        }
+    }
+
+    function listenFontSettings() {
+        if (fontSettingsListener) db.ref('app_settings/font_url').off('value', fontSettingsListener);
+        fontSettingsListener = db.ref('app_settings/font_url').on('value', snap => {
+            const data = snap.val();
+            if (data && typeof data === 'object') {
+                currentFontUrl = data.url || null;
+                currentFontName = data.name || '';
+            } else if (typeof data === 'string') {
+                currentFontUrl = data;
+                currentFontName = '';
+            } else {
+                currentFontUrl = null;
+                currentFontName = '';
+            }
+            applyCustomFont(currentFontUrl, currentFontName);
+            updateFontUI();
+        });
+    }
+
+    function updateFontUI() {
+        const nameEl = document.getElementById('current-font-name');
+        const infoEl = document.getElementById('fp-info');
+        if (nameEl) nameEl.textContent = currentFontName || (currentFontUrl ? 'خط مخصص' : 'الخط الافتراضي');
+        if (infoEl) infoEl.textContent = currentFontUrl ? '✓ خط مخصص مطبّق حالياً' : 'معاينة الخط الافتراضي';
+    }
+
+    function openAdvancedSettings() {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        pendingFontFile = null;
+        document.getElementById('font-file-input').value = '';
+        document.getElementById('selected-font-info').textContent = '';
+        document.getElementById('upload-font-btn').disabled = true;
+        updateFontUI();
+        document.getElementById('advanced-modal').classList.add('active');
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function handleFontFile(input) {
+        if (myRole !== 'owner') { alert('⛔ فقط المالك!'); input.value = ''; return; }
+        if (!input.files || !input.files[0]) return;
+        const f = input.files[0];
+        const validExt = /\.(ttf|otf|woff|woff2)$/i.test(f.name);
+        if (!validExt) { alert('❌ يرجى اختيار ملف خط بصيغة .ttf أو .otf أو .woff أو .woff2'); input.value = ''; return; }
+        if (f.size > 10 * 1024 * 1024) { alert('❌ حجم الملف كبير جداً. الحد 10 ميجابايت.'); input.value = ''; return; }
+        pendingFontFile = f;
+        document.getElementById('selected-font-info').innerHTML = '📎 <strong>' + escapeHtml(f.name) + '</strong> (' + (f.size / 1024).toFixed(1) + ' KB)';
+        document.getElementById('upload-font-btn').disabled = false;
+    }
+
+    async function uploadFontToCloudinary(f) {
+        const cn = 'nfg03aku', up = 'daufafvn';
+        const url = 'https://api.cloudinary.com/v1_1/' + cn + '/raw/upload';
+        const fd = new FormData();
+        fd.append('file', f);
+        fd.append('upload_preset', up);
+        const r = await fetch(url, { method: 'POST', body: fd });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json();
+        return d.secure_url || null;
+    }
+
+    async function uploadAndApplyFont() {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (!pendingFontFile) return alert('يرجى اختيار ملف أولاً');
+        const btn = document.getElementById('upload-font-btn');
+        btn.disabled = true; btn.textContent = '⏳ جاري الرفع...';
+        try {
+            const fontUrl = await uploadFontToCloudinary(pendingFontFile);
+            if (!fontUrl) throw new Error('فشل الرفع');
+            await db.ref('app_settings/font_url').set({
+                url: fontUrl,
+                name: pendingFontFile.name,
+                by: myName,
+                at: Date.now()
+            });
+            alert('✅ تم رفع الخط وتطبيقه على جميع المستخدمين!');
+            pendingFontFile = null;
+            document.getElementById('font-file-input').value = '';
+            document.getElementById('selected-font-info').textContent = '';
+        } catch (e) {
+            alert('❌ فشل رفع الخط: ' + e.message);
+        }
+        btn.disabled = false; btn.textContent = '💾 رفع وتطبيق';
+    }
+
+    async function resetFontToDefault() {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (!confirm('↺ إعادة الخط الافتراضي لجميع المستخدمين؟')) return;
+        try {
+            await db.ref('app_settings/font_url').remove();
+            alert('✅ تم إعادة الخط الافتراضي.');
+        } catch (e) { alert('❌ خطأ: ' + e.message); }
+    }
+
+    // ============================================================
+    //  Firebase - الأمان والدخول
+    // ============================================================
+    async function getDeviceFingerprint() { try { const f = await FingerprintJS.load(), r = await f.get(); return 'fp_' + r.visitorId } catch (e) { return 'fp_fallback_' + Math.random().toString(36).substr(2, 9) } }
+    async function checkSecurity(fp, name) {
+        const c = { banned: false, muted: false };
+        const b = await db.ref('bans/' + fp).once('value'); if (b.exists()) { c.banned = true; return c }
+        if (name) { const bn = await db.ref('banned_names/' + name.toLowerCase()).once('value'); if (bn.exists()) { c.banned = true; await db.ref('bans/' + fp).set(true); return c } }
+        const m = await db.ref('mutes/' + fp).once('value'); if (m.exists()) { const d = m.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { c.muted = true; muteEndTime = d.endTime } }
+        if (name && !c.muted) { const mn = await db.ref('muted_names/' + name.toLowerCase()).once('value'); if (mn.exists()) { const d = mn.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { c.muted = true; muteEndTime = d.endTime; await db.ref('mutes/' + fp).set(d) } } }
+        return c
+    }
+    async function linkFingerprint(fp, name) { if (!name) return; const t = Date.now(); await db.ref('name_links/' + name.toLowerCase() + '/' + fp).set(t); await db.ref('fp_links/' + fp + '/' + name.toLowerCase()).set(t) }
+
+    async function init() {
+        document.getElementById('loading-screen').style.display = 'none';
+        myFP = await getDeviceFingerprint();
+        localStorage.setItem("fp", myFP);
+        listenFontSettings();
+        listenBadWords();
+        if (myName) {
+            const s = await checkSecurity(myFP, myName);
+            if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return }
+            if (s.muted) isMuted = true;
+            await linkFingerprint(myFP, myName);
+            enterChat()
+        } else document.getElementById('login-screen').style.display = 'flex'
+    }
+
+    document.getElementById('login-btn').onclick = async () => {
+        const n = document.getElementById('username-input').value.trim();
+        if (n.length < 2) return alert("الاسم قصير!");
+        const s = await checkSecurity(myFP, n);
+        if (s.banned) { isBanned = true; document.getElementById('login-screen').style.display = 'none'; document.getElementById('ban-screen').style.display = 'flex'; return }
+        myName = n;
+        localStorage.setItem("name", myName);
+        if (s.muted) isMuted = true;
+        await linkFingerprint(myFP, myName);
+        enterChat()
+    };
+
+    function enterChat() {
+        document.getElementById('login-screen').style.display = 'none';
+        startHeartbeat();
+        startPresenceChecker();
+        db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
+        db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
+
+        db.ref('users/' + myFP).on('value', snap => {
+            if (myName && !snap.exists()) {
+                alert("⚠️ تم حذف حسابك نهائياً!");
+                localStorage.clear();
+                myName = '';
+                location.reload();
+            }
+        });
+
+        db.ref('users/' + myFP + '/role').on('value', s => {
+            myRole = s.val() || "user";
+            updateUI();
+            const hiddenControl = document.getElementById('hidden-owner-control');
+            if (myRole === 'owner') {
+                hiddenControl.style.display = 'block';
+                db.ref('users/' + myFP + '/hidden').once('value', snap => { isHidden = snap.val() || false; updateHiddenButton(); });
+                document.getElementById('reports-btn').style.display = 'inline-block';
+                listenReports();
+            } else {
+                hiddenControl.style.display = 'none';
+                document.getElementById('reports-btn').style.display = 'none';
+            }
+            saveFCMToken();
+        });
+
+        db.ref('users/' + myFP + '/hidden').on('value', snap => { isHidden = snap.val() || false; updateHiddenButton(); updateUsersList(); updateOnlineBadge(); });
+        db.ref('bans/' + myFP).on('value', s => { if (s.exists() && !isBanned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; } else if (!s.exists() && isBanned) { isBanned = false; document.getElementById('ban-screen').style.display = 'none'; } });
+        db.ref('mutes/' + myFP).on('value', s => { if (s.exists()) { const d = s.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { isMuted = true; muteEndTime = d.endTime; } else { isMuted = false; muteEndTime = 0; } } else { isMuted = false; muteEndTime = 0; } updateMuteUI(); });
+
+        startListeners();
+        loadColorSettings();
+        listenMaintenance();
+        listenMyDMPermission();
+        listenDMInbox();
+
+        // 🔔 تفعيل FCM بعد الدخول
+        setTimeout(() => initFCM(), 1500);
+    }
+
+    function listenMaintenance() {
+        if (maintenanceListener) db.ref('maintenance').off('value', maintenanceListener);
+        maintenanceListener = db.ref('maintenance').on('value', snap => {
+            const d = snap.val() || {};
+            maintenanceData.status = d.status === true;
+            maintenanceData.message = d.message || 'التطبيق تحت الصيانة المؤقتة، يرجى المحاولة لاحقاً.';
+            maintenanceData.testers = d.testers || {};
+            isTester = maintenanceData.testers[myFP] === true;
+            document.getElementById('maintenance-text').textContent = maintenanceData.message;
+            checkMaintenanceView();
+            updateMaintenanceBadge();
+            updateOwnerDMBtn();
+        });
+    }
+
+    function checkMaintenanceView() {
+        if (maintenanceData.status && myRole !== 'owner' && !isTester) {
+            document.getElementById('maintenance-screen').style.display = 'flex';
+        } else {
+            document.getElementById('maintenance-screen').style.display = 'none';
+        }
+    }
+
+    function updateMaintenanceBadge() {
+        const badge = document.getElementById('maintenance-badge');
+        if (!badge) return;
+        if (maintenanceData.status && myRole === 'owner') {
+            badge.textContent = '🔧 التطبيق في صيانة (أنت المالك - تحكم كامل)';
+            badge.style.display = 'block';
+            badge.classList.remove('tester');
+        } else if (maintenanceData.status && isTester) {
+            badge.textContent = '🧪 أنت في وضع اختبار - التطبيق في صيانة';
+            badge.style.display = 'block';
+            badge.classList.add('tester');
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function openMaintenanceSettings() {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        document.getElementById('maintenance-msg-input').value = maintenanceData.message || '';
+        pendingTesters = Object.assign({}, maintenanceData.testers);
+        renderTestersList();
+        updateMaintenanceToggleBtn();
+        document.getElementById('maintenance-modal').classList.add('active');
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function updateMaintenanceToggleBtn() {
+        const btn = document.getElementById('maintenance-toggle-btn');
+        if (!btn) return;
+        if (maintenanceData.status) {
+            btn.textContent = '✅ إيقاف وضع الصيانة (مفعّل حالياً)';
+            btn.style.background = '#4caf50';
+        } else {
+            btn.textContent = '🔧 تفعيل وضع الصيانة (معطّل حالياً)';
+            btn.style.background = '#f9a825';
+        }
+    }
+
+    function renderTestersList() {
+        const list = document.getElementById('testers-list');
+        if (!list) return;
+        list.innerHTML = '';
+        const users = [];
+        Object.keys(allUsersData).forEach(k => {
+            if (k === myFP) return;
+            const u = allUsersData[k];
+            u.uid = k;
+            users.push(u);
+        });
+        users.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        if (users.length === 0) {
+            list.innerHTML = '<div style="padding:10px;text-align:center;color:#999;font-size:12px;">لا يوجد مستخدمون</div>';
+            return;
+        }
+        users.forEach(u => {
+            const isChecked = pendingTesters && pendingTesters[u.uid] === true;
+            const div = document.createElement('div');
+            div.className = 'tester-item';
+            let roleText = 'عادي';
+            if (u.role === 'owner') roleText = '👑 مالك';
+            else if (u.role === 'manager') roleText = '💎 مدير';
+            else if (u.role === 'mod') roleText = '🛡️ مشرف';
+            else if (u.role === 'trusted') roleText = '✅ موثوق';
+            div.innerHTML = `<input type="checkbox" ${isChecked ? 'checked' : ''} data-uid="${u.uid}"><div class="tester-info"><div class="tester-name">${escapeHtml(u.name || 'مجهول')}</div><div class="tester-role">${roleText}</div></div>`;
+            div.onclick = (e) => {
+                if (e.target.tagName === 'INPUT') return;
+                const cb = div.querySelector('input[type="checkbox"]');
+                cb.checked = !cb.checked;
+            };
+            list.appendChild(div);
+        });
+    }
+
+    function toggleMaintenanceStatus() {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (!maintenanceData.status) {
+            if (!confirm('⚠️ تفعيل وضع الصيانة؟ سيتم طرد جميع المستخدمين (عدا المختبرين) إلى شاشة صيانة.')) return;
+        } else {
+            if (!confirm('إيقاف وضع الصيانة؟')) return;
+        }
+        maintenanceData.status = !maintenanceData.status;
+        updateMaintenanceToggleBtn();
+    }
+
+    async function saveMaintenanceSettings() {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        const msg = document.getElementById('maintenance-msg-input').value.trim() || 'التطبيق تحت الصيانة المؤقتة، يرجى المحاولة لاحقاً.';
+        const testers = {};
+        document.querySelectorAll('#testers-list input[type="checkbox"]').forEach(cb => {
+            if (cb.checked) testers[cb.dataset.uid] = true;
+        });
+        try {
+            await db.ref('maintenance').update({ status: maintenanceData.status, message: msg, testers: testers, by: myName, at: Date.now() });
+            document.getElementById('maintenance-modal').classList.remove('active');
+            document.getElementById('modal-overlay').classList.remove('show');
+            alert('✅ تم حفظ إعدادات الصيانة' + (maintenanceData.status ? ' (مفعّل)' : ' (معطّل)'));
+        } catch (e) { alert('❌ خطأ: ' + e.message); }
+    }
+
+    function listenMyDMPermission() {
+        if (myDMPermissionListener) db.ref('dm_permissions/' + myFP).off('value', myDMPermissionListener);
+        myDMPermissionListener = db.ref('dm_permissions/' + myFP).on('value', snap => {
+            myDMEnabled = snap.val() === true;
+            updateUI();
+            updateOwnerDMBtn();
+            renderMessages();
+        });
+    }
+
+    function updateOwnerDMBtn() {
+        const btn = document.getElementById('owner-dm-toggle-btn');
+        if (!btn) return;
+        if (myDMEnabled) {
+            btn.textContent = '💌 الخاص مفتوح لك (اضغط للإغلاق)';
+            btn.classList.add('on');
+        } else {
+            btn.textContent = '💌 فتح الخاص لنفسي';
+            btn.classList.remove('on');
+        }
+    }
+
+    async function toggleUserDM(uid, name) {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        const snap = await db.ref('dm_permissions/' + uid).once('value');
+        const isEnabled = snap.val() === true;
+        if (isEnabled) {
+            if (!confirm('إغلاق الخاص لـ "' + name + '"؟')) return;
+            await db.ref('dm_permissions/' + uid).remove();
+            alert('🔒 تم إغلاق الخاص لـ "' + name + '"');
+        } else {
+            await db.ref('dm_permissions/' + uid).set(true);
+            alert('🔓 تم فتح الخاص لـ "' + name + '"');
+        }
+        if (allUsersData[uid]) updateUserControls(uid, allUsersData[uid]);
+        if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
+        if (uid === myFP) { updateUI(); updateOwnerDMBtn(); }
+    }
+
+    async function toggleOwnerSelfDM() {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        const snap = await db.ref('dm_permissions/' + myFP).once('value');
+        const isEnabled = snap.val() === true;
+        if (isEnabled) {
+            if (!confirm('إغلاق خاصك الشخصي؟')) return;
+            await db.ref('dm_permissions/' + myFP).remove();
+            alert('🔒 تم إغلاق خاصك');
+        } else {
+            await db.ref('dm_permissions/' + myFP).set(true);
+            alert('🔓 تم فتح خاصك');
+        }
+        updateOwnerDMBtn();
+    }
+
+    function listenDMInbox() {
+        if (dmInboxListener) db.ref('dm_inbox/' + myFP).off('value', dmInboxListener);
+        dmInboxListener = db.ref('dm_inbox/' + myFP).on('value', snap => {
+            const old = dmUnreadCounts || {};
+            dmUnreadCounts = snap.val() || {};
+            Object.keys(dmUnreadCounts).forEach(uid => {
+                const newCount = Number(dmUnreadCounts[uid].count) || 0;
+                const oldCount = Number(old[uid] && old[uid].count) || 0;
+                if (newCount > oldCount && (!currentDMChat || currentDMChat.uid !== uid)) {
+                    showDMToast(dmUnreadCounts[uid].fromName || 'مجهول', uid);
+                }
+            });
+            updateDMBadge();
+            if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
+        });
+    }
+
+    function updateDMBadge() {
+        let total = 0;
+        Object.keys(dmUnreadCounts).forEach(uid => { total += Number(dmUnreadCounts[uid].count) || 0; });
+        const b = document.getElementById('dm-badge');
+        if (!b) return;
+        if (total > 0) { b.textContent = total > 99 ? '99+' : total; b.classList.add('active'); }
+        else b.classList.remove('active');
+    }
+
+    function showDMToast(senderName, uid) {
+        const old = document.getElementById('dm-toast'); if (old) old.remove();
+        const toast = document.createElement('div');
+        toast.id = 'dm-toast'; toast.className = 'dm-toast';
+        toast.innerHTML = '💌 رسالة خاصة من <strong>' + escapeHtml(senderName) + '</strong>';
+        toast.onclick = () => { toast.remove(); openDMChat(uid); };
+        document.body.appendChild(toast);
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 5000);
+    }
+
+    function openDMList() {
+        if (!myDMEnabled) return alert('🔒 الخاص غير مفعل لك. تواصل مع المالك لتفعيله.');
+        document.getElementById('dm-list-modal').classList.add('active');
+        document.getElementById('modal-overlay').classList.add('show');
+        renderDMList();
+    }
+
+    function closeDMList() {
+        document.getElementById('dm-list-modal').classList.remove('active');
+        document.getElementById('modal-overlay').classList.remove('show');
+    }
+
+    function renderDMList() {
+        const l = document.getElementById('dm-users-list');
+        if (!l) return;
+        l.innerHTML = '';
+        const users = [];
+        Object.keys(allUsersData).forEach(k => {
+            if (k === myFP) return;
+            const u = allUsersData[k];
+            if (u.hidden === true && myRole !== 'owner') return;
+            u.uid = k;
+            u._dmEnabled = (allDMUsersData[k] === true);
+            users.push(u);
+        });
+        users.sort((a, b) => {
+            const aUnread = (dmUnreadCounts[a.uid] && Number(dmUnreadCounts[a.uid].count)) || 0;
+            const bUnread = (dmUnreadCounts[b.uid] && Number(dmUnreadCounts[b.uid].count)) || 0;
+            if (bUnread !== aUnread) return bUnread - aUnread;
+            const aTime = (dmUnreadCounts[a.uid] && dmUnreadCounts[a.uid].lastTime) || 0;
+            const bTime = (dmUnreadCounts[b.uid] && dmUnreadCounts[b.uid].lastTime) || 0;
+            return bTime - aTime;
+        });
+        if (users.length === 0) {
+            l.innerHTML = '<div style="text-align:center;color:#999;padding:30px;font-size:14px;">لا يوجد مستخدمون</div>';
+            return;
+        }
+        users.forEach(u => {
+            const unreadData = dmUnreadCounts[u.uid] || {};
+            const unread = Number(unreadData.count) || 0;
+            const lastMsg = unreadData.lastMessage || '';
+            const isDMOn = u._dmEnabled === true;
+            const card = document.createElement('div');
+            card.className = 'dm-user-card' + (isDMOn ? '' : ' closed');
+            card.dataset.uid = u.uid;
+            card.dataset.name = (u.name || '').toLowerCase();
+            const avatar = u.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+            let roleBadge = '';
+            if (u.role === 'owner') roleBadge = '<span class="role-badge owner">مالك</span>';
+            else if (u.role === 'manager') roleBadge = '<span class="role-badge manager">مدير</span>';
+            else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">مشرف</span>';
+            else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">موثوق</span>';
+            let lockIcon = '';
+            if (!isDMOn) lockIcon = '<div class="dm-lock-badge">🔒</div>';
+            let settingsBtn = '';
+            if (myRole === 'owner') {
+                settingsBtn = `<button class="dm-settings-btn" onclick="event.stopPropagation();toggleUserDM('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}')" title="${isDMOn ? 'إغلاق الخاص' : 'فتح الخاص'}">⚙️</button>`;
+            }
+            card.innerHTML = `
+                <img src="${avatar}">
+                <div class="dm-info">
+                    <div class="dm-name">${escapeHtml(u.name || 'مجهول')} ${roleBadge}</div>
+                    <div class="dm-last">${isDMOn ? (lastMsg ? escapeHtml(lastMsg) : '💬 ابدأ محادثة جديدة') : '🔒 الخاص مغلق من المالك'}</div>
+                </div>
+                ${unread > 0 ? `<div class="dm-unread">${unread > 99 ? '99+' : unread}</div>` : ''}
+                ${lockIcon}
+                ${settingsBtn}
+            `;
+            card.onclick = (e) => {
+                if (e.target.closest('.dm-settings-btn')) return;
+                if (!isDMOn) { alert('🔒 هذا المستخدم ليس لديه صلاحية في الخاص - مغلق من قبل المالك'); return; }
+                openDMChat(u.uid);
+            };
+            l.appendChild(card);
+        });
+    }
+
+    function filterDMUsers() {
+        const t = document.getElementById('dm-search').value.toLowerCase();
+        document.querySelectorAll('#dm-users-list .dm-user-card').forEach(c => {
+            const n = c.dataset.name || '';
+            c.style.display = n.includes(t) ? 'flex' : 'none';
+        });
+    }
+
+    function openDMChat(uid) {
+        if (!myDMEnabled) {
+            return alert('🔒 الخاص غير مفعل لك. تواصل مع المالك لتفعيله.');
+        }
+        const u = allUsersData[uid];
+        if (!u) return;
+        const targetDMOn = (allDMUsersData[uid] === true);
+        if (!targetDMOn) {
+            return alert('🔒 هذا المستخدم ليس لديه صلاحية في الخاص - مغلق من قبل المالك');
+        }
+        closeDMList();
+        currentDMChat = { uid, name: u.name || 'مجهول', avatar: u.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png", role: u.role || 'user' };
+        document.getElementById('dm-chat-avatar').src = currentDMChat.avatar;
+        document.getElementById('dm-chat-name').textContent = currentDMChat.name;
+        let roleText = 'مستخدم عادي';
+        if (currentDMChat.role === 'owner') roleText = '👑 مالك';
+        else if (currentDMChat.role === 'manager') roleText = '💎 مدير';
+        else if (currentDMChat.role === 'mod') roleText = '🛡️ مشرف';
+        else if (currentDMChat.role === 'trusted') roleText = '✅ موثوق';
+        document.getElementById('dm-chat-role').textContent = roleText;
+        document.getElementById('dm-chat-modal').classList.add('active');
+        db.ref('dm_inbox/' + myFP + '/' + uid + '/count').set(0);
+        loadDMMessages(uid);
+    }
+
+    function closeDMChat() {
+        if (dmChatMessagesListener && currentDMChat) {
+            const chatId = getChatId(myFP, currentDMChat.uid);
+            db.ref('private_chats/' + chatId + '/messages').off('child_added', dmChatMessagesListener);
+            dmChatMessagesListener = null;
+        }
+        document.getElementById('dm-chat-modal').classList.remove('active');
+        currentDMChat = null;
+        currentDMClearedAt = 0;
+    }
+
+    function getChatId(uid1, uid2) { return [uid1, uid2].sort().join('_'); }
+
+    function loadDMMessages(uid) {
+        const chatId = getChatId(myFP, uid);
+        const box = document.getElementById('dm-chat-messages');
+        box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">⏳ جاري التحميل...</div>';
+
+        if (dmChatMessagesListener) {
+            db.ref('private_chats/' + chatId + '/messages').off('child_added', dmChatMessagesListener);
+            dmChatMessagesListener = null;
+        }
+
+        const renderedKeys = new Set();
+
+        db.ref('dm_clears/' + myFP + '/' + chatId).once('value').then(clearSnap => {
+            currentDMClearedAt = clearSnap.val() || 0;
+
+            db.ref('private_chats/' + chatId + '/messages').orderByChild('time').limitToLast(200).once('value', snap => {
+                box.innerHTML = '';
+                const allMsgs = [];
+                snap.forEach(c => {
+                    const v = c.val();
+                    const t = Number(v.time) || 0;
+                    if (t <= currentDMClearedAt) return;
+                    renderedKeys.add(c.key);
+                    v._key = c.key;
+                    allMsgs.push(v);
+                });
+                allMsgs.sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
+                allMsgs.forEach(m => renderDMMessage(m, false));
+                if (allMsgs.length === 0) {
+                    box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">لا توجد رسائل</div>';
+                }
+                box.scrollTop = box.scrollHeight;
+
+                dmChatMessagesListener = db.ref('private_chats/' + chatId + '/messages').on('child_added', snap => {
+                    if (renderedKeys.has(snap.key)) return;
+                    const m = snap.val();
+                    const t = Number(m.time) || 0;
+                    if (t <= currentDMClearedAt) { renderedKeys.add(snap.key); return; }
+                    renderedKeys.add(snap.key);
+                    m._key = snap.key;
+                    const emptyMsg = box.querySelector('div[style*="لا توجد رسائل"]');
+                    if (emptyMsg) emptyMsg.remove();
+                    renderDMMessage(m, true);
+                    box.scrollTop = box.scrollHeight;
+                    if (m.to === myFP) db.ref('dm_inbox/' + myFP + '/' + m.from + '/count').set(0);
+                });
+            });
+        });
+    }
+
+    function renderDMMessage(m, append) {
+        const box = document.getElementById('dm-chat-messages');
+        const isMine = m.from === myFP;
+        const div = document.createElement('div');
+        div.className = 'dm-msg-row ' + (isMine ? 'mine' : 'others');
+        div.dataset.dmkey = m._key || '';
+        div.innerHTML = '<div class="dm-bubble ' + (isMine ? 'mine' : 'others') + '">' + escapeHtml(m.text || '') + '<div class="dm-time">' + formatTime(m.time) + '</div></div>';
+        box.appendChild(div);
+    }
+
+    async function sendDMMessage(e) {
+        e.preventDefault();
+        if (!currentDMChat) return;
+        if (isMuted) return alert('🔇 أنت مكتوم!');
+        const targetDMOn = (allDMUsersData[currentDMChat.uid] === true);
+        if (!targetDMOn) {
+            return alert('🔒 هذا المستخدم ليس لديه صلاحية في الخاص - مغلق من قبل المالك');
+        }
+        const input = document.getElementById('dm-message-input');
+        const text = input.value.trim();
+        if (!text) return;
+        if (blockIfBadWord(text, { context: 'الرسالة الخاصة' })) {
+            return;
+        }
+        const toUid = currentDMChat.uid;
+        const chatId = getChatId(myFP, toUid);
+        const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, text: text, time: firebase.database.ServerValue.TIMESTAMP };
+        input.value = '';
+        try {
+            await db.ref('private_chats/' + chatId + '/messages').push(msgData);
+            await db.ref('dm_inbox/' + toUid + '/' + myFP).update({
+                fromName: myName, fromAvatar: myAvatar,
+                lastMessage: text, lastTime: firebase.database.ServerValue.TIMESTAMP,
+                count: firebase.database.ServerValue.increment(1)
+            });
+            await db.ref('dm_inbox/' + myFP + '/' + toUid).update({
+                fromName: currentDMChat.name, fromAvatar: currentDMChat.avatar,
+                lastMessage: text, lastTime: firebase.database.ServerValue.TIMESTAMP,
+                count: 0
+            });
+        } catch (err) { alert('خطأ في الإرسال: ' + err.message); }
+    }
+
+    async function clearCurrentDMChat() {
+        if (!currentDMChat) return;
+        if (!confirm('⚠️ سيتم إخفاء جميع رسائل هذه المحادثة من عندك. هل أنت متأكد؟')) return;
+        const chatId = getChatId(myFP, currentDMChat.uid);
+        try {
+            await db.ref('dm_clears/' + myFP + '/' + chatId).set(Date.now());
+            await db.ref('dm_inbox/' + myFP + '/' + currentDMChat.uid).update({ count: 0, lastMessage: '', lastTime: 0 });
+            loadDMMessages(currentDMChat.uid);
+        } catch (e) { alert('❌ خطأ: ' + e.message); }
+    }
+
+    async function clearAllDMs() {
+        if (!confirm('⚠️ سيتم إخفاء جميع المحادثات الخاصة من عندك. هل أنت متأكد؟')) return;
+        try {
+            const now = Date.now();
+            const updates = {};
+            Object.keys(allDMUsersData).forEach(uid => {
+                if (uid === myFP) return;
+                const chatId = getChatId(myFP, uid);
+                updates['dm_clears/' + myFP + '/' + chatId] = now;
+                updates['dm_inbox/' + myFP + '/' + uid] = { count: 0, lastMessage: '', lastTime: 0 };
+            });
+            Object.keys(dmUnreadCounts || {}).forEach(uid => {
+                const chatId = getChatId(myFP, uid);
+                updates['dm_clears/' + myFP + '/' + chatId] = now;
+                updates['dm_inbox/' + myFP + '/' + uid] = { count: 0, lastMessage: '', lastTime: 0 };
+            });
+            await db.ref().update(updates);
+            alert('✅ تم مسح جميع المحادثات الخاصة من عندك');
+            renderDMList();
+        } catch (e) { alert('❌ خطأ: ' + e.message); }
+    }
+
+    function loadDMUsersList() {
+        db.ref('dm_permissions').on('value', snap => {
+            allDMUsersData = {};
+            if (snap.exists()) snap.forEach(c => { allDMUsersData[c.key] = c.val() === true; });
+            if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
+            renderMessages();
+        });
+    }
+
+    async function deleteMyAccount() {
+        if (!confirm('⚠️ تحذير! سيتم حذف حسابك نهائياً من قاعدة البيانات بالكامل. هل أنت متأكد؟')) return;
+        try {
+            const currentFP = myFP, currentName = myName;
+            await db.ref('users/' + currentFP).remove();
+            await db.ref('bans/' + currentFP).remove();
+            await db.ref('mutes/' + currentFP).remove();
+            await db.ref('fp_links/' + currentFP).remove();
+            await db.ref('dm_permissions/' + currentFP).remove();
+            await db.ref('dm_inbox/' + currentFP).remove();
+            await db.ref('dm_clears/' + currentFP).remove();
+            await db.ref('fcm_tokens/' + currentFP).remove();
+            if (currentName) await db.ref('name_links/' + currentName.toLowerCase()).remove();
+            const messagesSnap = await db.ref('messages').orderByChild('uid').equalTo(currentFP).once('value');
+            if (messagesSnap.exists()) { const updates = {}; messagesSnap.forEach(child => { updates[child.key] = null; }); await db.ref('messages').update(updates); }
+            const statusesSnap = await db.ref('statuses').orderByChild('uid').equalTo(currentFP).once('value');
+            if (statusesSnap.exists()) { const updates = {}; statusesSnap.forEach(child => { updates[child.key] = null; }); await db.ref('statuses').update(updates); }
+            await db.ref('notifications/' + currentFP).remove();
+            localStorage.clear();
+            alert('✅ تم حذف حسابك نهائياً!');
+            window.location.reload();
+        } catch (e) { alert('❌ حدث خطأ: ' + e.message); }
+    }
+
+    function updateHiddenButton() { const btn = document.getElementById('toggle-hidden-btn'); if (!btn) return; if (isHidden) { btn.textContent = '🙈 أنا مخفي (إظهار)'; btn.style.background = '#4caf50'; } else { btn.textContent = '🙈 إخفاء نفسي'; btn.style.background = '#e91e63'; } }
+    function toggleOwnerHidden() { if (myRole !== 'owner') return alert('⛔ هذه الميزة للمالك فقط!'); const newHidden = !isHidden; db.ref('users/' + myFP + '/hidden').set(newHidden).then(() => { isHidden = newHidden; updateHiddenButton(); alert(newHidden ? '✅ تم إخفاؤك.' : '✅ أصبحت ظاهراً.'); }).catch(err => alert('حدث خطأ: ' + err.message)); }
+
+    function startListeners() {
+        loadMessages();
+        db.ref('messages').limitToLast(1).on('child_added', s => {
+            const k = s.key, v = s.val();
+            if (!messagesCache[k]) { messagesCache[k] = v; const ks = Object.keys(messagesCache); if (ks.length > 300) { const o = ks.sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0))[0]; delete messagesCache[o]; } renderMessages(); }
+        });
+        db.ref('messages').on('child_removed', s => { const k = s.key; if (messagesCache[k]) { delete messagesCache[k]; renderMessages(); } });
+        db.ref('users').on('value', s => {
+            const d = {}; s.forEach(c => { d[c.key] = c.val() }); allUsersData = d;
+            updateUsersList(); renderStatuses(); renderNotifications(); updateStatusBadge(); updateOnlineBadge();
+        });
+        db.ref('statuses').on('value', s => { statusesCache = {}; s.forEach(c => { statusesCache[c.key] = c.val() }); renderStatuses(); updateStatusBadge(); });
+        db.ref('notifications/' + myFP).on('value', s => { myNotifications = {}; if (s.exists()) s.forEach(c => { myNotifications[c.key] = c.val() }); renderNotifications(); updateNotifBadge(); });
+        loadDMUsersList();
+    }
+
+    let lastTime = null, loadingMore = false, hasMore = true, limit = 150;
+
+    function loadMessages() {
+        db.ref('messages').orderByChild('time').limitToLast(limit).once('value', s => {
+            messagesCache = {}; let minTime = Infinity;
+            s.forEach(c => { messagesCache[c.key] = c.val(); const t = Number(c.val().time) || 0; if (t < minTime) minTime = t; });
+            if (Object.keys(messagesCache).length > 0) { lastTime = minTime; hasMore = true; } else hasMore = false;
+            renderMessages(); setupScroll();
+        });
+    }
+
+    function loadMore() {
+        if (loadingMore || !hasMore) return;
+        loadingMore = true; document.getElementById('loading-more').classList.add('active');
+        db.ref('messages').orderByChild('time').endAt(lastTime).limitToLast(limit + 1).once('value', s => {
+            let nm = {}, fk = null;
+            s.forEach(c => { if (Number(c.val().time) !== lastTime) { nm[c.key] = c.val(); if (!fk) fk = c.val().time; } });
+            const nk = Object.keys(nm);
+            if (nk.length > 0) { nk.forEach(k => { if (!messagesCache[k]) messagesCache[k] = nm[k] }); if (fk) lastTime = fk; else lastTime = 0; renderMessages(); }
+            else hasMore = false;
+            loadingMore = false; document.getElementById('loading-more').classList.remove('active');
+        });
+    }
+
+    function setupScroll() {
+        const c = document.getElementById('chat-messages');
+        c.addEventListener('scroll', function() {
+            if (this.scrollTop < 30 && hasMore && !loadingMore) { const oh = this.scrollHeight; loadMore(); setTimeout(() => { this.scrollTop = this.scrollHeight - oh + 5; }, 50); }
+        });
+    }
+
+    function renderMessages() {
+        const box = document.getElementById('chat-messages');
+        const sp = box.scrollTop, isBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 50;
+        box.innerHTML = '';
+        const ld = document.createElement('div'); ld.id = 'loading-more'; ld.textContent = '⏳ جاري التحميل...'; ld.style.display = 'none'; box.appendChild(ld);
+        const ks = Object.keys(messagesCache).sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0));
+        if (ks.length === 0) { box.innerHTML += '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">✨ لا توجد رسائل</div>'; return; }
+        const dk = ks.slice(-300);
+        dk.forEach(k => {
+            const m = messagesCache[k]; if (!m) return;
+            const isMine = m.uid === myFP, ud = allUsersData[m.uid] || {}, da = ud.avatar || m.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png", dn = ud.name || m.sender || 'مجهول', dr = ud.role || m.role || 'user';
+            const div = document.createElement('div'); div.className = 'msg-row ' + (isMine ? 'mine' : 'others'); div.id = 'msg-' + k;
+            let bc = '', bs = '', snc = '', gc = '';
+            if (dr === 'owner') { bc = 'bubble-owner'; snc = '#5d4a00'; gc = 'owner-glow'; }
+            else if (dr === 'manager') { bc = 'bubble-manager'; snc = '#E1BEE7'; gc = getGlow(m.uid); }
+            else if (dr === 'mod') { bc = 'bubble-mod'; snc = '#BBDEFB'; gc = getGlow(m.uid); }
+            else { const uc = getColor(m.uid); bc = 'bubble-user'; bs = 'background:' + uc.bg + ';color:' + uc.text + ';'; snc = uc.name || '#333'; gc = getGlow(m.uid); }
+            let badge = '';
+            if (dr === 'owner') badge = '<span class="role-badge owner">👑 مالك</span>';
+            else if (dr === 'manager') badge = '<span class="role-badge manager">💎 مدير</span>';
+            else if (dr === 'mod') badge = '<span class="role-badge mod">🛡️ مشرف</span>';
+            else if (dr === 'trusted') badge = '<span class="role-badge trusted">✅ موثوق</span>';
+            let qh = '';
+            if (m.replyTo && m.replyTo.sender) { const qt = m.replyTo.text || 'وسائط'; qh = '<div class="quoted-msg" onclick="scrollToMessage(\'' + m.replyTo.key + '\')" style="background:rgba(0,0,0,0.04);border-right:2.5px solid var(--primary);padding:2px 5px;margin-bottom:3px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--font-main);"><div style="font-weight:700;color:var(--primary);font-size:9px;">↩ ' + escapeHtml(m.replyTo.sender) + '</div><div style="color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(qt) + '</div></div>'; }
+            let mh = '';
+            if (m.media) {
+                if (m.type === 'video') mh = '<div class="media-container" onclick="openViewer(\'' + m.media + '\',\'video\',\'' + dn + '\')"><video src="' + m.media + '" class="msg-img"></video><div class="play-icon">▶</div></div>';
+                else if (m.type === 'image') mh = '<div class="media-container" onclick="openViewer(\'' + m.media + '\',\'image\',\'' + dn + '\')"><img src="' + m.media + '" class="msg-img"></div>';
+                else if (m.type === 'youtube') { const y = m.youtubeId || extractYouTubeId(m.media); if (y) mh = '<div class="youtube-container" onclick="playYouTube(\'' + y + '\', this)"><img src="' + getYouTubeThumbnail(y) + '" class="youtube-thumbnail"><div class="youtube-label">▶ YouTube</div><div class="youtube-play-overlay"></div></div>'; }
+            }
+            let th = '';
+            if (m.text) {
+                let p = escapeHtml(m.text);
+                if (!m.media && isYouTubeUrl(m.text)) { const y = extractYouTubeId(m.text); if (y) { mh = '<div class="youtube-container" onclick="playYouTube(\'' + y + '\', this)"><img src="' + getYouTubeThumbnail(y) + '" class="youtube-thumbnail"><div class="youtube-label">▶ YouTube</div><div class="youtube-play-overlay"></div></div>'; p = p.replace(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}(?:[^\s]*)?/g, ''); p = p.trim(); } }
+                p = p.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#0066cc;text-decoration:underline;">$1</a>');
+                if (p) th = '<div style="word-break:break-word;">' + p + '</div>';
+            }
+            let acts = '';
+            const cd = isMine || canDeleteMessage(myRole, dr), cb = canBan(myRole, dr) && !isMine, cm = canMute(myRole, dr) && !isMine, cp = canAssignRole(myRole, dr) && !isMine, cc = isOwner() && !isMine;
+            const iCanDM = (myDMEnabled === true);
+            const targetCanDM = (allDMUsersData[m.uid] === true);
+            const canDM = !isMine && iCanDM && targetCanDM;
+            acts += '<div class="msg-actions">';
+            if (!isMine && myRole !== 'owner') { acts += '<button class="action-sm report" onclick="openReportModal(\'' + m.uid + '\',\'' + dn + '\',\'' + k + '\')"> إبلاغ</button>'; }
+            if (canDM) acts += '<button class="action-sm dm" onclick="openDMChat(\'' + m.uid + '\')">💌 خاص</button>';
+            if (!isMine) acts += '<button class="action-sm reply" onclick="startReply(\'' + k + '\')">رد ↩</button>';
+            if (cd) acts += '<button class="action-sm del" onclick="deleteMessage(\'' + k + '\')">🗑️</button>';
+            if (cb) acts += '<button class="action-sm ban" onclick="banUser(\'' + m.uid + '\',\'' + dn + '\')">حظر</button>';
+            if (cm) acts += '<button class="action-sm mute" onclick="openMuteMenu(\'' + m.uid + '\',\'' + dn + '\')">كتم</button>';
+            if (cp) acts += '<button class="action-sm promote" onclick="openRoleMenu(\'' + m.uid + '\',\'' + dn + '\')">رتبة</button>';
+            if (cc) acts += '<button class="action-sm" style="background:#e91e63;font-size:9px;padding:2px 6px;" onclick="openColorControl(\'' + m.uid + '\')">🎨</button>';
+            acts += '</div>';
+            const sns = snc ? 'color:' + snc + ';' : '', gc2 = gc && gc !== 'none' ? 'glow ' + gc : '';
+            div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar" onclick="openViewer(\'' + da + '\',\'image\',\'' + dn + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '">' + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '✓✓' : '') + '</div></div>' + acts;
+            box.appendChild(div);
+        });
+        if (isBottom) box.scrollTop = box.scrollHeight; else box.scrollTop = sp;
+    }
+
+    // ============================================================
+    //  👥 قائمة المستخدمين
+    // ============================================================
+    function updateUsersList() {
+        const l = document.getElementById('users-list'); if (!l) return;
+        const users = [];
+        Object.keys(allUsersData).forEach(k => {
+            const u = allUsersData[k];
+            if (u.hidden === true && k !== myFP) return;
+            u.uid = k;
+            u._effectiveStatus = getUserEffectiveStatus(u);
+            users.push(u);
+        });
+
+        const onlineUsers = users.filter(u => u._effectiveStatus === 'online' || u._effectiveStatus === 'away');
+        const offlineUsers = users.filter(u => u._effectiveStatus !== 'online' && u._effectiveStatus !== 'away');
+
+        onlineUsers.sort((a, b) => (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0));
+        offlineUsers.sort((a, b) => (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0));
+
+        const sortedUsers = [...onlineUsers, ...offlineUsers];
+        const onlineCount = onlineUsers.length;
+
+        const ob = document.getElementById('online-badge');
+        if (ob) { ob.textContent = onlineCount; ob.style.display = onlineCount > 0 ? 'block' : 'none'; }
+
+        const currentCards = l.querySelectorAll('.user-card');
+        const currentIds = Array.from(currentCards).map(el => el.dataset.uid);
+        currentIds.forEach(id => {
+            const u = allUsersData[id];
+            if (!u || (u.hidden === true && id !== myFP)) {
+                const el = l.querySelector('.user-card[data-uid="' + id + '"]');
+                if (el) el.remove();
+            }
+        });
+
+        sortedUsers.forEach((u, idx) => {
+            const existing = l.querySelector('.user-card[data-uid="' + u.uid + '"]');
+            const isOnline = u._effectiveStatus === 'online' || u._effectiveStatus === 'away';
+            const isAway = u._effectiveStatus === 'away';
+
+            let statusText;
+            if (isOnline) {
+                statusText = isAway ? '🟡 غائب' : '🟢 متصل';
+            } else {
+                const lastSeen = Number(u.lastSeen) || 0;
+                if (!lastSeen) statusText = '⚪ غير متصل';
+                else statusText = '⚪ غير متصل منذ ' + formatDateShort(lastSeen);
+            }
+
+            let roleBadge = '';
+            if (u.role === 'owner') roleBadge = '<span class="role-badge owner">مالك</span>';
+            else if (u.role === 'manager') roleBadge = '<span class="role-badge manager">مدير</span>';
+            else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">مشرف</span>';
+            else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">موثوق</span>';
+            const avatar = u.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+            let hiddenBadge = ''; if (u.uid === myFP && isHidden && myRole === 'owner') { hiddenBadge = '<span class="hidden-owner-badge">🙈 مخفي</span>'; }
+
+            if (existing) {
+                const statusEl = existing.querySelector('.user-status');
+                if (statusEl) statusEl.className = 'user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline');
+                const nameEl = existing.querySelector('.user-details h4');
+                if (nameEl) nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + u.name + ' ' + roleBadge + ' ' + hiddenBadge;
+                const lastSeenEl = existing.querySelector('.last-seen');
+                if (lastSeenEl) lastSeenEl.textContent = statusText + (isOnline ? ' - ' + formatDate(u.lastSeen) : '');
+                const avatarEl = existing.querySelector('.user-avatar');
+                if (avatarEl && avatarEl.src !== avatar) avatarEl.src = avatar;
+                const actionsEl = existing.querySelector('.user-actions');
+                if (actionsEl) { actionsEl.id = 'uact-' + u.uid; updateUserControls(u.uid, u); }
+                const currentIndex = Array.from(l.children).indexOf(existing);
+                if (currentIndex !== idx) {
+                    if (idx < l.children.length) l.insertBefore(existing, l.children[idx]);
+                    else l.appendChild(existing);
+                }
+            } else {
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                card.dataset.uid = u.uid;
+                card.dataset.role = u.role || 'user';
+                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openViewer('${avatar}','image','${u.name}')"><div class="user-details"><h4><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${u.name} ${roleBadge} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
+                if (idx < l.children.length) l.insertBefore(card, l.children[idx]);
+                else l.appendChild(card);
+                updateUserControls(u.uid, u);
+            }
+        });
+        filterUsers();
+    }
+
+    function deleteMessage(k) { const m = messagesCache[k]; if (!m) return; const tr = allUsersData[m.uid]?.role || m.role; if (!canDeleteMessage(myRole, tr) && m.uid !== myFP) return alert("⛔ لا صلاحية!"); if (confirm("🗑️ حذف؟")) db.ref('messages/' + k).remove().then(() => { delete messagesCache[k]; renderMessages(); }); }
+    function scrollToMessage(k) { const e = document.getElementById('msg-' + k); if (e) { e.scrollIntoView({ behavior: 'smooth', block: 'center' }); e.style.background = 'rgba(255,235,59,0.3)'; setTimeout(() => e.style.background = 'transparent', 1000); } }
+    function playYouTube(v, c) { c.innerHTML = '<iframe src="https://www.youtube.com/embed/' + v + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
+
+    function updateUserControls(u, d) {
+        const e = document.getElementById('uact-' + u); if (!e || u === myFP) return;
+        if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && myRole !== 'owner') { e.innerHTML = ''; return; }
+        db.ref('bans/' + u).once('value', b => {
+            const ib = b.exists(); let bt = '';
+            if (canBan(myRole, d.role)) { if (ib) { if (myRole === 'owner') bt += '<button class="ctrl-btn unban" onclick="unbanUser(\'' + u + '\',\'' + d.name + '\')">↺</button>'; } else { bt += '<button class="ctrl-btn ban" onclick="banUser(\'' + u + '\',\'' + d.name + '\')">🚫</button>'; } }
+            db.ref('mutes/' + u).once('value', m => {
+                let im = false; if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
+                if (canMute(myRole, d.role)) { if (im) bt += '<button class="ctrl-btn unmute" onclick="unmuteUser(\'' + u + '\',\'' + d.name + '\')">🔊</button>'; else bt += '<button class="ctrl-btn mute" onclick="openMuteMenu(\'' + u + '\',\'' + d.name + '\')">🔇</button>'; }
+                if (canAssignRole(myRole, d.role)) bt += '<button class="ctrl-btn role" onclick="openRoleMenu(\'' + u + '\',\'' + d.name + '\')">⚙️</button>';
+                if (myRole === 'owner' && d.role !== 'owner') {
+                    bt += '<button class="ctrl-btn color" onclick="openColorControl(\'' + u + '\')">🎨</button>';
+                    const isDMOn = allDMUsersData[u] === true;
+                    bt += '<button class="ctrl-btn ' + (isDMOn ? 'dm' : 'dm-off') + '" onclick="toggleUserDM(\'' + u + '\',\'' + d.name + '\')" title="' + (isDMOn ? 'إغلاق الخاص' : 'فتح الخاص') + '">' + (isDMOn ? '💌' : '🔒') + '</button>';
+                    bt += '<button class="ctrl-btn" style="background:#b71c1c;font-size:10px;" onclick="permanentDeleteUser(\'' + u + '\',\'' + d.name + '\')" title="حذف نهائي">🗑️</button>';
+                }
+                e.innerHTML = bt;
+            });
+        });
+    }
+
+    async function permanentDeleteUser(uid, name) {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        const targetRole = allUsersData[uid]?.role || 'user';
+        if (targetRole === 'owner') return alert('⛔ لا يمكنك حذف المالك!');
+        if (!confirm('⚠️ سيتم حذف حساب "' + name + '" نهائياً! هل أنت متأكد؟')) return;
+        try {
+            await db.ref('users/' + uid).remove();
+            await db.ref('bans/' + uid).remove();
+            await db.ref('mutes/' + uid).remove();
+            await db.ref('fp_links/' + uid).remove();
+            await db.ref('dm_permissions/' + uid).remove();
+            await db.ref('dm_inbox/' + uid).remove();
+            await db.ref('dm_clears/' + uid).remove();
+            await db.ref('maintenance/testers/' + uid).remove();
+            await db.ref('fcm_tokens/' + uid).remove();
+            if (name) await db.ref('name_links/' + name.toLowerCase()).remove();
+            const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value');
+            if (msgs.exists()) { let updates = {}; msgs.forEach(child => { updates[child.key] = null; }); await db.ref('messages').update(updates); }
+            const status = await db.ref('statuses').orderByChild('uid').equalTo(uid).once('value');
+            if (status.exists()) { let updates = {}; status.forEach(child => { updates[child.key] = null; }); await db.ref('statuses').update(updates); }
+            await db.ref('notifications/' + uid).remove();
+            alert("✅ تم حذف الحساب نهائياً!");
+        } catch (e) { alert('❌ خطأ: ' + e.message); }
+    }
+
+    function filterUsers() { const t = document.getElementById('user-search').value.toLowerCase(); document.querySelectorAll('.user-card').forEach(c => { const n = c.querySelector('.user-details h4')?.innerText?.toLowerCase() || ''; c.style.display = n.includes(t) ? 'flex' : 'none'; }); }
+    function updateStatusBadge() { const now = Date.now(), exp = 864e5; let unseen = 0; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (now - s.time > exp) { db.ref('statuses/' + k).remove(); return; } if (s.uid !== myFP) { const sb = s.seenBy || {}; if (!sb[myFP]) unseen++; } }); const b = document.getElementById('status-unseen-count'); if (unseen > 0) { b.textContent = unseen; b.classList.add('active'); } else b.classList.remove('active'); }
+
+    function updateOnlineBadge() {
+        let on = 0;
+        Object.keys(allUsersData).forEach(k => {
+            const u = allUsersData[k];
+            if (u.hidden === true && k !== myFP) return;
+            if (isUserOnline(u)) on++;
+        });
+        const b = document.getElementById('online-badge');
+        if (!b) return;
+        b.textContent = on;
+        b.style.display = on > 0 ? 'block' : 'none';
+    }
+
+    function updateUI() {
+        document.getElementById('clear-chat-btn').style.display = ['mod', 'manager', 'owner'].includes(myRole) ? 'inline-block' : 'none';
+        document.getElementById('btn-users').style.display = ['trusted', 'mod', 'manager', 'owner'].includes(myRole) ? 'block' : 'none';
+        document.getElementById('add-status-btn').style.display = ['trusted', 'mod', 'manager', 'owner'].includes(myRole) ? 'flex' : 'none';
+        document.getElementById('media-btn').style.display = ['mod', 'manager', 'owner'].includes(myRole) ? 'flex' : 'none';
+        document.getElementById('youtube-btn').style.display = 'flex';
+        const dmBtn = document.getElementById('dm-btn');
+        if (dmBtn) dmBtn.style.display = myDMEnabled ? 'inline-block' : 'none';
+        if (myRole === 'owner') { document.getElementById('reports-btn').style.display = 'inline-block'; listenReports(); }
+        else { document.getElementById('reports-btn').style.display = 'none'; }
+        updateFCMButton();
+    }
+
+    function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { i.placeholder = "اكتب رسالة..."; i.disabled = false; b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
+    function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
+
+    function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); }
+    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
+
+    async function banUser(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canBan(myRole, tr)) return alert('⛔ لا صلاحية!'); if (!confirm('⚠️ حظر "' + n + '"؟')) return; await db.ref('bans/' + u).set(true); if (n) await db.ref('banned_names/' + n.toLowerCase()).set(true); const nl = await db.ref('fp_links/' + u).once('value'); if (nl.exists()) for (let l in nl.val()) await db.ref('banned_names/' + l).set(true); if (n) { const fl = await db.ref('name_links/' + n.toLowerCase()).once('value'); if (fl.exists()) for (let f in fl.val()) await db.ref('bans/' + f).set(true); } alert("✅ تم الحظر"); }
+    async function unbanUser(u, n) { if (myRole !== 'owner') return alert('⛔ فقط المالك!'); if (!confirm('فك الحظر عن "' + n + '"؟')) return; await db.ref('bans/' + u).remove(); if (n) await db.ref('banned_names/' + n.toLowerCase()).remove(); alert("✅ تم فك الحظر"); }
+    function openMuteMenu(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canMute(myRole, tr)) return alert('⛔ لا صلاحية!'); targetUserForAction = { uid: u, name: n }; document.getElementById('mute-target-name').textContent = n; document.getElementById('mute-modal').classList.add('active'); }
+    async function applyMute(m) { const et = m === 999999 ? 9999999999999 : Date.now() + m * 6e4, data = { endTime: et, by: myName, at: Date.now() }; const { uid, name } = targetUserForAction; await db.ref('mutes/' + uid).set(data); if (name) await db.ref('muted_names/' + name.toLowerCase()).set(data); const nl = await db.ref('fp_links/' + uid).once('value'); if (nl.exists()) for (let l in nl.val()) await db.ref('muted_names/' + l).set(data); if (name) { const fl = await db.ref('name_links/' + name.toLowerCase()).once('value'); if (fl.exists()) for (let f in fl.val()) await db.ref('mutes/' + f).set(data); } document.getElementById('mute-modal').classList.remove('active'); alert("✅ تم الكتم"); }
+    async function unmuteUser(u, n) { if (!confirm('فك الكتم عن "' + n + '"؟')) return; await db.ref('mutes/' + u).remove(); if (n) await db.ref('muted_names/' + n.toLowerCase()).remove(); alert("✅ تم فك الكتم"); }
+    function openRoleMenu(u, n) { if (!canAssignRole(myRole, allUsersData[u]?.role || 'user')) return alert('⛔ لا صلاحية!'); targetUserForAction = { uid: u, name: n }; document.getElementById('role-target-name').textContent = n; document.getElementById('role-modal').classList.add('active'); }
+    function setRole(r) { const { uid } = targetUserForAction; if (!canAssignRole(myRole, r)) { document.getElementById('role-modal').classList.remove('active'); return alert("⛔ لا يمكنك إعطاء رتبة مساوية أو أعلى!"); } db.ref('users/' + uid + '/role').set(r); document.getElementById('role-modal').classList.remove('active'); alert("✅ تم التغيير"); }
+
+    function openProfile() {
+        document.getElementById('prof-img').src = myAvatar; document.getElementById('prof-name').value = myName;
+        const hiddenControl = document.getElementById('hidden-owner-control');
+        if (myRole === 'owner') { hiddenControl.style.display = 'block'; updateHiddenButton(); updateOwnerDMBtn(); } else { hiddenControl.style.display = 'none'; }
+        const avatarLabel = document.getElementById('avatar-change-label'); const avatarImg = document.getElementById('prof-img');
+        if (myRole === 'user') { if (avatarLabel) avatarLabel.style.display = 'none'; if (avatarImg) { avatarImg.style.cursor = 'default'; avatarImg.onclick = null; } }
+        else { if (avatarLabel) avatarLabel.style.display = 'inline-block'; if (avatarImg) { avatarImg.style.cursor = 'pointer'; avatarImg.onclick = () => document.getElementById('avatar-in').click(); } }
+        document.getElementById('profile-modal').classList.add('active');
+    }
+    function onAvatarClick() { if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه تغيير صورة الملف!"); return; } document.getElementById('avatar-in').click(); }
+    function previewProf(i) { if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه تغيير صورة الملف!"); i.value = ''; return; } if (i.files[0]) { const r = new FileReader(); r.onload = e => document.getElementById('prof-img').src = e.target.result; r.readAsDataURL(i.files[0]); } }
+    async function saveProfile() { const n = document.getElementById('prof-name').value.trim(); if (n.length < 2) return alert("الاسم قصير!"); const src = document.getElementById('prof-img').src; let fa = myAvatar; if (src.startsWith('data:image')) { if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه تغيير صورة الملف!"); return; } try { const b = await (await fetch(src)).blob(), f = new File([b], "avatar.jpg", { type: "image/jpeg" }), u = await uploadCloudinary(f); if (u) fa = u; } catch (e) { alert("فشل الرفع"); return; } } myName = n; myAvatar = fa; localStorage.setItem("name", myName); localStorage.setItem("avatar", myAvatar); await linkFingerprint(myFP, myName); db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar }); saveFCMToken(); document.getElementById('profile-modal').classList.remove('active'); alert("✅ تم التحديث"); }
+
+    function openViewer(u, t, s) { const v = document.getElementById('media-viewer'), c = document.getElementById('viewer-content'); document.getElementById('viewer-sender').textContent = s || '📸'; c.innerHTML = ''; if (t === 'video') c.innerHTML = '<video src="' + u + '" controls autoplay playsinline style="max-width:100%;max-height:80vh;"></video>'; else if (t === 'youtube') c.innerHTML = '<iframe src="' + u + '" style="width:100%;height:70vh;border:0;border-radius:8px;" allow="autoplay; encrypted-media" allowfullscreen></iframe>'; else c.innerHTML = '<img src="' + u + '" style="max-width:100%;max-height:80vh;object-fit:contain;">'; v.classList.add('active'); }
+    function closeViewer(e) { if (e && e.target.id !== 'media-viewer' && !e.target.closest('button')) return; const v = document.getElementById('media-viewer'), vid = v.querySelector('video'), ifr = v.querySelector('iframe'); if (vid) { vid.pause(); vid.removeAttribute('src'); } if (ifr) ifr.src = ''; v.classList.remove('active'); }
+
+    function switchTab(t) { currentTab = t; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); if (t === 'chat') { document.getElementById('nav-chat').classList.add('active'); document.getElementById('status-screen').classList.remove('active'); document.getElementById('chat-messages').style.display = 'flex'; document.getElementById('chat-form').style.display = 'flex'; document.getElementById('add-status-btn').classList.remove('active'); } else { document.getElementById('nav-status').classList.add('active'); document.getElementById('status-screen').classList.add('active'); document.getElementById('chat-messages').style.display = 'none'; document.getElementById('chat-form').style.display = 'none'; document.getElementById('add-status-btn').classList.add('active'); renderStatuses(); } }
+    function closeStatusScreen() { switchTab('chat'); }
+    function renderStatuses() { const l = document.getElementById('status-list'); l.innerHTML = ''; const n = Date.now(), exp = 864e5; const um = {}; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (n - s.time > exp) { db.ref('statuses/' + k).remove(); return; } const uid = s.uid; if (!allUsersData[uid]) return; if (!um[uid]) um[uid] = { user: s, statuses: [] }; um[uid].statuses.push({ key: k, ...s }); }); const su = Object.keys(um).sort((a, b) => { const al = um[a].statuses.reduce((m, s) => s.time > m ? s.time : m, 0), bl = um[b].statuses.reduce((m, s) => s.time > m ? s.time : m, 0); return bl - al; }); if (su.length === 0) { l.innerHTML = '<div style="text-align:center;padding:30px 0;color:#999;font-size:14px;font-family:var(--font-main);">📭 لا توجد حالات</div>'; return; } su.forEach(uid => { const d = um[uid], ls = d.statuses.reduce((a, b) => a.time > b.time ? a : b), ud = allUsersData[uid] || {}, dn = ud.name || d.user.sender || 'مجهول', da = ud.avatar || d.user.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png", isMine = uid === myFP; let hasUnseen = false, ts = d.statuses.length; d.statuses.forEach(s => { const sb = s.seenBy || {}; if (!sb[myFP] && s.uid !== myFP) hasUnseen = true; }); const c = document.createElement('div'); c.className = 'status-user-card ' + (hasUnseen ? 'unseen' : 'seen'); c.onclick = () => viewUserStatuses(uid, d.statuses); c.innerHTML = '<div class="status-avatar-wrapper"><img src="' + da + '" class="status-avatar" onclick="event.stopPropagation();openViewer(\'' + da + '\',\'image\',\'' + dn + '\')"><div class="status-ring"></div></div><div class="status-user-info"><div class="status-username">' + escapeHtml(dn) + (isMine ? '<span style="font-size:10px;color:#999;font-family:var(--font-main);">(حالتي)</span>' : '') + '</div><div class="status-time">' + formatDateShort(ls.time) + '</div><div class="status-preview">' + (ls.text || '📸') + '</div></div>' + (ts > 1 ? '<div class="status-count ' + (hasUnseen ? '' : 'seen') + '">' + ts + '</div>' : ''); l.appendChild(c); }); }
+
+    function viewUserStatuses(uid, statuses) { if (!statuses || statuses.length === 0) return; statuses.sort((a, b) => a.time - b.time); viewerStatuses = statuses; viewerCurrentIndex = 0; viewerCurrentUid = uid; showStatusAtIndex(0); }
+    function showStatusAtIndex(i) {
+        if (i >= viewerStatuses.length || i < 0) { closeStatusViewer(null); return; }
+        const s = viewerStatuses[i], ud = allUsersData[viewerCurrentUid] || {}, dn = ud.name || s.sender || 'مجهول';
+        if (s.uid !== myFP) { const sb = s.seenBy || {}; if (!sb[myFP]) { sb[myFP] = { name: myName, avatar: myAvatar, time: Date.now() }; db.ref('statuses/' + s.key + '/seenBy').set(sb); db.ref('notifications/' + viewerCurrentUid + '/' + myFP).set({ from: myName, fromAvatar: myAvatar, statusKey: s.key, time: Date.now(), seen: true }); } }
+        const v = document.getElementById('status-viewer'), c = document.getElementById('status-viewer-content'), ne = document.getElementById('status-viewer-name'), se = document.getElementById('status-viewer-seen'), db2 = document.getElementById('status-delete-btn');
+        ne.innerHTML = '📸 ' + escapeHtml(dn) + ' <span style="font-size:11px;color:#aaa;font-weight:400;">(' + (i + 1) + '/' + viewerStatuses.length + ')</span>';
+        c.innerHTML = '';
+        if (s.media) { if (s.type === 'video') c.innerHTML = '<video src="' + s.media + '" controls autoplay playsinline></video>'; else c.innerHTML = '<img src="' + s.media + '">'; }
+        else c.innerHTML = '<div style="color:#fff;font-size:18px;text-align:center;padding:20px;min-width:120px;min-height:60px;display:flex;align-items:center;justify-content:center;font-family:var(--font-main);">' + (s.text || '📸') + '</div>';
+        const sb = s.seenBy || {}, vw = Object.keys(sb);
+        if (vw.length > 0) { const ns = vw.map(id => { const d = sb[id]; return '<span class="seen-user" onclick="event.stopPropagation();openViewer(\'' + (d.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png") + '\',\'image\',\'' + (d.name || 'مجهول') + '\')">' + (d.name || 'مجهول') + '</span>'; }).join('، '); se.innerHTML = '👁️ شاهدها: ' + ns; } else se.textContent = '👁️ لا مشاهدات';
+        if (canDeleteStatus(s.uid)) { db2.style.display = 'inline-block'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف؟")) { db.ref('statuses/' + s.key).remove(); if (viewerStatuses.length <= 1) closeStatusViewer(null); else { const ni = i < viewerStatuses.length - 1 ? i : i - 1; viewerStatuses.splice(i, 1); showStatusAtIndex(ni >= viewerStatuses.length ? viewerStatuses.length - 1 : ni); } } }; } else db2.style.display = 'none';
+        viewerCurrentIndex = i; v.classList.add('active');
+        v.onclick = (e) => { if (e.target === v || e.target.closest('.viewer-close') || e.target.closest('.viewer-info')) return; if (i < viewerStatuses.length - 1) showStatusAtIndex(i + 1); };
+        let tsx = 0; v.ontouchstart = (e) => { tsx = e.touches[0].clientX; }; v.ontouchend = (e) => { const d = tsx - e.changedTouches[0].clientX; if (Math.abs(d) > 40) { if (d > 0 && i < viewerStatuses.length - 1) showStatusAtIndex(i + 1); else if (d < 0 && i > 0) showStatusAtIndex(i - 1); } };
+    }
+    function navigateStatus(d) { const ni = viewerCurrentIndex + d; if (ni >= 0 && ni < viewerStatuses.length) showStatusAtIndex(ni); }
+    function closeStatusViewer(e) { if (e && e.target && e.target.id !== 'status-viewer' && !e.target.closest('button') && !e.target.closest('.viewer-info')) { if (e.target !== document.getElementById('status-viewer')) return; } document.getElementById('status-viewer').classList.remove('active'); const v = document.querySelector('#status-viewer video'); if (v) { v.pause(); v.removeAttribute('src'); } viewerStatuses = []; viewerCurrentIndex = 0; viewerCurrentUid = ''; document.getElementById('status-viewer').onclick = null; document.getElementById('status-viewer').ontouchstart = null; document.getElementById('status-viewer').ontouchend = null; }
+    function deleteCurrentStatus() {}
+
+    let selectedStatusType = 'text', statusFileData = null, statusFileType = '';
+    function openAddStatus() { if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه نشر الحالات!"); return; } if (isMuted) { alert("🔇 أنت مكتوم!"); return; } document.getElementById('add-status-modal').classList.add('active'); selectStatusType('text'); document.getElementById('status-text-input').value = ''; document.getElementById('text-counter').textContent = '0 / 500'; document.getElementById('status-file-input').value = ''; document.getElementById('selected-filename').classList.remove('active'); statusFileData = null; statusFileType = ''; document.getElementById('publish-status-btn').disabled = false; }
+    function closeAddStatus() { document.getElementById('add-status-modal').classList.remove('active'); }
+    function selectStatusType(t) { selectedStatusType = t; document.querySelectorAll('.status-options button').forEach(b => b.classList.remove('active')); if (t === 'text') { document.getElementById('status-type-text').classList.add('active'); document.getElementById('status-text-area').classList.add('active'); document.getElementById('status-media-area').classList.remove('active'); } else { document.getElementById('status-type-media').classList.add('active'); document.getElementById('status-media-area').classList.add('active'); document.getElementById('status-text-area').classList.remove('active'); } }
+    document.getElementById('status-text-input')?.addEventListener('input', function() { document.getElementById('text-counter').textContent = this.value.length + ' / 500'; });
+    function handleStatusFile(i) { if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير! الحد 100 ميجا."); i.value = ''; return; } statusFileData = f; statusFileType = f.type.startsWith('video') ? 'video' : 'image'; document.getElementById('selected-filename').textContent = '📎 ' + f.name; document.getElementById('selected-filename').classList.add('active'); document.getElementById('publish-status-btn').disabled = false; }
+    async function publishStatus() {
+        if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه نشر الحالات!"); return; }
+        if (isMuted) { alert("🔇 أنت مكتوم!"); return; }
+        const statusText = document.getElementById('status-text-input').value.trim();
+        if (statusText && blockIfBadWord(statusText, { context: 'الحالة' })) {
+            return;
+        }
+        const pb = document.getElementById('publish-status-btn'); pb.disabled = true; pb.textContent = '⏳...';
+        try {
+            let mu = null, mt = null;
+            if (selectedStatusType === 'media' && statusFileData) { mu = await uploadCloudinary(statusFileData); mt = statusFileType; }
+            const data = { sender: myName, uid: myFP, avatar: myAvatar, text: statusText || (mu ? '' : '📸 حالة'), time: firebase.database.ServerValue.TIMESTAMP, seenBy: {} };
+            if (mu) { data.media = mu; data.type = mt; }
+            db.ref('statuses').push(data);
+            alert("✅ تم النشر!");
+            closeAddStatus();
+        } catch (e) { alert("❌ فشل: " + e.message); }
+        pb.disabled = false; pb.textContent = '📤 نشر';
+    }
+
+    function openNotifications() { document.getElementById('notifications-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); renderNotifications(); }
+    function closeNotifications() { document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); }
+    function renderNotifications() { const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png", sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
+    function clearAllNotifications() { if (confirm("مسح الكل؟")) db.ref('notifications/' + myFP).remove(); }
+    function updateNotifBadge() { const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
+
+    function openYouTubeModal() { document.getElementById('youtube-modal').classList.add('active'); document.getElementById('yt-link-input').focus(); }
+    function previewYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), p = document.getElementById('yt-preview'), img = document.getElementById('yt-preview-img'), t = document.getElementById('yt-preview-title'), sb = document.getElementById('yt-send-btn'), wb = document.getElementById('yt-watch-btn'), vid = extractYouTubeId(l); if (vid) { img.src = getYouTubeThumbnail(vid); t.textContent = 'https://youtu.be/' + vid; p.style.display = 'block'; sb.disabled = false; wb.disabled = false; } else { p.style.display = 'none'; sb.disabled = true; wb.disabled = true; } }
+    function sendYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return alert("رابط غير صحيح!"); const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: l, type: 'youtube', youtubeId: vid, avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); document.getElementById('yt-link-input').value = ''; document.getElementById('yt-preview').style.display = 'none'; document.getElementById('yt-send-btn').disabled = true; document.getElementById('yt-watch-btn').disabled = true; document.getElementById('youtube-modal').classList.remove('active'); }
+    function watchYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return; openViewer('https://www.youtube.com/embed/' + vid + '?autoplay=1', 'youtube', myName); }
+
+    function sendMessage(e) {
+        e.preventDefault();
+        if (isMuted) return alert("🔇 مكتوم!");
+        const input = document.getElementById('message-input');
+        const t = input.value.trim();
+        if (!t) return;
+        if (blockIfBadWord(t, { context: 'الرسالة' })) {
+            return;
+        }
+        const d = { sender: myName, text: t, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, avatar: myAvatar };
+        if (isYouTubeUrl(t)) { const y = extractYouTubeId(t); if (y) { d.media = t; d.type = 'youtube'; d.youtubeId = y; if (t === t.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}(?:[^\s]*)?/)?.[0]) d.text = ''; } }
+        if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 100), role: replyTo.role }; cancelReply(); }
+        db.ref('messages').push(d);
+        input.value = '';
+        input.focus();
+    }
+
+    async function handleFile(i) { if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه إرسال صور أو فيديو!"); i.value = ''; return; } if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير! الحد 100 ميجا."); i.value = ''; return; } const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true; try { const u = await uploadCloudinary(f); if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); } else alert("فشل الرفع"); } catch (e) { alert("خطأ: " + e.message); } sb.textContent = "➤"; sb.disabled = false; i.value = ''; }
+
+    async function uploadCloudinary(f) { const cn = 'nfg03aku', up = 'daufafvn', url = 'https://api.cloudinary.com/v1_1/' + cn + '/' + (f.type.startsWith('video') ? 'video' : 'image') + '/upload'; const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', up); const r = await fetch(url, { method: 'POST', body: fd }); if (!r.ok) throw new Error('HTTP ' + r.status); const d = await r.json(); return d.secure_url || null; }
+
+    function clearAllChat() { if (!['mod', 'manager', 'owner'].includes(myRole)) return alert("⛔ فقط المشرف والمدير والمالك!"); if (confirm("⚠️ حذف كل الرسائل؟")) { db.ref('messages').remove(); messagesCache = {}; renderMessages(); } }
+
+    function startReply(k) { const m = messagesCache[k]; if (!m) return; replyTo = { key: k, sender: m.sender, text: m.text || '[وسائط]', role: m.role }; document.getElementById('reply-sender-name').textContent = m.sender; document.getElementById('reply-content-text').textContent = m.text || '[صورة/فيديو/يوتيوب]'; document.getElementById('reply-bar').classList.add('active'); document.getElementById('message-input').focus(); }
+    function cancelReply() { replyTo = null; document.getElementById('reply-bar').classList.remove('active'); }
+
+    function openReportModal(targetUid, targetName, messageKey) { if (!myName || !myFP) return alert('يرجى تسجيل الدخول أولاً'); if (targetUid === myFP) return alert('لا يمكنك الإبلاغ عن نفسك'); document.getElementById('report-target-name').textContent = targetName; document.getElementById('report-target-uid').value = targetUid; document.getElementById('report-message-key').value = messageKey || ''; document.getElementById('report-reason-input').value = ''; document.getElementById('report-modal').classList.add('active'); }
+    async function submitReport() { const targetUid = document.getElementById('report-target-uid').value; const targetName = document.getElementById('report-target-name').textContent; const messageKey = document.getElementById('report-message-key').value; const reason = document.getElementById('report-reason-input').value.trim(); if (!reason) return alert('يرجى كتابة سبب البلاغ'); if (reason.length < 3) return alert('السبب قصير جداً'); const reportData = { reporterId: myFP, reporterName: myName, reporterAvatar: myAvatar, targetId: targetUid, targetName: targetName, reason: reason, messageKey: messageKey || null, status: 'pending', actionTaken: null, ownerComment: null, createdAt: Date.now(), resolvedAt: null }; try { const ref = db.ref('reports').push(); await ref.set(reportData); const owners = Object.keys(allUsersData).filter(k => allUsersData[k].role === 'owner'); owners.forEach(ownerId => { db.ref('notifications/' + ownerId).push({ from: myName, fromAvatar: myAvatar, type: 'new_report', reportId: ref.key, targetName: targetName, time: Date.now(), seen: false }); }); document.getElementById('report-modal').classList.remove('active'); alert('✅ تم إرسال البلاغ.'); } catch (e) { alert('❌ حدث خطأ: ' + e.message); } }
+    function listenReports() { if (myRole !== 'owner') return; db.ref('reports').on('value', snap => { reportsCache = {}; if (snap.exists()) { snap.forEach(child => { const val = child.val(); val.key = child.key; reportsCache[child.key] = val; }); } renderReports(); updateReportsBadge(); }); }
+    function toggleReportsModal() { const modal = document.getElementById('reports-modal'); modal.classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); if (modal.classList.contains('active')) { renderReports(); } }
+    function renderReports() { const list = document.getElementById('reports-list'); const filter = currentReportFilter; let filtered = Object.values(reportsCache); if (filter !== 'all') { filtered = filtered.filter(r => r.status === filter); } filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); if (filtered.length === 0) { list.innerHTML = '<div style="text-align:center;color:#999;padding:20px 0;font-size:14px;">لا توجد بلاغات</div>'; return; } list.innerHTML = ''; filtered.forEach(r => { const card = document.createElement('div'); card.className = 'report-card'; const isPending = r.status === 'pending'; const statusText = { pending: '⏳ معلق', resolved: '✅ محلول', rejected: '❌ مرفوض' } [r.status] || r.status; let actionsHtml = ''; if (isPending && myRole === 'owner') { actionsHtml = `<div class="report-actions"><button class="action-btn-sm action-ban" onclick="openResolveModal('${r.key}','ban')">🚫 حضر</button><button class="action-btn-sm action-mute" onclick="openResolveModal('${r.key}','mute')">🔇 كتم</button><button class="action-btn-sm action-kick" onclick="openResolveModal('${r.key}','kick')">👢 طرد</button><button class="action-btn-sm action-ignore" onclick="openResolveModal('${r.key}','ignore')">👁️ تجاهل</button><button class="action-btn-sm action-none" onclick="openResolveModal('${r.key}','none')">❌ رفض</button></div>`; } else if (!isPending) { actionsHtml = `<div class="report-actions"><span class="action-btn-sm action-resolved">${r.actionTaken ? '⚡ '+r.actionTaken : '✅ تم الحل'}</span></div>`; } let deleteBtn = ''; if (myRole === 'owner') { deleteBtn = `<button class="action-btn-sm action-delete" onclick="deleteReport('${r.key}')">🗑️ حذف</button>`; } const msgPreview = r.messageKey && messagesCache[r.messageKey] ? messagesCache[r.messageKey].text || '[وسائط]' : 'لا توجد رسالة مرفقة'; card.innerHTML = `<div class="report-header"><span class="reporter">👤 ${escapeHtml(r.reporterName)}</span><span>→</span><span class="target">🎯 ${escapeHtml(r.targetName)}</span><span class="report-status status-${r.status}">${statusText}</span></div><div class="report-reason">📝 ${escapeHtml(r.reason)}</div><div class="report-msg">💬 ${escapeHtml(msgPreview)}</div>${r.ownerComment ? `<div class="report-comment"><strong>👑 المالك:</strong> ${escapeHtml(r.ownerComment)}</div>` : ''}<div style="font-size:10px;color:#999;margin-top:4px;">🕒 ${formatDate(r.createdAt)}</div><div class="report-actions">${actionsHtml}${deleteBtn}</div>`; list.appendChild(card); }); document.getElementById('reports-count').textContent = `(${filtered.length})`; }
+    function deleteReport(reportId) { if (myRole !== 'owner') return alert('⛔ فقط المالك!'); if (!confirm('حذف هذا البلاغ نهائياً؟')) return; db.ref('reports/' + reportId).remove().then(() => { alert('✅ تم حذف البلاغ'); }).catch(err => alert('❌ خطأ: ' + err.message)); }
+    function filterReports(filter, btn) { currentReportFilter = filter; document.querySelectorAll('.filter-tabs button').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderReports(); }
+    function updateReportsBadge() { const pending = Object.values(reportsCache).filter(r => r.status === 'pending').length; const badge = document.getElementById('reports-badge'); if (pending > 0) { badge.textContent = pending; badge.classList.add('active'); } else { badge.classList.remove('active'); } }
+    function openResolveModal(reportId, action) { if (myRole !== 'owner') return alert('⛔ فقط المالك'); const report = reportsCache[reportId]; if (!report) return alert('البلاغ غير موجود'); if (report.status !== 'pending') return alert('تم حل هذا البلاغ مسبقاً'); resolveTargetReportId = reportId; document.getElementById('resolve-target-name').textContent = report.targetName; document.getElementById('resolve-comment-input').value = ''; document.getElementById('resolve-modal').dataset.action = action; document.getElementById('resolve-modal').classList.add('active'); }
+    async function resolveReport(action) { const reportId = resolveTargetReportId; if (!reportId) return; const comment = document.getElementById('resolve-comment-input').value.trim(); const report = reportsCache[reportId]; if (!report) return alert('البلاغ غير موجود'); const updates = { status: action === 'none' ? 'rejected' : 'resolved', actionTaken: action, ownerComment: comment || null, resolvedAt: Date.now() }; try { await db.ref('reports/' + reportId).update(updates); if (action !== 'none') { const targetUid = report.targetId; if (action === 'ban') { await db.ref('bans/' + targetUid).set(true); if (report.targetName) await db.ref('banned_names/' + report.targetName.toLowerCase()).set(true); } else if (action === 'mute') { const et = Date.now() + 3600000; const data = { endTime: et, by: myName, at: Date.now() }; await db.ref('mutes/' + targetUid).set(data); if (report.targetName) await db.ref('muted_names/' + report.targetName.toLowerCase()).set(data); } else if (action === 'kick') { const et = Date.now() + 3600000; await db.ref('ignores/' + targetUid).set({ endTime: et, by: myName, at: Date.now() }); } else if (action === 'ignore') { await db.ref('ignores/' + targetUid).set({ endTime: 9999999999999, by: myName, at: Date.now() }); } if (report.reporterId) { db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_resolved', reportId: reportId, targetName: report.targetName, action: action, comment: comment || '', time: Date.now(), seen: false }); } } else { if (report.reporterId) { db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_rejected', reportId: reportId, targetName: report.targetName, comment: comment || 'تم رفض البلاغ', time: Date.now(), seen: false }); } } document.getElementById('resolve-modal').classList.remove('active'); alert('✅ تم حل البلاغ بنجاح'); renderReports(); updateReportsBadge(); } catch (e) { alert('❌ خطأ: ' + e.message); } }
+
+    let colorTargetUid = null, selectedGlow = 'none';
+    function openColorControl(uid) { if (!isOwner()) return alert("⛔ فقط المالك!"); colorTargetUid = uid; const u = allUsersData[uid] || {}, n = u.name || 'مجهول', av = u.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png", r = u.role || 'user'; document.getElementById('color-target-avatar').src = av; document.getElementById('color-target-name').textContent = n; document.getElementById('color-target-role').textContent = 'رتبة: ' + r; const cc = getColor(uid), cg = getGlow(uid); selectedGlow = cg; document.getElementById('color-name-picker').value = cc.name || '#333333'; const g = document.getElementById('color-grid'); g.innerHTML = ''; COLORS.forEach((c, i) => { const d = document.createElement('div'); d.className = 'color-option'; d.style.background = c.bg; if (cc && cc.bg === c.bg) d.classList.add('selected'); d.innerHTML = '<span class="check">✓</span><span class="color-label">' + (i + 1) + '</span>'; d.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); d.classList.add('selected'); updatePreview(); }; g.appendChild(d); }); document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === cg); }); document.getElementById('color-name-picker').oninput = updatePreview; updatePreview(); document.getElementById('color-control-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); }
+    function selectGlow(g) { selectedGlow = g; document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === g); }); updatePreview(); }
+    function updatePreview() { const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; let bg = 'linear-gradient(135deg, #e0e0e0, #bdbdbd)', tc = '#333'; if (s) { const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx >= 0 && idx < COLORS.length) { const c = COLORS[idx]; bg = c.bg; tc = c.text; } } const pb = document.getElementById('preview-bubble'), pn = document.getElementById('preview-name'), pg = document.getElementById('preview-glow-label'); pb.style.background = bg; pb.style.color = tc; pb.textContent = '📝 نص'; pn.style.color = nc; pn.textContent = document.getElementById('color-target-name').textContent; pn.className = 'preview-name'; if (selectedGlow !== 'none') pn.classList.add('glow', selectedGlow); const gn = { none: '✨ بدون', glow: '✨ توهج', 'glow-fast': '⚡ سريع', 'glow-slow': '🌊 بطيء', 'glow-rainbow': '🌈 قوس قزح', 'glow-neon': '💡 نيون', 'glow-fire': '🔥 نار', 'owner-glow': '👑 ملكي' }; pg.textContent = gn[selectedGlow] || '✨ بدون'; }
+    function applyUserColor() { if (!colorTargetUid) return; const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; if (!s) { alert("اختر لون!"); return; } const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx < 0 || idx >= COLORS.length) return; const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc }; saveUserColor(colorTargetUid, cd, selectedGlow); closeColorControl(); alert("✅ تم التغيير!"); }
+    function resetUserColorHandler() { if (!colorTargetUid) return; if (confirm("إعادة تعيين؟")) { resetUserColor(colorTargetUid); closeColorControl(); alert("✅ تم!"); } }
+    function closeColorControl() { document.getElementById('color-control-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); colorTargetUid = null; }
+    async function loadColorSettings() { const s = await colorSettingsRef.once('value'); if (s.exists()) { const d = s.val(); Object.keys(d).forEach(k => { if (d[k]) userColors[k] = d[k]; }); } const g = await glowSettingsRef.once('value'); if (g.exists()) { const d = g.val(); Object.keys(d).forEach(k => { if (d[k]) userGlow[k] = d[k]; }); } renderMessages(); }
+
+    function handleKeyboard() {
+        const cm = document.getElementById('chat-messages');
+        if (window.ResizeObserver) { const ro = new ResizeObserver(() => { const hh = document.querySelector('header')?.offsetHeight || 0, fh = document.getElementById('chat-form')?.offsetHeight || 0, nh = document.querySelector('.bottom-nav')?.offsetHeight || 0, bh = document.getElementById('mute-banner')?.offsetHeight || 0, mb = document.getElementById('maintenance-badge')?.offsetHeight || 0, ah = window.innerHeight - hh - fh - nh - bh - mb; if (cm) cm.style.minHeight = Math.max(ah, 80) + 'px'; }); ro.observe(document.body); }
+        window.addEventListener('resize', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 80); });
+        document.getElementById('message-input')?.addEventListener('focus', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 200); });
+    }
+
+    init();
+    handleKeyboard();
+</script>
+
+</body>
+</html>
