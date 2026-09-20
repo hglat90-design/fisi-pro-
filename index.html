@@ -42,6 +42,7 @@
         #reports-btn .notif-badge, #dm-btn .notif-badge { background: #ff3b30; }
         #dm-btn { display: none; }
         #fcm-btn { display: none; }
+        #sound-btn { display: inline-block; }
         #maintenance-badge { display: none; background: linear-gradient(135deg, #f9a825, #f57c00); color: #fff; padding: 5px 10px; text-align: center; font-size: 11px; font-weight: 700; flex-shrink: 0; font-family: var(--font-main); }
         #maintenance-badge.tester { background: linear-gradient(135deg, #9c27b0, #6a1b9a); }
         #chat-messages { flex: 1; overflow-y: auto; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; background: #efe7dd; background-image: url("https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png"); background-blend-mode: overlay; position: relative; min-height: 0; height: 100%; -webkit-overflow-scrolling: touch; }
@@ -351,6 +352,7 @@
         .inapp-notif.chat { border-right-color: #008069; }
         .inapp-notif.status { border-right-color: #f9a825; }
         .inapp-notif.seen { border-right-color: #2196f3; }
+        .inapp-notif.report { border-right-color: #e74c3c; }
         .inapp-notif::after {
             content: '';
             position: absolute;
@@ -365,6 +367,7 @@
         .inapp-notif.chat::after { color: #008069; }
         .inapp-notif.status::after { color: #f9a825; }
         .inapp-notif.seen::after { color: #2196f3; }
+        .inapp-notif.report::after { color: #e74c3c; }
         .inapp-notif img {
             width: 42px;
             height: 42px;
@@ -398,6 +401,12 @@
         @keyframes inappSlideDown { from { transform: translateY(-100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes inappProgress { from { width: 100%; } to { width: 0%; } }
 
+        .sound-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
+        .sound-option { padding: 8px 6px; border: 2px solid #eee; border-radius: 8px; background: #fff; cursor: pointer; font-size: 11px; font-weight: 600; font-family: var(--font-main); transition: all .2s; text-align: center; }
+        .sound-option:active { transform: scale(.95); }
+        .sound-option.selected { border-color: var(--primary); background: #e8f5e9; color: var(--primary); }
+        .sound-option .s-icon { display: block; font-size: 16px; margin-bottom: 2px; }
+
         @media(max-width:480px) {
             .bubble { font-size: 13px; padding: 5px 8px; }
             .sender-name { font-size: 11px; }
@@ -421,6 +430,7 @@
             .color-grid { grid-template-columns: repeat(4, 1fr); }
             .color-control-box { padding: 12px; }
             .glow-options { grid-template-columns: repeat(3, 1fr); }
+            .sound-picker { grid-template-columns: repeat(2, 1fr); }
         }
         @supports(height:100dvh) { .app-container { height: 100dvh; max-height: 100dvh; } }
         #chat-messages::-webkit-scrollbar, #dm-chat-messages::-webkit-scrollbar { width: 3px; }
@@ -512,6 +522,7 @@
             <button class="icon-btn" id="dm-btn" onclick="openDMList()" title="الرسائل الخاصة" style="display:none;">
                 💌 <span class="notif-badge" id="dm-badge">0</span>
             </button>
+            <button class="icon-btn" id="sound-btn" onclick="toggleSoundQuick()" title="الأصوات">🔊</button>
             <button class="icon-btn" id="fcm-btn" onclick="requestNotificationPermission()" title="تفعيل الإشعارات">📲</button>
             <button class="icon-btn" onclick="openNotifications()" id="notif-btn">🔔<span class="notif-badge" id="notif-badge">0</span></button>
             <button class="icon-btn" onclick="openProfile()">👤</button>
@@ -795,7 +806,7 @@
                 <button id="open-maintenance-btn" class="btn-maintenance" onclick="openMaintenanceSettings()">🔧 إعدادات الصيانة</button>
                 <button id="open-advanced-btn" class="btn-advanced" onclick="openAdvancedSettings()">⚙️ إعدادات متقدمة (الخط)</button>
             </div>
-            <button class="btn-notif-settings" onclick="openNotificationSettings()">🔔 إعدادات الإشعارات</button>
+            <button class="btn-notif-settings" onclick="openNotificationSettings()">🔔 إعدادات الإشعارات والأصوات</button>
             <div style="text-align:center;"><span id="prof-notif-status" class="notif-status-badge disabled">غير مفعلة</span></div>
             <button onclick="saveProfile()" class="login-btn" style="padding:8px;font-size:14px;margin-top:10px;">💾 حفظ</button>
             <button class="btn-delete-account" onclick="deleteMyAccount()">🗑️ حذف حسابي نهائياً</button>
@@ -830,7 +841,21 @@
                     <label class="toggle-switch"><input type="checkbox" id="notif-seen-toggle" checked><span class="toggle-slider"></span></label>
                 </div>
             </div>
-            <button onclick="saveNotificationPrefs()" class="login-btn" style="padding:10px;font-size:14px;background:var(--primary);">💾 حفظ التفضيلات</button>
+            <div style="text-align:right;margin-top:12px;padding-top:12px;border-top:1px solid #eee;">
+                <div style="font-size:13px;font-weight:700;color:#555;padding:8px 0 4px;display:flex;justify-content:space-between;align-items:center;">
+                    <span>🔊 الأصوات</span>
+                    <label class="toggle-switch"><input type="checkbox" id="sound-toggle" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="notif-settings-row">
+                    <div class="notif-label"><span class="notif-icon">📤</span><div><div>صوت الإرسال</div><div class="notif-desc">صوت عند إرسال رسالة</div></div></div>
+                    <label class="toggle-switch"><input type="checkbox" id="sound-send-toggle" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="notif-settings-row">
+                    <div class="notif-label"><span class="notif-icon">📥</span><div><div>صوت الاستقبال</div><div class="notif-desc">صوت عند استقبال رسالة</div></div></div>
+                    <label class="toggle-switch"><input type="checkbox" id="sound-receive-toggle" checked><span class="toggle-slider"></span></label>
+                </div>
+            </div>
+            <button onclick="saveNotificationPrefs()" class="login-btn" style="padding:10px;font-size:14px;background:var(--primary);margin-top:12px;">💾 حفظ التفضيلات</button>
             <button onclick="document.getElementById('notification-settings-modal').classList.remove('active')" style="margin-top:8px;background:0;border:0;color:#777;cursor:pointer;font-size:13px;font-family:var(--font-main);">إغلاق</button>
         </div>
     </div>
@@ -952,7 +977,7 @@
     const DEFAULT_ICON = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
 
     // ============================================================
-    //  🕵️ كشف بيئة التشغيل (WebView / APK / Browser)
+    //  🕵️ كشف بيئة التشغيل
     // ============================================================
     function detectEnvironment() {
         const ua = (navigator.userAgent || '').toLowerCase();
@@ -1027,9 +1052,10 @@
     let fcmToken = null;
     let notificationMode = ENV.mode;
 
-    // ====== تفضيلات الإشعارات ======
+    // ====== تفضيلات الإشعارات والأصوات ======
     let currentNotificationPrefs = {
-        dm: true, chat: true, status: true, seen: true
+        dm: true, chat: true, status: true, seen: true,
+        sound: true, soundSend: true, soundReceive: true
     };
     let notifPrefsListener = null;
 
@@ -1096,38 +1122,110 @@
     function getYouTubeThumbnail(v) { return 'https://img.youtube.com/vi/' + v + '/hqdefault.jpg' }
 
     // ============================================================
-    //  🔊 صوت الإشعار + اهتزاز
+    //  🔊 نظام الأصوات المتعدد
     // ============================================================
     let audioContext = null;
-    function playNotificationSound() {
+    let audioUnlocked = false;
+
+    function unlockAudio() {
         try {
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
             if (audioContext.state === 'suspended') audioContext.resume();
-            const now = audioContext.currentTime;
-            const osc1 = audioContext.createOscillator();
-            const gain1 = audioContext.createGain();
-            osc1.connect(gain1); gain1.connect(audioContext.destination);
-            osc1.type = 'sine';
-            osc1.frequency.setValueAtTime(1046, now);
-            gain1.gain.setValueAtTime(0.001, now);
-            gain1.gain.exponentialRampToValueAtTime(0.3, now + 0.02);
-            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-            osc1.start(now); osc1.stop(now + 0.3);
-            const osc2 = audioContext.createOscillator();
-            const gain2 = audioContext.createGain();
-            osc2.connect(gain2); gain2.connect(audioContext.destination);
-            osc2.type = 'sine';
-            osc2.frequency.setValueAtTime(784, now + 0.15);
-            gain2.gain.setValueAtTime(0.001, now + 0.15);
-            gain2.gain.exponentialRampToValueAtTime(0.3, now + 0.17);
-            gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-            osc2.start(now + 0.15); osc2.stop(now + 0.45);
-        } catch (e) { /* صامت */ }
+            if (!audioUnlocked) {
+                const buffer = audioContext.createBuffer(1, 1, 22050);
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+                source.start(0);
+                audioUnlocked = true;
+            }
+        } catch (e) {}
+    }
+
+    // تفعيل الصوت عند أول تفاعل من المستخدم
+    ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
+        document.addEventListener(evt, unlockAudio, { once: true, passive: true });
+    });
+
+    // تشغيل نغمة مخصصة
+    function playTone(freq, duration, type, delay, volume) {
+        try {
+            if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioContext.state === 'suspended') audioContext.resume();
+            const now = audioContext.currentTime + (delay || 0);
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.type = type || 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.exponentialRampToValueAtTime(volume || 0.3, now + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + (duration || 0.2));
+            osc.start(now);
+            osc.stop(now + (duration || 0.2) + 0.05);
+        } catch (e) {}
+    }
+
+    // 🔊 صوت إرسال رسالة — نقرة سريعة حادة
+    function playSendSound() {
+        if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundSend) return;
+        playTone(1318, 0.08, 'sine', 0, 0.25);       // E6
+        playTone(1568, 0.06, 'sine', 0.04, 0.20);    // G6
+    }
+
+    // 📥 صوت استقبال رسالة عامة — نغمة ناعمة
+    function playReceiveChatSound() {
+        if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundReceive) return;
+        playTone(880, 0.12, 'sine', 0, 0.28);        // A5
+        playTone(1174, 0.14, 'sine', 0.10, 0.28);    // D6
+    }
+
+    // 💌 صوت رسالة خاصة — نغمة مميزة
+    function playReceiveDMSound() {
+        if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundReceive) return;
+        playTone(784, 0.10, 'sine', 0, 0.30);        // G5
+        playTone(988, 0.10, 'sine', 0.09, 0.30);     // B5
+        playTone(1318, 0.18, 'sine', 0.18, 0.32);    // E6
+    }
+
+    // 📸 صوت حالة جديدة — تنبيه
+    function playStatusSound() {
+        if (!currentNotificationPrefs.sound) return;
+        playTone(1046, 0.10, 'triangle', 0, 0.28);   // C6
+        playTone(1318, 0.14, 'triangle', 0.10, 0.28);
+    }
+
+    // 👁️ صوت مشاهدة الحالة — نغمة خفيفة
+    function playSeenSound() {
+        if (!currentNotificationPrefs.sound) return;
+        playTone(659, 0.10, 'sine', 0, 0.22);        // E5
+        playTone(880, 0.14, 'sine', 0.08, 0.22);     // A5
+    }
+
+    // 🔔 صوت إشعار عام
+    function playNotificationSound() {
+        if (!currentNotificationPrefs.sound) return;
+        playTone(1046, 0.12, 'sine', 0, 0.30);
+        playTone(784, 0.15, 'sine', 0.15, 0.30);
     }
 
     function vibrateDevice() {
         if (navigator.vibrate) {
             try { navigator.vibrate([200, 100, 200]); } catch (e) {}
+        }
+    }
+
+    // دالة موحدة لتشغيل الصوت حسب النوع
+    function playSoundForType(type) {
+        switch (type) {
+            case 'dm': playReceiveDMSound(); break;
+            case 'chat': playReceiveChatSound(); break;
+            case 'status':
+            case 'new_status': playStatusSound(); break;
+            case 'status_seen': playSeenSound(); break;
+            case 'report': playStatusSound(); break;
+            default: playNotificationSound();
         }
     }
 
@@ -1143,6 +1241,8 @@
         const type = opts.type || 'chat';
         const emoji = opts.emoji || '🔔';
         const onClick = opts.onClick;
+        const skipSound = opts.skipSound === true;
+
         const notif = document.createElement('div');
         notif.className = 'inapp-notif ' + type;
         const img = document.createElement('img');
@@ -1178,8 +1278,10 @@
             notif.remove();
         };
         container.appendChild(notif);
-        playNotificationSound();
-        vibrateDevice();
+        if (!skipSound) {
+            playSoundForType(type);
+            vibrateDevice();
+        }
         setTimeout(() => {
             if (notif.parentNode) {
                 notif.style.animation = 'fadeIn .3s reverse';
@@ -1189,7 +1291,7 @@
     }
 
     // ============================================================
-    //  🎯 إظهار إشعار موحد
+    //  🎯 notifyUser موحدة
     // ============================================================
     function notifyUser(title, body, icon, type, onClick) {
         const prefMap = { dm: 'dm', chat: 'chat', status: 'status', status_seen: 'seen', new_status: 'status', report: 'chat', media: 'chat' };
@@ -1209,10 +1311,11 @@
             try {
                 const n = new Notification(title, {
                     body: body, icon: icon || DEFAULT_ICON, badge: DEFAULT_ICON,
-                    dir: 'rtl', lang: 'ar', tag: 'vissypro-' + type + '-' + Date.now()
+                    dir: 'rtl', lang: 'ar', tag: 'vissypro-' + type + '-' + Date.now(),
+                    silent: false
                 });
                 if (typeof onClick === 'function') n.onclick = () => { window.focus(); n.close(); onClick(); };
-            } catch (e) { /* صامت */ }
+            } catch (e) {}
         }
     }
 
@@ -1224,10 +1327,12 @@
     }
 
     // ============================================================
-    //  🔔 نظام In-App Notifications
+    //  🔔 مستمعو الإشعارات داخل التطبيق
     // ============================================================
     function startInAppNotificationListeners() {
         console.log('🚀 بدء مستمعي الإشعارات داخل التطبيق');
+
+        // 1️⃣ رسائل خاصة
         if (inAppNotifListeners.dms) db.ref('dm_inbox/' + myFP).off('child_changed', inAppNotifListeners.dms);
         inAppNotifListeners.dms = db.ref('dm_inbox/' + myFP).on('child_changed', snap => {
             const uid = snap.key;
@@ -1243,6 +1348,8 @@
                 () => openDMChat(uid)
             );
         });
+
+        // 2️⃣ رسائل عامة
         if (inAppNotifListeners.messages) db.ref('messages').off('child_added', inAppNotifListeners.messages);
         inAppNotifListeners.messages = db.ref('messages').limitToLast(1).on('child_added', snap => {
             const m = snap.val();
@@ -1261,6 +1368,8 @@
             lastSeenTimestamps.messages = t;
             localStorage.setItem('lst_msg', t);
         });
+
+        // 3️⃣ حالات جديدة
         if (inAppNotifListeners.statuses) db.ref('statuses').off('child_added', inAppNotifListeners.statuses);
         inAppNotifListeners.statuses = db.ref('statuses').limitToLast(1).on('child_added', snap => {
             const s = snap.val();
@@ -1274,6 +1383,8 @@
             lastSeenTimestamps.statuses = t;
             localStorage.setItem('lst_st', t);
         });
+
+        // 4️⃣ إشعارات المنظومة
         if (inAppNotifListeners.notifications) db.ref('notifications/' + myFP).off('child_added', inAppNotifListeners.notifications);
         inAppNotifListeners.notifications = db.ref('notifications/' + myFP).limitToLast(1).on('child_added', snap => {
             const n = snap.val();
@@ -1290,15 +1401,8 @@
             lastSeenTimestamps.notifications = t;
             localStorage.setItem('lst_nt', t);
         });
-        console.log('✅ مستمعو الإشعارات داخل التطبيق جاهزون');
-    }
 
-    function stopInAppNotificationListeners() {
-        if (inAppNotifListeners.dms) db.ref('dm_inbox/' + myFP).off('child_changed', inAppNotifListeners.dms);
-        if (inAppNotifListeners.messages) db.ref('messages').off('child_added', inAppNotifListeners.messages);
-        if (inAppNotifListeners.statuses) db.ref('statuses').off('child_added', inAppNotifListeners.statuses);
-        if (inAppNotifListeners.notifications) db.ref('notifications/' + myFP).off('child_added', inAppNotifListeners.notifications);
-        inAppNotifListeners = { messages: null, dms: null, statuses: null, notifications: null };
+        console.log('✅ مستمعو الإشعارات جاهزون');
     }
 
     // ============================================================
@@ -1377,7 +1481,6 @@
                 else if (typeof v === 'object') Object.values(v).forEach(x => { if (x && String(x).trim()) badWordsList.push(x); });
                 else if (typeof v === 'string') { if (v.trim()) badWordsList.push(v); }
             }
-            console.log('🚫 الكلمات الممنوعة:', badWordsList.length);
         });
     }
 
@@ -1399,7 +1502,7 @@
     }
 
     // ============================================================
-    //  🔔 تفضيلات الإشعارات
+    //  🔔 تفضيلات الإشعارات والأصوات
     // ============================================================
     function listenNotificationPrefs() {
         if (notifPrefsListener) db.ref('notification_prefs/' + myFP).off('value', notifPrefsListener);
@@ -1409,16 +1512,26 @@
                 dm: d.dm !== false,
                 chat: d.chat !== false,
                 status: d.status !== false,
-                seen: d.seen !== false
+                seen: d.seen !== false,
+                sound: d.sound !== false,
+                soundSend: d.soundSend !== false,
+                soundReceive: d.soundReceive !== false
             };
             const dmT = document.getElementById('notif-dm-toggle');
             const chatT = document.getElementById('notif-chat-toggle');
             const statusT = document.getElementById('notif-status-toggle');
             const seenT = document.getElementById('notif-seen-toggle');
+            const soundT = document.getElementById('sound-toggle');
+            const soundSendT = document.getElementById('sound-send-toggle');
+            const soundRecT = document.getElementById('sound-receive-toggle');
             if (dmT) dmT.checked = currentNotificationPrefs.dm;
             if (chatT) chatT.checked = currentNotificationPrefs.chat;
             if (statusT) statusT.checked = currentNotificationPrefs.status;
             if (seenT) seenT.checked = currentNotificationPrefs.seen;
+            if (soundT) soundT.checked = currentNotificationPrefs.sound;
+            if (soundSendT) soundSendT.checked = currentNotificationPrefs.soundSend;
+            if (soundRecT) soundRecT.checked = currentNotificationPrefs.soundReceive;
+            updateSoundButton();
         });
     }
 
@@ -1428,15 +1541,37 @@
             chat: document.getElementById('notif-chat-toggle').checked,
             status: document.getElementById('notif-status-toggle').checked,
             seen: document.getElementById('notif-seen-toggle').checked,
+            sound: document.getElementById('sound-toggle').checked,
+            soundSend: document.getElementById('sound-send-toggle').checked,
+            soundReceive: document.getElementById('sound-receive-toggle').checked,
             updatedAt: Date.now()
         };
         try {
             await db.ref('notification_prefs/' + myFP).set(prefs);
             currentNotificationPrefs = prefs;
-            alert('✅ تم حفظ تفضيلات الإشعارات');
+            alert('✅ تم حفظ التفضيلات');
             document.getElementById('notification-settings-modal').classList.remove('active');
             updateNotifStatusBadge();
+            updateSoundButton();
         } catch (e) { alert('❌ خطأ: ' + e.message); }
+    }
+
+    function updateSoundButton() {
+        const btn = document.getElementById('sound-btn');
+        if (!btn) return;
+        btn.textContent = currentNotificationPrefs.sound ? '🔊' : '🔇';
+        btn.title = currentNotificationPrefs.sound ? 'الصوت مفعل' : 'الصوت معطل';
+    }
+
+    async function toggleSoundQuick() {
+        currentNotificationPrefs.sound = !currentNotificationPrefs.sound;
+        try {
+            await db.ref('notification_prefs/' + myFP + '/sound').set(currentNotificationPrefs.sound);
+            updateSoundButton();
+            if (currentNotificationPrefs.sound) {
+                playTone(1046, 0.15, 'sine', 0, 0.3);
+            }
+        } catch (e) {}
     }
 
     function updateNotifStatusBadge() {
@@ -1504,6 +1639,9 @@
         document.getElementById('notif-chat-toggle').checked = currentNotificationPrefs.chat;
         document.getElementById('notif-status-toggle').checked = currentNotificationPrefs.status;
         document.getElementById('notif-seen-toggle').checked = currentNotificationPrefs.seen;
+        document.getElementById('sound-toggle').checked = currentNotificationPrefs.sound;
+        document.getElementById('sound-send-toggle').checked = currentNotificationPrefs.soundSend;
+        document.getElementById('sound-receive-toggle').checked = currentNotificationPrefs.soundReceive;
         document.getElementById('notification-settings-modal').classList.add('active');
     }
 
@@ -1512,19 +1650,18 @@
     // ============================================================
     async function requestNotificationPermission() {
         if (ENV.isWebView || notificationMode === 'inapp') {
-            alert('📱 الإشعارات داخل التطبيق مفعلة تلقائياً.\nستصلك إشعارات للرسائل الخاصة والعامة والحالات.');
+            alert('📱 الإشعارات داخل التطبيق مفعلة تلقائياً.\nستصلك إشعارات للرسائل والحالات.');
             openNotificationSettings();
             return;
         }
         if (!ENV.hasNotification) {
-            console.log('ℹ️ Notification API غير مدعوم — استخدام الإشعارات داخل التطبيق');
             notificationMode = 'inapp';
             startInAppNotificationListeners();
-            alert('📱 سيتم استخدام إشعارات داخل التطبيق (متصفحك لا يدعم إشعارات النظام)');
+            alert('📱 سيتم استخدام إشعارات داخل التطبيق');
             return;
         }
         if (Notification.permission === 'denied') {
-            alert('🔕 الإشعارات مرفوضة من المتصفح.\n\nChrome: الإعدادات → الخصوصية → إعدادات الموقع → الإشعارات\n\nSafari: الإعدادات → Safari → إشعارات');
+            alert('🔕 الإشعارات مرفوضة من المتصفح.\n\nChrome: الإعدادات → الخصوصية → الإشعارات\nSafari: الإعدادات → Safari → إشعارات');
             return;
         }
         if (Notification.permission === 'granted') {
@@ -1546,27 +1683,24 @@
                 if (document.getElementById('notification-settings-modal').classList.contains('active')) openNotificationSettings();
                 alert('✅ تم تفعيل الإشعارات! ستصلك حتى لو التطبيق مغلق.');
             } else {
-                alert('⚠️ لم يتم تفعيل الإشعارات. يمكنك تفعيلها لاحقاً');
+                alert('⚠️ لم يتم تفعيل الإشعارات.');
             }
         } catch (e) {
-            console.warn('⚠️ فشل طلب الإذن:', e);
             notificationMode = 'inapp';
             startInAppNotificationListeners();
         }
     }
 
     // ============================================================
-    //  🚀 تهيئة FCM
+    //  🚀 FCM
     // ============================================================
     async function initFCM() {
         if (!ENV.hasServiceWorker || !ENV.hasNotification) {
-            console.warn('⚠️ FCM غير مدعوم — التبديل للإشعارات الداخلية');
             notificationMode = 'inapp';
             startInAppNotificationListeners();
             return false;
         }
         if (typeof firebase.messaging !== 'function') {
-            console.warn('⚠️ Firebase Messaging غير محمل');
             notificationMode = 'inapp';
             startInAppNotificationListeners();
             return false;
@@ -1587,7 +1721,6 @@
                 notifyUser(title, body, icon, type, () => { window.focus(); });
             });
             messaging.onTokenRefresh(async () => {
-                console.log('🔄 تحديث FCM Token');
                 fcmToken = null;
                 await saveFCMToken();
             });
@@ -1598,7 +1731,6 @@
             updateNotifStatusBadge();
             return true;
         } catch (e) {
-            console.warn('⚠️ خطأ FCM — التبديل للإشعارات الداخلية:', e);
             notificationMode = 'inapp';
             startInAppNotificationListeners();
             return false;
@@ -1612,7 +1744,6 @@
             if (token && token !== fcmToken) {
                 fcmToken = token;
                 localStorage.setItem('fcm_token', token);
-                console.log('🎫 FCM Token:', token.substring(0, 30) + '...');
             }
             if (fcmToken && myFP && myName) {
                 await db.ref('fcm_tokens/' + myFP).update({
@@ -1628,7 +1759,6 @@
             updateNotifStatusBadge();
             return fcmToken;
         } catch (e) {
-            console.warn('⚠️ خطأ في التوكن:', e);
             return null;
         }
     }
@@ -1682,7 +1812,7 @@
     }
 
     // ============================================================
-    //  نظام الخط المخصص
+    //  الخط المخصص
     // ============================================================
     function applyCustomFont(url, name) {
         let styleTag = document.getElementById('custom-app-font-style');
@@ -1738,11 +1868,10 @@
     }
 
     function handleFontFile(input) {
-        if (myRole !== 'owner') { alert('⛔ فقط المالك!'); input.value = ''; return; }
+        if (myRole !== 'owner') { alert('⛔'); input.value = ''; return; }
         if (!input.files || !input.files[0]) return;
         const f = input.files[0];
-        const validExt = /\.(ttf|otf|woff|woff2)$/i.test(f.name);
-        if (!validExt) { alert('❌ صيغة غير مدعومة'); input.value = ''; return; }
+        if (!/\.(ttf|otf|woff|woff2)$/i.test(f.name)) { alert('❌ صيغة غير مدعومة'); input.value = ''; return; }
         if (f.size > 10 * 1024 * 1024) { alert('❌ حجم كبير'); input.value = ''; return; }
         pendingFontFile = f;
         document.getElementById('selected-font-info').innerHTML = '📎 <strong>' + escapeHtml(f.name) + '</strong> (' + (f.size / 1024).toFixed(1) + ' KB)';
@@ -1762,7 +1891,7 @@
     }
 
     async function uploadAndApplyFont() {
-        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (myRole !== 'owner') return alert('⛔');
         if (!pendingFontFile) return alert('اختر ملف');
         const btn = document.getElementById('upload-font-btn');
         btn.disabled = true; btn.textContent = '⏳ جاري الرفع...';
@@ -1779,9 +1908,9 @@
     }
 
     async function resetFontToDefault() {
-        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (myRole !== 'owner') return alert('⛔');
         if (!confirm('إعادة الخط الافتراضي؟')) return;
-        try { await db.ref('app_settings/font_url').remove(); alert('✅ تم'); }
+        try { await db.ref('app_settings/font_url').remove(); alert('✅'); }
         catch (e) { alert('❌ ' + e.message); }
     }
 
@@ -1817,6 +1946,7 @@
     document.getElementById('login-btn').onclick = async () => {
         const n = document.getElementById('username-input').value.trim();
         if (n.length < 2) return alert("الاسم قصير!");
+        unlockAudio();
         const s = await checkSecurity(myFP, n);
         if (s.banned) { isBanned = true; document.getElementById('login-screen').style.display = 'none'; document.getElementById('ban-screen').style.display = 'flex'; return; }
         myName = n;
@@ -1864,12 +1994,28 @@
         listenMyDMPermission();
         listenDMInbox();
         listenNotificationPrefs();
+
+        // معالجة النقر على إشعار من Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'NOTIFICATION_CLICKED') {
+                    const d = event.data.data || {};
+                    if (d.type === 'dm' && d.fromUid) {
+                        setTimeout(() => openDMChat(d.fromUid), 800);
+                    } else if (d.type === 'chat') {
+                        setTimeout(() => switchTab('chat'), 500);
+                    } else if (d.type === 'new_status') {
+                        setTimeout(() => switchTab('status'), 500);
+                    }
+                }
+            });
+        }
+
         setTimeout(() => {
             startInAppNotificationListeners();
             if (ENV.hasServiceWorker && ENV.hasNotification && !ENV.isWebView) {
                 initFCM().then(() => autoRequestNotificationPermission());
             } else {
-                console.log('📱 وضع APK/WebView — الإشعارات الداخلية مفعلة');
                 updateFCMButton();
                 updateNotifStatusBadge();
             }
@@ -1881,7 +2027,7 @@
         maintenanceListener = db.ref('maintenance').on('value', snap => {
             const d = snap.val() || {};
             maintenanceData.status = d.status === true;
-            maintenanceData.message = d.message || 'التطبيق تحت الصيانة المؤقتة، يرجى المحاولة لاحقاً.';
+            maintenanceData.message = d.message || 'التطبيق تحت الصيانة المؤقتة.';
             maintenanceData.testers = d.testers || {};
             isTester = maintenanceData.testers[myFP] === true;
             document.getElementById('maintenance-text').textContent = maintenanceData.message;
@@ -1897,12 +2043,12 @@
     function updateMaintenanceBadge() {
         const badge = document.getElementById('maintenance-badge');
         if (!badge) return;
-        if (maintenanceData.status && myRole === 'owner') { badge.textContent = '🔧 التطبيق في صيانة (مالك)'; badge.style.display = 'block'; badge.classList.remove('tester'); }
+        if (maintenanceData.status && myRole === 'owner') { badge.textContent = '🔧 صيانة (مالك)'; badge.style.display = 'block'; badge.classList.remove('tester'); }
         else if (maintenanceData.status && isTester) { badge.textContent = '🧪 وضع اختبار'; badge.style.display = 'block'; badge.classList.add('tester'); }
         else badge.style.display = 'none';
     }
     function openMaintenanceSettings() {
-        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (myRole !== 'owner') return alert('⛔');
         document.getElementById('maintenance-msg-input').value = maintenanceData.message || '';
         pendingTesters = Object.assign({}, maintenanceData.testers);
         renderTestersList();
@@ -1939,14 +2085,14 @@
         });
     }
     function toggleMaintenanceStatus() {
-        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (myRole !== 'owner') return alert('⛔');
         if (!maintenanceData.status) { if (!confirm('⚠️ تفعيل الصيانة؟')) return; }
         else { if (!confirm('إيقاف الصيانة؟')) return; }
         maintenanceData.status = !maintenanceData.status;
         updateMaintenanceToggleBtn();
     }
     async function saveMaintenanceSettings() {
-        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (myRole !== 'owner') return alert('⛔');
         const msg = document.getElementById('maintenance-msg-input').value.trim() || 'التطبيق تحت الصيانة المؤقتة.';
         const testers = {};
         document.querySelectorAll('#testers-list input[type="checkbox"]').forEach(cb => { if (cb.checked) testers[cb.dataset.uid] = true; });
@@ -1954,7 +2100,7 @@
             await db.ref('maintenance').update({ status: maintenanceData.status, message: msg, testers: testers, by: myName, at: Date.now() });
             document.getElementById('maintenance-modal').classList.remove('active');
             document.getElementById('modal-overlay').classList.remove('show');
-            alert('✅ تم الحفظ');
+            alert('✅');
         } catch (e) { alert('❌ ' + e.message); }
     }
     function listenMyDMPermission() {
@@ -1973,17 +2119,17 @@
         else { btn.textContent = '💌 فتح الخاص لنفسي'; btn.classList.remove('on'); }
     }
     async function toggleUserDM(uid, name) {
-        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (myRole !== 'owner') return alert('⛔');
         const snap = await db.ref('dm_permissions/' + uid).once('value');
         const isEnabled = snap.val() === true;
-        if (isEnabled) { if (!confirm('إغلاق الخاص لـ "' + name + '"؟')) return; await db.ref('dm_permissions/' + uid).remove(); alert('🔒 تم'); }
-        else { await db.ref('dm_permissions/' + uid).set(true); alert('🔓 تم'); }
+        if (isEnabled) { if (!confirm('إغلاق الخاص لـ "' + name + '"؟')) return; await db.ref('dm_permissions/' + uid).remove(); alert('🔒'); }
+        else { await db.ref('dm_permissions/' + uid).set(true); alert('🔓'); }
         if (allUsersData[uid]) updateUserControls(uid, allUsersData[uid]);
         if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
         if (uid === myFP) { updateUI(); updateOwnerDMBtn(); }
     }
     async function toggleOwnerSelfDM() {
-        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (myRole !== 'owner') return alert('⛔');
         const snap = await db.ref('dm_permissions/' + myFP).once('value');
         const isEnabled = snap.val() === true;
         if (isEnabled) { if (!confirm('إغلاق خاصك؟')) return; await db.ref('dm_permissions/' + myFP).remove(); }
@@ -2007,7 +2153,7 @@
         else b.classList.remove('active');
     }
     function openDMList() {
-        if (!myDMEnabled) return alert('🔒 الخاص غير مفعل لك');
+        if (!myDMEnabled) return alert('🔒');
         document.getElementById('dm-list-modal').classList.add('active');
         document.getElementById('modal-overlay').classList.add('show');
         renderDMList();
@@ -2058,7 +2204,7 @@
             card.innerHTML = `<img src="${avatar}"><div class="dm-info"><div class="dm-name">${escapeHtml(u.name || 'مجهول')} ${roleBadge}</div><div class="dm-last">${isDMOn ? (lastMsg ? escapeHtml(lastMsg) : '💬 ابدأ') : '🔒 مغلق'}</div></div>${unread > 0 ? `<div class="dm-unread">${unread > 99 ? '99+' : unread}</div>` : ''}${lockIcon}${settingsBtn}`;
             card.onclick = (e) => {
                 if (e.target.closest('.dm-settings-btn')) return;
-                if (!isDMOn) return alert('🔒 مغلق من المالك');
+                if (!isDMOn) return alert('🔒');
                 openDMChat(u.uid);
             };
             l.appendChild(card);
@@ -2071,10 +2217,10 @@
         });
     }
     function openDMChat(uid) {
-        if (!myDMEnabled) return alert('🔒 الخاص غير مفعل لك');
+        if (!myDMEnabled) return alert('🔒');
         const u = allUsersData[uid];
         if (!u) return;
-        if (allDMUsersData[uid] !== true) return alert('🔒 مغلق');
+        if (allDMUsersData[uid] !== true) return alert('🔒');
         closeDMList();
         currentDMChat = { uid, name: u.name || 'مجهول', avatar: u.avatar || DEFAULT_ICON, role: u.role || 'user' };
         document.getElementById('dm-chat-avatar').src = currentDMChat.avatar;
@@ -2129,7 +2275,11 @@
                     if (emptyMsg) emptyMsg.remove();
                     renderDMMessage(m, true);
                     box.scrollTop = box.scrollHeight;
-                    if (m.to === myFP) db.ref('dm_inbox/' + myFP + '/' + m.from + '/count').set(0);
+                    if (m.to === myFP) {
+                        db.ref('dm_inbox/' + myFP + '/' + m.from + '/count').set(0);
+                        // 🔊 صوت استقبال رسالة خاصة أثناء فتح المحادثة
+                        playReceiveDMSound();
+                    }
                 });
             });
         });
@@ -2146,8 +2296,8 @@
     async function sendDMMessage(e) {
         e.preventDefault();
         if (!currentDMChat) return;
-        if (isMuted) return alert('🔇 أنت مكتوم!');
-        if (allDMUsersData[currentDMChat.uid] !== true) return alert('🔒 مغلق');
+        if (isMuted) return alert('🔇');
+        if (allDMUsersData[currentDMChat.uid] !== true) return alert('🔒');
         const input = document.getElementById('dm-message-input');
         const text = input.value.trim();
         if (!text) return;
@@ -2156,6 +2306,8 @@
         const chatId = getChatId(myFP, toUid);
         const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, text: text, time: firebase.database.ServerValue.TIMESTAMP };
         input.value = '';
+        // 🔊 صوت الإرسال
+        playSendSound();
         try {
             await db.ref('private_chats/' + chatId + '/messages').push(msgData);
             await db.ref('dm_inbox/' + toUid + '/' + myFP).update({ fromName: myName, fromAvatar: myAvatar, lastMessage: text, lastTime: firebase.database.ServerValue.TIMESTAMP, count: firebase.database.ServerValue.increment(1) });
@@ -2188,7 +2340,7 @@
                 updates['dm_inbox/' + myFP + '/' + uid] = { count: 0, lastMessage: '', lastTime: 0 };
             });
             await db.ref().update(updates);
-            alert('✅ تم');
+            alert('✅');
             renderDMList();
         } catch (e) { alert('❌ ' + e.message); }
     }
@@ -2220,12 +2372,12 @@
             if (statusesSnap.exists()) { const updates = {}; statusesSnap.forEach(child => { updates[child.key] = null; }); await db.ref('statuses').update(updates); }
             await db.ref('notifications/' + currentFP).remove();
             localStorage.clear();
-            alert('✅ تم الحذف');
+            alert('✅');
             window.location.reload();
         } catch (e) { alert('❌ ' + e.message); }
     }
     function updateHiddenButton() { const btn = document.getElementById('toggle-hidden-btn'); if (!btn) return; if (isHidden) { btn.textContent = '🙈 أنا مخفي (إظهار)'; btn.style.background = '#4caf50'; } else { btn.textContent = '🙈 إخفاء نفسي'; btn.style.background = '#e91e63'; } }
-    function toggleOwnerHidden() { if (myRole !== 'owner') return alert('⛔ للمالك فقط!'); const n = !isHidden; db.ref('users/' + myFP + '/hidden').set(n).then(() => { isHidden = n; updateHiddenButton(); alert(n ? '✅ مخفي' : '✅ ظاهر'); }); }
+    function toggleOwnerHidden() { if (myRole !== 'owner') return alert('⛔'); const n = !isHidden; db.ref('users/' + myFP + '/hidden').set(n).then(() => { isHidden = n; updateHiddenButton(); alert(n ? '✅' : '✅'); }); }
 
     function startListeners() {
         loadMessages();
@@ -2396,7 +2548,7 @@
         });
         filterUsers();
     }
-    function deleteMessage(k) { const m = messagesCache[k]; if (!m) return; const tr = allUsersData[m.uid]?.role || m.role; if (!canDeleteMessage(myRole, tr) && m.uid !== myFP) return alert("⛔ لا صلاحية!"); if (confirm("🗑️ حذف؟")) db.ref('messages/' + k).remove().then(() => { delete messagesCache[k]; renderMessages(); }); }
+    function deleteMessage(k) { const m = messagesCache[k]; if (!m) return; const tr = allUsersData[m.uid]?.role || m.role; if (!canDeleteMessage(myRole, tr) && m.uid !== myFP) return alert("⛔"); if (confirm("🗑️ حذف؟")) db.ref('messages/' + k).remove().then(() => { delete messagesCache[k]; renderMessages(); }); }
     function scrollToMessage(k) { const e = document.getElementById('msg-' + k); if (e) { e.scrollIntoView({ behavior: 'smooth', block: 'center' }); e.style.background = 'rgba(255,235,59,0.3)'; setTimeout(() => e.style.background = 'transparent', 1000); } }
     function playYouTube(v, c) { c.innerHTML = '<iframe src="https://www.youtube.com/embed/' + v + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
     function updateUserControls(u, d) {
@@ -2421,9 +2573,9 @@
         });
     }
     async function permanentDeleteUser(uid, name) {
-        if (myRole !== 'owner') return alert('⛔ فقط المالك!');
+        if (myRole !== 'owner') return alert('⛔');
         const tr = allUsersData[uid]?.role || 'user';
-        if (tr === 'owner') return alert('⛔ لا يمكنك حذف المالك!');
+        if (tr === 'owner') return alert('⛔');
         if (!confirm('⚠️ حذف "' + name + '" نهائياً؟')) return;
         try {
             await db.ref('users/' + uid).remove();
@@ -2442,7 +2594,7 @@
             const st = await db.ref('statuses').orderByChild('uid').equalTo(uid).once('value');
             if (st.exists()) { let u = {}; st.forEach(c => { u[c.key] = null; }); await db.ref('statuses').update(u); }
             await db.ref('notifications/' + uid).remove();
-            alert("✅ تم");
+            alert("✅");
         } catch (e) { alert('❌ ' + e.message); }
     }
     function filterUsers() { const t = document.getElementById('user-search').value.toLowerCase(); document.querySelectorAll('.user-card').forEach(c => { const n = c.querySelector('.user-details h4')?.innerText?.toLowerCase() || ''; c.style.display = n.includes(t) ? 'flex' : 'none'; }); }
@@ -2470,18 +2622,19 @@
         if (myRole === 'owner') { document.getElementById('reports-btn').style.display = 'inline-block'; listenReports(); }
         else document.getElementById('reports-btn').style.display = 'none';
         updateFCMButton();
+        updateSoundButton();
     }
     function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { i.placeholder = "اكتب رسالة..."; i.disabled = false; b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
     function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
     function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); }
     function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
-    async function banUser(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canBan(myRole, tr)) return alert('⛔ لا صلاحية!'); if (!confirm('⚠️ حظر "' + n + '"؟')) return; await db.ref('bans/' + u).set(true); if (n) await db.ref('banned_names/' + n.toLowerCase()).set(true); const nl = await db.ref('fp_links/' + u).once('value'); if (nl.exists()) for (let l in nl.val()) await db.ref('banned_names/' + l).set(true); if (n) { const fl = await db.ref('name_links/' + n.toLowerCase()).once('value'); if (fl.exists()) for (let f in fl.val()) await db.ref('bans/' + f).set(true); } alert("✅ تم"); }
-    async function unbanUser(u, n) { if (myRole !== 'owner') return alert('⛔ فقط المالك!'); if (!confirm('فك الحظر؟')) return; await db.ref('bans/' + u).remove(); if (n) await db.ref('banned_names/' + n.toLowerCase()).remove(); alert("✅ تم"); }
-    function openMuteMenu(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canMute(myRole, tr)) return alert('⛔ لا صلاحية!'); targetUserForAction = { uid: u, name: n }; document.getElementById('mute-target-name').textContent = n; document.getElementById('mute-modal').classList.add('active'); }
-    async function applyMute(m) { const et = m === 999999 ? 9999999999999 : Date.now() + m * 6e4, data = { endTime: et, by: myName, at: Date.now() }; const { uid, name } = targetUserForAction; await db.ref('mutes/' + uid).set(data); if (name) await db.ref('muted_names/' + name.toLowerCase()).set(data); const nl = await db.ref('fp_links/' + uid).once('value'); if (nl.exists()) for (let l in nl.val()) await db.ref('muted_names/' + l).set(data); if (name) { const fl = await db.ref('name_links/' + name.toLowerCase()).once('value'); if (fl.exists()) for (let f in fl.val()) await db.ref('mutes/' + f).set(data); } document.getElementById('mute-modal').classList.remove('active'); alert("✅ تم"); }
-    async function unmuteUser(u, n) { if (!confirm('فك الكتم؟')) return; await db.ref('mutes/' + u).remove(); if (n) await db.ref('muted_names/' + n.toLowerCase()).remove(); alert("✅ تم"); }
-    function openRoleMenu(u, n) { if (!canAssignRole(myRole, allUsersData[u]?.role || 'user')) return alert('⛔ لا صلاحية!'); targetUserForAction = { uid: u, name: n }; document.getElementById('role-target-name').textContent = n; document.getElementById('role-modal').classList.add('active'); }
-    function setRole(r) { const { uid } = targetUserForAction; if (!canAssignRole(myRole, r)) { document.getElementById('role-modal').classList.remove('active'); return alert("⛔"); } db.ref('users/' + uid + '/role').set(r); document.getElementById('role-modal').classList.remove('active'); alert("✅ تم"); }
+    async function banUser(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canBan(myRole, tr)) return alert('⛔'); if (!confirm('⚠️ حظر "' + n + '"؟')) return; await db.ref('bans/' + u).set(true); if (n) await db.ref('banned_names/' + n.toLowerCase()).set(true); const nl = await db.ref('fp_links/' + u).once('value'); if (nl.exists()) for (let l in nl.val()) await db.ref('banned_names/' + l).set(true); if (n) { const fl = await db.ref('name_links/' + n.toLowerCase()).once('value'); if (fl.exists()) for (let f in fl.val()) await db.ref('bans/' + f).set(true); } alert("✅"); }
+    async function unbanUser(u, n) { if (myRole !== 'owner') return alert('⛔'); if (!confirm('فك الحظر؟')) return; await db.ref('bans/' + u).remove(); if (n) await db.ref('banned_names/' + n.toLowerCase()).remove(); alert("✅"); }
+    function openMuteMenu(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canMute(myRole, tr)) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('mute-target-name').textContent = n; document.getElementById('mute-modal').classList.add('active'); }
+    async function applyMute(m) { const et = m === 999999 ? 9999999999999 : Date.now() + m * 6e4, data = { endTime: et, by: myName, at: Date.now() }; const { uid, name } = targetUserForAction; await db.ref('mutes/' + uid).set(data); if (name) await db.ref('muted_names/' + name.toLowerCase()).set(data); const nl = await db.ref('fp_links/' + uid).once('value'); if (nl.exists()) for (let l in nl.val()) await db.ref('muted_names/' + l).set(data); if (name) { const fl = await db.ref('name_links/' + name.toLowerCase()).once('value'); if (fl.exists()) for (let f in fl.val()) await db.ref('mutes/' + f).set(data); } document.getElementById('mute-modal').classList.remove('active'); alert("✅"); }
+    async function unmuteUser(u, n) { if (!confirm('فك الكتم؟')) return; await db.ref('mutes/' + u).remove(); if (n) await db.ref('muted_names/' + n.toLowerCase()).remove(); alert("✅"); }
+    function openRoleMenu(u, n) { if (!canAssignRole(myRole, allUsersData[u]?.role || 'user')) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('role-target-name').textContent = n; document.getElementById('role-modal').classList.add('active'); }
+    function setRole(r) { const { uid } = targetUserForAction; if (!canAssignRole(myRole, r)) { document.getElementById('role-modal').classList.remove('active'); return alert("⛔"); } db.ref('users/' + uid + '/role').set(r); document.getElementById('role-modal').classList.remove('active'); alert("✅"); }
     function openProfile() {
         document.getElementById('prof-img').src = myAvatar;
         document.getElementById('prof-name').value = myName;
@@ -2513,7 +2666,7 @@
         db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar });
         saveFCMToken();
         document.getElementById('profile-modal').classList.remove('active');
-        alert("✅ تم");
+        alert("✅");
     }
     function openViewer(u, t, s) { const v = document.getElementById('media-viewer'), c = document.getElementById('viewer-content'); document.getElementById('viewer-sender').textContent = s || '📸'; c.innerHTML = ''; if (t === 'video') c.innerHTML = '<video src="' + u + '" controls autoplay playsinline style="max-width:100%;max-height:80vh;"></video>'; else if (t === 'youtube') c.innerHTML = '<iframe src="' + u + '" style="width:100%;height:70vh;border:0;border-radius:8px;" allow="autoplay; encrypted-media" allowfullscreen></iframe>'; else c.innerHTML = '<img src="' + u + '" style="max-width:100%;max-height:80vh;object-fit:contain;">'; v.classList.add('active'); }
     function closeViewer(e) { if (e && e.target.id !== 'media-viewer' && !e.target.closest('button')) return; const v = document.getElementById('media-viewer'), vid = v.querySelector('video'), ifr = v.querySelector('iframe'); if (vid) { vid.pause(); vid.removeAttribute('src'); } if (ifr) ifr.src = ''; v.classList.remove('active'); }
@@ -2629,8 +2782,12 @@
     function updateNotifBadge() { const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
     function openYouTubeModal() { document.getElementById('youtube-modal').classList.add('active'); document.getElementById('yt-link-input').focus(); }
     function previewYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), p = document.getElementById('yt-preview'), img = document.getElementById('yt-preview-img'), t = document.getElementById('yt-preview-title'), sb = document.getElementById('yt-send-btn'), wb = document.getElementById('yt-watch-btn'), vid = extractYouTubeId(l); if (vid) { img.src = getYouTubeThumbnail(vid); t.textContent = 'https://youtu.be/' + vid; p.style.display = 'block'; sb.disabled = false; wb.disabled = false; } else { p.style.display = 'none'; sb.disabled = true; wb.disabled = true; } }
-    function sendYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return alert("رابط غير صحيح!"); const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: l, type: 'youtube', youtubeId: vid, avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); document.getElementById('yt-link-input').value = ''; document.getElementById('yt-preview').style.display = 'none'; document.getElementById('yt-send-btn').disabled = true; document.getElementById('yt-watch-btn').disabled = true; document.getElementById('youtube-modal').classList.remove('active'); }
+    function sendYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return alert("رابط غير صحيح!"); const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: l, type: 'youtube', youtubeId: vid, avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); document.getElementById('yt-link-input').value = ''; document.getElementById('yt-preview').style.display = 'none'; document.getElementById('yt-send-btn').disabled = true; document.getElementById('yt-watch-btn').disabled = true; document.getElementById('youtube-modal').classList.remove('active'); }
     function watchYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return; openViewer('https://www.youtube.com/embed/' + vid + '?autoplay=1', 'youtube', myName); }
+
+    // ============================================================
+    //  💬 sendMessage — صوت الإرسال مضاف
+    // ============================================================
     function sendMessage(e) {
         e.preventDefault();
         if (isMuted) return alert("🔇");
@@ -2642,10 +2799,13 @@
         if (isYouTubeUrl(t)) { const y = extractYouTubeId(t); if (y) { d.media = t; d.type = 'youtube'; d.youtubeId = y; if (t === t.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}(?:[^\s]*)?/)?.[0]) d.text = ''; } }
         if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 100), role: replyTo.role }; cancelReply(); }
         db.ref('messages').push(d);
+        // 🔊 صوت الإرسال
+        playSendSound();
         input.value = '';
         input.focus();
     }
-    async function handleFile(i) { if (myRole === 'user') { alert("⛔"); i.value = ''; return; } if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير!"); i.value = ''; return; } const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true; try { const u = await uploadCloudinary(f); if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); } else alert("فشل الرفع"); } catch (e) { alert("خطأ: " + e.message); } sb.textContent = "➤"; sb.disabled = false; i.value = ''; }
+
+    async function handleFile(i) { if (myRole === 'user') { alert("⛔"); i.value = ''; return; } if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير!"); i.value = ''; return; } const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true; try { const u = await uploadCloudinary(f); if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); } else alert("فشل الرفع"); } catch (e) { alert("خطأ: " + e.message); } sb.textContent = "➤"; sb.disabled = false; i.value = ''; }
     async function uploadCloudinary(f) { const cn = 'nfg03aku', up = 'daufafvn', url = 'https://api.cloudinary.com/v1_1/' + cn + '/' + (f.type.startsWith('video') ? 'video' : 'image') + '/upload'; const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', up); const r = await fetch(url, { method: 'POST', body: fd }); if (!r.ok) throw new Error('HTTP ' + r.status); const d = await r.json(); return d.secure_url || null; }
     function clearAllChat() { if (!['mod', 'manager', 'owner'].includes(myRole)) return alert("⛔"); if (confirm("⚠️ حذف كل الرسائل؟")) { db.ref('messages').remove(); messagesCache = {}; renderMessages(); } }
     function startReply(k) { const m = messagesCache[k]; if (!m) return; replyTo = { key: k, sender: m.sender, text: m.text || '[وسائط]', role: m.role }; document.getElementById('reply-sender-name').textContent = m.sender; document.getElementById('reply-content-text').textContent = m.text || '[وسائط]'; document.getElementById('reply-bar').classList.add('active'); document.getElementById('message-input').focus(); }
@@ -2655,17 +2815,17 @@
     function listenReports() { if (myRole !== 'owner') return; db.ref('reports').on('value', snap => { reportsCache = {}; if (snap.exists()) { snap.forEach(child => { const val = child.val(); val.key = child.key; reportsCache[child.key] = val; }); } renderReports(); updateReportsBadge(); }); }
     function toggleReportsModal() { const modal = document.getElementById('reports-modal'); modal.classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); if (modal.classList.contains('active')) renderReports(); }
     function renderReports() { const list = document.getElementById('reports-list'); const filter = currentReportFilter; let filtered = Object.values(reportsCache); if (filter !== 'all') filtered = filtered.filter(r => r.status === filter); filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); if (filtered.length === 0) { list.innerHTML = '<div style="text-align:center;color:#999;padding:20px 0;font-size:14px;">لا توجد بلاغات</div>'; return; } list.innerHTML = ''; filtered.forEach(r => { const card = document.createElement('div'); card.className = 'report-card'; const isPending = r.status === 'pending'; const statusText = { pending: '⏳ معلق', resolved: '✅ محلول', rejected: '❌ مرفوض' }[r.status] || r.status; let actionsHtml = ''; if (isPending && myRole === 'owner') actionsHtml = `<div class="report-actions"><button class="action-btn-sm action-ban" onclick="openResolveModal('${r.key}','ban')">🚫 حضر</button><button class="action-btn-sm action-mute" onclick="openResolveModal('${r.key}','mute')">🔇 كتم</button><button class="action-btn-sm action-kick" onclick="openResolveModal('${r.key}','kick')">👢 طرد</button><button class="action-btn-sm action-ignore" onclick="openResolveModal('${r.key}','ignore')">👁️ تجاهل</button><button class="action-btn-sm action-none" onclick="openResolveModal('${r.key}','none')">❌ رفض</button></div>`; else if (!isPending) actionsHtml = `<div class="report-actions"><span class="action-btn-sm action-resolved">${r.actionTaken ? '⚡ '+r.actionTaken : '✅ تم الحل'}</span></div>`; let deleteBtn = ''; if (myRole === 'owner') deleteBtn = `<button class="action-btn-sm action-delete" onclick="deleteReport('${r.key}')">🗑️ حذف</button>`; const msgPreview = r.messageKey && messagesCache[r.messageKey] ? messagesCache[r.messageKey].text || '[وسائط]' : 'لا توجد رسالة'; card.innerHTML = `<div class="report-header"><span class="reporter">👤 ${escapeHtml(r.reporterName)}</span><span>→</span><span class="target">🎯 ${escapeHtml(r.targetName)}</span><span class="report-status status-${r.status}">${statusText}</span></div><div class="report-reason">📝 ${escapeHtml(r.reason)}</div><div class="report-msg">💬 ${escapeHtml(msgPreview)}</div>${r.ownerComment ? `<div class="report-comment"><strong>👑 المالك:</strong> ${escapeHtml(r.ownerComment)}</div>` : ''}<div style="font-size:10px;color:#999;margin-top:4px;">🕒 ${formatDate(r.createdAt)}</div><div class="report-actions">${actionsHtml}${deleteBtn}</div>`; list.appendChild(card); }); document.getElementById('reports-count').textContent = `(${filtered.length})`; }
-    function deleteReport(reportId) { if (myRole !== 'owner') return alert('⛔'); if (!confirm('حذف البلاغ؟')) return; db.ref('reports/' + reportId).remove().then(() => alert('✅ تم')).catch(err => alert('❌ ' + err.message)); }
+    function deleteReport(reportId) { if (myRole !== 'owner') return alert('⛔'); if (!confirm('حذف البلاغ؟')) return; db.ref('reports/' + reportId).remove().then(() => alert('✅')).catch(err => alert('❌ ' + err.message)); }
     function filterReports(filter, btn) { currentReportFilter = filter; document.querySelectorAll('.filter-tabs button').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderReports(); }
     function updateReportsBadge() { const pending = Object.values(reportsCache).filter(r => r.status === 'pending').length; const badge = document.getElementById('reports-badge'); if (pending > 0) { badge.textContent = pending; badge.classList.add('active'); } else badge.classList.remove('active'); }
     function openResolveModal(reportId, action) { if (myRole !== 'owner') return alert('⛔'); const report = reportsCache[reportId]; if (!report) return alert('غير موجود'); if (report.status !== 'pending') return alert('تم الحل'); resolveTargetReportId = reportId; document.getElementById('resolve-target-name').textContent = report.targetName; document.getElementById('resolve-comment-input').value = ''; document.getElementById('resolve-modal').dataset.action = action; document.getElementById('resolve-modal').classList.add('active'); }
-    async function resolveReport(action) { const reportId = resolveTargetReportId; if (!reportId) return; const comment = document.getElementById('resolve-comment-input').value.trim(); const report = reportsCache[reportId]; if (!report) return; const updates = { status: action === 'none' ? 'rejected' : 'resolved', actionTaken: action, ownerComment: comment || null, resolvedAt: Date.now() }; try { await db.ref('reports/' + reportId).update(updates); if (action !== 'none') { const targetUid = report.targetId; if (action === 'ban') { await db.ref('bans/' + targetUid).set(true); if (report.targetName) await db.ref('banned_names/' + report.targetName.toLowerCase()).set(true); } else if (action === 'mute') { const et = Date.now() + 3600000; const data = { endTime: et, by: myName, at: Date.now() }; await db.ref('mutes/' + targetUid).set(data); if (report.targetName) await db.ref('muted_names/' + report.targetName.toLowerCase()).set(data); } else if (action === 'kick') { await db.ref('ignores/' + targetUid).set({ endTime: Date.now() + 3600000, by: myName, at: Date.now() }); } else if (action === 'ignore') { await db.ref('ignores/' + targetUid).set({ endTime: 9999999999999, by: myName, at: Date.now() }); } if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_resolved', reportId: reportId, targetName: report.targetName, action: action, comment: comment || '', time: Date.now(), seen: false }); } else { if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_rejected', reportId: reportId, targetName: report.targetName, comment: comment || 'تم الرفض', time: Date.now(), seen: false }); } document.getElementById('resolve-modal').classList.remove('active'); alert('✅ تم'); renderReports(); updateReportsBadge(); } catch (e) { alert('❌ ' + e.message); } }
+    async function resolveReport(action) { const reportId = resolveTargetReportId; if (!reportId) return; const comment = document.getElementById('resolve-comment-input').value.trim(); const report = reportsCache[reportId]; if (!report) return; const updates = { status: action === 'none' ? 'rejected' : 'resolved', actionTaken: action, ownerComment: comment || null, resolvedAt: Date.now() }; try { await db.ref('reports/' + reportId).update(updates); if (action !== 'none') { const targetUid = report.targetId; if (action === 'ban') { await db.ref('bans/' + targetUid).set(true); if (report.targetName) await db.ref('banned_names/' + report.targetName.toLowerCase()).set(true); } else if (action === 'mute') { const et = Date.now() + 3600000; const data = { endTime: et, by: myName, at: Date.now() }; await db.ref('mutes/' + targetUid).set(data); if (report.targetName) await db.ref('muted_names/' + report.targetName.toLowerCase()).set(data); } else if (action === 'kick') { await db.ref('ignores/' + targetUid).set({ endTime: Date.now() + 3600000, by: myName, at: Date.now() }); } else if (action === 'ignore') { await db.ref('ignores/' + targetUid).set({ endTime: 9999999999999, by: myName, at: Date.now() }); } if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_resolved', reportId: reportId, targetName: report.targetName, action: action, comment: comment || '', time: Date.now(), seen: false }); } else { if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_rejected', reportId: reportId, targetName: report.targetName, comment: comment || 'تم الرفض', time: Date.now(), seen: false }); } document.getElementById('resolve-modal').classList.remove('active'); alert('✅'); renderReports(); updateReportsBadge(); } catch (e) { alert('❌ ' + e.message); } }
     let colorTargetUid = null, selectedGlow = 'none';
     function openColorControl(uid) { if (!isOwner()) return alert("⛔"); colorTargetUid = uid; const u = allUsersData[uid] || {}, n = u.name || 'مجهول', av = u.avatar || DEFAULT_ICON, r = u.role || 'user'; document.getElementById('color-target-avatar').src = av; document.getElementById('color-target-name').textContent = n; document.getElementById('color-target-role').textContent = 'رتبة: ' + r; const cc = getColor(uid), cg = getGlow(uid); selectedGlow = cg; document.getElementById('color-name-picker').value = cc.name || '#333333'; const g = document.getElementById('color-grid'); g.innerHTML = ''; COLORS.forEach((c, i) => { const d = document.createElement('div'); d.className = 'color-option'; d.style.background = c.bg; if (cc && cc.bg === c.bg) d.classList.add('selected'); d.innerHTML = '<span class="check">✓</span><span class="color-label">' + (i + 1) + '</span>'; d.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); d.classList.add('selected'); updatePreview(); }; g.appendChild(d); }); document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === cg); }); document.getElementById('color-name-picker').oninput = updatePreview; updatePreview(); document.getElementById('color-control-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); }
     function selectGlow(g) { selectedGlow = g; document.querySelectorAll('.glow-btn').forEach(b => b.classList.toggle('selected', b.dataset.glow === g)); updatePreview(); }
     function updatePreview() { const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; let bg = 'linear-gradient(135deg, #e0e0e0, #bdbdbd)', tc = '#333'; if (s) { const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx >= 0 && idx < COLORS.length) { const c = COLORS[idx]; bg = c.bg; tc = c.text; } } const pb = document.getElementById('preview-bubble'), pn = document.getElementById('preview-name'), pg = document.getElementById('preview-glow-label'); pb.style.background = bg; pb.style.color = tc; pb.textContent = '📝 نص'; pn.style.color = nc; pn.textContent = document.getElementById('color-target-name').textContent; pn.className = 'preview-name'; if (selectedGlow !== 'none') pn.classList.add('glow', selectedGlow); const gn = { none: '✨ بدون', glow: '✨ توهج', 'glow-fast': '⚡ سريع', 'glow-slow': '🌊 بطيء', 'glow-rainbow': '🌈', 'glow-neon': '💡 نيون', 'glow-fire': '🔥 نار', 'owner-glow': '👑 ملكي' }; pg.textContent = gn[selectedGlow] || '✨ بدون'; }
-    function applyUserColor() { if (!colorTargetUid) return; const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; if (!s) return alert("اختر لون!"); const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx < 0 || idx >= COLORS.length) return; const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc }; saveUserColor(colorTargetUid, cd, selectedGlow); closeColorControl(); alert("✅ تم"); }
-    function resetUserColorHandler() { if (!colorTargetUid) return; if (confirm("إعادة تعيين؟")) { resetUserColor(colorTargetUid); closeColorControl(); alert("✅ تم"); } }
+    function applyUserColor() { if (!colorTargetUid) return; const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; if (!s) return alert("اختر لون!"); const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx < 0 || idx >= COLORS.length) return; const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc }; saveUserColor(colorTargetUid, cd, selectedGlow); closeColorControl(); alert("✅"); }
+    function resetUserColorHandler() { if (!colorTargetUid) return; if (confirm("إعادة تعيين؟")) { resetUserColor(colorTargetUid); closeColorControl(); alert("✅"); } }
     function closeColorControl() { document.getElementById('color-control-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); colorTargetUid = null; }
     async function loadColorSettings() { const s = await colorSettingsRef.once('value'); if (s.exists()) { const d = s.val(); Object.keys(d).forEach(k => { if (d[k]) userColors[k] = d[k]; }); } const g = await glowSettingsRef.once('value'); if (g.exists()) { const d = g.val(); Object.keys(d).forEach(k => { if (d[k]) userGlow[k] = d[k]; }); } renderMessages(); }
     function handleKeyboard() { const cm = document.getElementById('chat-messages'); if (window.ResizeObserver) { const ro = new ResizeObserver(() => { const hh = document.querySelector('header')?.offsetHeight || 0, fh = document.getElementById('chat-form')?.offsetHeight || 0, nh = document.querySelector('.bottom-nav')?.offsetHeight || 0, bh = document.getElementById('mute-banner')?.offsetHeight || 0, mb = document.getElementById('maintenance-badge')?.offsetHeight || 0, ah = window.innerHeight - hh - fh - nh - bh - mb; if (cm) cm.style.minHeight = Math.max(ah, 80) + 'px'; }); ro.observe(document.body); } window.addEventListener('resize', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 80); }); document.getElementById('message-input')?.addEventListener('focus', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 200); }); }
