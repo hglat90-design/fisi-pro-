@@ -304,6 +304,17 @@
         .font-preview .fp-text { font-size: 20px; font-weight: 700; color: #333; margin-bottom: 6px; }
         .font-preview .fp-info { font-size: 11px; color: #888; }
         @keyframes pulseFCM { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .notif-settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 10px; border-bottom: 1px solid #f0f0f0; }
+        .notif-settings-row:last-child { border-bottom: 0; }
+        .notif-settings-row .notif-label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #333; }
+        .notif-settings-row .notif-label .notif-icon { font-size: 20px; }
+        .notif-settings-row .notif-desc { font-size: 11px; color: #999; margin-top: 2px; }
+        .toggle-switch { position: relative; width: 48px; height: 26px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; transition: .3s; border-radius: 26px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; transition: .3s; border-radius: 50%; }
+        .toggle-switch input:checked + .toggle-slider { background: var(--primary); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
         @media(max-width:480px) {
             .bubble { font-size: 13px; padding: 5px 8px; }
             .sender-name { font-size: 11px; }
@@ -370,6 +381,12 @@
         .btn-dm-toggle:active { transform: scale(.95); }
         .btn-advanced { width: 100%; padding: 10px; background: #1976d2; color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; }
         .btn-advanced:active { transform: scale(.95); }
+        .btn-notif-settings { width: 100%; padding: 10px; background: linear-gradient(135deg, #008069, #00a884); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-notif-settings:active { transform: scale(.95); }
+        .notif-status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-top: 6px; }
+        .notif-status-badge.enabled { background: #e8f5e9; color: #2e7d32; }
+        .notif-status-badge.disabled { background: #ffebee; color: #c62828; }
+        .notif-status-badge.not-supported { background: #fff3e0; color: #e65100; }
     </style>
 </head>
 <body>
@@ -694,9 +711,43 @@
                 <button id="open-maintenance-btn" class="btn-maintenance" onclick="openMaintenanceSettings()">🔧 إعدادات الصيانة</button>
                 <button id="open-advanced-btn" class="btn-advanced" onclick="openAdvancedSettings()">⚙️ إعدادات متقدمة (الخط)</button>
             </div>
-            <button onclick="saveProfile()" class="login-btn" style="padding:8px;font-size:14px;">💾 حفظ</button>
+            <button class="btn-notif-settings" onclick="openNotificationSettings()">🔔 إعدادات الإشعارات</button>
+            <div style="text-align:center;"><span id="prof-notif-status" class="notif-status-badge disabled">غير مفعلة</span></div>
+            <button onclick="saveProfile()" class="login-btn" style="padding:8px;font-size:14px;margin-top:10px;">💾 حفظ</button>
             <button class="btn-delete-account" onclick="deleteMyAccount()">🗑️ حذف حسابي نهائياً</button>
             <button onclick="document.getElementById('profile-modal').classList.remove('active')" style="margin-top:6px;background:0;border:0;color:#777;cursor:pointer;font-size:13px;font-family:var(--font-main);">إلغاء</button>
+        </div>
+    </div>
+
+    <div class="modal-popup" id="notification-settings-modal">
+        <div class="popup-box" style="max-width:420px;">
+            <h3 style="font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">🔔 إعدادات الإشعارات</h3>
+            <div id="notif-permission-status" style="text-align:center;padding:12px;margin-bottom:8px;border-radius:10px;background:#f5f5f5;">
+                <span id="notif-perm-badge" class="notif-status-badge disabled">جاري التحقق...</span>
+                <p id="notif-perm-text" style="font-size:11px;color:#888;margin-top:4px;"></p>
+            </div>
+            <button id="enable-notif-btn" onclick="requestNotificationPermission()" class="login-btn" style="background:linear-gradient(135deg,#008069,#00a884);padding:12px;font-size:15px;margin-bottom:12px;">📲 تفعيل الإشعارات على هذا الجهاز</button>
+            <div style="text-align:right;margin-bottom:8px;">
+                <div style="font-size:13px;font-weight:700;color:#555;padding:8px 0 4px;">📩 أنواع الإشعارات:</div>
+                <div class="notif-settings-row">
+                    <div class="notif-label"><span class="notif-icon">💌</span><div><div>الرسائل الخاصة</div><div class="notif-desc">إشعار عند استقبال رسالة خاصة</div></div></div>
+                    <label class="toggle-switch"><input type="checkbox" id="notif-dm-toggle" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="notif-settings-row">
+                    <div class="notif-label"><span class="notif-icon">💬</span><div><div>رسائل الدردشة العامة</div><div class="notif-desc">إشعار عند كتابة رسالة في الغرفة</div></div></div>
+                    <label class="toggle-switch"><input type="checkbox" id="notif-chat-toggle" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="notif-settings-row">
+                    <div class="notif-label"><span class="notif-icon">📸</span><div><div>الحالات الجديدة</div><div class="notif-desc">إشعار عند نشر أحد حالة جديدة</div></div></div>
+                    <label class="toggle-switch"><input type="checkbox" id="notif-status-toggle" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="notif-settings-row">
+                    <div class="notif-label"><span class="notif-icon">👁️</span><div><div>مشاهدة حالاتي</div><div class="notif-desc">إشعار عند مشاهدة أحد لحالتك</div></div></div>
+                    <label class="toggle-switch"><input type="checkbox" id="notif-seen-toggle" checked><span class="toggle-slider"></span></label>
+                </div>
+            </div>
+            <button onclick="saveNotificationPrefs()" class="login-btn" style="padding:10px;font-size:14px;background:var(--primary);">💾 حفظ التفضيلات</button>
+            <button onclick="document.getElementById('notification-settings-modal').classList.remove('active')" style="margin-top:8px;background:0;border:0;color:#777;cursor:pointer;font-size:13px;font-family:var(--font-main);">إغلاق</button>
         </div>
     </div>
 
@@ -809,13 +860,9 @@
     const db = firebase.database();
 
     // ============================================================
-    //  🔑 مفاتيح FCM
+    //  🔑 مفتاح VAPID الخاص بك (لا يتغير)
     // ============================================================
     const VAPID_KEY = 'BDfPDyXH10O6avY5v2zHHmcEswMuxyOPWvBz048dp78RmeQM4Mit_TEE2cdxoAuKrujLT_3Ft_upy1K93zXT3kQ';
-
-    // ⚠️ ضع هنا Server Key من Firebase Console
-    // Project Settings → Cloud Messaging → Server key (يبدأ بـ AAAA)
-    const FCM_SERVER_KEY = 'ضع_Server_Key_هنا';
 
     const APP_URL = 'https://fisi-pro.vercel.app';
     const DEFAULT_ICON = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
@@ -865,6 +912,13 @@
     let messaging = null;
     let swRegistration = null;
     let fcmToken = null;
+    let currentNotificationPrefs = {
+        dm: true,
+        chat: true,
+        status: true,
+        seen: true
+    };
+    let notifPrefsListener = null;
 
     let reportsCache = {};
     let currentReportFilter = 'pending';
@@ -1052,129 +1106,110 @@
     }
 
     // ============================================================
-    //  🔔 Firebase Cloud Messaging — دالة إرسال الإشعارات
+    //  🔔 تفضيلات الإشعارات (لكل مستخدم)
     // ============================================================
-
-    // 📤 دالة إرسال إشعار عبر FCM Legacy HTTP API
-    async function sendNotificationToUser(targetToken, title, body, icon, extraData) {
-        if (!targetToken) { console.warn('⚠️ لا يوجد Token للإرسال'); return false; }
-        if (!FCM_SERVER_KEY || FCM_SERVER_KEY === 'ضع_Server_Key_هنا') {
-            console.warn('⚠️ FCM_SERVER_KEY غير مُعدّ — لن يتم إرسال الإشعار');
-            return false;
-        }
-        try {
-            const payload = {
-                to: targetToken,
-                notification: {
-                    title: title || 'فيسي برو',
-                    body: body || '',
-                    icon: icon || DEFAULT_ICON,
-                    sound: 'default',
-                    badge: DEFAULT_ICON
-                },
-                data: Object.assign({
-                    title: title || 'فيسي برو',
-                    body: body || '',
-                    icon: icon || DEFAULT_ICON,
-                    url: APP_URL,
-                    type: 'general'
-                }, extraData || {}),
-                webpush: {
-                    headers: { Urgency: 'high' },
-                    notification: {
-                        title: title || 'فيسي برو',
-                        body: body || '',
-                        icon: icon || DEFAULT_ICON,
-                        badge: DEFAULT_ICON,
-                        dir: 'rtl',
-                        lang: 'ar',
-                        vibrate: [200, 100, 200],
-                        requireInteraction: false
-                    },
-                    fcm_options: { link: APP_URL }
-                }
+    function listenNotificationPrefs() {
+        if (notifPrefsListener) db.ref('notification_prefs/' + myFP).off('value', notifPrefsListener);
+        notifPrefsListener = db.ref('notification_prefs/' + myFP).on('value', snap => {
+            const d = snap.val() || {};
+            currentNotificationPrefs = {
+                dm: d.dm !== false,
+                chat: d.chat !== false,
+                status: d.status !== false,
+                seen: d.seen !== false
             };
+            // تحديث الـ toggles في الواجهة
+            const dmT = document.getElementById('notif-dm-toggle');
+            const chatT = document.getElementById('notif-chat-toggle');
+            const statusT = document.getElementById('notif-status-toggle');
+            const seenT = document.getElementById('notif-seen-toggle');
+            if (dmT) dmT.checked = currentNotificationPrefs.dm;
+            if (chatT) chatT.checked = currentNotificationPrefs.chat;
+            if (statusT) statusT.checked = currentNotificationPrefs.status;
+            if (seenT) seenT.checked = currentNotificationPrefs.seen;
+        });
+    }
 
-            const r = await fetch('https://fcm.googleapis.com/fcm/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'key=' + FCM_SERVER_KEY
-                },
-                body: JSON.stringify(payload)
-            });
-            const result = await r.json();
-            console.log('📤 نتيجة إرسال الإشعار:', result);
-            return r.ok;
-        } catch (e) {
-            console.error('❌ فشل إرسال الإشعار:', e);
-            return false;
+    async function saveNotificationPrefs() {
+        const dmT = document.getElementById('notif-dm-toggle');
+        const chatT = document.getElementById('notif-chat-toggle');
+        const statusT = document.getElementById('notif-status-toggle');
+        const seenT = document.getElementById('notif-seen-toggle');
+        const prefs = {
+            dm: dmT.checked,
+            chat: chatT.checked,
+            status: statusT.checked,
+            seen: seenT.checked,
+            updatedAt: Date.now()
+        };
+        try {
+            await db.ref('notification_prefs/' + myFP).set(prefs);
+            currentNotificationPrefs = prefs;
+            alert('✅ تم حفظ تفضيلات الإشعارات');
+            document.getElementById('notification-settings-modal').classList.remove('active');
+            updateNotifStatusBadge();
+        } catch (e) { alert('❌ خطأ: ' + e.message); }
+    }
+
+    function updateNotifStatusBadge() {
+        const badge = document.getElementById('prof-notif-status');
+        if (!badge) return;
+        if (!('Notification' in window)) {
+            badge.textContent = '⚠️ غير مدعوم';
+            badge.className = 'notif-status-badge not-supported';
+        } else if (Notification.permission === 'granted' && fcmToken) {
+            badge.textContent = '✅ مفعلة';
+            badge.className = 'notif-status-badge enabled';
+        } else if (Notification.permission === 'denied') {
+            badge.textContent = '🔕 مرفوضة';
+            badge.className = 'notif-status-badge disabled';
+        } else {
+            badge.textContent = '⚪ غير مفعلة';
+            badge.className = 'notif-status-badge disabled';
         }
     }
 
-    // 🔍 جلب توكن مستخدم من قاعدة البيانات
-    async function getUserFCMToken(uid) {
-        if (!uid) return null;
-        try {
-            const snap = await db.ref('fcm_tokens/' + uid + '/token').once('value');
-            return snap.val() || null;
-        } catch (e) {
-            console.warn('⚠️ فشل جلب التوكن:', e);
-            return null;
+    function openNotificationSettings() {
+        if (!('Notification' in window)) {
+            alert('⚠️ المتصفح لا يدعم الإشعارات');
+            return;
         }
-    }
+        const permBadge = document.getElementById('notif-perm-badge');
+        const permText = document.getElementById('notif-perm-text');
+        const enableBtn = document.getElementById('enable-notif-btn');
 
-    // 📢 إرسال إشعار لجميع المستخدمين (عدا المستثنى)
-    async function notifyAllUsers(title, body, icon, extraData, excludeUid) {
-        try {
-            const snap = await db.ref('fcm_tokens').once('value');
-            if (!snap.exists()) return;
-            const promises = [];
-            snap.forEach(child => {
-                const uid = child.key;
-                if (uid === excludeUid) return;
-                const token = child.val().token;
-                if (token) promises.push(sendNotificationToUser(token, title, body, icon, extraData));
-            });
-            await Promise.all(promises);
-        } catch (e) {
-            console.warn('⚠️ فشل إرسال الإشعارات الجماعية:', e);
+        if (Notification.permission === 'granted' && fcmToken) {
+            permBadge.textContent = '✅ الإشعارات مفعلة';
+            permBadge.className = 'notif-status-badge enabled';
+            permText.textContent = 'هذا الجهاز مسجل في الإشعارات';
+            enableBtn.textContent = '✅ الإشعارات مفعلة';
+            enableBtn.disabled = true;
+            enableBtn.style.opacity = '0.6';
+        } else if (Notification.permission === 'denied') {
+            permBadge.textContent = '🔕 الإشعارات مرفوضة';
+            permBadge.className = 'notif-status-badge disabled';
+            permText.textContent = 'يرجى فتح إعدادات المتصفح والسماح بالإشعارات لهذا الموقع';
+            enableBtn.textContent = '🔕 مرفوضة — افتح إعدادات المتصفح';
+            enableBtn.disabled = false;
+        } else {
+            permBadge.textContent = '⚪ لم تُفعّل بعد';
+            permBadge.className = 'notif-status-badge disabled';
+            permText.textContent = 'اضغط الزر أدناه لتفعيل الإشعارات';
+            enableBtn.textContent = '📲 تفعيل الإشعارات على هذا الجهاز';
+            enableBtn.disabled = false;
         }
+
+        // ملء التoggles من التفضيلات الحالية
+        document.getElementById('notif-dm-toggle').checked = currentNotificationPrefs.dm;
+        document.getElementById('notif-chat-toggle').checked = currentNotificationPrefs.chat;
+        document.getElementById('notif-status-toggle').checked = currentNotificationPrefs.status;
+        document.getElementById('notif-seen-toggle').checked = currentNotificationPrefs.seen;
+
+        document.getElementById('notification-settings-modal').classList.add('active');
     }
 
     // ============================================================
-    //  🎫 حفظ التوكن في Firebase
-    // ============================================================
-    async function saveFCMToken() {
-        if (!messaging) return null;
-        try {
-            const token = await messaging.getToken({ vapidKey: VAPID_KEY });
-            if (token && token !== fcmToken) {
-                fcmToken = token;
-                localStorage.setItem('fcm_token', token);
-                console.log('🎫 FCM Token:', token.substring(0, 30) + '...');
-            }
-            if (fcmToken && myFP && myName) {
-                await db.ref('fcm_tokens/' + myFP).update({
-                    token: fcmToken,
-                    name: myName || '',
-                    avatar: myAvatar || '',
-                    role: myRole || 'user',
-                    updatedAt: Date.now(),
-                    platform: 'web',
-                    ua: navigator.userAgent.substring(0, 120)
-                });
-                console.log('✅ تم حفظ FCM Token في Firebase');
-            }
-            return fcmToken;
-        } catch (e) {
-            console.error('❌ خطأ في الحصول على Token:', e);
-            return null;
-        }
-    }
-
-    // ============================================================
-    //  🚀 تهيئة FCM
+    //  🔔 Firebase Cloud Messaging
     // ============================================================
     async function initFCM() {
         if (!('serviceWorker' in navigator) || !('Notification' in window)) {
@@ -1207,6 +1242,7 @@
                 await saveFCMToken();
             }
             updateFCMButton();
+            updateNotifStatusBadge();
             return true;
         } catch (e) {
             console.error('❌ خطأ في FCM:', e);
@@ -1214,16 +1250,20 @@
         }
     }
 
-    // ============================================================
-    //  🎯 طلب إذن الإشعارات
-    // ============================================================
     async function requestNotificationPermission() {
         if (!('Notification' in window)) {
             return alert('⚠️ المتصفح لا يدعم الإشعارات');
         }
+        if (Notification.permission === 'denied') {
+            return alert('🔕 الإشعارات مرفوضة. يرجى فتح إعدادات المتصفح:\n\nChrome: الإعدادات → الخصوصية → إعدادات الموقع → الإشعارات → السماح لـ fisi-pro.vercel.app\n\nSafari: الإعدادات → Safari → إشعارات');
+        }
         if (Notification.permission === 'granted') {
             await saveFCMToken();
             updateFCMButton();
+            updateNotifStatusBadge();
+            if (document.getElementById('notification-settings-modal').classList.contains('active')) {
+                openNotificationSettings();
+            }
             return alert('✅ الإشعارات مفعلة مسبقاً');
         }
         const p = await Notification.requestPermission();
@@ -1231,19 +1271,20 @@
             if (!messaging) await initFCM();
             await saveFCMToken();
             updateFCMButton();
+            updateNotifStatusBadge();
+            if (document.getElementById('notification-settings-modal').classList.contains('active')) {
+                openNotificationSettings();
+            }
             alert('✅ تم تفعيل الإشعارات! ستصلك حتى لو التطبيق مغلق.');
         } else {
-            alert('⚠️ لم يتم تفعيل الإشعارات. يمكنك تفعيلها لاحقاً من زر 📲');
+            alert('⚠️ لم يتم تفعيل الإشعارات. يمكنك تفعيلها لاحقاً من إعدادات الإشعارات');
         }
     }
 
-    // ============================================================
-    //  📲 طلب إذن الإشعارات التلقائي
-    // ============================================================
     async function autoRequestNotificationPermission() {
         if (!('Notification' in window)) return;
         if (Notification.permission === 'default') {
-            // طلب تلقائي هادئ بعد 3 ثوانٍ من فتح التطبيق
+            // طلب تلقائي بعد 2 ثانية من الدخول
             setTimeout(async () => {
                 try {
                     const p = await Notification.requestPermission();
@@ -1251,18 +1292,46 @@
                         if (!messaging) await initFCM();
                         await saveFCMToken();
                         updateFCMButton();
+                        updateNotifStatusBadge();
                         console.log('✅ تم تفعيل الإشعارات تلقائياً');
                     }
                 } catch (e) { console.warn('Auto permission error:', e); }
-            }, 3000);
+            }, 2000);
         } else if (Notification.permission === 'granted') {
             await saveFCMToken();
+            updateNotifStatusBadge();
         }
     }
 
-    // ============================================================
-    //  🔔 إشعارات في المقدمة (التطبيق مفتوح)
-    // ============================================================
+    async function saveFCMToken() {
+        if (!messaging) return null;
+        try {
+            const token = await messaging.getToken({ vapidKey: VAPID_KEY });
+            if (token && token !== fcmToken) {
+                fcmToken = token;
+                localStorage.setItem('fcm_token', token);
+                console.log('🎫 FCM Token:', token.substring(0, 30) + '...');
+            }
+            if (fcmToken && myFP && myName) {
+                await db.ref('fcm_tokens/' + myFP).update({
+                    token: fcmToken,
+                    name: myName || '',
+                    avatar: myAvatar || '',
+                    role: myRole || 'user',
+                    updatedAt: Date.now(),
+                    platform: 'web',
+                    ua: navigator.userAgent.substring(0, 120)
+                });
+                console.log('✅ تم حفظ FCM Token في Firebase');
+            }
+            updateNotifStatusBadge();
+            return fcmToken;
+        } catch (e) {
+            console.error('❌ خطأ في الحصول على Token:', e);
+            return null;
+        }
+    }
+
     function showForegroundNotification(payload) {
         const n = payload.notification || {};
         const d = payload.data || {};
@@ -1283,9 +1352,6 @@
         }
     }
 
-    // ============================================================
-    //  🔘 تحديث زر FCM
-    // ============================================================
     function updateFCMButton() {
         const btn = document.getElementById('fcm-btn');
         if (!btn) return;
@@ -1296,6 +1362,7 @@
             btn.style.display = 'inline-block';
             btn.style.animation = 'pulseFCM 1.5s infinite';
         }
+        updateNotifStatusBadge();
     }
 
     // ============================================================
@@ -1504,6 +1571,7 @@
         listenMaintenance();
         listenMyDMPermission();
         listenDMInbox();
+        listenNotificationPrefs();
 
         // 🔔 تهيئة FCM + طلب إذن تلقائي
         setTimeout(() => {
@@ -1907,7 +1975,7 @@
     }
 
     // ============================================================
-    //  💌 إرسال رسالة خاصة + إشعار FCM
+    //  💌 إرسال رسالة خاصة (الإشعار يُرسل عبر Cloud Functions)
     // ============================================================
     async function sendDMMessage(e) {
         e.preventDefault();
@@ -1939,19 +2007,6 @@
                 lastMessage: text, lastTime: firebase.database.ServerValue.TIMESTAMP,
                 count: 0
             });
-
-            // 🔔 إرسال إشعار FCM للمستقبل
-            const targetToken = await getUserFCMToken(toUid);
-            if (targetToken) {
-                const msgPreview = text.length > 60 ? text.substring(0, 60) + '...' : text;
-                sendNotificationToUser(
-                    targetToken,
-                    '💌 ' + myName,
-                    msgPreview,
-                    myAvatar,
-                    { type: 'dm', fromUid: myFP, tag: 'dm-' + Date.now(), url: APP_URL }
-                );
-            }
         } catch (err) { alert('خطأ في الإرسال: ' + err.message); }
     }
 
@@ -2009,6 +2064,7 @@
             await db.ref('dm_inbox/' + currentFP).remove();
             await db.ref('dm_clears/' + currentFP).remove();
             await db.ref('fcm_tokens/' + currentFP).remove();
+            await db.ref('notification_prefs/' + currentFP).remove();
             if (currentName) await db.ref('name_links/' + currentName.toLowerCase()).remove();
             const messagesSnap = await db.ref('messages').orderByChild('uid').equalTo(currentFP).once('value');
             if (messagesSnap.exists()) { const updates = {}; messagesSnap.forEach(child => { updates[child.key] = null; }); await db.ref('messages').update(updates); }
@@ -2258,6 +2314,7 @@
             await db.ref('dm_clears/' + uid).remove();
             await db.ref('maintenance/testers/' + uid).remove();
             await db.ref('fcm_tokens/' + uid).remove();
+            await db.ref('notification_prefs/' + uid).remove();
             if (name) await db.ref('name_links/' + name.toLowerCase()).remove();
             const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value');
             if (msgs.exists()) { let updates = {}; msgs.forEach(child => { updates[child.key] = null; }); await db.ref('messages').update(updates); }
@@ -2301,7 +2358,7 @@
     function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
 
     function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); }
-    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
+    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
 
     async function banUser(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canBan(myRole, tr)) return alert('⛔ لا صلاحية!'); if (!confirm('⚠️ حظر "' + n + '"؟')) return; await db.ref('bans/' + u).set(true); if (n) await db.ref('banned_names/' + n.toLowerCase()).set(true); const nl = await db.ref('fp_links/' + u).once('value'); if (nl.exists()) for (let l in nl.val()) await db.ref('banned_names/' + l).set(true); if (n) { const fl = await db.ref('name_links/' + n.toLowerCase()).once('value'); if (fl.exists()) for (let f in fl.val()) await db.ref('bans/' + f).set(true); } alert("✅ تم الحظر"); }
     async function unbanUser(u, n) { if (myRole !== 'owner') return alert('⛔ فقط المالك!'); if (!confirm('فك الحظر عن "' + n + '"؟')) return; await db.ref('bans/' + u).remove(); if (n) await db.ref('banned_names/' + n.toLowerCase()).remove(); alert("✅ تم فك الحظر"); }
@@ -2318,6 +2375,7 @@
         const avatarLabel = document.getElementById('avatar-change-label'); const avatarImg = document.getElementById('prof-img');
         if (myRole === 'user') { if (avatarLabel) avatarLabel.style.display = 'none'; if (avatarImg) { avatarImg.style.cursor = 'default'; avatarImg.onclick = null; } }
         else { if (avatarLabel) avatarLabel.style.display = 'inline-block'; if (avatarImg) { avatarImg.style.cursor = 'pointer'; avatarImg.onclick = () => document.getElementById('avatar-in').click(); } }
+        updateNotifStatusBadge();
         document.getElementById('profile-modal').classList.add('active');
     }
     function onAvatarClick() { if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه تغيير صورة الملف!"); return; } document.getElementById('avatar-in').click(); }
@@ -2341,10 +2399,7 @@
                 sb[myFP] = { name: myName, avatar: myAvatar, time: Date.now() };
                 db.ref('statuses/' + s.key + '/seenBy').set(sb);
                 db.ref('notifications/' + viewerCurrentUid + '/' + myFP).set({ from: myName, fromAvatar: myAvatar, statusKey: s.key, time: Date.now(), seen: true });
-                // 🔔 إشعار FCM لصاحب الحالة
-                getUserFCMToken(viewerCurrentUid).then(tk => {
-                    if (tk) sendNotificationToUser(tk, '👁️ ' + myName + ' شاهد حالتك', (s.text || '📸 حالة'), myAvatar, { type: 'status_seen', fromUid: myFP, tag: 'seen-' + Date.now(), url: APP_URL });
-                });
+                // إشعار Cloud Function سيتعامل مع إرسال الإشعار
             }
         }
         const v = document.getElementById('status-viewer'), c = document.getElementById('status-viewer-content'), ne = document.getElementById('status-viewer-name'), se = document.getElementById('status-viewer-seen'), db2 = document.getElementById('status-delete-btn');
@@ -2371,7 +2426,7 @@
     function handleStatusFile(i) { if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير! الحد 100 ميجا."); i.value = ''; return; } statusFileData = f; statusFileType = f.type.startsWith('video') ? 'video' : 'image'; document.getElementById('selected-filename').textContent = '📎 ' + f.name; document.getElementById('selected-filename').classList.add('active'); document.getElementById('publish-status-btn').disabled = false; }
 
     // ============================================================
-    //  📸 نشر حالة + إشعار FCM لكل المستخدمين
+    //  📸 نشر حالة (الإشعار عبر Cloud Functions)
     // ============================================================
     async function publishStatus() {
         if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه نشر الحالات!"); return; }
@@ -2389,10 +2444,6 @@
             db.ref('statuses').push(data);
             alert("✅ تم النشر!");
             closeAddStatus();
-
-            // 🔔 إشعار FCM لجميع المستخدمين
-            const preview = statusText ? (statusText.length > 60 ? statusText.substring(0, 60) + '...' : statusText) : '📸 حالة جديدة';
-            notifyAllUsers('📸 ' + myName + ' نشر حالة جديدة', preview, myAvatar, { type: 'new_status', fromUid: myFP, tag: 'status-' + Date.now(), url: APP_URL }, myFP);
         } catch (e) { alert("❌ فشل: " + e.message); }
         pb.disabled = false; pb.textContent = '📤 نشر';
     }
@@ -2409,7 +2460,7 @@
     function watchYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return; openViewer('https://www.youtube.com/embed/' + vid + '?autoplay=1', 'youtube', myName); }
 
     // ============================================================
-    //  💬 إرسال رسالة عامة + إشعار FCM للجميع
+    //  💬 إرسال رسالة عامة (الإشعار عبر Cloud Functions)
     // ============================================================
     function sendMessage(e) {
         e.preventDefault();
@@ -2426,13 +2477,9 @@
         db.ref('messages').push(d);
         input.value = '';
         input.focus();
-
-        // 🔔 إشعار FCM لجميع المستخدمين (عدا المرسل)
-        const preview = t.length > 60 ? t.substring(0, 60) + '...' : t;
-        notifyAllUsers('💬 ' + myName, preview, myAvatar, { type: 'chat', fromUid: myFP, tag: 'chat-' + Date.now(), url: APP_URL }, myFP);
     }
 
-    async function handleFile(i) { if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه إرسال صور أو فيديو!"); i.value = ''; return; } if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير! الحد 100 ميجا."); i.value = ''; return; } const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true; try { const u = await uploadCloudinary(f); if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); notifyAllUsers('📎 ' + myName, f.type.startsWith('video') ? '🎥 أرسل مقطع فيديو' : '🖼️ أرسل صورة', myAvatar, { type: 'media', fromUid: myFP, tag: 'media-' + Date.now(), url: APP_URL }, myFP); } else alert("فشل الرفع"); } catch (e) { alert("خطأ: " + e.message); } sb.textContent = "➤"; sb.disabled = false; i.value = ''; }
+    async function handleFile(i) { if (myRole === 'user') { alert("⛔ المستخدم العادي لا يمكنه إرسال صور أو فيديو!"); i.value = ''; return; } if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير! الحد 100 ميجا."); i.value = ''; return; } const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true; try { const u = await uploadCloudinary(f); if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); } else alert("فشل الرفع"); } catch (e) { alert("خطأ: " + e.message); } sb.textContent = "➤"; sb.disabled = false; i.value = ''; }
 
     async function uploadCloudinary(f) { const cn = 'nfg03aku', up = 'daufafvn', url = 'https://api.cloudinary.com/v1_1/' + cn + '/' + (f.type.startsWith('video') ? 'video' : 'image') + '/upload'; const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', up); const r = await fetch(url, { method: 'POST', body: fd }); if (!r.ok) throw new Error('HTTP ' + r.status); const d = await r.json(); return d.secure_url || null; }
 
