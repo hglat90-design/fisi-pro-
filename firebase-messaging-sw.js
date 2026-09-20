@@ -1,12 +1,17 @@
 // ============================================================
 //  🔔 firebase-messaging-sw.js
 //  Service Worker — يستقبل الإشعارات حتى لو التطبيق مغلق تماماً
-//  يعمل في الخلفية ويُظهر الإشعارات في شريط التنبيهات
+//  يعمل في الخلفية ويُظهر الإشعارات في شريط التنبيهات (Android/iOS/Desktop)
+//  ⚠️ يجب أن يكون في جذر الموقع (root)
 // ============================================================
 
+// استيراد مكتبات Firebase الأساسية والمراسلة
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
 
+// ============================================================
+//  ⚙️ إعدادات Firebase
+// ============================================================
 const firebaseConfig = {
     apiKey: "AIzaSyB5qXJOOIMs3rWwxRjDai2enpCC4UUfyR4",
     authDomain: "kiot-1ea8c.firebaseapp.com",
@@ -21,15 +26,22 @@ const firebaseConfig = {
 const APP_URL = 'https://fisi-pro.vercel.app';
 const DEFAULT_ICON = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
 
+// ============================================================
+//  🚀 تهيئة Firebase داخل Service Worker
+// ============================================================
 firebase.initializeApp(firebaseConfig);
+
+// الحصول على كائن messaging
 const messaging = firebase.messaging();
 
 // ============================================================
-//  📬 استقبال الإشعارات في الخلفية — يعمل والشاشة مغلقة
+//  📬 استقبال الإشعارات في الخلفية (التطبيق مغلق أو في الخلفية)
+//  هذه الدالة الأهم — تعمل حتى لو التطبيق مغلق تماماً
 // ============================================================
 messaging.onBackgroundMessage((payload) => {
     console.log('📬 [SW] رسالة في الخلفية:', payload);
 
+    // استخراج البيانات من payload
     const n = payload.notification || {};
     const d = payload.data || {};
 
@@ -39,14 +51,16 @@ messaging.onBackgroundMessage((payload) => {
     const url   = d.url   || APP_URL;
     const type  = d.type  || 'general';
 
-    // اختيار أيقونة الإشعار حسب النوع
+    // إضافة رمز تعبيري بادئ حسب نوع الإشعار
     let emojiPrefix = '';
     if (type === 'dm') emojiPrefix = '💌 ';
     else if (type === 'chat') emojiPrefix = '💬 ';
     else if (type === 'new_status') emojiPrefix = '📸 ';
     else if (type === 'status_seen') emojiPrefix = '👁️ ';
     else if (type === 'report') emojiPrefix = '🚩 ';
+    else emojiPrefix = '🔔 ';
 
+    // خيارات الإشعار
     const options = {
         body: body,
         icon: icon,
@@ -72,21 +86,23 @@ messaging.onBackgroundMessage((payload) => {
         ]
     };
 
+    // عرض الإشعار — يظهر في شريط التنبيهات العلوي
     return self.registration.showNotification(emojiPrefix + title, options);
 });
 
 // ============================================================
-//  🖱️ عند الضغط على الإشعار — فتح التطبيق
+//  🖱️ عند الضغط على الإشعار — فتح التطبيق على القسم المناسب
 // ============================================================
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
+    // إذا ضغط على زر "إغلاق" — فقط أغلق الإشعار
     if (event.action === 'close') return;
 
     const data = event.notification.data || {};
     let targetUrl = data.url || APP_URL;
 
-    // إضافة باراميتر لفتح القسم المناسب
+    // إضافة باراميتر لفتح القسم المناسب داخل التطبيق
     if (data.type === 'dm' && data.fromUid) {
         targetUrl += (targetUrl.includes('?') ? '&' : '?') + 'open_dm=' + data.fromUid;
     } else if (data.type === 'new_status') {
@@ -97,6 +113,7 @@ self.addEventListener('notificationclick', (event) => {
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+            // إذا كان التطبيق مفتوح في تبويب — ركّز عليه وأرسل رسالة
             for (const client of clientList) {
                 if (client.url.includes('fisi-pro.vercel.app') && 'focus' in client) {
                     client.postMessage({
@@ -106,6 +123,7 @@ self.addEventListener('notificationclick', (event) => {
                     return client.focus();
                 }
             }
+            // وإلا افتح تبويب جديد على الرابط
             if (clients.openWindow) {
                 return clients.openWindow(targetUrl);
             }
@@ -114,7 +132,33 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 // ============================================================
-//  ⚡ تفعيل فوري للـ Service Worker
+//  🔄 عند إغلاق الإشعار (بدون ضغط) — لا نفعل شيء
 // ============================================================
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', (event) => event.waitUntil(clients.claim()));
+self.addEventListener('notificationclose', (event) => {
+    console.log('🔕 تم إغلاق الإشعار:', event.notification.tag);
+});
+
+// ============================================================
+//  ⚡ تفعيل فوري للـ Service Worker (بدون انتظار)
+// ============================================================
+self.addEventListener('install', (event) => {
+    console.log('✅ Service Worker قيد التثبيت...');
+    self.skipWaiting();
+});
+
+// السيطرة على جميع النوافذ بمجرد التفعيل
+self.addEventListener('activate', (event) => {
+    console.log('✅ Service Worker مُفعّل');
+    event.waitUntil(clients.claim());
+});
+
+// ============================================================
+//  📨 التعامل مع الرسائل الواردة من التطبيق (اختياري)
+// ============================================================
+self.addEventListener('message', (event) => {
+    console.log('📨 [SW] رسالة من التطبيق:', event.data);
+    
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
