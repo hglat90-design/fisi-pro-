@@ -67,7 +67,7 @@
         .others .bubble { border-bottom-right-radius: 3px; }
         .sender-info { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
         .sender-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid rgba(0, 0, 0, 0.06); cursor: pointer; flex-shrink: 0; }
-        .sender-name { font-size: 12px; font-weight: 700; color: #555; display: flex; align-items: center; gap: 3px; flex-wrap: wrap; font-family: var(--font-main); }
+        .sender-name { font-size: 12px; font-weight: 700; color: #555; display: flex; align-items: center; gap: 3px; flex-wrap: wrap; font-family: var(--font-main); cursor: pointer; }
         .sender-name.mine-name { color: #005c4b; }
         .role-badge { font-size: 8px; padding: 1px 5px; border-radius: 5px; color: #fff; font-weight: 700; }
         .role-badge.owner { background: #FFD700; color: #5d4a00; }
@@ -131,7 +131,7 @@
         .user-card { padding: 8px 10px; border-radius: 6px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #eee; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03); }
         .user-card .user-info { display: flex; align-items: center; gap: 8px; }
         .user-card .user-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; cursor: pointer; flex-shrink: 0; }
-        .user-card .user-details h4 { font-size: 12px; display: flex; align-items: center; gap: 4px; font-family: var(--font-main); }
+        .user-card .user-details h4 { font-size: 12px; display: flex; align-items: center; gap: 4px; font-family: var(--font-main); cursor: pointer; }
         .user-card .user-status { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-left: 3px; flex-shrink: 0; }
         .user-card .user-status.online { background: #25D366; box-shadow: 0 0 6px rgba(37, 211, 102, 0.4); }
         .user-card .user-status.offline { background: #ccc; }
@@ -148,6 +148,7 @@
         .ctrl-btn.color { background: #e91e63; }
         .ctrl-btn.dm { background: #9c27b0; }
         .ctrl-btn.dm-off { background: #616161; }
+        .ctrl-btn.report { background: #e74c3c; }
         .search-box { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; outline: 0; font-size: 13px; margin-bottom: 8px; font-family: var(--font-main); }
         #color-control-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 400; display: none; justify-content: center; align-items: center; padding: 16px; }
         #color-control-modal.active { display: flex; animation: fadeIn .3s; }
@@ -244,6 +245,8 @@
         #status-viewer .viewer-content img, #status-viewer .viewer-content video { max-width: 100%; max-height: 70vh; border-radius: 10px; object-fit: contain; display: block; }
         #status-viewer .viewer-close { position: absolute; top: 14px; right: 14px; background: rgba(255, 255, 255, 0.12); border: 0; color: #fff; font-size: 20px; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: background .2s; }
         #status-viewer .viewer-close:active { background: rgba(255, 255, 255, 0.25); }
+        #status-viewer .viewer-report { position: absolute; top: 14px; right: 60px; background: rgba(231, 76, 60, 0.9); border: 0; color: #fff; font-size: 16px; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: background .2s; }
+        #status-viewer .viewer-report:active { background: rgba(192, 57, 43, 1); }
         #status-viewer .viewer-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.08); border: 0; color: #fff; font-size: 22px; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; }
         #status-viewer .viewer-nav:active { background: rgba(255, 255, 255, 0.18); }
         #status-viewer .viewer-nav.prev { left: 8px; }
@@ -318,95 +321,73 @@
         .toggle-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; transition: .3s; border-radius: 50%; }
         .toggle-switch input:checked + .toggle-slider { background: var(--primary); }
         .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
-
-        #inapp-notif-container {
-            position: fixed;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 94%;
-            max-width: 420px;
-            pointer-events: none;
-        }
-        .inapp-notif {
-            background: #fff;
-            border-radius: 14px;
-            padding: 10px 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: inappSlideDown .35s cubic-bezier(.34,1.56,.64,1);
-            pointer-events: auto;
-            cursor: pointer;
-            border-right: 4px solid var(--primary);
-            font-family: var(--font-main);
-            position: relative;
-            overflow: hidden;
-        }
+        #inapp-notif-container { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 8px; width: 94%; max-width: 420px; pointer-events: none; }
+        .inapp-notif { background: #fff; border-radius: 14px; padding: 10px 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.25); display: flex; align-items: center; gap: 10px; animation: inappSlideDown .35s cubic-bezier(.34,1.56,.64,1); pointer-events: auto; cursor: pointer; border-right: 4px solid var(--primary); font-family: var(--font-main); position: relative; overflow: hidden; }
         .inapp-notif.dm { border-right-color: #9c27b0; }
         .inapp-notif.chat { border-right-color: #008069; }
         .inapp-notif.status { border-right-color: #f9a825; }
         .inapp-notif.seen { border-right-color: #2196f3; }
         .inapp-notif.report { border-right-color: #e74c3c; }
-        .inapp-notif::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, currentColor);
-            width: 100%;
-            animation: inappProgress 5s linear;
-        }
-        .inapp-notif.dm::after { color: #9c27b0; }
-        .inapp-notif.chat::after { color: #008069; }
-        .inapp-notif.status::after { color: #f9a825; }
-        .inapp-notif.seen::after { color: #2196f3; }
-        .inapp-notif.report::after { color: #e74c3c; }
-        .inapp-notif img {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            object-fit: cover;
-            flex-shrink: 0;
-            border: 2px solid #f0f0f0;
-        }
+        .inapp-notif img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #f0f0f0; }
         .inapp-notif .ni-text { flex: 1; min-width: 0; }
         .inapp-notif .ni-title { font-weight: 700; font-size: 13px; color: #111; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .inapp-notif .ni-body { font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .inapp-notif .ni-icon { font-size: 24px; flex-shrink: 0; }
-        .inapp-notif .ni-close {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.05);
-            border: 0;
-            color: #666;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-        }
+        .inapp-notif .ni-close { position: absolute; top: 4px; left: 4px; width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,0.05); border: 0; color: #666; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
         .inapp-notif .ni-close:active { background: rgba(0,0,0,0.15); }
         @keyframes inappSlideDown { from { transform: translateY(-100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes inappProgress { from { width: 100%; } to { width: 0%; } }
-
         .sound-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
         .sound-option { padding: 8px 6px; border: 2px solid #eee; border-radius: 8px; background: #fff; cursor: pointer; font-size: 11px; font-weight: 600; font-family: var(--font-main); transition: all .2s; text-align: center; }
         .sound-option:active { transform: scale(.95); }
         .sound-option.selected { border-color: var(--primary); background: #e8f5e9; color: var(--primary); }
         .sound-option .s-icon { display: block; font-size: 16px; margin-bottom: 2px; }
-
+        /* ===== Report Modal Extra Styles ===== */
+        .report-type-info {
+            display: flex; align-items: center; gap: 10px;
+            background: #f5f5f5; border-radius: 10px;
+            padding: 10px 12px; margin-bottom: 12px;
+            text-align: right; font-family: var(--font-main);
+        }
+        .report-type-info .rt-icon { font-size: 24px; flex-shrink: 0; }
+        .report-type-info .rt-text { flex: 1; min-width: 0; }
+        .report-type-info .rt-label { font-size: 11px; color: #888; font-weight: 600; }
+        .report-type-info .rt-value { font-size: 13px; color: #333; font-weight: 700; margin-top: 2px; word-break: break-word; }
+        .report-preview-box {
+            background: #fafafa; border: 1px solid #eee;
+            border-radius: 10px; padding: 10px 12px;
+            margin-bottom: 12px; text-align: right;
+            font-family: var(--font-main); font-size: 12px;
+            color: #555; max-height: 150px; overflow-y: auto;
+            line-height: 1.6;
+        }
+        .report-preview-box img {
+            max-width: 100%; max-height: 100px;
+            border-radius: 8px; margin-top: 6px; display: block;
+        }
+        .report-preview-box strong { color: #333; }
+        .report-reasons {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            margin-bottom: 10px; justify-content: center;
+        }
+        .report-reason-chip {
+            padding: 6px 12px;
+            background: #f0f0f0;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 12px; font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: var(--font-main);
+            color: #555;
+        }
+        .report-reason-chip:hover { background: #e8e8e8; }
+        .report-reason-chip.selected {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+            border-color: #c0392b;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+        }
         @media(max-width:480px) {
             .bubble { font-size: 13px; padding: 5px 8px; }
             .sender-name { font-size: 11px; }
@@ -481,6 +462,17 @@
         .notif-status-badge.disabled { background: #ffebee; color: #c62828; }
         .notif-status-badge.not-supported { background: #fff3e0; color: #e65100; }
         .notif-status-badge.inapp { background: #e3f2fd; color: #1565c0; }
+        /* ===== Report buttons ===== */
+        .btn-report-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border: 0; color: #fff; width: 24px; height: 24px;
+            border-radius: 50%; cursor: pointer; font-size: 11px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all .2s;
+        }
+        .btn-report-icon:hover { transform: scale(1.1); }
+        .btn-report-icon:active { transform: scale(.9); }
+        .user-card .user-actions .ctrl-btn.report-user { background: #e74c3c; }
     </style>
 </head>
 <body>
@@ -712,17 +704,55 @@
         </div>
     </div>
 
+    <!-- ===== نافذة خيارات الحساب (لصورة والاسم) ===== -->
+    <div class="modal-popup" id="profile-actions-modal">
+        <div class="popup-box" style="max-width: 300px;">
+            <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">👤 خيارات الحساب</h3>
+            <img id="pa-avatar" src="" style="width:70px;height:70px;border-radius:50%;object-fit:cover;margin:0 auto 10px;display:block;border:2px solid var(--primary);">
+            <div id="pa-name" style="font-weight:700;font-size:15px;margin-bottom:12px;text-align:center;"></div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <button onclick="paViewImage()" class="login-btn" style="background:#2196f3;padding:8px;font-size:13px;">👁️ عرض الصورة</button>
+                <button onclick="paReport('avatar')" class="login-btn" style="background:#e74c3c;padding:8px;font-size:13px;">⚑ الإبلاغ عن الصورة</button>
+                <button onclick="paReport('name')" class="login-btn" style="background:#e74c3c;padding:8px;font-size:13px;">⚑ الإبلاغ عن الاسم</button>
+                <button onclick="paDM()" id="pa-dm-btn" class="login-btn" style="background:#9c27b0;padding:8px;font-size:13px;">💌 رسالة خاصة</button>
+            </div>
+            <button onclick="closeProfileActions()" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;margin-top:8px;">إلغاء</button>
+        </div>
+    </div>
+
     <div class="modal-popup" id="report-modal">
         <div class="popup-box">
             <h3 style="font-size:16px;font-weight:700;">🚩 إبلاغ</h3>
-            <p id="report-target-info" style="color:#777;margin:6px 0;font-size:14px;">تبليغ عن: <strong id="report-target-name"></strong></p>
+            <div id="report-type-info-box" class="report-type-info">
+                <div class="rt-icon" id="report-rt-icon">💬</div>
+                <div class="rt-text">
+                    <div class="rt-label">نوع الإبلاغ</div>
+                    <div class="rt-value" id="report-rt-value">رسالة</div>
+                </div>
+            </div>
+            <p style="color:#777;margin:6px 0;font-size:13px;text-align:right;">المُبلَّغ عنه: <strong id="report-target-name" style="color:#d32f2f;"></strong></p>
+            <div id="report-preview-box" class="report-preview-box" style="display:none;"></div>
             <input type="hidden" id="report-target-uid">
             <input type="hidden" id="report-message-key">
-            <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin:8px 0 4px;">سبب البلاغ:</label>
-            <textarea id="report-reason-input" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:var(--font-main);resize:vertical;" placeholder="اكتب سبب الإبلاغ..."></textarea>
-            <div style="margin-top:8px;display:flex;gap:6px;">
-                <button onclick="submitReport()" class="login-btn" style="background:#e74c3c;padding:8px;font-size:13px;">📤 إرسال البلاغ</button>
-                <button onclick="document.getElementById('report-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;">إلغاء</button>
+            <input type="hidden" id="report-type">
+            <input type="hidden" id="report-status-key">
+            <input type="hidden" id="report-avatar-url">
+            <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin:10px 0 4px;">اختر سبباً سريعاً:</label>
+            <div class="report-reasons" id="report-reasons-chips">
+                <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'محتوى مسيء')">محتوى مسيء</button>
+                <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'سب وشتم')">سب وشتم</button>
+                <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'محتوى غير لائق')">محتوى غير لائق</button>
+                <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'تحرش')">تحرش</button>
+                <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'انتحال شخصية')">انتحال شخصية</button>
+                <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'محتوى عنيف')">محتوى عنيف</button>
+                <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'إعلانات / سبام')">إعلانات / سبام</button>
+                <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'أخرى')">أخرى</button>
+            </div>
+            <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin:8px 0 4px;">تفاصيل إضافية:</label>
+            <textarea id="report-reason-input" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:var(--font-main);resize:vertical;font-size:13px;" placeholder="اكتب تفاصيل البلاغ (اختياري)..."></textarea>
+            <div style="margin-top:10px;display:flex;gap:6px;">
+                <button onclick="submitReport()" class="login-btn" style="background:#e74c3c;padding:10px;font-size:13px;">📤 إرسال البلاغ</button>
+                <button onclick="closeReportModal()" class="login-btn" style="background:#f0f0f0;color:#555;padding:10px;font-size:13px;">إلغاء</button>
             </div>
         </div>
     </div>
@@ -933,6 +963,7 @@
 
     <div id="status-viewer" onclick="closeStatusViewer(event)">
         <button class="viewer-close" onclick="closeStatusViewer(event)">✕</button>
+        <button class="viewer-report" id="status-viewer-report-btn" onclick="event.stopPropagation();reportCurrentStatus()" title="إبلاغ عن الحالة">⚑</button>
         <button class="viewer-nav prev" onclick="event.stopPropagation();navigateStatus(-1)">‹</button>
         <button class="viewer-nav next" onclick="event.stopPropagation();navigateStatus(1)">›</button>
         <div class="viewer-content" id="status-viewer-content"></div>
@@ -978,23 +1009,14 @@
         const ua = (navigator.userAgent || '').toLowerCase();
         const isAndroid = /android/i.test(ua);
         const isIOS = /iphone|ipad|ipod/i.test(ua);
-        const isAndroidWebView = isAndroid && (
-            /wv\)/.test(ua) ||
-            /version\/[\d.]+.*chrome/.test(ua) ||
-            (!/chrome\/[6-9][\d]/.test(ua) && /safari/.test(ua))
-        );
+        const isAndroidWebView = isAndroid && (/wv\)/.test(ua) || /version\/[\d.]+.*chrome/.test(ua) || (!/chrome\/[6-9][\d]/.test(ua) && /safari/.test(ua)));
         const isCordova = typeof window.cordova !== 'undefined' || typeof window.Capacitor !== 'undefined';
         const isAPKWrapper = /apk|kodular|thunkable|webintoapp|median/i.test(ua);
         const hasServiceWorker = 'serviceWorker' in navigator;
         const hasNotification = 'Notification' in window;
         const hasVibrate = 'vibrate' in navigator;
         const isWebView = isAndroidWebView || isCordova || isAPKWrapper;
-        return {
-            isAndroid, isIOS, isWebView, isCordova, isAPKWrapper,
-            hasServiceWorker, hasNotification, hasVibrate,
-            mode: (!isWebView && hasServiceWorker && hasNotification) ? 'fcm' :
-                  (hasNotification) ? 'webview' : 'inapp'
-        };
+        return { isAndroid, isIOS, isWebView, isCordova, isAPKWrapper, hasServiceWorker, hasNotification, hasVibrate, mode: (!isWebView && hasServiceWorker && hasNotification) ? 'fcm' : (hasNotification) ? 'webview' : 'inapp' };
     }
 
     const ENV = detectEnvironment();
@@ -1026,7 +1048,6 @@
     let currentFontName = '';
     let pendingFontFile = null;
     let fontSettingsListener = null;
-    const roleHierarchy = { user: 1, trusted: 2, mod: 3, manager: 4, owner: 5 };
 
     let badWordsList = [];
     let badWordsListener = null;
@@ -1044,18 +1065,10 @@
     let fcmToken = null;
     let notificationMode = ENV.mode;
 
-    let currentNotificationPrefs = {
-        dm: true, chat: true, status: true, seen: true,
-        sound: true, soundSend: true, soundReceive: true
-    };
+    let currentNotificationPrefs = { dm: true, chat: true, status: true, seen: true, sound: true, soundSend: true, soundReceive: true };
     let notifPrefsListener = null;
 
-    let inAppNotifListeners = {
-        messages: null,
-        dms: null,
-        statuses: null,
-        notifications: null
-    };
+    let inAppNotifListeners = { messages: null, dms: null, statuses: null, notifications: null };
     let lastSeenTimestamps = {
         messages: Number(localStorage.getItem('lst_msg') || Date.now()),
         dms: Number(localStorage.getItem('lst_dm') || Date.now()),
@@ -1112,32 +1125,24 @@
     function getYouTubeThumbnail(v) { return 'https://img.youtube.com/vi/' + v + '/hqdefault.jpg' }
 
     // ============================================================
-    //  📜 دالة تسجيل عمليات الإدارة
+    //  📜 logAdminAction
     // ============================================================
     async function logAdminAction(type, targetUid, targetName, details) {
         try {
             await db.ref('admin_logs').push({
-                type: type,
-                actor_uid: myFP,
-                actor_name: myName || 'مجهول',
-                actor_role: myRole || 'user',
-                actor_avatar: myAvatar || DEFAULT_ICON,
-                target_uid: targetUid || null,
-                target_name: targetName || null,
-                details: details || {},
-                timestamp: Date.now()
+                type: type, actor_uid: myFP, actor_name: myName || 'مجهول',
+                actor_role: myRole || 'user', actor_avatar: myAvatar || DEFAULT_ICON,
+                target_uid: targetUid || null, target_name: targetName || null,
+                details: details || {}, timestamp: Date.now()
             });
-        } catch (e) {
-            console.warn('⚠️ فشل تسجيل الإجراء:', e);
-        }
+        } catch (e) { console.warn('⚠️ فشل تسجيل الإجراء:', e); }
     }
 
     // ============================================================
-    //  🔊 نظام الأصوات
+    //  🔊 الأصوات
     // ============================================================
     let audioContext = null;
     let audioUnlocked = false;
-
     function unlockAudio() {
         try {
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1152,11 +1157,7 @@
             }
         } catch (e) {}
     }
-
-    ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
-        document.addEventListener(evt, unlockAudio, { once: true, passive: true });
-    });
-
+    ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => { document.addEventListener(evt, unlockAudio, { once: true, passive: true }); });
     function playTone(freq, duration, type, delay, volume) {
         try {
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1164,61 +1165,22 @@
             const now = audioContext.currentTime + (delay || 0);
             const osc = audioContext.createOscillator();
             const gain = audioContext.createGain();
-            osc.connect(gain);
-            gain.connect(audioContext.destination);
+            osc.connect(gain); gain.connect(audioContext.destination);
             osc.type = type || 'sine';
             osc.frequency.setValueAtTime(freq, now);
             gain.gain.setValueAtTime(0.001, now);
             gain.gain.exponentialRampToValueAtTime(volume || 0.3, now + 0.01);
             gain.gain.exponentialRampToValueAtTime(0.001, now + (duration || 0.2));
-            osc.start(now);
-            osc.stop(now + (duration || 0.2) + 0.05);
+            osc.start(now); osc.stop(now + (duration || 0.2) + 0.05);
         } catch (e) {}
     }
-
-    function playSendSound() {
-        if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundSend) return;
-        playTone(1318, 0.08, 'sine', 0, 0.25);
-        playTone(1568, 0.06, 'sine', 0.04, 0.20);
-    }
-
-    function playReceiveChatSound() {
-        if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundReceive) return;
-        playTone(880, 0.12, 'sine', 0, 0.28);
-        playTone(1174, 0.14, 'sine', 0.10, 0.28);
-    }
-
-    function playReceiveDMSound() {
-        if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundReceive) return;
-        playTone(784, 0.10, 'sine', 0, 0.30);
-        playTone(988, 0.10, 'sine', 0.09, 0.30);
-        playTone(1318, 0.18, 'sine', 0.18, 0.32);
-    }
-
-    function playStatusSound() {
-        if (!currentNotificationPrefs.sound) return;
-        playTone(1046, 0.10, 'triangle', 0, 0.28);
-        playTone(1318, 0.14, 'triangle', 0.10, 0.28);
-    }
-
-    function playSeenSound() {
-        if (!currentNotificationPrefs.sound) return;
-        playTone(659, 0.10, 'sine', 0, 0.22);
-        playTone(880, 0.14, 'sine', 0.08, 0.22);
-    }
-
-    function playNotificationSound() {
-        if (!currentNotificationPrefs.sound) return;
-        playTone(1046, 0.12, 'sine', 0, 0.30);
-        playTone(784, 0.15, 'sine', 0.15, 0.30);
-    }
-
-    function vibrateDevice() {
-        if (navigator.vibrate) {
-            try { navigator.vibrate([200, 100, 200]); } catch (e) {}
-        }
-    }
-
+    function playSendSound() { if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundSend) return; playTone(1318, 0.08, 'sine', 0, 0.25); playTone(1568, 0.06, 'sine', 0.04, 0.20); }
+    function playReceiveChatSound() { if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundReceive) return; playTone(880, 0.12, 'sine', 0, 0.28); playTone(1174, 0.14, 'sine', 0.10, 0.28); }
+    function playReceiveDMSound() { if (!currentNotificationPrefs.sound || !currentNotificationPrefs.soundReceive) return; playTone(784, 0.10, 'sine', 0, 0.30); playTone(988, 0.10, 'sine', 0.09, 0.30); playTone(1318, 0.18, 'sine', 0.18, 0.32); }
+    function playStatusSound() { if (!currentNotificationPrefs.sound) return; playTone(1046, 0.10, 'triangle', 0, 0.28); playTone(1318, 0.14, 'triangle', 0.10, 0.28); }
+    function playSeenSound() { if (!currentNotificationPrefs.sound) return; playTone(659, 0.10, 'sine', 0, 0.22); playTone(880, 0.14, 'sine', 0.08, 0.22); }
+    function playNotificationSound() { if (!currentNotificationPrefs.sound) return; playTone(1046, 0.12, 'sine', 0, 0.30); playTone(784, 0.15, 'sine', 0.15, 0.30); }
+    function vibrateDevice() { if (navigator.vibrate) { try { navigator.vibrate([200, 100, 200]); } catch (e) {} } }
     function playSoundForType(type) {
         switch (type) {
             case 'dm': playReceiveDMSound(); break;
@@ -1247,187 +1209,97 @@
         const notif = document.createElement('div');
         notif.className = 'inapp-notif ' + type;
         const img = document.createElement('img');
-        img.src = icon;
-        img.onerror = () => { img.src = DEFAULT_ICON; };
-        const textWrap = document.createElement('div');
-        textWrap.className = 'ni-text';
-        const titleEl = document.createElement('div');
-        titleEl.className = 'ni-title';
-        titleEl.textContent = title;
-        const bodyEl = document.createElement('div');
-        bodyEl.className = 'ni-body';
-        bodyEl.textContent = body;
-        textWrap.appendChild(titleEl);
-        textWrap.appendChild(bodyEl);
-        const iconEl = document.createElement('div');
-        iconEl.className = 'ni-icon';
-        iconEl.textContent = emoji;
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'ni-close';
-        closeBtn.textContent = '✕';
-        closeBtn.onclick = (e) => {
-            e.stopPropagation();
-            notif.style.animation = 'fadeIn .2s reverse';
-            setTimeout(() => notif.remove(), 200);
-        };
-        notif.appendChild(img);
-        notif.appendChild(textWrap);
-        notif.appendChild(iconEl);
-        notif.appendChild(closeBtn);
-        notif.onclick = () => {
-            if (typeof onClick === 'function') onClick();
-            notif.remove();
-        };
+        img.src = icon; img.onerror = () => { img.src = DEFAULT_ICON; };
+        const textWrap = document.createElement('div'); textWrap.className = 'ni-text';
+        const titleEl = document.createElement('div'); titleEl.className = 'ni-title'; titleEl.textContent = title;
+        const bodyEl = document.createElement('div'); bodyEl.className = 'ni-body'; bodyEl.textContent = body;
+        textWrap.appendChild(titleEl); textWrap.appendChild(bodyEl);
+        const iconEl = document.createElement('div'); iconEl.className = 'ni-icon'; iconEl.textContent = emoji;
+        const closeBtn = document.createElement('button'); closeBtn.className = 'ni-close'; closeBtn.textContent = '✕';
+        closeBtn.onclick = (e) => { e.stopPropagation(); notif.remove(); };
+        notif.appendChild(img); notif.appendChild(textWrap); notif.appendChild(iconEl); notif.appendChild(closeBtn);
+        notif.onclick = () => { if (typeof onClick === 'function') onClick(); notif.remove(); };
         container.appendChild(notif);
-        if (!skipSound) {
-            playSoundForType(type);
-            vibrateDevice();
-        }
-        setTimeout(() => {
-            if (notif.parentNode) {
-                notif.style.animation = 'fadeIn .3s reverse';
-                setTimeout(() => notif.remove(), 300);
-            }
-        }, 5000);
+        if (!skipSound) { playSoundForType(type); vibrateDevice(); }
+        setTimeout(() => { if (notif.parentNode) notif.remove(); }, 5000);
     }
 
     function notifyUser(title, body, icon, type, onClick, skipSound) {
         const prefMap = { dm: 'dm', chat: 'chat', status: 'status', status_seen: 'seen', new_status: 'status', report: 'chat', media: 'chat' };
         const prefKey = prefMap[type];
-        if (prefKey && currentNotificationPrefs[prefKey] === false) {
-            console.log('🔕 تم تجاهل إشعار لأن المستخدم عطّله:', type);
-            return;
-        }
+        if (prefKey && currentNotificationPrefs[prefKey] === false) return;
         if (notificationMode === 'fcm') {
-            if (!document.hidden) {
-                showInAppNotification({ title, body, icon, type, emoji: getEmojiForType(type), onClick, skipSound: skipSound === true });
-            }
+            if (!document.hidden) showInAppNotification({ title, body, icon, type, emoji: getEmojiForType(type), onClick, skipSound: skipSound === true });
             return;
         }
         showInAppNotification({ title, body, icon, type, emoji: getEmojiForType(type), onClick, skipSound: skipSound === true });
         if (notificationMode === 'webview' && 'Notification' in window && Notification.permission === 'granted') {
             try {
-                const n = new Notification(title, {
-                    body: body, icon: icon || DEFAULT_ICON, badge: DEFAULT_ICON,
-                    dir: 'rtl', lang: 'ar', tag: 'vissypro-' + type + '-' + Date.now(),
-                    silent: false
-                });
+                const n = new Notification(title, { body, icon: icon || DEFAULT_ICON, badge: DEFAULT_ICON, dir: 'rtl', lang: 'ar', tag: 'vissypro-' + type + '-' + Date.now() });
                 if (typeof onClick === 'function') n.onclick = () => { window.focus(); n.close(); onClick(); };
             } catch (e) {}
         }
     }
 
     function getEmojiForType(type) {
-        return {
-            dm: '💌', chat: '💬', status: '📸', status_seen: '👁️',
-            new_status: '📸', report: '🚩', media: '📎', general: '🔔'
-        }[type] || '🔔';
+        return { dm: '💌', chat: '💬', status: '📸', status_seen: '👁️', new_status: '📸', report: '🚩', media: '📎', general: '🔔' }[type] || '🔔';
     }
 
     // ============================================================
-    //  🔔 مستمعو الإشعارات داخل التطبيق
+    //  🔔 مستمعو الإشعارات
     // ============================================================
     function startInAppNotificationListeners() {
-        console.log('🚀 بدء مستمعي الإشعارات داخل التطبيق');
-
         if (inAppNotifListeners.dms) db.ref('dm_inbox/' + myFP).off('child_changed', inAppNotifListeners.dms);
         let lastPlayedDMTime = 0;
         inAppNotifListeners.dms = db.ref('dm_inbox/' + myFP).on('child_changed', snap => {
-            const uid = snap.key;
-            const d = snap.val();
+            const uid = snap.key; const d = snap.val();
             if (!d || !d.count || Number(d.count) <= 0) return;
-
             const msgTime = Number(d.lastTime) || Date.now();
-            if (msgTime > lastPlayedDMTime) {
-                lastPlayedDMTime = msgTime;
-                if (currentNotificationPrefs.sound && currentNotificationPrefs.soundReceive) {
-                    playReceiveDMSound();
-                    vibrateDevice();
-                }
-            }
-
+            if (msgTime > lastPlayedDMTime) { lastPlayedDMTime = msgTime; if (currentNotificationPrefs.sound && currentNotificationPrefs.soundReceive) { playReceiveDMSound(); vibrateDevice(); } }
             if (currentDMChat && currentDMChat.uid === uid) return;
             if (document.hidden && notificationMode === 'fcm') return;
-
-            notifyUser(
-                '💌 ' + (d.fromName || 'مجهول'),
-                d.lastMessage || 'رسالة جديدة',
-                d.fromAvatar || DEFAULT_ICON,
-                'dm',
-                () => openDMChat(uid),
-                true
-            );
+            notifyUser('💌 ' + (d.fromName || 'مجهول'), d.lastMessage || 'رسالة جديدة', d.fromAvatar || DEFAULT_ICON, 'dm', () => openDMChat(uid), true);
         });
 
         if (inAppNotifListeners.messages) db.ref('messages').off('child_added', inAppNotifListeners.messages);
         inAppNotifListeners.messages = db.ref('messages').limitToLast(1).on('child_added', snap => {
-            const m = snap.val();
-            if (!m) return;
-            if (m.uid === myFP) return;
+            const m = snap.val(); if (!m || m.uid === myFP) return;
             const t = Number(m.time) || Date.now();
             if (t <= lastSeenTimestamps.messages) return;
-            lastSeenTimestamps.messages = t;
-            localStorage.setItem('lst_msg', t);
-
-            if (currentNotificationPrefs.sound && currentNotificationPrefs.soundReceive) {
-                playReceiveChatSound();
-                vibrateDevice();
-            }
-
+            lastSeenTimestamps.messages = t; localStorage.setItem('lst_msg', t);
+            if (currentNotificationPrefs.sound && currentNotificationPrefs.soundReceive) { playReceiveChatSound(); vibrateDevice(); }
             if (currentTab === 'chat' && !document.hidden) return;
             if (document.hidden && notificationMode === 'fcm') return;
-
-            const preview = (m.text || '📎 وسائط').substring(0, 60);
-            notifyUser('💬 ' + (m.sender || 'مجهول'), preview, m.avatar || DEFAULT_ICON, 'chat', () => switchTab('chat'), true);
+            notifyUser('💬 ' + (m.sender || 'مجهول'), (m.text || '📎 وسائط').substring(0, 60), m.avatar || DEFAULT_ICON, 'chat', () => switchTab('chat'), true);
         });
 
         if (inAppNotifListeners.statuses) db.ref('statuses').off('child_added', inAppNotifListeners.statuses);
         inAppNotifListeners.statuses = db.ref('statuses').limitToLast(1).on('child_added', snap => {
-            const s = snap.val();
-            if (!s) return;
-            if (s.uid === myFP) return;
+            const s = snap.val(); if (!s || s.uid === myFP) return;
             const t = Number(s.time) || Date.now();
             if (t <= lastSeenTimestamps.statuses) return;
-            lastSeenTimestamps.statuses = t;
-            localStorage.setItem('lst_st', t);
-
-            if (currentNotificationPrefs.sound) {
-                playStatusSound();
-                vibrateDevice();
-            }
-
+            lastSeenTimestamps.statuses = t; localStorage.setItem('lst_st', t);
+            if (currentNotificationPrefs.sound) { playStatusSound(); vibrateDevice(); }
             if (document.hidden && notificationMode === 'fcm') return;
-            const preview = (s.text || '📸 حالة جديدة').substring(0, 60);
-            notifyUser('📸 ' + (s.sender || 'مجهول') + ' نشر حالة', preview, s.avatar || DEFAULT_ICON, 'status', () => { switchTab('status'); }, true);
+            notifyUser('📸 ' + (s.sender || 'مجهول') + ' نشر حالة', (s.text || '📸 حالة جديدة').substring(0, 60), s.avatar || DEFAULT_ICON, 'status', () => { switchTab('status'); }, true);
         });
 
         if (inAppNotifListeners.notifications) db.ref('notifications/' + myFP).off('child_added', inAppNotifListeners.notifications);
         inAppNotifListeners.notifications = db.ref('notifications/' + myFP).limitToLast(1).on('child_added', snap => {
-            const n = snap.val();
-            if (!n) return;
+            const n = snap.val(); if (!n) return;
             const t = Number(n.time) || Date.now();
             if (t <= lastSeenTimestamps.notifications) return;
-            lastSeenTimestamps.notifications = t;
-            localStorage.setItem('lst_nt', t);
-
+            lastSeenTimestamps.notifications = t; localStorage.setItem('lst_nt', t);
             if (n.type === 'new_report') {
-                if (currentNotificationPrefs.sound) {
-                    playStatusSound();
-                    vibrateDevice();
-                }
+                if (currentNotificationPrefs.sound) { playStatusSound(); vibrateDevice(); }
                 if (myRole === 'owner' && document.hidden && notificationMode === 'fcm') return;
                 notifyUser('🚩 بلاغ جديد', 'على: ' + (n.targetName || 'مجهول'), n.fromAvatar || DEFAULT_ICON, 'report', () => { if (myRole === 'owner') { closeAllModals(); toggleReportsModal(); } }, true);
             } else if (n.statusKey) {
-                if (currentNotificationPrefs.sound) {
-                    playSeenSound();
-                    vibrateDevice();
-                }
+                if (currentNotificationPrefs.sound) { playSeenSound(); vibrateDevice(); }
                 if (document.hidden && notificationMode === 'fcm') return;
                 notifyUser('👁️ ' + (n.from || 'مجهول') + ' شاهد حالتك', 'اضغط للاطلاع', n.fromAvatar || DEFAULT_ICON, 'status_seen', () => { switchTab('status'); }, true);
             }
         });
-
-        console.log('✅ مستمعو الإشعارات جاهزون');
     }
 
     // ============================================================
@@ -1437,57 +1309,35 @@
         if (!user) return 'offline';
         const lastSeen = Number(user.lastSeen) || 0;
         if (!lastSeen) return 'offline';
-        const timeSince = Date.now() - lastSeen;
-        if (timeSince > OFFLINE_THRESHOLD) return 'offline';
+        if (Date.now() - lastSeen > OFFLINE_THRESHOLD) return 'offline';
         const status = user.status || 'offline';
         if (status === 'online' || status === 'away') return status;
         return 'offline';
     }
-
-    function isUserOnline(user) {
-        const st = getUserEffectiveStatus(user);
-        return st === 'online' || st === 'away';
-    }
+    function isUserOnline(user) { const st = getUserEffectiveStatus(user); return st === 'online' || st === 'away'; }
 
     function startHeartbeat() {
-        const sendHeartbeat = () => {
-            if (!myFP) return;
-            if (document.hidden) return;
-            db.ref('users/' + myFP).update({ status: 'online', lastSeen: Date.now() }).catch(() => {});
-        };
-        const goOffline = () => {
-            if (!myFP) return;
-            db.ref('users/' + myFP).update({ status: 'offline', lastSeen: Date.now() }).catch(() => {});
-        };
-        const startInterval = () => {
-            if (heartbeatInterval) clearInterval(heartbeatInterval);
-            sendHeartbeat();
-            heartbeatInterval = setInterval(sendHeartbeat, HEARTBEAT_INTERVAL);
-        };
-        const stopInterval = () => {
-            if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
-        };
+        const sendHeartbeat = () => { if (!myFP || document.hidden) return; db.ref('users/' + myFP).update({ status: 'online', lastSeen: Date.now() }).catch(() => {}); };
+        const goOffline = () => { if (!myFP) return; db.ref('users/' + myFP).update({ status: 'offline', lastSeen: Date.now() }).catch(() => {}); };
+        const startInterval = () => { if (heartbeatInterval) clearInterval(heartbeatInterval); sendHeartbeat(); heartbeatInterval = setInterval(sendHeartbeat, HEARTBEAT_INTERVAL); };
+        const stopInterval = () => { if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; } };
         db.ref('users/' + myFP).onDisconnect().update({ status: 'offline', lastSeen: Date.now() }).catch(() => {});
         document.addEventListener('visibilitychange', () => {
             isPageVisible = !document.hidden;
             if (isPageVisible) startInterval();
             else { stopInterval(); goOffline(); }
         });
-        const setOffline = () => {
-            db.ref('users/' + myFP).update({ status: 'offline', lastSeen: Date.now() }).catch(() => {});
-        };
+        const setOffline = () => { db.ref('users/' + myFP).update({ status: 'offline', lastSeen: Date.now() }).catch(() => {}); };
         window.addEventListener('beforeunload', setOffline);
         window.addEventListener('pagehide', setOffline);
-        if (!document.hidden) startInterval();
-        else goOffline();
+        if (!document.hidden) startInterval(); else goOffline();
     }
 
     function startPresenceChecker() {
         if (presenceCheckInterval) clearInterval(presenceCheckInterval);
         presenceCheckInterval = setInterval(() => {
             if (Object.keys(allUsersData).length > 0) {
-                updateUsersList();
-                updateOnlineBadge();
+                updateUsersList(); updateOnlineBadge();
                 if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
             }
         }, PRESENCE_CHECK_INTERVAL);
@@ -1508,7 +1358,6 @@
             }
         });
     }
-
     function findBadWord(text) {
         if (!text || badWordsList.length === 0) return null;
         const lower = String(text).toLowerCase();
@@ -1520,35 +1369,18 @@
         }
         return null;
     }
-
-    function blockIfBadWord(text) {
-        if (!text) return false;
-        return !!findBadWord(text);
-    }
+    function blockIfBadWord(text) { if (!text) return false; return !!findBadWord(text); }
 
     // ============================================================
-    //  🔔 تفضيلات الإشعارات والأصوات
+    //  🔔 تفضيلات الإشعارات
     // ============================================================
     function listenNotificationPrefs() {
         if (notifPrefsListener) db.ref('notification_prefs/' + myFP).off('value', notifPrefsListener);
         notifPrefsListener = db.ref('notification_prefs/' + myFP).on('value', snap => {
             const d = snap.val() || {};
-            currentNotificationPrefs = {
-                dm: d.dm !== false,
-                chat: d.chat !== false,
-                status: d.status !== false,
-                seen: d.seen !== false,
-                sound: d.sound !== false,
-                soundSend: d.soundSend !== false,
-                soundReceive: d.soundReceive !== false
-            };
-            const dmT = document.getElementById('notif-dm-toggle');
-            const chatT = document.getElementById('notif-chat-toggle');
-            const statusT = document.getElementById('notif-status-toggle');
-            const seenT = document.getElementById('notif-seen-toggle');
-            const soundT = document.getElementById('sound-toggle');
-            const soundSendT = document.getElementById('sound-send-toggle');
-            const soundRecT = document.getElementById('sound-receive-toggle');
+            currentNotificationPrefs = { dm: d.dm !== false, chat: d.chat !== false, status: d.status !== false, seen: d.seen !== false, sound: d.sound !== false, soundSend: d.soundSend !== false, soundReceive: d.soundReceive !== false };
+            const dmT = document.getElementById('notif-dm-toggle'), chatT = document.getElementById('notif-chat-toggle'), statusT = document.getElementById('notif-status-toggle'), seenT = document.getElementById('notif-seen-toggle');
+            const soundT = document.getElementById('sound-toggle'), soundSendT = document.getElementById('sound-send-toggle'), soundRecT = document.getElementById('sound-receive-toggle');
             if (dmT) dmT.checked = currentNotificationPrefs.dm;
             if (chatT) chatT.checked = currentNotificationPrefs.chat;
             if (statusT) statusT.checked = currentNotificationPrefs.status;
@@ -1561,104 +1393,58 @@
     }
 
     async function saveNotificationPrefs() {
-        const prefs = {
-            dm: document.getElementById('notif-dm-toggle').checked,
-            chat: document.getElementById('notif-chat-toggle').checked,
-            status: document.getElementById('notif-status-toggle').checked,
-            seen: document.getElementById('notif-seen-toggle').checked,
-            sound: document.getElementById('sound-toggle').checked,
-            soundSend: document.getElementById('sound-send-toggle').checked,
-            soundReceive: document.getElementById('sound-receive-toggle').checked,
-            updatedAt: Date.now()
-        };
+        const prefs = { dm: document.getElementById('notif-dm-toggle').checked, chat: document.getElementById('notif-chat-toggle').checked, status: document.getElementById('notif-status-toggle').checked, seen: document.getElementById('notif-seen-toggle').checked, sound: document.getElementById('sound-toggle').checked, soundSend: document.getElementById('sound-send-toggle').checked, soundReceive: document.getElementById('sound-receive-toggle').checked, updatedAt: Date.now() };
         try {
             await db.ref('notification_prefs/' + myFP).set(prefs);
             currentNotificationPrefs = prefs;
             alert('✅ تم حفظ التفضيلات');
             document.getElementById('notification-settings-modal').classList.remove('active');
-            updateNotifStatusBadge();
-            updateSoundButton();
+            updateNotifStatusBadge(); updateSoundButton();
         } catch (e) { alert('❌ خطأ: ' + e.message); }
     }
 
     function updateSoundButton() {
-        const btn = document.getElementById('sound-btn');
-        if (!btn) return;
+        const btn = document.getElementById('sound-btn'); if (!btn) return;
         btn.textContent = currentNotificationPrefs.sound ? '🔊' : '🔇';
         btn.title = currentNotificationPrefs.sound ? 'الصوت مفعل' : 'الصوت معطل';
     }
 
     async function toggleSoundQuick() {
         currentNotificationPrefs.sound = !currentNotificationPrefs.sound;
-        try {
-            await db.ref('notification_prefs/' + myFP + '/sound').set(currentNotificationPrefs.sound);
-            updateSoundButton();
-            if (currentNotificationPrefs.sound) {
-                playTone(1046, 0.15, 'sine', 0, 0.3);
-            }
-        } catch (e) {}
+        try { await db.ref('notification_prefs/' + myFP + '/sound').set(currentNotificationPrefs.sound); updateSoundButton(); if (currentNotificationPrefs.sound) playTone(1046, 0.15, 'sine', 0, 0.3); } catch (e) {}
     }
 
     function updateNotifStatusBadge() {
-        const badge = document.getElementById('prof-notif-status');
-        if (!badge) return;
-        if (notificationMode === 'inapp' || ENV.isWebView) {
-            badge.textContent = '📱 إشعارات داخلية (APK)';
-            badge.className = 'notif-status-badge inapp';
-            return;
-        }
-        if (!ENV.hasNotification) {
-            badge.textContent = '⚠️ غير مدعوم';
-            badge.className = 'notif-status-badge not-supported';
-        } else if (Notification.permission === 'granted' && fcmToken) {
-            badge.textContent = '✅ مفعلة (Push)';
-            badge.className = 'notif-status-badge enabled';
-        } else if (Notification.permission === 'denied') {
-            badge.textContent = '🔕 مرفوضة';
-            badge.className = 'notif-status-badge disabled';
-        } else {
-            badge.textContent = '⚪ غير مفعلة';
-            badge.className = 'notif-status-badge disabled';
-        }
+        const badge = document.getElementById('prof-notif-status'); if (!badge) return;
+        if (notificationMode === 'inapp' || ENV.isWebView) { badge.textContent = '📱 إشعارات داخلية (APK)'; badge.className = 'notif-status-badge inapp'; return; }
+        if (!ENV.hasNotification) { badge.textContent = '⚠️ غير مدعوم'; badge.className = 'notif-status-badge not-supported'; }
+        else if (Notification.permission === 'granted' && fcmToken) { badge.textContent = '✅ مفعلة (Push)'; badge.className = 'notif-status-badge enabled'; }
+        else if (Notification.permission === 'denied') { badge.textContent = '🔕 مرفوضة'; badge.className = 'notif-status-badge disabled'; }
+        else { badge.textContent = '⚪ غير مفعلة'; badge.className = 'notif-status-badge disabled'; }
     }
 
     function openNotificationSettings() {
-        const permBadge = document.getElementById('notif-perm-badge');
-        const permText = document.getElementById('notif-perm-text');
-        const enableBtn = document.getElementById('enable-notif-btn');
+        const permBadge = document.getElementById('notif-perm-badge'), permText = document.getElementById('notif-perm-text'), enableBtn = document.getElementById('enable-notif-btn');
         if (notificationMode === 'inapp' || ENV.isWebView) {
-            permBadge.textContent = '📱 الإشعارات داخل التطبيق مفعلة';
-            permBadge.className = 'notif-status-badge inapp';
-            permText.textContent = 'ستصلك الإشعارات داخل التطبيق للرسائل والحالات والمشاهدات';
-            enableBtn.textContent = '✅ الإشعارات داخل التطبيق مفعلة';
-            enableBtn.disabled = true;
-            enableBtn.style.opacity = '0.6';
+            permBadge.textContent = '📱 الإشعارات داخل التطبيق مفعلة'; permBadge.className = 'notif-status-badge inapp';
+            permText.textContent = 'ستصلك الإشعارات داخل التطبيق';
+            enableBtn.textContent = '✅ الإشعارات داخل التطبيق مفعلة'; enableBtn.disabled = true; enableBtn.style.opacity = '0.6';
         } else if (!ENV.hasNotification) {
-            permBadge.textContent = '⚠️ الإشعارات غير مدعومة';
-            permBadge.className = 'notif-status-badge not-supported';
-            permText.textContent = 'متصفحك لا يدعم إشعارات النظام، لكن الإشعارات داخل التطبيق تعمل';
-            enableBtn.textContent = '📱 الإشعارات داخل التطبيق مفعلة';
-            enableBtn.disabled = true;
-            enableBtn.style.opacity = '0.6';
+            permBadge.textContent = '⚠️ غير مدعوم'; permBadge.className = 'notif-status-badge not-supported';
+            permText.textContent = 'متصفحك لا يدعم إشعارات النظام';
+            enableBtn.textContent = '📱 الإشعارات الداخلية مفعلة'; enableBtn.disabled = true; enableBtn.style.opacity = '0.6';
         } else if (Notification.permission === 'granted' && fcmToken) {
-            permBadge.textContent = '✅ الإشعارات مفعلة';
-            permBadge.className = 'notif-status-badge enabled';
+            permBadge.textContent = '✅ الإشعارات مفعلة'; permBadge.className = 'notif-status-badge enabled';
             permText.textContent = 'هذا الجهاز مسجل في إشعارات Push';
-            enableBtn.textContent = '✅ الإشعارات مفعلة';
-            enableBtn.disabled = true;
-            enableBtn.style.opacity = '0.6';
+            enableBtn.textContent = '✅ الإشعارات مفعلة'; enableBtn.disabled = true; enableBtn.style.opacity = '0.6';
         } else if (Notification.permission === 'denied') {
-            permBadge.textContent = '🔕 مرفوضة';
-            permBadge.className = 'notif-status-badge disabled';
-            permText.textContent = 'يرجى السماح بالإشعارات من إعدادات المتصفح';
-            enableBtn.textContent = '🔕 مرفوضة';
-            enableBtn.disabled = false;
+            permBadge.textContent = '🔕 مرفوضة'; permBadge.className = 'notif-status-badge disabled';
+            permText.textContent = 'يرجى السماح من إعدادات المتصفح';
+            enableBtn.textContent = '🔕 مرفوضة'; enableBtn.disabled = false;
         } else {
-            permBadge.textContent = '⚪ لم تُفعّل بعد';
-            permBadge.className = 'notif-status-badge disabled';
-            permText.textContent = 'اضغط الزر أدناه لتفعيل الإشعارات';
-            enableBtn.textContent = '📲 تفعيل الإشعارات';
-            enableBtn.disabled = false;
+            permBadge.textContent = '⚪ لم تُفعّل'; permBadge.className = 'notif-status-badge disabled';
+            permText.textContent = 'اضغط الزر أدناه';
+            enableBtn.textContent = '📲 تفعيل الإشعارات'; enableBtn.disabled = false;
         }
         document.getElementById('notif-dm-toggle').checked = currentNotificationPrefs.dm;
         document.getElementById('notif-chat-toggle').checked = currentNotificationPrefs.chat;
@@ -1671,169 +1457,72 @@
     }
 
     // ============================================================
-    //  🎯 طلب الإذن
+    //  🎯 طلب الإذن + FCM
     // ============================================================
     async function requestNotificationPermission() {
-        if (ENV.isWebView || notificationMode === 'inapp') {
-            alert('📱 الإشعارات داخل التطبيق مفعلة تلقائياً.\nستصلك إشعارات للرسائل والحالات.');
-            openNotificationSettings();
-            return;
-        }
-        if (!ENV.hasNotification) {
-            notificationMode = 'inapp';
-            startInAppNotificationListeners();
-            alert('📱 سيتم استخدام إشعارات داخل التطبيق');
-            return;
-        }
-        if (Notification.permission === 'denied') {
-            alert('🔕 الإشعارات مرفوضة من المتصفح.\n\nChrome: الإعدادات → الخصوصية → الإشعارات\nSafari: الإعدادات → Safari → إشعارات');
-            return;
-        }
-        if (Notification.permission === 'granted') {
-            if (!messaging && ENV.hasServiceWorker) await initFCM();
-            await saveFCMToken();
-            updateFCMButton();
-            updateNotifStatusBadge();
-            if (document.getElementById('notification-settings-modal').classList.contains('active')) openNotificationSettings();
-            alert('✅ الإشعارات مفعلة مسبقاً');
-            return;
-        }
+        if (ENV.isWebView || notificationMode === 'inapp') { alert('📱 الإشعارات داخل التطبيق مفعلة'); openNotificationSettings(); return; }
+        if (!ENV.hasNotification) { notificationMode = 'inapp'; startInAppNotificationListeners(); alert('📱 استخدام إشعارات داخلية'); return; }
+        if (Notification.permission === 'denied') { alert('🔕 مرفوضة من المتصفح'); return; }
+        if (Notification.permission === 'granted') { if (!messaging && ENV.hasServiceWorker) await initFCM(); await saveFCMToken(); updateFCMButton(); updateNotifStatusBadge(); if (document.getElementById('notification-settings-modal').classList.contains('active')) openNotificationSettings(); alert('✅ مفعلة مسبقاً'); return; }
         try {
             const p = await Notification.requestPermission();
-            if (p === 'granted') {
-                if (!messaging && ENV.hasServiceWorker) await initFCM();
-                await saveFCMToken();
-                updateFCMButton();
-                updateNotifStatusBadge();
-                if (document.getElementById('notification-settings-modal').classList.contains('active')) openNotificationSettings();
-                alert('✅ تم تفعيل الإشعارات! ستصلك حتى لو التطبيق مغلق.');
-            } else {
-                alert('⚠️ لم يتم تفعيل الإشعارات.');
-            }
-        } catch (e) {
-            notificationMode = 'inapp';
-            startInAppNotificationListeners();
-        }
+            if (p === 'granted') { if (!messaging && ENV.hasServiceWorker) await initFCM(); await saveFCMToken(); updateFCMButton(); updateNotifStatusBadge(); if (document.getElementById('notification-settings-modal').classList.contains('active')) openNotificationSettings(); alert('✅ تم تفعيل الإشعارات!'); }
+            else alert('⚠️ لم يتم التفعيل');
+        } catch (e) { notificationMode = 'inapp'; startInAppNotificationListeners(); }
     }
 
-    // ============================================================
-    //  🚀 FCM
-    // ============================================================
     async function initFCM() {
-        if (!ENV.hasServiceWorker || !ENV.hasNotification) {
-            notificationMode = 'inapp';
-            startInAppNotificationListeners();
-            return false;
-        }
-        if (typeof firebase.messaging !== 'function') {
-            notificationMode = 'inapp';
-            startInAppNotificationListeners();
-            return false;
-        }
+        if (!ENV.hasServiceWorker || !ENV.hasNotification) { notificationMode = 'inapp'; startInAppNotificationListeners(); return false; }
+        if (typeof firebase.messaging !== 'function') { notificationMode = 'inapp'; startInAppNotificationListeners(); return false; }
         try {
             swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
-            console.log('✅ تم تسجيل Service Worker');
             messaging = firebase.messaging();
             try { messaging.useServiceWorker(swRegistration); } catch (e) {}
             messaging.onMessage((payload) => {
-                console.log('📬 FCM foreground:', payload);
-                const n = payload.notification || {};
-                const d = payload.data || {};
-                const title = n.title || d.title || 'فيسي برو';
-                const body = n.body || d.body || '';
-                const icon = n.icon || d.icon || DEFAULT_ICON;
-                const type = d.type || 'general';
-                notifyUser(title, body, icon, type, () => { window.focus(); });
+                const n = payload.notification || {}, d = payload.data || {};
+                notifyUser(n.title || d.title || 'فيسي برو', n.body || d.body || '', n.icon || d.icon || DEFAULT_ICON, d.type || 'general', () => { window.focus(); });
             });
-            messaging.onTokenRefresh(async () => {
-                fcmToken = null;
-                await saveFCMToken();
-            });
-            if (Notification.permission === 'granted') {
-                await saveFCMToken();
-            }
-            updateFCMButton();
-            updateNotifStatusBadge();
+            messaging.onTokenRefresh(async () => { fcmToken = null; await saveFCMToken(); });
+            if (Notification.permission === 'granted') await saveFCMToken();
+            updateFCMButton(); updateNotifStatusBadge();
             return true;
-        } catch (e) {
-            notificationMode = 'inapp';
-            startInAppNotificationListeners();
-            return false;
-        }
+        } catch (e) { notificationMode = 'inapp'; startInAppNotificationListeners(); return false; }
     }
 
     async function saveFCMToken() {
         if (!messaging) return null;
         try {
             const token = await messaging.getToken({ vapidKey: VAPID_KEY });
-            if (token && token !== fcmToken) {
-                fcmToken = token;
-                localStorage.setItem('fcm_token', token);
-            }
+            if (token && token !== fcmToken) { fcmToken = token; localStorage.setItem('fcm_token', token); }
             if (fcmToken && myFP && myName) {
-                await db.ref('fcm_tokens/' + myFP).update({
-                    token: fcmToken,
-                    name: myName || '',
-                    avatar: myAvatar || '',
-                    role: myRole || 'user',
-                    updatedAt: Date.now(),
-                    platform: ENV.isWebView ? 'webview' : 'web',
-                    ua: navigator.userAgent.substring(0, 120)
-                });
+                await db.ref('fcm_tokens/' + myFP).update({ token: fcmToken, name: myName || '', avatar: myAvatar || '', role: myRole || 'user', updatedAt: Date.now(), platform: ENV.isWebView ? 'webview' : 'web', ua: navigator.userAgent.substring(0, 120) });
             }
             updateNotifStatusBadge();
             return fcmToken;
-        } catch (e) {
-            return null;
-        }
+        } catch (e) { return null; }
     }
 
     function updateFCMButton() {
-        const btn = document.getElementById('fcm-btn');
-        if (!btn) return;
+        const btn = document.getElementById('fcm-btn'); if (!btn) return;
         if (ENV.isWebView || notificationMode === 'inapp') { btn.style.display = 'none'; return; }
         if (!ENV.hasNotification) { btn.style.display = 'none'; return; }
-        if (Notification.permission === 'granted') {
-            btn.style.display = 'none';
-        } else {
-            btn.style.display = 'inline-block';
-            btn.style.animation = 'pulseFCM 1.5s infinite';
-        }
+        if (Notification.permission === 'granted') { btn.style.display = 'none'; }
+        else { btn.style.display = 'inline-block'; btn.style.animation = 'pulseFCM 1.5s infinite'; }
         updateNotifStatusBadge();
     }
 
     async function autoRequestNotificationPermission() {
-        if (ENV.isWebView || notificationMode === 'inapp') {
-            startInAppNotificationListeners();
-            return;
-        }
-        if (!ENV.hasNotification) {
-            notificationMode = 'inapp';
-            startInAppNotificationListeners();
-            return;
-        }
+        if (ENV.isWebView || notificationMode === 'inapp') { startInAppNotificationListeners(); return; }
+        if (!ENV.hasNotification) { notificationMode = 'inapp'; startInAppNotificationListeners(); return; }
         if (Notification.permission === 'default') {
             setTimeout(async () => {
                 try {
                     const p = await Notification.requestPermission();
-                    if (p === 'granted') {
-                        if (!messaging && ENV.hasServiceWorker) await initFCM();
-                        await saveFCMToken();
-                        updateFCMButton();
-                        updateNotifStatusBadge();
-                    }
-                } catch (e) {
-                    notificationMode = 'inapp';
-                    startInAppNotificationListeners();
-                }
+                    if (p === 'granted') { if (!messaging && ENV.hasServiceWorker) await initFCM(); await saveFCMToken(); updateFCMButton(); updateNotifStatusBadge(); }
+                } catch (e) { notificationMode = 'inapp'; startInAppNotificationListeners(); }
             }, 2500);
-        } else if (Notification.permission === 'granted') {
-            await saveFCMToken();
-            updateNotifStatusBadge();
-        } else {
-            notificationMode = 'inapp';
-            startInAppNotificationListeners();
-        }
+        } else if (Notification.permission === 'granted') { await saveFCMToken(); updateNotifStatusBadge(); }
+        else { notificationMode = 'inapp'; startInAppNotificationListeners(); }
     }
 
     // ============================================================
@@ -1841,57 +1530,30 @@
     // ============================================================
     function applyCustomFont(url, name) {
         let styleTag = document.getElementById('custom-app-font-style');
-        if (!styleTag) {
-            styleTag = document.createElement('style');
-            styleTag.id = 'custom-app-font-style';
-            document.head.appendChild(styleTag);
-        }
-        if (!url) {
-            styleTag.textContent = '';
-            document.documentElement.style.setProperty('--font-main', "'alfont_com_سلطان-بلاك', 'Cairo', sans-serif");
-        } else {
-            styleTag.textContent = `@font-face { font-family: 'CustomAppFont'; src: url('${url}') format('truetype'), url('${url}') format('opentype'), url('${url}') format('woff'), url('${url}') format('woff2'); font-weight: normal; font-style: normal; font-display: swap; }`;
-            document.documentElement.style.setProperty('--font-main', "'CustomAppFont', 'alfont_com_سلطان-بلاك', 'Cairo', sans-serif");
-        }
+        if (!styleTag) { styleTag = document.createElement('style'); styleTag.id = 'custom-app-font-style'; document.head.appendChild(styleTag); }
+        if (!url) { styleTag.textContent = ''; document.documentElement.style.setProperty('--font-main', "'alfont_com_سلطان-بلاك', 'Cairo', sans-serif"); }
+        else { styleTag.textContent = `@font-face { font-family: 'CustomAppFont'; src: url('${url}') format('truetype'), url('${url}') format('opentype'), url('${url}') format('woff'), url('${url}') format('woff2'); font-weight: normal; font-style: normal; font-display: swap; }`; document.documentElement.style.setProperty('--font-main', "'CustomAppFont', 'alfont_com_سلطان-بلاك', 'Cairo', sans-serif"); }
     }
-
     function listenFontSettings() {
         if (fontSettingsListener) db.ref('app_settings/font_url').off('value', fontSettingsListener);
         fontSettingsListener = db.ref('app_settings/font_url').on('value', snap => {
             const data = snap.val();
-            if (data && typeof data === 'object') {
-                currentFontUrl = data.url || null;
-                currentFontName = data.name || '';
-            } else if (typeof data === 'string') {
-                currentFontUrl = data;
-                currentFontName = '';
-            } else {
-                currentFontUrl = null;
-                currentFontName = '';
-            }
-            applyCustomFont(currentFontUrl, currentFontName);
-            updateFontUI();
+            if (data && typeof data === 'object') { currentFontUrl = data.url || null; currentFontName = data.name || ''; }
+            else if (typeof data === 'string') { currentFontUrl = data; currentFontName = ''; }
+            else { currentFontUrl = null; currentFontName = ''; }
+            applyCustomFont(currentFontUrl, currentFontName); updateFontUI();
         });
     }
-
     function updateFontUI() {
-        const nameEl = document.getElementById('current-font-name');
-        const infoEl = document.getElementById('fp-info');
+        const nameEl = document.getElementById('current-font-name'), infoEl = document.getElementById('fp-info');
         if (nameEl) nameEl.textContent = currentFontName || (currentFontUrl ? 'خط مخصص' : 'الخط الافتراضي');
         if (infoEl) infoEl.textContent = currentFontUrl ? '✓ خط مخصص مطبّق' : 'معاينة الخط الافتراضي';
     }
-
     function openAdvancedSettings() {
         if (myRole !== 'owner') return alert('⛔ فقط المالك!');
-        pendingFontFile = null;
-        document.getElementById('font-file-input').value = '';
-        document.getElementById('selected-font-info').textContent = '';
-        document.getElementById('upload-font-btn').disabled = true;
-        updateFontUI();
-        document.getElementById('advanced-modal').classList.add('active');
-        document.getElementById('modal-overlay').classList.add('show');
+        pendingFontFile = null; document.getElementById('font-file-input').value = ''; document.getElementById('selected-font-info').textContent = ''; document.getElementById('upload-font-btn').disabled = true;
+        updateFontUI(); document.getElementById('advanced-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show');
     }
-
     function handleFontFile(input) {
         if (myRole !== 'owner') { alert('⛔'); input.value = ''; return; }
         if (!input.files || !input.files[0]) return;
@@ -1902,83 +1564,50 @@
         document.getElementById('selected-font-info').innerHTML = '📎 <strong>' + escapeHtml(f.name) + '</strong> (' + (f.size / 1024).toFixed(1) + ' KB)';
         document.getElementById('upload-font-btn').disabled = false;
     }
-
     async function uploadFontToCloudinary(f) {
         const cn = 'nfg03aku', up = 'daufafvn';
         const url = 'https://api.cloudinary.com/v1_1/' + cn + '/raw/upload';
-        const fd = new FormData();
-        fd.append('file', f);
-        fd.append('upload_preset', up);
+        const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', up);
         const r = await fetch(url, { method: 'POST', body: fd });
         if (!r.ok) throw new Error('HTTP ' + r.status);
-        const d = await r.json();
-        return d.secure_url || null;
+        const d = await r.json(); return d.secure_url || null;
     }
-
     async function uploadAndApplyFont() {
         if (myRole !== 'owner') return alert('⛔');
         if (!pendingFontFile) return alert('اختر ملف');
-        const btn = document.getElementById('upload-font-btn');
-        btn.disabled = true; btn.textContent = '⏳ جاري الرفع...';
+        const btn = document.getElementById('upload-font-btn'); btn.disabled = true; btn.textContent = '⏳ جاري الرفع...';
         try {
             const fontUrl = await uploadFontToCloudinary(pendingFontFile);
             if (!fontUrl) throw new Error('فشل');
             await db.ref('app_settings/font_url').set({ url: fontUrl, name: pendingFontFile.name, by: myName, at: Date.now() });
             alert('✅ تم رفع الخط!');
-            pendingFontFile = null;
-            document.getElementById('font-file-input').value = '';
-            document.getElementById('selected-font-info').textContent = '';
+            pendingFontFile = null; document.getElementById('font-file-input').value = ''; document.getElementById('selected-font-info').textContent = '';
         } catch (e) { alert('❌ ' + e.message); }
         btn.disabled = false; btn.textContent = '💾 رفع وتطبيق';
     }
-
     async function resetFontToDefault() {
         if (myRole !== 'owner') return alert('⛔');
         if (!confirm('إعادة الخط الافتراضي؟')) return;
-        try { await db.ref('app_settings/font_url').remove(); alert('✅'); }
-        catch (e) { alert('❌ ' + e.message); }
+        try { await db.ref('app_settings/font_url').remove(); alert('✅'); } catch (e) { alert('❌ ' + e.message); }
     }
 
     // ============================================================
     //  🔐 الأمان والدخول
     // ============================================================
-    async function getDeviceFingerprint() {
-        try {
-            const f = await FingerprintJS.load(), r = await f.get();
-            return 'fp_' + r.visitorId;
-        } catch (e) {
-            return 'fp_fallback_' + Math.random().toString(36).substr(2, 9);
-        }
-    }
-
+    async function getDeviceFingerprint() { try { const f = await FingerprintJS.load(), r = await f.get(); return 'fp_' + r.visitorId } catch (e) { return 'fp_fallback_' + Math.random().toString(36).substr(2, 9) } }
     async function checkSecurity(fp, name) {
         const c = { banned: false, muted: false };
-        const b = await db.ref('bans/' + fp).once('value');
-        if (b.exists()) { c.banned = true; return c; }
-        const m = await db.ref('mutes/' + fp).once('value');
-        if (m.exists()) {
-            const d = m.val();
-            if (d.endTime > Date.now() || d.endTime === 9999999999999) {
-                c.muted = true;
-                muteEndTime = d.endTime;
-            }
-        }
+        const b = await db.ref('bans/' + fp).once('value'); if (b.exists()) { c.banned = true; return c }
+        const m = await db.ref('mutes/' + fp).once('value'); if (m.exists()) { const d = m.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { c.muted = true; muteEndTime = d.endTime } }
         return c;
     }
-
-    async function linkFingerprint(fp, name) {
-        if (!name) return;
-        const t = Date.now();
-        await db.ref('name_links/' + name.toLowerCase() + '/' + fp).set(t);
-        await db.ref('fp_links/' + fp + '/' + name.toLowerCase()).set(t);
-    }
+    async function linkFingerprint(fp, name) { if (!name) return; const t = Date.now(); await db.ref('name_links/' + name.toLowerCase() + '/' + fp).set(t); await db.ref('fp_links/' + fp + '/' + name.toLowerCase()).set(t) }
 
     async function init() {
         document.getElementById('loading-screen').style.display = 'none';
         myFP = await getDeviceFingerprint();
         localStorage.setItem("fp", myFP);
-        listenFontSettings();
-        listenBadWords();
+        listenFontSettings(); listenBadWords();
         if (myName) {
             const s = await checkSecurity(myFP, myName);
             if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
@@ -1993,14 +1622,8 @@
         if (n.length < 2) return alert("الاسم قصير!");
         unlockAudio();
         const s = await checkSecurity(myFP, n);
-        if (s.banned) {
-            isBanned = true;
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('ban-screen').style.display = 'flex';
-            return;
-        }
-        myName = n;
-        localStorage.setItem("name", myName);
+        if (s.banned) { isBanned = true; document.getElementById('login-screen').style.display = 'none'; document.getElementById('ban-screen').style.display = 'flex'; return; }
+        myName = n; localStorage.setItem("name", myName);
         if (s.muted) isMuted = true;
         await linkFingerprint(myFP, myName);
         enterChat();
@@ -2008,18 +1631,10 @@
 
     function enterChat() {
         document.getElementById('login-screen').style.display = 'none';
-        startHeartbeat();
-        startPresenceChecker();
+        startHeartbeat(); startPresenceChecker();
         db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
         db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
-        db.ref('users/' + myFP).on('value', snap => {
-            if (myName && !snap.exists()) {
-                alert("⚠️ تم حذف حسابك!");
-                localStorage.clear();
-                myName = '';
-                location.reload();
-            }
-        });
+        db.ref('users/' + myFP).on('value', snap => { if (myName && !snap.exists()) { alert("⚠️ تم حذف حسابك!"); localStorage.clear(); myName = ''; location.reload(); } });
         db.ref('users/' + myFP + '/role').on('value', s => {
             myRole = s.val() || "user";
             updateUI();
@@ -2029,55 +1644,29 @@
                 db.ref('users/' + myFP + '/hidden').once('value', snap => { isHidden = snap.val() || false; updateHiddenButton(); });
                 document.getElementById('reports-btn').style.display = 'inline-block';
                 listenReports();
-            } else {
-                hiddenControl.style.display = 'none';
-                document.getElementById('reports-btn').style.display = 'none';
-            }
+            } else { hiddenControl.style.display = 'none'; document.getElementById('reports-btn').style.display = 'none'; }
             saveFCMToken();
         });
         db.ref('users/' + myFP + '/hidden').on('value', snap => { isHidden = snap.val() || false; updateHiddenButton(); updateUsersList(); updateOnlineBadge(); });
-        db.ref('bans/' + myFP).on('value', s => {
-            if (s.exists() && !isBanned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; }
-            else if (!s.exists() && isBanned) { isBanned = false; document.getElementById('ban-screen').style.display = 'none'; }
-        });
-        db.ref('mutes/' + myFP).on('value', s => {
-            if (s.exists()) {
-                const d = s.val();
-                if (d.endTime > Date.now() || d.endTime === 9999999999999) { isMuted = true; muteEndTime = d.endTime; }
-                else { isMuted = false; muteEndTime = 0; }
-            } else { isMuted = false; muteEndTime = 0; }
-            updateMuteUI();
-        });
-        startListeners();
-        loadColorSettings();
-        listenMaintenance();
-        listenMyDMPermission();
-        listenDMInbox();
-        listenNotificationPrefs();
+        db.ref('bans/' + myFP).on('value', s => { if (s.exists() && !isBanned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; } else if (!s.exists() && isBanned) { isBanned = false; document.getElementById('ban-screen').style.display = 'none'; } });
+        db.ref('mutes/' + myFP).on('value', s => { if (s.exists()) { const d = s.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { isMuted = true; muteEndTime = d.endTime; } else { isMuted = false; muteEndTime = 0; } } else { isMuted = false; muteEndTime = 0; } updateMuteUI(); });
+        startListeners(); loadColorSettings(); listenMaintenance(); listenMyDMPermission(); listenDMInbox(); listenNotificationPrefs();
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', (event) => {
                 if (event.data && event.data.type === 'NOTIFICATION_CLICKED') {
                     const d = event.data.data || {};
-                    if (d.type === 'dm' && d.fromUid) {
-                        setTimeout(() => openDMChat(d.fromUid), 800);
-                    } else if (d.type === 'chat') {
-                        setTimeout(() => switchTab('chat'), 500);
-                    } else if (d.type === 'new_status') {
-                        setTimeout(() => switchTab('status'), 500);
-                    }
+                    if (d.type === 'dm' && d.fromUid) setTimeout(() => openDMChat(d.fromUid), 800);
+                    else if (d.type === 'chat') setTimeout(() => switchTab('chat'), 500);
+                    else if (d.type === 'new_status') setTimeout(() => switchTab('status'), 500);
                 }
             });
         }
 
         setTimeout(() => {
             startInAppNotificationListeners();
-            if (ENV.hasServiceWorker && ENV.hasNotification && !ENV.isWebView) {
-                initFCM().then(() => autoRequestNotificationPermission());
-            } else {
-                updateFCMButton();
-                updateNotifStatusBadge();
-            }
+            if (ENV.hasServiceWorker && ENV.hasNotification && !ENV.isWebView) initFCM().then(() => autoRequestNotificationPermission());
+            else { updateFCMButton(); updateNotifStatusBadge(); }
         }, 1500);
     }
 
@@ -2090,18 +1679,12 @@
             maintenanceData.testers = d.testers || {};
             isTester = maintenanceData.testers[myFP] === true;
             document.getElementById('maintenance-text').textContent = maintenanceData.message;
-            checkMaintenanceView();
-            updateMaintenanceBadge();
-            updateOwnerDMBtn();
+            checkMaintenanceView(); updateMaintenanceBadge(); updateOwnerDMBtn();
         });
     }
-    function checkMaintenanceView() {
-        if (maintenanceData.status && myRole !== 'owner' && !isTester) document.getElementById('maintenance-screen').style.display = 'flex';
-        else document.getElementById('maintenance-screen').style.display = 'none';
-    }
+    function checkMaintenanceView() { if (maintenanceData.status && myRole !== 'owner' && !isTester) document.getElementById('maintenance-screen').style.display = 'flex'; else document.getElementById('maintenance-screen').style.display = 'none'; }
     function updateMaintenanceBadge() {
-        const badge = document.getElementById('maintenance-badge');
-        if (!badge) return;
+        const badge = document.getElementById('maintenance-badge'); if (!badge) return;
         if (maintenanceData.status && myRole === 'owner') { badge.textContent = '🔧 صيانة (مالك)'; badge.style.display = 'block'; badge.classList.remove('tester'); }
         else if (maintenanceData.status && isTester) { badge.textContent = '🧪 وضع اختبار'; badge.style.display = 'block'; badge.classList.add('tester'); }
         else badge.style.display = 'none';
@@ -2110,20 +1693,16 @@
         if (myRole !== 'owner') return alert('⛔');
         document.getElementById('maintenance-msg-input').value = maintenanceData.message || '';
         pendingTesters = Object.assign({}, maintenanceData.testers);
-        renderTestersList();
-        updateMaintenanceToggleBtn();
-        document.getElementById('maintenance-modal').classList.add('active');
-        document.getElementById('modal-overlay').classList.add('show');
+        renderTestersList(); updateMaintenanceToggleBtn();
+        document.getElementById('maintenance-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show');
     }
     function updateMaintenanceToggleBtn() {
-        const btn = document.getElementById('maintenance-toggle-btn');
-        if (!btn) return;
+        const btn = document.getElementById('maintenance-toggle-btn'); if (!btn) return;
         if (maintenanceData.status) { btn.textContent = '✅ إيقاف الصيانة'; btn.style.background = '#4caf50'; }
         else { btn.textContent = '🔧 تفعيل الصيانة'; btn.style.background = '#f9a825'; }
     }
     function renderTestersList() {
-        const list = document.getElementById('testers-list');
-        if (!list) return;
+        const list = document.getElementById('testers-list'); if (!list) return;
         list.innerHTML = '';
         const users = [];
         Object.keys(allUsersData).forEach(k => { if (k === myFP) return; const u = allUsersData[k]; u.uid = k; users.push(u); });
@@ -2131,8 +1710,7 @@
         if (users.length === 0) { list.innerHTML = '<div style="padding:10px;text-align:center;color:#999;font-size:12px;">لا يوجد مستخدمون</div>'; return; }
         users.forEach(u => {
             const isChecked = pendingTesters && pendingTesters[u.uid] === true;
-            const div = document.createElement('div');
-            div.className = 'tester-item';
+            const div = document.createElement('div'); div.className = 'tester-item';
             let roleText = 'عادي';
             if (u.role === 'owner') roleText = '👑 مالك';
             else if (u.role === 'manager') roleText = '💎 مدير';
@@ -2147,8 +1725,7 @@
         if (myRole !== 'owner') return alert('⛔');
         if (!maintenanceData.status) { if (!confirm('⚠️ تفعيل الصيانة؟')) return; }
         else { if (!confirm('إيقاف الصيانة؟')) return; }
-        maintenanceData.status = !maintenanceData.status;
-        updateMaintenanceToggleBtn();
+        maintenanceData.status = !maintenanceData.status; updateMaintenanceToggleBtn();
     }
     async function saveMaintenanceSettings() {
         if (myRole !== 'owner') return alert('⛔');
@@ -2157,23 +1734,15 @@
         document.querySelectorAll('#testers-list input[type="checkbox"]').forEach(cb => { if (cb.checked) testers[cb.dataset.uid] = true; });
         try {
             await db.ref('maintenance').update({ status: maintenanceData.status, message: msg, testers: testers, by: myName, at: Date.now() });
-            document.getElementById('maintenance-modal').classList.remove('active');
-            document.getElementById('modal-overlay').classList.remove('show');
-            alert('✅');
+            document.getElementById('maintenance-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); alert('✅');
         } catch (e) { alert('❌ ' + e.message); }
     }
     function listenMyDMPermission() {
         if (myDMPermissionListener) db.ref('dm_permissions/' + myFP).off('value', myDMPermissionListener);
-        myDMPermissionListener = db.ref('dm_permissions/' + myFP).on('value', snap => {
-            myDMEnabled = snap.val() === true;
-            updateUI();
-            updateOwnerDMBtn();
-            renderMessages();
-        });
+        myDMPermissionListener = db.ref('dm_permissions/' + myFP).on('value', snap => { myDMEnabled = snap.val() === true; updateUI(); updateOwnerDMBtn(); renderMessages(); });
     }
     function updateOwnerDMBtn() {
-        const btn = document.getElementById('owner-dm-toggle-btn');
-        if (!btn) return;
+        const btn = document.getElementById('owner-dm-toggle-btn'); if (!btn) return;
         if (myDMEnabled) { btn.textContent = '💌 الخاص مفتوح (إغلاق)'; btn.classList.add('on'); }
         else { btn.textContent = '💌 فتح الخاص لنفسي'; btn.classList.remove('on'); }
     }
@@ -2197,42 +1766,24 @@
     }
     function listenDMInbox() {
         if (dmInboxListener) db.ref('dm_inbox/' + myFP).off('value', dmInboxListener);
-        dmInboxListener = db.ref('dm_inbox/' + myFP).on('value', snap => {
-            dmUnreadCounts = snap.val() || {};
-            updateDMBadge();
-            if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
-        });
+        dmInboxListener = db.ref('dm_inbox/' + myFP).on('value', snap => { dmUnreadCounts = snap.val() || {}; updateDMBadge(); if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList(); });
     }
     function updateDMBadge() {
-        let total = 0;
-        Object.keys(dmUnreadCounts).forEach(uid => { total += Number(dmUnreadCounts[uid].count) || 0; });
-        const b = document.getElementById('dm-badge');
-        if (!b) return;
-        if (total > 0) { b.textContent = total > 99 ? '99+' : total; b.classList.add('active'); }
-        else b.classList.remove('active');
+        let total = 0; Object.keys(dmUnreadCounts).forEach(uid => { total += Number(dmUnreadCounts[uid].count) || 0; });
+        const b = document.getElementById('dm-badge'); if (!b) return;
+        if (total > 0) { b.textContent = total > 99 ? '99+' : total; b.classList.add('active'); } else b.classList.remove('active');
     }
-    function openDMList() {
-        if (!myDMEnabled) return alert('🔒');
-        document.getElementById('dm-list-modal').classList.add('active');
-        document.getElementById('modal-overlay').classList.add('show');
-        renderDMList();
-    }
-    function closeDMList() {
-        document.getElementById('dm-list-modal').classList.remove('active');
-        document.getElementById('modal-overlay').classList.remove('show');
-    }
+    function openDMList() { if (!myDMEnabled) return alert('🔒'); document.getElementById('dm-list-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); renderDMList(); }
+    function closeDMList() { document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); }
     function renderDMList() {
-        const l = document.getElementById('dm-users-list');
-        if (!l) return;
+        const l = document.getElementById('dm-users-list'); if (!l) return;
         l.innerHTML = '';
         const users = [];
         Object.keys(allUsersData).forEach(k => {
             if (k === myFP) return;
             const u = allUsersData[k];
             if (u.hidden === true && myRole !== 'owner') return;
-            u.uid = k;
-            u._dmEnabled = (allDMUsersData[k] === true);
-            users.push(u);
+            u.uid = k; u._dmEnabled = (allDMUsersData[k] === true); users.push(u);
         });
         users.sort((a, b) => {
             const aU = (dmUnreadCounts[a.uid] && Number(dmUnreadCounts[a.uid].count)) || 0;
@@ -2248,37 +1799,24 @@
             const isDMOn = u._dmEnabled === true;
             const card = document.createElement('div');
             card.className = 'dm-user-card' + (isDMOn ? '' : ' closed');
-            card.dataset.uid = u.uid;
-            card.dataset.name = (u.name || '').toLowerCase();
+            card.dataset.uid = u.uid; card.dataset.name = (u.name || '').toLowerCase();
             const avatar = u.avatar || DEFAULT_ICON;
             let roleBadge = '';
             if (u.role === 'owner') roleBadge = '<span class="role-badge owner">مالك</span>';
             else if (u.role === 'manager') roleBadge = '<span class="role-badge manager">مدير</span>';
             else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">مشرف</span>';
             else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">موثوق</span>';
-            let lockIcon = '';
-            if (!isDMOn) lockIcon = '<div class="dm-lock-badge">🔒</div>';
-            let settingsBtn = '';
-            if (myRole === 'owner') settingsBtn = `<button class="dm-settings-btn" onclick="event.stopPropagation();toggleUserDM('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}')">⚙️</button>`;
+            let lockIcon = ''; if (!isDMOn) lockIcon = '<div class="dm-lock-badge">🔒</div>';
+            let settingsBtn = ''; if (myRole === 'owner') settingsBtn = `<button class="dm-settings-btn" onclick="event.stopPropagation();toggleUserDM('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}')">⚙️</button>`;
             card.innerHTML = `<img src="${avatar}"><div class="dm-info"><div class="dm-name">${escapeHtml(u.name || 'مجهول')} ${roleBadge}</div><div class="dm-last">${isDMOn ? (lastMsg ? escapeHtml(lastMsg) : '💬 ابدأ') : '🔒 مغلق'}</div></div>${unread > 0 ? `<div class="dm-unread">${unread > 99 ? '99+' : unread}</div>` : ''}${lockIcon}${settingsBtn}`;
-            card.onclick = (e) => {
-                if (e.target.closest('.dm-settings-btn')) return;
-                if (!isDMOn) return alert('🔒');
-                openDMChat(u.uid);
-            };
+            card.onclick = (e) => { if (e.target.closest('.dm-settings-btn')) return; if (!isDMOn) return alert('🔒'); openDMChat(u.uid); };
             l.appendChild(card);
         });
     }
-    function filterDMUsers() {
-        const t = document.getElementById('dm-search').value.toLowerCase();
-        document.querySelectorAll('#dm-users-list .dm-user-card').forEach(c => {
-            c.style.display = (c.dataset.name || '').includes(t) ? 'flex' : 'none';
-        });
-    }
+    function filterDMUsers() { const t = document.getElementById('dm-search').value.toLowerCase(); document.querySelectorAll('#dm-users-list .dm-user-card').forEach(c => { c.style.display = (c.dataset.name || '').includes(t) ? 'flex' : 'none'; }); }
     function openDMChat(uid) {
         if (!myDMEnabled) return alert('🔒');
-        const u = allUsersData[uid];
-        if (!u) return;
+        const u = allUsersData[uid]; if (!u) return;
         if (allDMUsersData[uid] !== true) return alert('🔒');
         closeDMList();
         currentDMChat = { uid, name: u.name || 'مجهول', avatar: u.avatar || DEFAULT_ICON, role: u.role || 'user' };
@@ -2295,14 +1833,8 @@
         loadDMMessages(uid);
     }
     function closeDMChat() {
-        if (dmChatMessagesListener && currentDMChat) {
-            const chatId = getChatId(myFP, currentDMChat.uid);
-            db.ref('private_chats/' + chatId + '/messages').off('child_added', dmChatMessagesListener);
-            dmChatMessagesListener = null;
-        }
-        document.getElementById('dm-chat-modal').classList.remove('active');
-        currentDMChat = null;
-        currentDMClearedAt = 0;
+        if (dmChatMessagesListener && currentDMChat) { const chatId = getChatId(myFP, currentDMChat.uid); db.ref('private_chats/' + chatId + '/messages').off('child_added', dmChatMessagesListener); dmChatMessagesListener = null; }
+        document.getElementById('dm-chat-modal').classList.remove('active'); currentDMChat = null; currentDMClearedAt = 0;
     }
     function getChatId(uid1, uid2) { return [uid1, uid2].sort().join('_'); }
     function loadDMMessages(uid) {
@@ -2316,11 +1848,7 @@
             db.ref('private_chats/' + chatId + '/messages').orderByChild('time').limitToLast(200).once('value', snap => {
                 box.innerHTML = '';
                 const allMsgs = [];
-                snap.forEach(c => {
-                    const v = c.val(); const t = Number(v.time) || 0;
-                    if (t <= currentDMClearedAt) return;
-                    renderedKeys.add(c.key); v._key = c.key; allMsgs.push(v);
-                });
+                snap.forEach(c => { const v = c.val(); const t = Number(v.time) || 0; if (t <= currentDMClearedAt) return; renderedKeys.add(c.key); v._key = c.key; allMsgs.push(v); });
                 allMsgs.sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
                 allMsgs.forEach(m => renderDMMessage(m, false));
                 if (allMsgs.length === 0) box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">لا توجد رسائل</div>';
@@ -2330,13 +1858,9 @@
                     const m = snap.val(); const t = Number(m.time) || 0;
                     if (t <= currentDMClearedAt) { renderedKeys.add(snap.key); return; }
                     renderedKeys.add(snap.key); m._key = snap.key;
-                    const emptyMsg = box.querySelector('div[style*="لا توجد رسائل"]');
-                    if (emptyMsg) emptyMsg.remove();
-                    renderDMMessage(m, true);
-                    box.scrollTop = box.scrollHeight;
-                    if (m.to === myFP) {
-                        db.ref('dm_inbox/' + myFP + '/' + m.from + '/count').set(0);
-                    }
+                    const emptyMsg = box.querySelector('div[style*="لا توجد رسائل"]'); if (emptyMsg) emptyMsg.remove();
+                    renderDMMessage(m, true); box.scrollTop = box.scrollHeight;
+                    if (m.to === myFP) db.ref('dm_inbox/' + myFP + '/' + m.from + '/count').set(0);
                 });
             });
         });
@@ -2362,8 +1886,7 @@
         const toUid = currentDMChat.uid;
         const chatId = getChatId(myFP, toUid);
         const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, toName: currentDMChat.name, text: text, time: firebase.database.ServerValue.TIMESTAMP };
-        input.value = '';
-        playSendSound();
+        input.value = ''; playSendSound();
         try {
             await db.ref('private_chats/' + chatId + '/messages').push(msgData);
             await db.ref('dm_inbox/' + toUid + '/' + myFP).update({ fromName: myName, fromAvatar: myAvatar, lastMessage: text, lastTime: firebase.database.ServerValue.TIMESTAMP, count: firebase.database.ServerValue.increment(1) });
@@ -2384,20 +1907,9 @@
         if (!confirm('إخفاء جميع المحادثات؟')) return;
         try {
             const now = Date.now(); const updates = {};
-            Object.keys(allDMUsersData).forEach(uid => {
-                if (uid === myFP) return;
-                const chatId = getChatId(myFP, uid);
-                updates['dm_clears/' + myFP + '/' + chatId] = now;
-                updates['dm_inbox/' + myFP + '/' + uid] = { count: 0, lastMessage: '', lastTime: 0 };
-            });
-            Object.keys(dmUnreadCounts || {}).forEach(uid => {
-                const chatId = getChatId(myFP, uid);
-                updates['dm_clears/' + myFP + '/' + chatId] = now;
-                updates['dm_inbox/' + myFP + '/' + uid] = { count: 0, lastMessage: '', lastTime: 0 };
-            });
-            await db.ref().update(updates);
-            alert('✅');
-            renderDMList();
+            Object.keys(allDMUsersData).forEach(uid => { if (uid === myFP) return; const chatId = getChatId(myFP, uid); updates['dm_clears/' + myFP + '/' + chatId] = now; updates['dm_inbox/' + myFP + '/' + uid] = { count: 0, lastMessage: '', lastTime: 0 }; });
+            Object.keys(dmUnreadCounts || {}).forEach(uid => { const chatId = getChatId(myFP, uid); updates['dm_clears/' + myFP + '/' + chatId] = now; updates['dm_inbox/' + myFP + '/' + uid] = { count: 0, lastMessage: '', lastTime: 0 }; });
+            await db.ref().update(updates); alert('✅'); renderDMList();
         } catch (e) { alert('❌ ' + e.message); }
     }
     function loadDMUsersList() {
@@ -2427,9 +1939,7 @@
             const statusesSnap = await db.ref('statuses').orderByChild('uid').equalTo(currentFP).once('value');
             if (statusesSnap.exists()) { const updates = {}; statusesSnap.forEach(child => { updates[child.key] = null; }); await db.ref('statuses').update(updates); }
             await db.ref('notifications/' + currentFP).remove();
-            localStorage.clear();
-            alert('✅');
-            window.location.reload();
+            localStorage.clear(); alert('✅'); window.location.reload();
         } catch (e) { alert('❌ ' + e.message); }
     }
     function updateHiddenButton() { const btn = document.getElementById('toggle-hidden-btn'); if (!btn) return; if (isHidden) { btn.textContent = '🙈 أنا مخفي (إظهار)'; btn.style.background = '#4caf50'; } else { btn.textContent = '🙈 إخفاء نفسي'; btn.style.background = '#e91e63'; } }
@@ -2442,10 +1952,7 @@
             if (!messagesCache[k]) { messagesCache[k] = v; const ks = Object.keys(messagesCache); if (ks.length > 300) { const o = ks.sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0))[0]; delete messagesCache[o]; } renderMessages(); }
         });
         db.ref('messages').on('child_removed', s => { const k = s.key; if (messagesCache[k]) { delete messagesCache[k]; renderMessages(); } });
-        db.ref('users').on('value', s => {
-            const d = {}; s.forEach(c => { d[c.key] = c.val() }); allUsersData = d;
-            updateUsersList(); renderStatuses(); renderNotifications(); updateStatusBadge(); updateOnlineBadge();
-        });
+        db.ref('users').on('value', s => { const d = {}; s.forEach(c => { d[c.key] = c.val() }); allUsersData = d; updateUsersList(); renderStatuses(); renderNotifications(); updateStatusBadge(); updateOnlineBadge(); });
         db.ref('statuses').on('value', s => { statusesCache = {}; s.forEach(c => { statusesCache[c.key] = c.val() }); renderStatuses(); updateStatusBadge(); });
         db.ref('notifications/' + myFP).on('value', s => { myNotifications = {}; if (s.exists()) s.forEach(c => { myNotifications[c.key] = c.val() }); renderNotifications(); updateNotifBadge(); });
         loadDMUsersList();
@@ -2474,9 +1981,7 @@
     }
     function setupScroll() {
         const c = document.getElementById('chat-messages');
-        c.addEventListener('scroll', function() {
-            if (this.scrollTop < 30 && hasMore && !loadingMore) { const oh = this.scrollHeight; loadMore(); setTimeout(() => { this.scrollTop = this.scrollHeight - oh + 5; }, 50); }
-        });
+        c.addEventListener('scroll', function() { if (this.scrollTop < 30 && hasMore && !loadingMore) { const oh = this.scrollHeight; loadMore(); setTimeout(() => { this.scrollTop = this.scrollHeight - oh + 5; }, 50); } });
     }
     function renderMessages() {
         const box = document.getElementById('chat-messages');
@@ -2521,7 +2026,7 @@
             const targetCanDM = (allDMUsersData[m.uid] === true);
             const canDM = !isMine && iCanDM && targetCanDM;
             acts += '<div class="msg-actions">';
-            if (!isMine && myRole !== 'owner') acts += '<button class="action-sm report" onclick="openReportModal(\'' + m.uid + '\',\'' + dn + '\',\'' + k + '\')"> إبلاغ</button>';
+            if (!isMine && myRole !== 'owner') acts += '<button class="action-sm report" onclick="openReportModal(\'message\',\'' + m.uid + '\',\'' + dn.replace(/'/g, "\\'") + '\',\'' + k + '\')"> إبلاغ</button>';
             if (canDM) acts += '<button class="action-sm dm" onclick="openDMChat(\'' + m.uid + '\')">💌 خاص</button>';
             if (!isMine) acts += '<button class="action-sm reply" onclick="startReply(\'' + k + '\')">رد ↩</button>';
             if (cd) acts += '<button class="action-sm del" onclick="deleteMessage(\'' + k + '\')">🗑️</button>';
@@ -2531,7 +2036,10 @@
             if (cc) acts += '<button class="action-sm" style="background:#e91e63;font-size:9px;padding:2px 6px;" onclick="openColorControl(\'' + m.uid + '\')">🎨</button>';
             acts += '</div>';
             const sns = snc ? 'color:' + snc + ';' : '', gc2 = gc && gc !== 'none' ? 'glow ' + gc : '';
-            div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar" onclick="openViewer(\'' + da + '\',\'image\',\'' + dn + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '">' + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '✓✓' : '') + '</div></div>' + acts;
+            
+            // تعديل: جعل الصورة والاسم قابلين للضغط لفتح خيارات الحساب
+            const safeName = escapeHtml(dn).replace(/'/g, "\\'");
+            div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar" onclick="openProfileActions(\'' + m.uid + '\',\'' + safeName + '\',\'' + da + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '" onclick="openProfileActions(\'' + m.uid + '\',\'' + safeName + '\',\'' + da + '\')">' + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '✓✓' : '') + '</div></div>' + acts;
             box.appendChild(div);
         });
         if (isBottom) box.scrollTop = box.scrollHeight; else box.scrollTop = sp;
@@ -2543,9 +2051,7 @@
         Object.keys(allUsersData).forEach(k => {
             const u = allUsersData[k];
             if (u.hidden === true && k !== myFP) return;
-            u.uid = k;
-            u._effectiveStatus = getUserEffectiveStatus(u);
-            users.push(u);
+            u.uid = k; u._effectiveStatus = getUserEffectiveStatus(u); users.push(u);
         });
         const onlineUsers = users.filter(u => u._effectiveStatus === 'online' || u._effectiveStatus === 'away');
         const offlineUsers = users.filter(u => u._effectiveStatus !== 'online' && u._effectiveStatus !== 'away');
@@ -2559,10 +2065,7 @@
         const currentIds = Array.from(currentCards).map(el => el.dataset.uid);
         currentIds.forEach(id => {
             const u = allUsersData[id];
-            if (!u || (u.hidden === true && id !== myFP)) {
-                const el = l.querySelector('.user-card[data-uid="' + id + '"]');
-                if (el) el.remove();
-            }
+            if (!u || (u.hidden === true && id !== myFP)) { const el = l.querySelector('.user-card[data-uid="' + id + '"]'); if (el) el.remove(); }
         });
         sortedUsers.forEach((u, idx) => {
             const existing = l.querySelector('.user-card[data-uid="' + u.uid + '"]');
@@ -2577,27 +2080,31 @@
             else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">مشرف</span>';
             else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">موثوق</span>';
             const avatar = u.avatar || DEFAULT_ICON;
-            let hiddenBadge = '';
-            if (u.uid === myFP && isHidden && myRole === 'owner') hiddenBadge = '<span class="hidden-owner-badge">🙈 مخفي</span>';
+            let hiddenBadge = ''; if (u.uid === myFP && isHidden && myRole === 'owner') hiddenBadge = '<span class="hidden-owner-badge">🙈 مخفي</span>';
             if (existing) {
                 const statusEl = existing.querySelector('.user-status');
                 if (statusEl) statusEl.className = 'user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline');
                 const nameEl = existing.querySelector('.user-details h4');
-                if (nameEl) nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + u.name + ' ' + roleBadge + ' ' + hiddenBadge;
+                // تعديل: إضافة onclick للاسم
+                if (nameEl) {
+                    nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + escapeHtml(u.name) + ' ' + roleBadge + ' ' + hiddenBadge;
+                    nameEl.onclick = () => openProfileActions(u.uid, escapeHtml(u.name), avatar);
+                }
                 const lastSeenEl = existing.querySelector('.last-seen');
                 if (lastSeenEl) lastSeenEl.textContent = statusText + (isOnline ? ' - ' + formatDate(u.lastSeen) : '');
                 const avatarEl = existing.querySelector('.user-avatar');
                 if (avatarEl && avatarEl.src !== avatar) avatarEl.src = avatar;
+                // تعديل: تحديث onclick للصورة
+                if (avatarEl) avatarEl.onclick = () => openProfileActions(u.uid, escapeHtml(u.name), avatar);
                 const actionsEl = existing.querySelector('.user-actions');
                 if (actionsEl) { actionsEl.id = 'uact-' + u.uid; updateUserControls(u.uid, u); }
                 const currentIndex = Array.from(l.children).indexOf(existing);
                 if (currentIndex !== idx) { if (idx < l.children.length) l.insertBefore(existing, l.children[idx]); else l.appendChild(existing); }
             } else {
                 const card = document.createElement('div');
-                card.className = 'user-card';
-                card.dataset.uid = u.uid;
-                card.dataset.role = u.role || 'user';
-                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openViewer('${avatar}','image','${u.name}')"><div class="user-details"><h4><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${u.name} ${roleBadge} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
+                card.className = 'user-card'; card.dataset.uid = u.uid; card.dataset.role = u.role || 'user';
+                // تعديل: إضافة onclick للصورة والاسم
+                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openProfileActions('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}','${avatar}')"><div class="user-details"><h4 onclick="openProfileActions('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}','${avatar}')"><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${escapeHtml(u.name)} ${roleBadge} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
                 if (idx < l.children.length) l.insertBefore(card, l.children[idx]); else l.appendChild(card);
                 updateUserControls(u.uid, u);
             }
@@ -2605,64 +2112,41 @@
         filterUsers();
     }
 
-    // ============================================================
-    //  ✅ deleteMessage — نسخة محدثة مع تسجيل كامل
-    // ============================================================
     async function deleteMessage(k) {
-        const m = messagesCache[k];
-        if (!m) return;
+        const m = messagesCache[k]; if (!m) return;
         const tr = allUsersData[m.uid]?.role || m.role;
         if (!canDeleteMessage(myRole, tr) && m.uid !== myFP) return alert("⛔ لا صلاحية!");
         if (!confirm("🗑️ حذف الرسالة؟")) return;
-
-        // 1️⃣ احفظ نسخة كاملة من الرسالة في deleted_messages
         try {
             await db.ref('deleted_messages').push({
-                original_msg_id: k,
-                original_sender_uid: m.uid,
-                original_sender_name: m.sender || 'مجهول',
-                original_sender_avatar: m.avatar || DEFAULT_ICON,
-                text: m.text || '',
-                media: m.media || null,
-                media_type: m.type || null,
-                sent_time: m.time || Date.now(),
-                deleted_by_uid: myFP,
-                deleted_by_name: myName || 'مجهول',
-                deleted_by_role: myRole || 'user',
-                deleted_by_avatar: myAvatar || DEFAULT_ICON,
-                deleted_time: Date.now()
+                original_msg_id: k, original_sender_uid: m.uid, original_sender_name: m.sender || 'مجهول',
+                original_sender_avatar: m.avatar || DEFAULT_ICON, text: m.text || '', media: m.media || null,
+                media_type: m.type || null, sent_time: m.time || Date.now(),
+                deleted_by_uid: myFP, deleted_by_name: myName || 'مجهول',
+                deleted_by_role: myRole || 'user', deleted_by_avatar: myAvatar || DEFAULT_ICON, deleted_time: Date.now()
             });
-
-            // 2️⃣ سجل الإجراء في admin_logs
-            await logAdminAction('delete_message', m.uid, m.sender || 'مجهول', {
-                message_text: (m.text || '').substring(0, 200),
-                has_media: !!m.media,
-                media_type: m.type || null
-            });
-        } catch (e) {
-            console.warn('⚠️ فشل الحفظ في السجلات:', e);
-        }
-
-        // 3️⃣ احذف الرسالة فعلياً
-        db.ref('messages/' + k).remove().then(() => {
-            delete messagesCache[k];
-            renderMessages();
-        });
+            await logAdminAction('delete_message', m.uid, m.sender || 'مجهول', { message_text: (m.text || '').substring(0, 200), has_media: !!m.media, media_type: m.type || null });
+        } catch (e) { console.warn('⚠️ فشل الحفظ:', e); }
+        db.ref('messages/' + k).remove().then(() => { delete messagesCache[k]; renderMessages(); });
     }
-
     function scrollToMessage(k) { const e = document.getElementById('msg-' + k); if (e) { e.scrollIntoView({ behavior: 'smooth', block: 'center' }); e.style.background = 'rgba(255,235,59,0.3)'; setTimeout(() => e.style.background = 'transparent', 1000); } }
     function playYouTube(v, c) { c.innerHTML = '<iframe src="https://www.youtube.com/embed/' + v + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
     function updateUserControls(u, d) {
         const e = document.getElementById('uact-' + u); if (!e || u === myFP) return;
-        if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && myRole !== 'owner') { e.innerHTML = ''; return; }
+        if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && myRole !== 'owner') {
+            let bt = '';
+            if (myRole !== 'owner' && u !== myFP) bt += '<button class="ctrl-btn report-user" onclick="openReportModal(\'name\',\'' + u + '\',\'' + (d.name || 'مجهول').replace(/'/g, "\\'") + '\')" title="إبلاغ عن الاسم">⚑</button>';
+            e.innerHTML = bt;
+            return;
+        }
         db.ref('bans/' + u).once('value', b => {
             const ib = b.exists(); let bt = '';
             if (canBan(myRole, d.role)) { if (ib) { if (myRole === 'owner') bt += '<button class="ctrl-btn unban" onclick="unbanUser(\'' + u + '\',\'' + d.name + '\')">↺</button>'; } else bt += '<button class="ctrl-btn ban" onclick="banUser(\'' + u + '\',\'' + d.name + '\')">🚫</button>'; }
             db.ref('mutes/' + u).once('value', m => {
-                let im = false;
-                if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
+                let im = false; if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
                 if (canMute(myRole, d.role)) { if (im) bt += '<button class="ctrl-btn unmute" onclick="unmuteUser(\'' + u + '\',\'' + d.name + '\')">🔊</button>'; else bt += '<button class="ctrl-btn mute" onclick="openMuteMenu(\'' + u + '\',\'' + d.name + '\')">🔇</button>'; }
                 if (canAssignRole(myRole, d.role)) bt += '<button class="ctrl-btn role" onclick="openRoleMenu(\'' + u + '\',\'' + d.name + '\')">⚙️</button>';
+                if (myRole !== 'owner' && u !== myFP) bt += '<button class="ctrl-btn report-user" onclick="openReportModal(\'name\',\'' + u + '\',\'' + (d.name || 'مجهول').replace(/'/g, "\\'") + '\')" title="إبلاغ عن الاسم">⚑</button>';
                 if (myRole === 'owner' && d.role !== 'owner') {
                     bt += '<button class="ctrl-btn color" onclick="openColorControl(\'' + u + '\')">🎨</button>';
                     const isDMOn = allDMUsersData[u] === true;
@@ -2674,18 +2158,12 @@
         });
     }
 
-    // ============================================================
-    //  ✅ permanentDeleteUser — نسخة محدثة مع تسجيل
-    // ============================================================
     async function permanentDeleteUser(uid, name) {
         if (myRole !== 'owner') return alert('⛔');
         const tr = allUsersData[uid]?.role || 'user';
         if (tr === 'owner') return alert('⛔');
         if (!confirm('⚠️ حذف "' + name + '" نهائياً؟')) return;
-
-        // 📜 سجل الإجراء قبل الحذف
         await logAdminAction('delete_user', uid, name, { target_role: tr });
-
         try {
             await db.ref('users/' + uid).remove();
             await db.ref('bans/' + uid).remove();
@@ -2711,15 +2189,9 @@
     function updateStatusBadge() { const now = Date.now(), exp = 864e5; let unseen = 0; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (now - s.time > exp) { db.ref('statuses/' + k).remove(); return; } if (s.uid !== myFP) { const sb = s.seenBy || {}; if (!sb[myFP]) unseen++; } }); const b = document.getElementById('status-unseen-count'); if (unseen > 0) { b.textContent = unseen; b.classList.add('active'); } else b.classList.remove('active'); }
     function updateOnlineBadge() {
         let on = 0;
-        Object.keys(allUsersData).forEach(k => {
-            const u = allUsersData[k];
-            if (u.hidden === true && k !== myFP) return;
-            if (isUserOnline(u)) on++;
-        });
-        const b = document.getElementById('online-badge');
-        if (!b) return;
-        b.textContent = on;
-        b.style.display = on > 0 ? 'block' : 'none';
+        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (u.hidden === true && k !== myFP) return; if (isUserOnline(u)) on++; });
+        const b = document.getElementById('online-badge'); if (!b) return;
+        b.textContent = on; b.style.display = on > 0 ? 'block' : 'none';
     }
     function updateUI() {
         document.getElementById('clear-chat-btn').style.display = ['mod', 'manager', 'owner'].includes(myRole) ? 'inline-block' : 'none';
@@ -2731,89 +2203,99 @@
         if (dmBtn) dmBtn.style.display = myDMEnabled ? 'inline-block' : 'none';
         if (myRole === 'owner') { document.getElementById('reports-btn').style.display = 'inline-block'; listenReports(); }
         else document.getElementById('reports-btn').style.display = 'none';
-        updateFCMButton();
-        updateSoundButton();
+        updateFCMButton(); updateSoundButton();
     }
     function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { i.placeholder = "اكتب رسالة..."; i.disabled = false; b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
     function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
     function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); }
-    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
+    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
 
-    // ============================================================
-    //  ✅ banUser — نسخة محدثة مع تسجيل
-    // ============================================================
+    // ====== دوال خيارات الحساب (Profile Actions) ======
+    let paTargetUid = null, paTargetName = null, paTargetAvatar = null;
+
+    function openProfileActions(uid, name, avatar) {
+        if (uid === myFP) return; 
+        paTargetUid = uid; paTargetName = name; paTargetAvatar = avatar;
+        document.getElementById('pa-avatar').src = avatar;
+        document.getElementById('pa-name').textContent = name;
+        const dmBtn = document.getElementById('pa-dm-btn');
+        if (myDMEnabled && allDMUsersData[uid] === true) {
+            dmBtn.style.display = 'block';
+        } else {
+            dmBtn.style.display = 'none';
+        }
+        document.getElementById('profile-actions-modal').classList.add('active');
+        document.getElementById('modal-overlay').classList.add('show');
+    }
+
+    function closeProfileActions() {
+        document.getElementById('profile-actions-modal').classList.remove('active');
+        document.getElementById('modal-overlay').classList.remove('show');
+        paTargetUid = null; paTargetName = null; paTargetAvatar = null;
+    }
+
+    function paViewImage() { 
+        if (paTargetAvatar) openViewer(paTargetAvatar, 'image', paTargetName); 
+        closeProfileActions(); 
+    }
+
+    function paReport(type) {
+        if (!paTargetUid) return;
+        closeProfileActions();
+        openReportModal(type, paTargetUid, paTargetName, null, null, paTargetAvatar);
+    }
+
+    function paDM() { 
+        if (paTargetUid) { 
+            closeProfileActions(); 
+            openDMChat(paTargetUid); 
+        } 
+    }
+
     async function banUser(u, n) {
         const tr = allUsersData[u]?.role || 'user';
         if (!canBan(myRole, tr)) return alert('⛔ لا صلاحية!');
-        if (!confirm('⚠️ حظر "' + n + '"؟ (سيتم حظر هذا الجهاز فقط)')) return;
+        if (!confirm('⚠️ حظر "' + n + '"؟')) return;
         await db.ref('bans/' + u).set(true);
         await logAdminAction('ban', u, n, { target_role: tr });
-        alert("✅ تم حظر هذا الجهاز بنجاح");
+        alert("✅ تم الحظر");
     }
-
-    // ============================================================
-    //  ✅ unbanUser — نسخة محدثة مع تسجيل
-    // ============================================================
     async function unbanUser(u, n) {
         if (myRole !== 'owner') return alert('⛔ فقط المالك!');
         if (!confirm('فك الحظر عن "' + n + '"؟')) return;
         await db.ref('bans/' + u).remove();
         await logAdminAction('unban', u, n, {});
-        alert("✅ تم فك الحظر بنجاح");
+        alert("✅");
     }
-
     function openMuteMenu(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canMute(myRole, tr)) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('mute-target-name').textContent = n; document.getElementById('mute-modal').classList.add('active'); }
-
-    // ============================================================
-    //  ✅ applyMute — نسخة محدثة مع تسجيل
-    // ============================================================
     async function applyMute(m) {
         const et = m === 999999 ? 9999999999999 : Date.now() + m * 6e4;
         const data = { endTime: et, by: myName, at: Date.now() };
         const { uid, name } = targetUserForAction;
         await db.ref('mutes/' + uid).set(data);
-        await logAdminAction('mute', uid, name, {
-            duration_minutes: m === 999999 ? 'forever' : m,
-            end_time: et
-        });
+        await logAdminAction('mute', uid, name, { duration_minutes: m === 999999 ? 'forever' : m, end_time: et });
         document.getElementById('mute-modal').classList.remove('active');
         alert("✅");
     }
-
-    // ============================================================
-    //  ✅ unmuteUser — نسخة محدثة مع تسجيل
-    // ============================================================
     async function unmuteUser(u, n) {
         if (!confirm('فك الكتم عن "' + n + '"؟')) return;
         await db.ref('mutes/' + u).remove();
         await logAdminAction('unmute', u, n, {});
         alert("✅");
     }
-
     function openRoleMenu(u, n) { if (!canAssignRole(myRole, allUsersData[u]?.role || 'user')) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('role-target-name').textContent = n; document.getElementById('role-modal').classList.add('active'); }
-
-    // ============================================================
-    //  ✅ setRole — نسخة محدثة مع تسجيل
-    // ============================================================
     function setRole(r) {
         const { uid, name } = targetUserForAction;
-        if (!canAssignRole(myRole, r)) {
-            document.getElementById('role-modal').classList.remove('active');
-            return alert("⛔ لا يمكنك إعطاء رتبة مساوية أو أعلى!");
-        }
+        if (!canAssignRole(myRole, r)) { document.getElementById('role-modal').classList.remove('active'); return alert("⛔"); }
         const oldRole = allUsersData[uid]?.role || 'user';
         db.ref('users/' + uid + '/role').set(r);
-        logAdminAction('role_change', uid, name, {
-            from_role: oldRole,
-            to_role: r
-        });
+        logAdminAction('role_change', uid, name, { from_role: oldRole, to_role: r });
         document.getElementById('role-modal').classList.remove('active');
         alert("✅");
     }
 
     function openProfile() {
-        document.getElementById('prof-img').src = myAvatar;
-        document.getElementById('prof-name').value = myName;
+        document.getElementById('prof-img').src = myAvatar; document.getElementById('prof-name').value = myName;
         const hiddenControl = document.getElementById('hidden-owner-control');
         if (myRole === 'owner') { hiddenControl.style.display = 'block'; updateHiddenButton(); updateOwnerDMBtn(); }
         else hiddenControl.style.display = 'none';
@@ -2836,8 +2318,7 @@
             catch (e) { alert("فشل الرفع"); return; }
         }
         myName = n; myAvatar = fa;
-        localStorage.setItem("name", myName);
-        localStorage.setItem("avatar", myAvatar);
+        localStorage.setItem("name", myName); localStorage.setItem("avatar", myAvatar);
         await linkFingerprint(myFP, myName);
         db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar });
         saveFCMToken();
@@ -2846,6 +2327,7 @@
     }
     function openViewer(u, t, s) { const v = document.getElementById('media-viewer'), c = document.getElementById('viewer-content'); document.getElementById('viewer-sender').textContent = s || '📸'; c.innerHTML = ''; if (t === 'video') c.innerHTML = '<video src="' + u + '" controls autoplay playsinline style="max-width:100%;max-height:80vh;"></video>'; else if (t === 'youtube') c.innerHTML = '<iframe src="' + u + '" style="width:100%;height:70vh;border:0;border-radius:8px;" allow="autoplay; encrypted-media" allowfullscreen></iframe>'; else c.innerHTML = '<img src="' + u + '" style="max-width:100%;max-height:80vh;object-fit:contain;">'; v.classList.add('active'); }
     function closeViewer(e) { if (e && e.target.id !== 'media-viewer' && !e.target.closest('button')) return; const v = document.getElementById('media-viewer'), vid = v.querySelector('video'), ifr = v.querySelector('iframe'); if (vid) { vid.pause(); vid.removeAttribute('src'); } if (ifr) ifr.src = ''; v.classList.remove('active'); }
+
     function switchTab(t) {
         currentTab = t;
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -2867,6 +2349,7 @@
         }
     }
     function closeStatusScreen() { switchTab('chat'); }
+
     function renderStatuses() {
         const l = document.getElementById('status-list');
         l.innerHTML = '';
@@ -2897,6 +2380,7 @@
             l.appendChild(c);
         });
     }
+
     function viewUserStatuses(uid, statuses) { if (!statuses || statuses.length === 0) return; statuses.sort((a, b) => a.time - b.time); viewerStatuses = statuses; viewerCurrentIndex = 0; viewerCurrentUid = uid; showStatusAtIndex(0); }
     function showStatusAtIndex(i) {
         if (i >= viewerStatuses.length || i < 0) { closeStatusViewer(null); return; }
@@ -2910,6 +2394,11 @@
             }
         }
         const v = document.getElementById('status-viewer'), c = document.getElementById('status-viewer-content'), ne = document.getElementById('status-viewer-name'), se = document.getElementById('status-viewer-seen'), db2 = document.getElementById('status-delete-btn');
+        const reportBtn = document.getElementById('status-viewer-report-btn');
+
+        if (s.uid === myFP) reportBtn.style.display = 'none';
+        else reportBtn.style.display = 'flex';
+
         ne.innerHTML = '📸 ' + escapeHtml(dn) + ' <span style="font-size:11px;color:#aaa;font-weight:400;">(' + (i + 1) + '/' + viewerStatuses.length + ')</span>';
         c.innerHTML = '';
         if (s.media) { if (s.type === 'video') c.innerHTML = '<video src="' + s.media + '" controls autoplay playsinline></video>'; else c.innerHTML = '<img src="' + s.media + '">'; }
@@ -2918,7 +2407,6 @@
         if (vw.length > 0) { const ns = vw.map(id => { const d = sb[id]; return '<span class="seen-user" onclick="event.stopPropagation();openViewer(\'' + (d.avatar || DEFAULT_ICON) + '\',\'image\',\'' + (d.name || 'مجهول') + '\')">' + (d.name || 'مجهول') + '</span>'; }).join('، '); se.innerHTML = '👁️ شاهدها: ' + ns; }
         else se.textContent = '👁️ لا مشاهدات';
 
-        // ✅ حذف الحالة مع تسجيل
         if (canDeleteStatus(s.uid)) {
             db2.style.display = 'inline-block';
             db2.onclick = async (e) => {
@@ -2926,30 +2414,36 @@
                 if (!confirm("حذف الحالة؟")) return;
                 const statusOwnerName = ud.name || s.sender || 'مجهول';
                 const statusText = s.text || '📸 حالة';
-                // 📜 سجل الإجراء قبل الحذف
-                await logAdminAction('delete_status', s.uid, statusOwnerName, {
-                    status_text: statusText.substring(0, 200),
-                    has_media: !!s.media,
-                    media_type: s.type || null
-                });
+                await logAdminAction('delete_status', s.uid, statusOwnerName, { status_text: statusText.substring(0, 200), has_media: !!s.media, media_type: s.type || null });
                 db.ref('statuses/' + s.key).remove();
                 if (viewerStatuses.length <= 1) closeStatusViewer(null);
-                else {
-                    const ni = i < viewerStatuses.length - 1 ? i : i - 1;
-                    viewerStatuses.splice(i, 1);
-                    showStatusAtIndex(ni >= viewerStatuses.length ? viewerStatuses.length - 1 : ni);
-                }
+                else { const ni = i < viewerStatuses.length - 1 ? i : i - 1; viewerStatuses.splice(i, 1); showStatusAtIndex(ni >= viewerStatuses.length ? viewerStatuses.length - 1 : ni); }
             };
         } else db2.style.display = 'none';
 
         viewerCurrentIndex = i; v.classList.add('active');
-        v.onclick = (e) => { if (e.target === v || e.target.closest('.viewer-close') || e.target.closest('.viewer-info')) return; if (i < viewerStatuses.length - 1) showStatusAtIndex(i + 1); };
+        v.onclick = (e) => { if (e.target === v || e.target.closest('.viewer-close') || e.target.closest('.viewer-info') || e.target.closest('.viewer-report')) return; if (i < viewerStatuses.length - 1) showStatusAtIndex(i + 1); };
         let tsx = 0; v.ontouchstart = (e) => { tsx = e.touches[0].clientX; };
         v.ontouchend = (e) => { const d = tsx - e.changedTouches[0].clientX; if (Math.abs(d) > 40) { if (d > 0 && i < viewerStatuses.length - 1) showStatusAtIndex(i + 1); else if (d < 0 && i > 0) showStatusAtIndex(i - 1); } };
     }
     function navigateStatus(d) { const ni = viewerCurrentIndex + d; if (ni >= 0 && ni < viewerStatuses.length) showStatusAtIndex(ni); }
     function closeStatusViewer(e) { if (e && e.target && e.target.id !== 'status-viewer' && !e.target.closest('button') && !e.target.closest('.viewer-info')) { if (e.target !== document.getElementById('status-viewer')) return; } document.getElementById('status-viewer').classList.remove('active'); const v = document.querySelector('#status-viewer video'); if (v) { v.pause(); v.removeAttribute('src'); } viewerStatuses = []; viewerCurrentIndex = 0; viewerCurrentUid = ''; }
     function deleteCurrentStatus() {}
+
+    function reportCurrentStatus() {
+        if (!viewerStatuses || viewerStatuses.length === 0) return;
+        const s = viewerStatuses[viewerCurrentIndex];
+        if (!s) return;
+        if (s.uid === myFP) return alert('لا يمكنك الإبلاغ عن حالتك');
+        const ud = allUsersData[s.uid] || {};
+        const dn = ud.name || s.sender || 'مجهول';
+        
+        // إصلاح: إغلاق عارض الحالة أولاً لضمان ظهور نافذة البلاغ
+        closeStatusViewer(null);
+        setTimeout(() => {
+            openReportModal('status', s.uid, dn, null, s.key);
+        }, 150);
+    }
 
     let selectedStatusType = 'text', statusFileData = null, statusFileType = '';
     function openAddStatus() { if (myRole === 'user') return alert("⛔"); if (isMuted) return alert("🔇"); document.getElementById('add-status-modal').classList.add('active'); selectStatusType('text'); document.getElementById('status-text-input').value = ''; document.getElementById('text-counter').textContent = '0 / 500'; document.getElementById('status-file-input').value = ''; document.getElementById('selected-filename').classList.remove('active'); statusFileData = null; statusFileType = ''; document.getElementById('publish-status-btn').disabled = false; }
@@ -2974,15 +2468,18 @@
         } catch (e) { alert("❌ " + e.message); }
         pb.disabled = false; pb.textContent = '📤 نشر';
     }
+
     function openNotifications() { document.getElementById('notifications-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); renderNotifications(); }
     function closeNotifications() { document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); }
     function renderNotifications() { const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
     function clearAllNotifications() { if (confirm("مسح الكل؟")) db.ref('notifications/' + myFP).remove(); }
     function updateNotifBadge() { const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
+
     function openYouTubeModal() { document.getElementById('youtube-modal').classList.add('active'); document.getElementById('yt-link-input').focus(); }
     function previewYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), p = document.getElementById('yt-preview'), img = document.getElementById('yt-preview-img'), t = document.getElementById('yt-preview-title'), sb = document.getElementById('yt-send-btn'), wb = document.getElementById('yt-watch-btn'), vid = extractYouTubeId(l); if (vid) { img.src = getYouTubeThumbnail(vid); t.textContent = 'https://youtu.be/' + vid; p.style.display = 'block'; sb.disabled = false; wb.disabled = false; } else { p.style.display = 'none'; sb.disabled = true; wb.disabled = true; } }
     function sendYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return alert("رابط غير صحيح!"); const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: l, type: 'youtube', youtubeId: vid, avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); document.getElementById('yt-link-input').value = ''; document.getElementById('yt-preview').style.display = 'none'; document.getElementById('yt-send-btn').disabled = true; document.getElementById('yt-watch-btn').disabled = true; document.getElementById('youtube-modal').classList.remove('active'); }
     function watchYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return; openViewer('https://www.youtube.com/embed/' + vid + '?autoplay=1', 'youtube', myName); }
+
     function sendMessage(e) {
         e.preventDefault();
         if (isMuted) return alert("🔇");
@@ -3001,70 +2498,247 @@
     async function handleFile(i) { if (myRole === 'user') { alert("⛔"); i.value = ''; return; } if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير!"); i.value = ''; return; } const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true; try { const u = await uploadCloudinary(f); if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); } else alert("فشل الرفع"); } catch (e) { alert("خطأ: " + e.message); } sb.textContent = "➤"; sb.disabled = false; i.value = ''; }
     async function uploadCloudinary(f) { const cn = 'nfg03aku', up = 'daufafvn', url = 'https://api.cloudinary.com/v1_1/' + cn + '/' + (f.type.startsWith('video') ? 'video' : 'image') + '/upload'; const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', up); const r = await fetch(url, { method: 'POST', body: fd }); if (!r.ok) throw new Error('HTTP ' + r.status); const d = await r.json(); return d.secure_url || null; }
 
-    // ============================================================
-    //  ✅ clearAllChat — نسخة محدثة مع تسجيل
-    // ============================================================
     async function clearAllChat() {
-        if (!['mod', 'manager', 'owner'].includes(myRole)) return alert("⛔ فقط المشرف والمدير والمالك!");
+        if (!['mod', 'manager', 'owner'].includes(myRole)) return alert("⛔");
         if (!confirm("⚠️ حذف كل الرسائل؟")) return;
-        if (!confirm("تأكيد أخير: هل أنت متأكد تماماً؟")) return;
-
+        if (!confirm("تأكيد أخير؟")) return;
         const msgCount = Object.keys(messagesCache).length;
-        await logAdminAction('clear_chat', null, null, {
-            messages_count: msgCount
-        });
-
-        db.ref('messages').remove();
-        messagesCache = {};
-        renderMessages();
+        await logAdminAction('clear_chat', null, null, { messages_count: msgCount });
+        db.ref('messages').remove(); messagesCache = {}; renderMessages();
     }
-
     function startReply(k) { const m = messagesCache[k]; if (!m) return; replyTo = { key: k, sender: m.sender, text: m.text || '[وسائط]', role: m.role }; document.getElementById('reply-sender-name').textContent = m.sender; document.getElementById('reply-content-text').textContent = m.text || '[وسائط]'; document.getElementById('reply-bar').classList.add('active'); document.getElementById('message-input').focus(); }
     function cancelReply() { replyTo = null; document.getElementById('reply-bar').classList.remove('active'); }
-    function openReportModal(targetUid, targetName, messageKey) { if (!myName || !myFP) return alert('سجل الدخول أولاً'); if (targetUid === myFP) return alert('لا يمكنك الإبلاغ عن نفسك'); document.getElementById('report-target-name').textContent = targetName; document.getElementById('report-target-uid').value = targetUid; document.getElementById('report-message-key').value = messageKey || ''; document.getElementById('report-reason-input').value = ''; document.getElementById('report-modal').classList.add('active'); }
-    async function submitReport() { const targetUid = document.getElementById('report-target-uid').value; const targetName = document.getElementById('report-target-name').textContent; const messageKey = document.getElementById('report-message-key').value; const reason = document.getElementById('report-reason-input').value.trim(); if (!reason) return alert('اكتب السبب'); if (reason.length < 3) return alert('السبب قصير'); const reportData = { reporterId: myFP, reporterName: myName, reporterAvatar: myAvatar, targetId: targetUid, targetName: targetName, reason: reason, messageKey: messageKey || null, status: 'pending', actionTaken: null, ownerComment: null, createdAt: Date.now(), resolvedAt: null }; try { const ref = db.ref('reports').push(); await ref.set(reportData); const owners = Object.keys(allUsersData).filter(k => allUsersData[k].role === 'owner'); owners.forEach(ownerId => { db.ref('notifications/' + ownerId).push({ from: myName, fromAvatar: myAvatar, type: 'new_report', reportId: ref.key, targetName: targetName, time: Date.now(), seen: false }); }); document.getElementById('report-modal').classList.remove('active'); alert('✅ تم إرسال البلاغ'); } catch (e) { alert('❌ ' + e.message); } }
+
+    // ============================================================
+    //  🚩 نظام البلاغات المُحدَّث - يدعم 4 أنواع
+    // ============================================================
+    let currentReportType = null;
+    let currentReportStatusKey = null;
+
+    function openReportModal(type, targetUid, targetName, messageKey, statusKey, avatarUrl) {
+        if (!myName || !myFP) return alert('يرجى تسجيل الدخول أولاً');
+        if (targetUid === myFP) return alert('لا يمكنك الإبلاغ عن نفسك');
+
+        currentReportType = type || 'message';
+        currentReportStatusKey = statusKey || null;
+
+        const iconEl = document.getElementById('report-rt-icon');
+        const valueEl = document.getElementById('report-rt-value');
+        const previewEl = document.getElementById('report-preview-box');
+
+        let icon = '💬', label = 'رسالة', previewHtml = '';
+
+        if (type === 'message') {
+            icon = '💬'; label = 'رسالة في الغرفة';
+            const m = messagesCache[messageKey];
+            if (m) {
+                const text = m.text || '';
+                let mediaHtml = '';
+                if (m.media) {
+                    if (m.type === 'image') mediaHtml = `<img src="${escapeHtml(m.media)}" onerror="this.style.display='none'">`;
+                    else if (m.type === 'video') mediaHtml = '<div style="text-align:center;padding:6px;">🎥 <strong>مقطع فيديو</strong></div>';
+                    else if (m.type === 'youtube') mediaHtml = '<div style="text-align:center;padding:6px;">▶️ <strong>فيديو يوتيوب</strong></div>';
+                }
+                previewHtml = `<strong>📝 نص الرسالة:</strong><br>"${escapeHtml(text.substring(0, 300))}"${mediaHtml}`;
+            }
+        } else if (type === 'status') {
+            icon = '📸'; label = 'حالة (Status)';
+            const s = statusesCache[statusKey];
+            if (s) {
+                const text = s.text || '';
+                let mediaHtml = '';
+                if (s.media) {
+                    if (s.type === 'video') mediaHtml = '<div style="text-align:center;padding:6px;">🎥 <strong>مقطع فيديو</strong></div>';
+                    else mediaHtml = `<img src="${escapeHtml(s.media)}" onerror="this.style.display='none'">`;
+                }
+                previewHtml = `<strong>📸 محتوى الحالة:</strong><br>"${escapeHtml(text.substring(0, 300) || '(وسائط فقط)')}"${mediaHtml}`;
+            }
+        } else if (type === 'avatar') {
+            icon = '🖼️'; label = 'صورة شخصية';
+            const user = allUsersData[targetUid] || {};
+            const av = avatarUrl || user.avatar || DEFAULT_ICON;
+            previewHtml = `<strong>🖼️ الصورة الشخصية:</strong><img src="${escapeHtml(av)}" onerror="this.style.display='none'">`;
+        } else if (type === 'name') {
+            icon = '👤'; label = 'اسم مستخدم';
+            const user = allUsersData[targetUid] || {};
+            previewHtml = `<strong>👤 الاسم:</strong> "${escapeHtml(user.name || targetName || 'مجهول')}"`;
+        }
+
+        iconEl.textContent = icon;
+        valueEl.textContent = label;
+        if (previewHtml) { previewEl.innerHTML = previewHtml; previewEl.style.display = 'block'; }
+        else { previewEl.style.display = 'none'; previewEl.innerHTML = ''; }
+
+        document.getElementById('report-target-name').textContent = targetName;
+        document.getElementById('report-target-uid').value = targetUid;
+        document.getElementById('report-message-key').value = messageKey || '';
+        document.getElementById('report-type').value = type;
+        document.getElementById('report-status-key').value = statusKey || '';
+        document.getElementById('report-avatar-url').value = avatarUrl || '';
+        document.getElementById('report-reason-input').value = '';
+
+        document.querySelectorAll('.report-reason-chip').forEach(c => c.classList.remove('selected'));
+
+        document.getElementById('report-modal').classList.add('active');
+    }
+
+    function closeReportModal() { document.getElementById('report-modal').classList.remove('active'); }
+
+    function selectQuickReason(el, reason) {
+        document.querySelectorAll('.report-reason-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        const ta = document.getElementById('report-reason-input');
+        if (!ta.value.trim()) ta.value = reason;
+    }
+
+    async function submitReport() {
+        const type = document.getElementById('report-type').value || 'message';
+        const targetUid = document.getElementById('report-target-uid').value;
+        const targetName = document.getElementById('report-target-name').textContent;
+        const messageKey = document.getElementById('report-message-key').value;
+        const statusKey = document.getElementById('report-status-key').value;
+        const avatarUrl = document.getElementById('report-avatar-url').value;
+        const reason = document.getElementById('report-reason-input').value.trim();
+
+        if (!reason) return alert('يرجى كتابة سبب البلاغ');
+        if (reason.length < 3) return alert('السبب قصير جداً');
+        if (!targetUid) return alert('خطأ: لا يوجد مستخدم مُبلَّغ عنه');
+
+        let itemSnapshot = null;
+
+        if (type === 'message' && messageKey && messagesCache[messageKey]) {
+            const rm = messagesCache[messageKey];
+            itemSnapshot = {
+                kind: 'message',
+                text: rm.text || '',
+                media: rm.media || null,
+                media_type: rm.type || null,
+                youtube_id: rm.youtubeId || null,
+                sender_name: rm.sender || 'مجهول',
+                sender_avatar: rm.avatar || DEFAULT_ICON,
+                sender_uid: rm.uid || null,
+                sender_role: rm.role || 'user',
+                sent_time: rm.time || Date.now(),
+                reply_to: rm.replyTo || null
+            };
+        } else if (type === 'status' && statusKey && statusesCache[statusKey]) {
+            const rs = statusesCache[statusKey];
+            itemSnapshot = {
+                kind: 'status',
+                text: rs.text || '',
+                media: rs.media || null,
+                media_type: rs.type || null,
+                sender_name: rs.sender || 'مجهول',
+                sender_avatar: rs.avatar || DEFAULT_ICON,
+                sender_uid: rs.uid || null,
+                sent_time: rs.time || Date.now()
+            };
+        } else if (type === 'avatar') {
+            const user = allUsersData[targetUid] || {};
+            itemSnapshot = {
+                kind: 'avatar',
+                avatar_url: avatarUrl || user.avatar || DEFAULT_ICON,
+                sender_name: user.name || targetName,
+                sender_avatar: user.avatar || DEFAULT_ICON,
+                sender_uid: targetUid,
+                sender_role: user.role || 'user'
+            };
+        } else if (type === 'name') {
+            const user = allUsersData[targetUid] || {};
+            itemSnapshot = {
+                kind: 'name',
+                name: user.name || targetName,
+                sender_name: user.name || targetName,
+                sender_avatar: user.avatar || DEFAULT_ICON,
+                sender_uid: targetUid,
+                sender_role: user.role || 'user'
+            };
+        }
+
+        const reportData = {
+            reporterId: myFP,
+            reporterName: myName,
+            reporterAvatar: myAvatar,
+            targetId: targetUid,
+            targetName: targetName,
+            reportType: type,
+            reason: reason,
+            messageKey: messageKey || null,
+            statusKey: statusKey || null,
+            messageSnapshot: itemSnapshot,
+            status: 'pending',
+            actionTaken: null,
+            ownerComment: null,
+            createdAt: Date.now(),
+            resolvedAt: null
+        };
+
+        try {
+            const ref = db.ref('reports').push();
+            await ref.set(reportData);
+            const owners = Object.keys(allUsersData).filter(k => allUsersData[k].role === 'owner');
+            const typeLabels = { message: '💬 رسالة', status: '📸 حالة', avatar: '🖼️ صورة شخصية', name: '👤 اسم مستخدم' };
+            owners.forEach(ownerId => {
+                db.ref('notifications/' + ownerId).push({
+                    from: myName, fromAvatar: myAvatar, type: 'new_report',
+                    reportId: ref.key, targetName: targetName,
+                    reportKind: typeLabels[type] || 'محتوى',
+                    time: Date.now(), seen: false
+                });
+            });
+            closeReportModal();
+            alert('✅ تم إرسال البلاغ');
+        } catch (e) { alert('❌ ' + e.message); }
+    }
+
+    // ============================================================
+    //  بلاغات الأدمن (المالك فقط)
+    // ============================================================
     function listenReports() { if (myRole !== 'owner') return; db.ref('reports').on('value', snap => { reportsCache = {}; if (snap.exists()) { snap.forEach(child => { const val = child.val(); val.key = child.key; reportsCache[child.key] = val; }); } renderReports(); updateReportsBadge(); }); }
     function toggleReportsModal() { const modal = document.getElementById('reports-modal'); modal.classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); if (modal.classList.contains('active')) renderReports(); }
-    function renderReports() { const list = document.getElementById('reports-list'); const filter = currentReportFilter; let filtered = Object.values(reportsCache); if (filter !== 'all') filtered = filtered.filter(r => r.status === filter); filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); if (filtered.length === 0) { list.innerHTML = '<div style="text-align:center;color:#999;padding:20px 0;font-size:14px;">لا توجد بلاغات</div>'; return; } list.innerHTML = ''; filtered.forEach(r => { const card = document.createElement('div'); card.className = 'report-card'; const isPending = r.status === 'pending'; const statusText = { pending: '⏳ معلق', resolved: '✅ محلول', rejected: '❌ مرفوض' }[r.status] || r.status; let actionsHtml = ''; if (isPending && myRole === 'owner') actionsHtml = `<div class="report-actions"><button class="action-btn-sm action-ban" onclick="openResolveModal('${r.key}','ban')">🚫 حضر</button><button class="action-btn-sm action-mute" onclick="openResolveModal('${r.key}','mute')">🔇 كتم</button><button class="action-btn-sm action-kick" onclick="openResolveModal('${r.key}','kick')">👢 طرد</button><button class="action-btn-sm action-ignore" onclick="openResolveModal('${r.key}','ignore')">👁️ تجاهل</button><button class="action-btn-sm action-none" onclick="openResolveModal('${r.key}','none')">❌ رفض</button></div>`; else if (!isPending) actionsHtml = `<div class="report-actions"><span class="action-btn-sm action-resolved">${r.actionTaken ? '⚡ '+r.actionTaken : '✅ تم الحل'}</span></div>`; let deleteBtn = ''; if (myRole === 'owner') deleteBtn = `<button class="action-btn-sm action-delete" onclick="deleteReport('${r.key}')">🗑️ حذف</button>`; const msgPreview = r.messageKey && messagesCache[r.messageKey] ? messagesCache[r.messageKey].text || '[وسائط]' : 'لا توجد رسالة'; card.innerHTML = `<div class="report-header"><span class="reporter">👤 ${escapeHtml(r.reporterName)}</span><span>→</span><span class="target">🎯 ${escapeHtml(r.targetName)}</span><span class="report-status status-${r.status}">${statusText}</span></div><div class="report-reason">📝 ${escapeHtml(r.reason)}</div><div class="report-msg">💬 ${escapeHtml(msgPreview)}</div>${r.ownerComment ? `<div class="report-comment"><strong>👑 المالك:</strong> ${escapeHtml(r.ownerComment)}</div>` : ''}<div style="font-size:10px;color:#999;margin-top:4px;">🕒 ${formatDate(r.createdAt)}</div><div class="report-actions">${actionsHtml}${deleteBtn}</div>`; list.appendChild(card); }); document.getElementById('reports-count').textContent = `(${filtered.length})`; }
+    function renderReports() {
+        const list = document.getElementById('reports-list');
+        const filter = currentReportFilter;
+        let filtered = Object.values(reportsCache);
+        if (filter !== 'all') filtered = filtered.filter(r => r.status === filter);
+        filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        if (filtered.length === 0) { list.innerHTML = '<div style="text-align:center;color:#999;padding:20px 0;font-size:14px;">لا توجد بلاغات</div>'; return; }
+        list.innerHTML = '';
+        filtered.forEach(r => {
+            const card = document.createElement('div'); card.className = 'report-card';
+            const isPending = r.status === 'pending';
+            const statusText = { pending: '⏳ معلق', resolved: '✅ محلول', rejected: '❌ مرفوض' }[r.status] || r.status;
+            const typeIcons = { message: '💬', status: '📸', avatar: '🖼️', name: '👤' };
+            const typeNames = { message: 'رسالة', status: 'حالة', avatar: 'صورة شخصية', name: 'اسم مستخدم' };
+            const rt = r.reportType || 'message';
+            let actionsHtml = '';
+            if (isPending && myRole === 'owner') actionsHtml = `<div class="report-actions"><button class="action-btn-sm action-ban" onclick="openResolveModal('${r.key}','ban')">🚫 حضر</button><button class="action-btn-sm action-mute" onclick="openResolveModal('${r.key}','mute')">🔇 كتم</button><button class="action-btn-sm action-kick" onclick="openResolveModal('${r.key}','kick')">👢 طرد</button><button class="action-btn-sm action-ignore" onclick="openResolveModal('${r.key}','ignore')">👁️ تجاهل</button><button class="action-btn-sm action-none" onclick="openResolveModal('${r.key}','none')">❌ رفض</button></div>`;
+            else if (!isPending) actionsHtml = `<div class="report-actions"><span class="action-btn-sm action-resolved">${r.actionTaken ? '⚡ ' + r.actionTaken : '✅ تم الحل'}</span></div>`;
+            let deleteBtn = '';
+            if (myRole === 'owner') deleteBtn = `<button class="action-btn-sm action-delete" onclick="deleteReport('${r.key}')">🗑️ حذف</button>`;
+            const msgPreview = r.messageKey && messagesCache[r.messageKey] ? messagesCache[r.messageKey].text || '[وسائط]' : (r.messageSnapshot && r.messageSnapshot.text ? r.messageSnapshot.text : 'لا يوجد محتوى');
+            card.innerHTML = `<div class="report-header"><span class="reporter">👤 ${escapeHtml(r.reporterName)}</span><span>→</span><span class="target">🎯 ${escapeHtml(r.targetName)}</span><span class="report-status status-${r.status}">${statusText}</span></div><div style="font-size:11px;color:#666;margin:4px 0;">${typeIcons[rt] || '📌'} نوع البلاغ: ${typeNames[rt] || rt}</div><div class="report-reason">📝 ${escapeHtml(r.reason)}</div><div class="report-msg">${typeIcons[rt] || '📌'} ${escapeHtml(msgPreview)}</div>${r.ownerComment ? `<div class="report-comment"><strong>👑 المالك:</strong> ${escapeHtml(r.ownerComment)}</div>` : ''}<div style="font-size:10px;color:#999;margin-top:4px;">🕒 ${formatDate(r.createdAt)}</div><div class="report-actions">${actionsHtml}${deleteBtn}</div>`;
+            list.appendChild(card);
+        });
+        document.getElementById('reports-count').textContent = `(${filtered.length})`;
+    }
     function deleteReport(reportId) { if (myRole !== 'owner') return alert('⛔'); if (!confirm('حذف البلاغ؟')) return; db.ref('reports/' + reportId).remove().then(() => alert('✅')).catch(err => alert('❌ ' + err.message)); }
     function filterReports(filter, btn) { currentReportFilter = filter; document.querySelectorAll('.filter-tabs button').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderReports(); }
     function updateReportsBadge() { const pending = Object.values(reportsCache).filter(r => r.status === 'pending').length; const badge = document.getElementById('reports-badge'); if (pending > 0) { badge.textContent = pending; badge.classList.add('active'); } else badge.classList.remove('active'); }
     function openResolveModal(reportId, action) { if (myRole !== 'owner') return alert('⛔'); const report = reportsCache[reportId]; if (!report) return alert('غير موجود'); if (report.status !== 'pending') return alert('تم الحل'); resolveTargetReportId = reportId; document.getElementById('resolve-target-name').textContent = report.targetName; document.getElementById('resolve-comment-input').value = ''; document.getElementById('resolve-modal').dataset.action = action; document.getElementById('resolve-modal').classList.add('active'); }
-
-    // ============================================================
-    //  ✅ resolveReport — نسخة محدثة مع تسجيل
-    // ============================================================
     async function resolveReport(action) {
-        const reportId = resolveTargetReportId;
-        if (!reportId) return;
+        const reportId = resolveTargetReportId; if (!reportId) return;
         const comment = document.getElementById('resolve-comment-input').value.trim();
-        const report = reportsCache[reportId];
-        if (!report) return;
-        const updates = {
-            status: action === 'none' ? 'rejected' : 'resolved',
-            actionTaken: action,
-            ownerComment: comment || null,
-            resolvedAt: Date.now()
-        };
+        const report = reportsCache[reportId]; if (!report) return;
+        const updates = { status: action === 'none' ? 'rejected' : 'resolved', actionTaken: action, ownerComment: comment || null, resolvedAt: Date.now() };
         try {
             await db.ref('reports/' + reportId).update(updates);
             if (action !== 'none') {
                 const targetUid = report.targetId;
-                if (action === 'ban') {
-                    await db.ref('bans/' + targetUid).set(true);
-                    await logAdminAction('report_ban', targetUid, report.targetName, { report_id: reportId });
-                } else if (action === 'mute') {
-                    const et = Date.now() + 3600000;
-                    const data = { endTime: et, by: myName, at: Date.now() };
-                    await db.ref('mutes/' + targetUid).set(data);
-                    await logAdminAction('report_mute', targetUid, report.targetName, { report_id: reportId, duration: 60 });
-                } else if (action === 'kick') {
-                    await db.ref('ignores/' + targetUid).set({ endTime: Date.now() + 3600000, by: myName, at: Date.now() });
-                    await logAdminAction('report_kick', targetUid, report.targetName, { report_id: reportId });
-                } else if (action === 'ignore') {
-                    await db.ref('ignores/' + targetUid).set({ endTime: 9999999999999, by: myName, at: Date.now() });
-                    await logAdminAction('report_ignore', targetUid, report.targetName, { report_id: reportId });
-                }
+                if (action === 'ban') { await db.ref('bans/' + targetUid).set(true); await logAdminAction('report_ban', targetUid, report.targetName, { report_id: reportId }); }
+                else if (action === 'mute') { const et = Date.now() + 3600000; const data = { endTime: et, by: myName, at: Date.now() }; await db.ref('mutes/' + targetUid).set(data); await logAdminAction('report_mute', targetUid, report.targetName, { report_id: reportId, duration: 60 }); }
+                else if (action === 'kick') { await db.ref('ignores/' + targetUid).set({ endTime: Date.now() + 3600000, by: myName, at: Date.now() }); await logAdminAction('report_kick', targetUid, report.targetName, { report_id: reportId }); }
+                else if (action === 'ignore') { await db.ref('ignores/' + targetUid).set({ endTime: 9999999999999, by: myName, at: Date.now() }); await logAdminAction('report_ignore', targetUid, report.targetName, { report_id: reportId }); }
                 if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_resolved', reportId: reportId, targetName: report.targetName, action: action, comment: comment || '', time: Date.now(), seen: false });
             } else {
                 await logAdminAction('report_reject', report.targetId, report.targetName, { report_id: reportId });
@@ -3072,14 +2746,13 @@
             }
             document.getElementById('resolve-modal').classList.remove('active');
             alert('✅');
-            renderReports();
-            updateReportsBadge();
+            renderReports(); updateReportsBadge();
         } catch (e) { alert('❌ ' + e.message); }
     }
 
     let colorTargetUid = null, selectedGlow = 'none';
     function openColorControl(uid) { if (!isOwner()) return alert("⛔"); colorTargetUid = uid; const u = allUsersData[uid] || {}, n = u.name || 'مجهول', av = u.avatar || DEFAULT_ICON, r = u.role || 'user'; document.getElementById('color-target-avatar').src = av; document.getElementById('color-target-name').textContent = n; document.getElementById('color-target-role').textContent = 'رتبة: ' + r; const cc = getColor(uid), cg = getGlow(uid); selectedGlow = cg; document.getElementById('color-name-picker').value = cc.name || '#333333'; const g = document.getElementById('color-grid'); g.innerHTML = ''; COLORS.forEach((c, i) => { const d = document.createElement('div'); d.className = 'color-option'; d.style.background = c.bg; if (cc && cc.bg === c.bg) d.classList.add('selected'); d.innerHTML = '<span class="check">✓</span><span class="color-label">' + (i + 1) + '</span>'; d.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); d.classList.add('selected'); updatePreview(); }; g.appendChild(d); }); document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === cg); }); document.getElementById('color-name-picker').oninput = updatePreview; updatePreview(); document.getElementById('color-control-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); }
-    function selectGlow(g) { selectedGlow = g; document.querySelectorAll('.glow-btn').forEach(b => b.classList.toggle('selected', b.dataset.glow === g)); updatePreview(); }
+    function selectGlow(g) { selectedGlow = g; document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === g); }); updatePreview(); }
     function updatePreview() { const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; let bg = 'linear-gradient(135deg, #e0e0e0, #bdbdbd)', tc = '#333'; if (s) { const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx >= 0 && idx < COLORS.length) { const c = COLORS[idx]; bg = c.bg; tc = c.text; } } const pb = document.getElementById('preview-bubble'), pn = document.getElementById('preview-name'), pg = document.getElementById('preview-glow-label'); pb.style.background = bg; pb.style.color = tc; pb.textContent = '📝 نص'; pn.style.color = nc; pn.textContent = document.getElementById('color-target-name').textContent; pn.className = 'preview-name'; if (selectedGlow !== 'none') pn.classList.add('glow', selectedGlow); const gn = { none: '✨ بدون', glow: '✨ توهج', 'glow-fast': '⚡ سريع', 'glow-slow': '🌊 بطيء', 'glow-rainbow': '🌈', 'glow-neon': '💡 نيون', 'glow-fire': '🔥 نار', 'owner-glow': '👑 ملكي' }; pg.textContent = gn[selectedGlow] || '✨ بدون'; }
     function applyUserColor() { if (!colorTargetUid) return; const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; if (!s) return alert("اختر لون!"); const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx < 0 || idx >= COLORS.length) return; const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc }; saveUserColor(colorTargetUid, cd, selectedGlow); closeColorControl(); alert("✅"); }
     function resetUserColorHandler() { if (!colorTargetUid) return; if (confirm("إعادة تعيين؟")) { resetUserColor(colorTargetUid); closeColorControl(); alert("✅"); } }
