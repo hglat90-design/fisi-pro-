@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>فيسي برو - نظام البلاغات المتطور</title>
+    <title>فيسي برو - نظام البلاغات</title>
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#008069">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3.4.2/dist/fp.min.js"></script>
@@ -26,6 +27,8 @@
         #loading-screen { display: flex; }
         #ban-screen { background: linear-gradient(135deg, #1a1a1a, #4a0000); color: #fff; z-index: 999; display: none; text-align: center; }
         #maintenance-screen { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; z-index: 999; text-align: center; }
+        #maintenance-screen h1 { font-size: 28px; margin: 16px 0 8px; font-weight: 900; color: #f9a825; }
+        #maintenance-screen p { font-size: 15px; color: #ddd; max-width: 300px; line-height: 1.6; }
         .login-input { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 15px; text-align: center; outline: 0; font-size: 18px; font-family: var(--font-main); transition: border .3s; }
         .login-input:focus { border-color: var(--primary); }
         .login-btn { width: 100%; padding: 15px; background: var(--primary); color: #fff; border: 0; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 18px; font-family: var(--font-main); transition: transform .2s; }
@@ -51,14 +54,26 @@
         .bubble { padding: 6px 10px; border-radius: 12px; position: relative; font-size: 14px; line-height: 1.5; max-width: 100%; overflow: hidden; word-wrap: break-word; font-family: var(--font-main); font-weight: 400; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
         .bubble-owner { background: linear-gradient(135deg, #FFD700, #F9A825) !important; color: #1a1a1a !important; border-bottom-left-radius: 3px; box-shadow: 0 2px 12px rgba(255, 215, 0, 0.4) !important; border: 1px solid rgba(255, 215, 0, 0.3); }
         .bubble-owner .sender-name { color: #5d4a00 !important; }
+        .bubble-owner .sender-name .role-badge.owner { background: #5d4a00 !important; color: #FFD700 !important; }
         .bubble-manager { background: linear-gradient(135deg, #9C27B0, #6A1B9A) !important; color: #fff !important; border-bottom-left-radius: 3px; box-shadow: 0 2px 12px rgba(156, 39, 176, 0.3) !important; }
         .bubble-manager .sender-name { color: #E1BEE7 !important; }
+        .bubble-manager .sender-name .role-badge.manager { background: #E1BEE7 !important; color: #6A1B9A !important; }
         .bubble-mod { background: linear-gradient(135deg, #1E88E5, #0D47A1) !important; color: #fff !important; border-bottom-left-radius: 3px; box-shadow: 0 2px 12px rgba(30, 136, 229, 0.3) !important; }
         .bubble-mod .sender-name { color: #BBDEFB !important; }
+        .bubble-mod .sender-name .role-badge.mod { background: #BBDEFB !important; color: #0D47A1 !important; }
         .bubble-user { border-bottom-left-radius: 3px; }
+        .bubble-user .sender-name { color: #333 !important; }
+        .mine .bubble { border-bottom-left-radius: 3px; }
+        .others .bubble { border-bottom-right-radius: 3px; }
         .sender-info { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
         .sender-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid rgba(0, 0, 0, 0.06); cursor: pointer; flex-shrink: 0; }
-        .sender-name { font-size: 12px; font-weight: 700; color: #555; display: flex; align-items: center; gap: 3px; flex-wrap: wrap; font-family: var(--font-main); cursor: pointer; }
+        .sender-name { font-size: 12px; font-weight: 700; color: #555; display: flex; align-items: center; gap: 3px; flex-wrap: wrap; font-family: var(--font-main); }
+        .sender-name.mine-name { color: #005c4b; }
+        .role-badge { font-size: 8px; padding: 1px 5px; border-radius: 5px; color: #fff; font-weight: 700; }
+        .role-badge.owner { background: #FFD700; color: #5d4a00; }
+        .role-badge.manager { background: #9c27b0; }
+        .role-badge.mod { background: #2196f3; }
+        .role-badge.trusted { background: #ff9800; }
         .msg-time { font-size: 9px; text-align: left; opacity: .5; margin-top: 2px; font-family: var(--font-main); font-weight: 300; }
         .media-container { margin-top: 3px; border-radius: 6px; overflow: hidden; cursor: pointer; position: relative; background: #000; }
         .media-container img, .media-container video { width: 100%; display: block; max-height: 200px; object-fit: cover; }
@@ -116,7 +131,7 @@
         .user-card { padding: 8px 10px; border-radius: 6px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #eee; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03); }
         .user-card .user-info { display: flex; align-items: center; gap: 8px; }
         .user-card .user-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; cursor: pointer; flex-shrink: 0; }
-        .user-card .user-details h4 { font-size: 12px; display: flex; align-items: center; gap: 4px; font-family: var(--font-main); cursor: pointer; }
+        .user-card .user-details h4 { font-size: 12px; display: flex; align-items: center; gap: 4px; font-family: var(--font-main); }
         .user-card .user-status { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-left: 3px; flex-shrink: 0; }
         .user-card .user-status.online { background: #25D366; box-shadow: 0 0 6px rgba(37, 211, 102, 0.4); }
         .user-card .user-status.offline { background: #ccc; }
@@ -328,18 +343,51 @@
         .sound-option.selected { border-color: var(--primary); background: #e8f5e9; color: var(--primary); }
         .sound-option .s-icon { display: block; font-size: 16px; margin-bottom: 2px; }
         /* ===== Report Modal Extra Styles ===== */
-        .report-type-info { display: flex; align-items: center; gap: 10px; background: #f5f5f5; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; text-align: right; font-family: var(--font-main); }
+        .report-type-info {
+            display: flex; align-items: center; gap: 10px;
+            background: #f5f5f5; border-radius: 10px;
+            padding: 10px 12px; margin-bottom: 12px;
+            text-align: right; font-family: var(--font-main);
+        }
         .report-type-info .rt-icon { font-size: 24px; flex-shrink: 0; }
         .report-type-info .rt-text { flex: 1; min-width: 0; }
         .report-type-info .rt-label { font-size: 11px; color: #888; font-weight: 600; }
         .report-type-info .rt-value { font-size: 13px; color: #333; font-weight: 700; margin-top: 2px; word-break: break-word; }
-        .report-preview-box { background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; text-align: right; font-family: var(--font-main); font-size: 12px; color: #555; max-height: 150px; overflow-y: auto; line-height: 1.6; }
-        .report-preview-box img { max-width: 100%; max-height: 100px; border-radius: 8px; margin-top: 6px; display: block; cursor: pointer; }
+        .report-preview-box {
+            background: #fafafa; border: 1px solid #eee;
+            border-radius: 10px; padding: 10px 12px;
+            margin-bottom: 12px; text-align: right;
+            font-family: var(--font-main); font-size: 12px;
+            color: #555; max-height: 150px; overflow-y: auto;
+            line-height: 1.6;
+        }
+        .report-preview-box img {
+            max-width: 100%; max-height: 100px;
+            border-radius: 8px; margin-top: 6px; display: block;
+        }
         .report-preview-box strong { color: #333; }
-        .report-reasons { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; justify-content: center; }
-        .report-reason-chip { padding: 6px 12px; background: #f0f0f0; border: 1.5px solid #e0e0e0; border-radius: 16px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .2s; font-family: var(--font-main); color: #555; }
+        .report-reasons {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            margin-bottom: 10px; justify-content: center;
+        }
+        .report-reason-chip {
+            padding: 6px 12px;
+            background: #f0f0f0;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 12px; font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: var(--font-main);
+            color: #555;
+        }
         .report-reason-chip:hover { background: #e8e8e8; }
-        .report-reason-chip.selected { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; border-color: #c0392b; box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4); }
+        .report-reason-chip.selected {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+            border-color: #c0392b;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+        }
         @media(max-width:480px) {
             .bubble { font-size: 13px; padding: 5px 8px; }
             .sender-name { font-size: 11px; }
@@ -375,10 +423,9 @@
         .report-card .report-header .reporter { font-weight: 700; color: var(--primary); }
         .report-card .report-header .target { font-weight: 700; color: #d32f2f; }
         .report-card .report-reason { font-size: 13px; color: #333; margin: 4px 0; }
-        .report-card .report-msg { font-size: 12px; color: #777; background: #f5f5f5; padding: 4px 8px; border-radius: 4px; margin-top: 4px; word-break: break-word; }
-        .report-card .report-msg img { max-width: 100%; max-height: 150px; border-radius: 6px; margin-top: 6px; cursor: pointer; display: block; }
+        .report-card .report-msg { font-size: 12px; color: #777; background: #f5f5f5; padding: 4px 8px; border-radius: 4px; margin-top: 4px; }
         .report-card .report-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-        .report-card .report-actions .action-btn-sm { padding: 5px 10px; border: 0; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: var(--font-main); }
+        .report-card .report-actions .action-btn-sm { padding: 3px 10px; border: 0; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: var(--font-main); }
         .report-card .report-actions .action-btn-sm:active { transform: scale(.95); }
         .action-ban { background: #d32f2f; color: #fff; }
         .action-mute { background: #ff9800; color: #fff; }
@@ -388,8 +435,6 @@
         .action-resolved { background: #4caf50; color: #fff; cursor: default; }
         .action-delete { background: #e53935; color: #fff; }
         .action-delete:hover { background: #b71c1c; }
-        .action-edit { background: #1976d2; color: #fff; }
-        .action-preview { background: #9c27b0; color: #fff; }
         .report-status { font-size: 11px; padding: 2px 10px; border-radius: 12px; color: #fff; }
         .status-pending { background: #ff9800; }
         .status-resolved { background: #4caf50; }
@@ -417,30 +462,17 @@
         .notif-status-badge.disabled { background: #ffebee; color: #c62828; }
         .notif-status-badge.not-supported { background: #fff3e0; color: #e65100; }
         .notif-status-badge.inapp { background: #e3f2fd; color: #1565c0; }
-        .btn-report-icon { background: linear-gradient(135deg, #e74c3c, #c0392b); border: 0; color: #fff; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
+        /* ===== Report buttons ===== */
+        .btn-report-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border: 0; color: #fff; width: 24px; height: 24px;
+            border-radius: 50%; cursor: pointer; font-size: 11px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all .2s;
+        }
         .btn-report-icon:hover { transform: scale(1.1); }
         .btn-report-icon:active { transform: scale(.9); }
         .user-card .user-actions .ctrl-btn.report-user { background: #e74c3c; }
-        /* ===== DM Monitor Styles ===== */
-        #dm-monitor-btn { display: none; }
-        #dm-monitor-modal .modal-header { background: #1a237e; color: #fff; }
-        #dm-monitor-modal .modal-header h3 { color: #fff; }
-        .dm-monitor-card { padding: 12px; background: #fff; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-        .dm-monitor-card:active { background: #f5f5f5; }
-        .dm-monitor-card .dm-users { display: flex; align-items: center; gap: 8px; }
-        .dm-monitor-card .dm-users img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-        .dm-monitor-card .dm-users .dm-arrow { font-size: 16px; color: #999; margin: 0 4px; }
-        .dm-monitor-card .dm-names { font-size: 14px; font-weight: 700; color: #333; }
-        #dm-monitor-view-modal .modal-header { background: #1a237e; color: #fff; }
-        #dm-monitor-view-modal .modal-header h3 { color: #fff; }
-        #dm-monitor-view-modal .modal-body { background: #efe7dd; }
-        .monitor-msg-row { display: flex; flex-direction: column; max-width: 85%; margin-bottom: 4px; }
-        .monitor-msg-row.mine { align-self: flex-end; }
-        .monitor-msg-row.others { align-self: flex-start; }
-        .monitor-bubble { padding: 6px 10px; border-radius: 10px; font-size: 13px; font-family: var(--font-main); word-wrap: break-word; }
-        .monitor-bubble.mine { background: #d9fdd3; color: #111; border-bottom-left-radius: 3px; }
-        .monitor-bubble.others { background: #fff; color: #111; border-bottom-right-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
-        .monitor-time { font-size: 9px; opacity: .5; text-align: left; margin-top: 1px; }
     </style>
 </head>
 <body>
@@ -482,7 +514,6 @@
             <button class="icon-btn" id="dm-btn" onclick="openDMList()" title="الرسائل الخاصة" style="display:none;">
                 💌 <span class="notif-badge" id="dm-badge">0</span>
             </button>
-            <button class="icon-btn" id="dm-monitor-btn" onclick="openDMMonitor()" title="مراقبة الخاص" style="display:none;">🕵️</button>
             <button class="icon-btn" id="sound-btn" onclick="toggleSoundQuick()" title="الأصوات">🔊</button>
             <button class="icon-btn" id="fcm-btn" onclick="requestNotificationPermission()" title="تفعيل الإشعارات">📲</button>
             <button class="icon-btn" onclick="openNotifications()" id="notif-btn">🔔<span class="notif-badge" id="notif-badge">0</span></button>
@@ -609,26 +640,6 @@
         </form>
     </div>
 
-    <!-- ===== نافذة مراقبة الخاص (للمالك فقط) ===== -->
-    <div class="modal-slide" id="dm-monitor-modal">
-        <div class="modal-header" style="background:#1a237e;color:#fff;">
-            <h3 style="color:#fff;">🕵️ مراقبة الخاص</h3>
-            <button class="modal-close" onclick="closeDMMonitor()" style="color:#fff;">✕</button>
-        </div>
-        <div style="padding:8px;">
-            <input type="text" id="dm-monitor-search" class="search-box" placeholder="🔍 بحث عن مستخدم..." onkeyup="filterDMMonitor()">
-        </div>
-        <div id="dm-monitor-list" style="flex:1;overflow-y:auto;"></div>
-    </div>
-
-    <div class="modal-slide" id="dm-monitor-view-modal">
-        <div class="modal-header" style="background:#1a237e;color:#fff;">
-            <h3 id="dm-monitor-view-title" style="color:#fff;">💬 المحادثة</h3>
-            <button class="modal-close" onclick="closeDMMonitorView()" style="color:#fff;">✕</button>
-        </div>
-        <div class="modal-body" id="dm-monitor-view-body" style="background:#efe7dd; display:flex; flex-direction:column; gap:6px; padding:10px;"></div>
-    </div>
-
     <div class="modal-slide" id="notifications-modal">
         <div class="modal-header">
             <h3>🔔 الإشعارات</h3>
@@ -693,22 +704,6 @@
         </div>
     </div>
 
-    <!-- ===== نافذة خيارات الحساب (لصورة والاسم) ===== -->
-    <div class="modal-popup" id="profile-actions-modal">
-        <div class="popup-box" style="max-width: 300px;">
-            <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">👤 خيارات الحساب</h3>
-            <img id="pa-avatar" src="" style="width:70px;height:70px;border-radius:50%;object-fit:cover;margin:0 auto 10px;display:block;border:2px solid var(--primary);">
-            <div id="pa-name" style="font-weight:700;font-size:15px;margin-bottom:12px;text-align:center;"></div>
-            <div style="display:flex;flex-direction:column;gap:6px;">
-                <button onclick="paViewImage()" class="login-btn" style="background:#2196f3;padding:8px;font-size:13px;">👁️ عرض الصورة</button>
-                <button onclick="paReport('avatar')" class="login-btn" style="background:#e74c3c;padding:8px;font-size:13px;">⚑ الإبلاغ عن الصورة</button>
-                <button onclick="paReport('name')" class="login-btn" style="background:#e74c3c;padding:8px;font-size:13px;">⚑ الإبلاغ عن الاسم</button>
-                <button onclick="paDM()" id="pa-dm-btn" class="login-btn" style="background:#9c27b0;padding:8px;font-size:13px;">💌 رسالة خاصة</button>
-            </div>
-            <button onclick="closeProfileActions()" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;margin-top:8px;">إلغاء</button>
-        </div>
-    </div>
-
     <div class="modal-popup" id="report-modal">
         <div class="popup-box">
             <h3 style="font-size:16px;font-weight:700;">🚩 إبلاغ</h3>
@@ -726,7 +721,7 @@
             <input type="hidden" id="report-type">
             <input type="hidden" id="report-status-key">
             <input type="hidden" id="report-avatar-url">
-            <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin:10px 0 4px;">اختر سبباً سريعاً (اختياري):</label>
+            <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin:10px 0 4px;">اختر سبباً سريعاً:</label>
             <div class="report-reasons" id="report-reasons-chips">
                 <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'محتوى مسيء')">محتوى مسيء</button>
                 <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'سب وشتم')">سب وشتم</button>
@@ -737,8 +732,8 @@
                 <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'إعلانات / سبام')">إعلانات / سبام</button>
                 <button type="button" class="report-reason-chip" onclick="selectQuickReason(this, 'أخرى')">أخرى</button>
             </div>
-            <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin:8px 0 4px;">تفاصيل إضافية (اختياري):</label>
-            <textarea id="report-reason-input" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:var(--font-main);resize:vertical;font-size:13px;" placeholder="اكتب تفاصيل البلاغ..."></textarea>
+            <label style="display:block;text-align:right;font-size:13px;font-weight:600;margin:8px 0 4px;">تفاصيل إضافية:</label>
+            <textarea id="report-reason-input" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:var(--font-main);resize:vertical;font-size:13px;" placeholder="اكتب تفاصيل البلاغ (اختياري)..."></textarea>
             <div style="margin-top:10px;display:flex;gap:6px;">
                 <button onclick="submitReport()" class="login-btn" style="background:#e74c3c;padding:10px;font-size:13px;">📤 إرسال البلاغ</button>
                 <button onclick="closeReportModal()" class="login-btn" style="background:#f0f0f0;color:#555;padding:10px;font-size:13px;">إلغاء</button>
@@ -1068,7 +1063,6 @@
     let reportsCache = {};
     let currentReportFilter = 'pending';
     let resolveTargetReportId = null;
-    let dmMonitorListener = null;
 
     const COLORS = [
         { bg: 'linear-gradient(135deg,#E3F2FD,#64B5F6)', text: '#0D47A1', name: '#0D47A1' },
@@ -1634,8 +1628,7 @@
                 db.ref('users/' + myFP + '/hidden').once('value', snap => { isHidden = snap.val() || false; updateHiddenButton(); });
                 document.getElementById('reports-btn').style.display = 'inline-block';
                 listenReports();
-                document.getElementById('dm-monitor-btn').style.display = 'inline-block';
-            } else { hiddenControl.style.display = 'none'; document.getElementById('reports-btn').style.display = 'none'; document.getElementById('dm-monitor-btn').style.display = 'none'; }
+            } else { hiddenControl.style.display = 'none'; document.getElementById('reports-btn').style.display = 'none'; }
             saveFCMToken();
         });
         db.ref('users/' + myFP + '/hidden').on('value', snap => { isHidden = snap.val() || false; updateHiddenButton(); updateUsersList(); updateOnlineBadge(); });
@@ -2027,8 +2020,7 @@
             if (cc) acts += '<button class="action-sm" style="background:#e91e63;font-size:9px;padding:2px 6px;" onclick="openColorControl(\'' + m.uid + '\')">🎨</button>';
             acts += '</div>';
             const sns = snc ? 'color:' + snc + ';' : '', gc2 = gc && gc !== 'none' ? 'glow ' + gc : '';
-            const safeName = escapeHtml(dn).replace(/'/g, "\\'");
-            div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar" onclick="openProfileActions(\'' + m.uid + '\',\'' + safeName + '\',\'' + da + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '" onclick="openProfileActions(\'' + m.uid + '\',\'' + safeName + '\',\'' + da + '\')">' + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '✓✓' : '') + '</div></div>' + acts;
+            div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar" onclick="openViewer(\'' + da + '\',\'image\',\'' + dn + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '">' + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '✓✓' : '') + '</div></div>' + acts;
             box.appendChild(div);
         });
         if (isBottom) box.scrollTop = box.scrollHeight; else box.scrollTop = sp;
@@ -2074,15 +2066,11 @@
                 const statusEl = existing.querySelector('.user-status');
                 if (statusEl) statusEl.className = 'user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline');
                 const nameEl = existing.querySelector('.user-details h4');
-                if (nameEl) {
-                    nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + escapeHtml(u.name) + ' ' + roleBadge + ' ' + hiddenBadge;
-                    nameEl.onclick = () => openProfileActions(u.uid, escapeHtml(u.name), avatar);
-                }
+                if (nameEl) nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + u.name + ' ' + roleBadge + ' ' + hiddenBadge;
                 const lastSeenEl = existing.querySelector('.last-seen');
                 if (lastSeenEl) lastSeenEl.textContent = statusText + (isOnline ? ' - ' + formatDate(u.lastSeen) : '');
                 const avatarEl = existing.querySelector('.user-avatar');
                 if (avatarEl && avatarEl.src !== avatar) avatarEl.src = avatar;
-                if (avatarEl) avatarEl.onclick = () => openProfileActions(u.uid, escapeHtml(u.name), avatar);
                 const actionsEl = existing.querySelector('.user-actions');
                 if (actionsEl) { actionsEl.id = 'uact-' + u.uid; updateUserControls(u.uid, u); }
                 const currentIndex = Array.from(l.children).indexOf(existing);
@@ -2090,7 +2078,7 @@
             } else {
                 const card = document.createElement('div');
                 card.className = 'user-card'; card.dataset.uid = u.uid; card.dataset.role = u.role || 'user';
-                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openProfileActions('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}','${avatar}')"><div class="user-details"><h4 onclick="openProfileActions('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}','${avatar}')"><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${escapeHtml(u.name)} ${roleBadge} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
+                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openViewer('${avatar}','image','${u.name}')"><div class="user-details"><h4><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${u.name} ${roleBadge} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
                 if (idx < l.children.length) l.insertBefore(card, l.children[idx]); else l.appendChild(card);
                 updateUserControls(u.uid, u);
             }
@@ -2120,6 +2108,7 @@
     function updateUserControls(u, d) {
         const e = document.getElementById('uact-' + u); if (!e || u === myFP) return;
         if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && myRole !== 'owner') {
+            // Even without admin permissions, show report button
             let bt = '';
             if (myRole !== 'owner' && u !== myFP) bt += '<button class="ctrl-btn report-user" onclick="openReportModal(\'name\',\'' + u + '\',\'' + (d.name || 'مجهول').replace(/'/g, "\\'") + '\')" title="إبلاغ عن الاسم">⚑</button>';
             e.innerHTML = bt;
@@ -2187,56 +2176,14 @@
         document.getElementById('youtube-btn').style.display = 'flex';
         const dmBtn = document.getElementById('dm-btn');
         if (dmBtn) dmBtn.style.display = myDMEnabled ? 'inline-block' : 'none';
-        if (myRole === 'owner') { document.getElementById('reports-btn').style.display = 'inline-block'; listenReports(); document.getElementById('dm-monitor-btn').style.display = 'inline-block'; }
-        else { document.getElementById('reports-btn').style.display = 'none'; document.getElementById('dm-monitor-btn').style.display = 'none'; }
+        if (myRole === 'owner') { document.getElementById('reports-btn').style.display = 'inline-block'; listenReports(); }
+        else document.getElementById('reports-btn').style.display = 'none';
         updateFCMButton(); updateSoundButton();
     }
     function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { i.placeholder = "اكتب رسالة..."; i.disabled = false; b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
     function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
     function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); }
-    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('dm-monitor-modal').classList.remove('active'); document.getElementById('dm-monitor-view-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
-
-    // ====== دوال خيارات الحساب (Profile Actions) ======
-    let paTargetUid = null, paTargetName = null, paTargetAvatar = null;
-
-    function openProfileActions(uid, name, avatar) {
-        if (uid === myFP) return; 
-        paTargetUid = uid; paTargetName = name; paTargetAvatar = avatar;
-        document.getElementById('pa-avatar').src = avatar;
-        document.getElementById('pa-name').textContent = name;
-        const dmBtn = document.getElementById('pa-dm-btn');
-        if (myDMEnabled && allDMUsersData[uid] === true) {
-            dmBtn.style.display = 'block';
-        } else {
-            dmBtn.style.display = 'none';
-        }
-        document.getElementById('profile-actions-modal').classList.add('active');
-        document.getElementById('modal-overlay').classList.add('show');
-    }
-
-    function closeProfileActions() {
-        document.getElementById('profile-actions-modal').classList.remove('active');
-        document.getElementById('modal-overlay').classList.remove('show');
-        paTargetUid = null; paTargetName = null; paTargetAvatar = null;
-    }
-
-    function paViewImage() { 
-        if (paTargetAvatar) openViewer(paTargetAvatar, 'image', paTargetName); 
-        closeProfileActions(); 
-    }
-
-    function paReport(type) {
-        if (!paTargetUid) return;
-        closeProfileActions();
-        openReportModal(type, paTargetUid, paTargetName, null, null, paTargetAvatar);
-    }
-
-    function paDM() { 
-        if (paTargetUid) { 
-            closeProfileActions(); 
-            openDMChat(paTargetUid); 
-        } 
-    }
+    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
 
     async function banUser(u, n) {
         const tr = allUsersData[u]?.role || 'user';
@@ -2382,6 +2329,7 @@
         const v = document.getElementById('status-viewer'), c = document.getElementById('status-viewer-content'), ne = document.getElementById('status-viewer-name'), se = document.getElementById('status-viewer-seen'), db2 = document.getElementById('status-delete-btn');
         const reportBtn = document.getElementById('status-viewer-report-btn');
 
+        // إخفاء زر الإبلاغ إذا كانت حالتي
         if (s.uid === myFP) reportBtn.style.display = 'none';
         else reportBtn.style.display = 'flex';
 
@@ -2423,12 +2371,7 @@
         if (s.uid === myFP) return alert('لا يمكنك الإبلاغ عن حالتك');
         const ud = allUsersData[s.uid] || {};
         const dn = ud.name || s.sender || 'مجهول';
-        
-        // إغلاق عارض الحالة أولاً لضمان ظهور نافذة البلاغ
-        closeStatusViewer(null);
-        setTimeout(() => {
-            openReportModal('status', s.uid, dn, null, s.key);
-        }, 150);
+        openReportModal('status', s.uid, dn, null, s.key);
     }
 
     let selectedStatusType = 'text', statusFileData = null, statusFileType = '';
@@ -2496,7 +2439,7 @@
     function cancelReply() { replyTo = null; document.getElementById('reply-bar').classList.remove('active'); }
 
     // ============================================================
-    //  🚩 نظام البلاغات المُحدَّث
+    //  🚩 نظام البلاغات المُحدَّث - يدعم 4 أنواع
     // ============================================================
     let currentReportType = null;
     let currentReportStatusKey = null;
@@ -2505,15 +2448,6 @@
         if (!myName || !myFP) return alert('يرجى تسجيل الدخول أولاً');
         if (targetUid === myFP) return alert('لا يمكنك الإبلاغ عن نفسك');
 
-        // إصلاح: البحث عن المستخدم في حال كان الآيدي مفقوداً
-        if (!targetUid && targetName) {
-            const found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').toLowerCase() === (targetName || '').toLowerCase());
-            if (found) targetUid = found;
-        }
-        if (!targetUid || targetUid === 'undefined' || targetUid === 'null') {
-            return alert('خطأ: لا يوجد مستخدم مُبلَّغ عنه. يرجى التأكد من البيانات.');
-        }
-
         currentReportType = type || 'message';
         currentReportStatusKey = statusKey || null;
 
@@ -2521,6 +2455,7 @@
         const valueEl = document.getElementById('report-rt-value');
         const previewEl = document.getElementById('report-preview-box');
 
+        // إعداد معلومات النوع
         let icon = '💬', label = 'رسالة', previewHtml = '';
 
         if (type === 'message') {
@@ -2572,6 +2507,7 @@
         document.getElementById('report-avatar-url').value = avatarUrl || '';
         document.getElementById('report-reason-input').value = '';
 
+        // إعادة تعيين الأسباب السريعة
         document.querySelectorAll('.report-reason-chip').forEach(c => c.classList.remove('selected'));
 
         document.getElementById('report-modal').classList.add('active');
@@ -2588,26 +2524,18 @@
 
     async function submitReport() {
         const type = document.getElementById('report-type').value || 'message';
-        let targetUid = document.getElementById('report-target-uid').value;
+        const targetUid = document.getElementById('report-target-uid').value;
         const targetName = document.getElementById('report-target-name').textContent;
         const messageKey = document.getElementById('report-message-key').value;
         const statusKey = document.getElementById('report-status-key').value;
         const avatarUrl = document.getElementById('report-avatar-url').value;
-        let reason = document.getElementById('report-reason-input').value.trim();
+        const reason = document.getElementById('report-reason-input').value.trim();
 
-        // إصلاح: جعل السبب اختيارياً وتوليد سبب تلقائي إذا كان فارغاً
-        if (!reason) {
-            const typeLabels = { message: 'رسالة', status: 'حالة', avatar: 'صورة شخصية', name: 'اسم مستخدم' };
-            reason = 'بلاغ تلقائي - ' + (typeLabels[type] || 'محتوى') + ': لم يحدد المُبلِّغ سبباً.';
-        }
+        if (!reason) return alert('يرجى كتابة سبب البلاغ');
+        if (reason.length < 3) return alert('السبب قصير جداً');
+        if (!targetUid) return alert('خطأ: لا يوجد مستخدم مُبلَّغ عنه');
 
-        if (!targetUid || targetUid === 'undefined' || targetUid === 'null') {
-            // محاولة البحث عن المستخدم بالاسم
-            const found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').toLowerCase() === (targetName || '').toLowerCase());
-            if (found) targetUid = found;
-            else return alert('خطأ: لا يوجد مستخدم مُبلَّغ عنه. يرجى التأكد من البيانات.');
-        }
-
+        // 📸 احفظ نسخة كاملة من العنصر المُبلَّغ عنه
         let itemSnapshot = null;
 
         if (type === 'message' && messageKey && messagesCache[messageKey]) {
@@ -2696,11 +2624,10 @@
     }
 
     // ============================================================
-    //  بلاغات الأدمن (المالك فقط) - محدثة باحترافية
+    //  بلاغات الأدمن (المالك فقط)
     // ============================================================
     function listenReports() { if (myRole !== 'owner') return; db.ref('reports').on('value', snap => { reportsCache = {}; if (snap.exists()) { snap.forEach(child => { const val = child.val(); val.key = child.key; reportsCache[child.key] = val; }); } renderReports(); updateReportsBadge(); }); }
     function toggleReportsModal() { const modal = document.getElementById('reports-modal'); modal.classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); if (modal.classList.contains('active')) renderReports(); }
-    
     function renderReports() {
         const list = document.getElementById('reports-list');
         const filter = currentReportFilter;
@@ -2709,7 +2636,6 @@
         filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         if (filtered.length === 0) { list.innerHTML = '<div style="text-align:center;color:#999;padding:20px 0;font-size:14px;">لا توجد بلاغات</div>'; return; }
         list.innerHTML = '';
-        
         filtered.forEach(r => {
             const card = document.createElement('div'); card.className = 'report-card';
             const isPending = r.status === 'pending';
@@ -2717,125 +2643,18 @@
             const typeIcons = { message: '💬', status: '📸', avatar: '🖼️', name: '👤' };
             const typeNames = { message: 'رسالة', status: 'حالة', avatar: 'صورة شخصية', name: 'اسم مستخدم' };
             const rt = r.reportType || 'message';
-            
             let actionsHtml = '';
-            if (isPending && myRole === 'owner') {
-                actionsHtml = `<div class="report-actions">`;
-                // أزرار حذف المحتوى المبلّغ عنه
-                if (rt === 'message' && r.messageKey) {
-                    actionsHtml += `<button class="action-btn-sm action-delete" onclick="deleteReportedContent('${r.key}', 'message', '${r.messageKey}')">🗑️ حذف الرسالة</button>`;
-                } else if (rt === 'status' && r.statusKey) {
-                    actionsHtml += `<button class="action-btn-sm action-delete" onclick="deleteReportedContent('${r.key}', 'status', '${r.statusKey}')">🗑️ حذف الحالة</button>`;
-                } else if (rt === 'avatar') {
-                    actionsHtml += `<button class="action-btn-sm action-delete" onclick="deleteReportedContent('${r.key}', 'avatar', '${r.targetId}')">🗑️ حذف الصورة</button>`;
-                } else if (rt === 'name') {
-                    actionsHtml += `<button class="action-btn-sm action-edit" onclick="editReportedName('${r.key}', '${r.targetId}', '${escapeHtml(r.targetName)}')">✏️ تعديل الاسم</button>`;
-                }
-                
-                // أزرار العقوبات
-                actionsHtml += `<button class="action-btn-sm action-ban" onclick="openResolveModal('${r.key}','ban')">🚫 حضر</button>`;
-                actionsHtml += `<button class="action-btn-sm action-mute" onclick="openResolveModal('${r.key}','mute')">🔇 كتم</button>`;
-                actionsHtml += `<button class="action-btn-sm action-none" onclick="openResolveModal('${r.key}','none')">❌ رفض</button>`;
-                actionsHtml += `</div>`;
-            } else if (!isPending) {
-                actionsHtml = `<div class="report-actions"><span class="action-btn-sm action-resolved">${r.actionTaken ? '⚡ ' + r.actionTaken : '✅ تم الحل'}</span></div>`;
-            }
-            
+            if (isPending && myRole === 'owner') actionsHtml = `<div class="report-actions"><button class="action-btn-sm action-ban" onclick="openResolveModal('${r.key}','ban')">🚫 حضر</button><button class="action-btn-sm action-mute" onclick="openResolveModal('${r.key}','mute')">🔇 كتم</button><button class="action-btn-sm action-kick" onclick="openResolveModal('${r.key}','kick')">👢 طرد</button><button class="action-btn-sm action-ignore" onclick="openResolveModal('${r.key}','ignore')">👁️ تجاهل</button><button class="action-btn-sm action-none" onclick="openResolveModal('${r.key}','none')">❌ رفض</button></div>`;
+            else if (!isPending) actionsHtml = `<div class="report-actions"><span class="action-btn-sm action-resolved">${r.actionTaken ? '⚡ ' + r.actionTaken : '✅ تم الحل'}</span></div>`;
             let deleteBtn = '';
-            if (myRole === 'owner') deleteBtn = `<button class="action-btn-sm action-delete" style="margin-top:5px;" onclick="deleteReport('${r.key}')">🗑️ حذف البلاغ نهائياً</button>`;
-            
-            // استخراج معاينة المحتوى
-            let msgPreview = '';
-            if (r.messageKey && messagesCache[r.messageKey]) {
-                msgPreview = messagesCache[r.messageKey].text || '[وسائط]';
-            } else if (r.messageSnapshot) {
-                if (r.messageSnapshot.media) {
-                    if (r.messageSnapshot.media_type === 'image') {
-                        msgPreview = `<img src="${escapeHtml(r.messageSnapshot.media)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','image','${escapeHtml(r.targetName)}')" onerror="this.style.display='none'">`;
-                    } else if (r.messageSnapshot.media_type === 'video') {
-                        msgPreview = `🎥 <strong>فيديو</strong> <button class="action-btn-sm action-preview" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','video','${escapeHtml(r.targetName)}')">معاينة</button>`;
-                    }
-                }
-                if (r.messageSnapshot.text) msgPreview += (msgPreview ? '<br>' : '') + escapeHtml(r.messageSnapshot.text);
-            } else {
-                msgPreview = 'لا يوجد محتوى';
-            }
-            
-            // معاينة الحالة
-            if (rt === 'status' && r.messageSnapshot) {
-                if (r.messageSnapshot.media) {
-                    if (r.messageSnapshot.media_type === 'image') {
-                        msgPreview = `<img src="${escapeHtml(r.messageSnapshot.media)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','image','${escapeHtml(r.targetName)}')" onerror="this.style.display='none'">`;
-                    } else if (r.messageSnapshot.media_type === 'video') {
-                        msgPreview = `🎥 <strong>فيديو حالة</strong> <button class="action-btn-sm action-preview" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','video','${escapeHtml(r.targetName)}')">معاينة</button>`;
-                    }
-                }
-                if (r.messageSnapshot.text) msgPreview += (msgPreview ? '<br>' : '') + escapeHtml(r.messageSnapshot.text);
-            }
-            
-            // معاينة الصورة الشخصية
-            if (rt === 'avatar' && r.messageSnapshot && r.messageSnapshot.avatar_url) {
-                msgPreview = `<img src="${escapeHtml(r.messageSnapshot.avatar_url)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.avatar_url)}','image','${escapeHtml(r.targetName)}')" onerror="this.style.display='none'">`;
-            }
-            
-            // معاينة الاسم
-            if (rt === 'name' && r.messageSnapshot && r.messageSnapshot.name) {
-                msgPreview = `👤 <strong>${escapeHtml(r.messageSnapshot.name)}</strong>`;
-            }
-
-            card.innerHTML = `
-                <div class="report-header">
-                    <span class="reporter">👤 ${escapeHtml(r.reporterName)}</span>
-                    <span>→</span>
-                    <span class="target">🎯 ${escapeHtml(r.targetName)}</span>
-                    <span class="report-status status-${r.status}">${statusText}</span>
-                </div>
-                <div style="font-size:11px;color:#666;margin:4px 0;">${typeIcons[rt] || '📌'} نوع البلاغ: ${typeNames[rt] || rt}</div>
-                <div class="report-reason">📝 ${escapeHtml(r.reason)}</div>
-                <div class="report-msg">${typeIcons[rt] || '📌'} ${msgPreview}</div>
-                ${r.ownerComment ? `<div class="report-comment"><strong>👑 المالك:</strong> ${escapeHtml(r.ownerComment)}</div>` : ''}
-                <div style="font-size:10px;color:#999;margin-top:4px;">🕒 ${formatDate(r.createdAt)}</div>
-                <div class="report-actions">${actionsHtml}</div>
-                ${deleteBtn}
-            `;
+            if (myRole === 'owner') deleteBtn = `<button class="action-btn-sm action-delete" onclick="deleteReport('${r.key}')">🗑️ حذف</button>`;
+            const msgPreview = r.messageKey && messagesCache[r.messageKey] ? messagesCache[r.messageKey].text || '[وسائط]' : (r.messageSnapshot && r.messageSnapshot.text ? r.messageSnapshot.text : 'لا يوجد محتوى');
+            card.innerHTML = `<div class="report-header"><span class="reporter">👤 ${escapeHtml(r.reporterName)}</span><span>→</span><span class="target">🎯 ${escapeHtml(r.targetName)}</span><span class="report-status status-${r.status}">${statusText}</span></div><div style="font-size:11px;color:#666;margin:4px 0;">${typeIcons[rt] || '📌'} نوع البلاغ: ${typeNames[rt] || rt}</div><div class="report-reason">📝 ${escapeHtml(r.reason)}</div><div class="report-msg">${typeIcons[rt] || '📌'} ${escapeHtml(msgPreview)}</div>${r.ownerComment ? `<div class="report-comment"><strong>👑 المالك:</strong> ${escapeHtml(r.ownerComment)}</div>` : ''}<div style="font-size:10px;color:#999;margin-top:4px;">🕒 ${formatDate(r.createdAt)}</div><div class="report-actions">${actionsHtml}${deleteBtn}</div>`;
             list.appendChild(card);
         });
         document.getElementById('reports-count').textContent = `(${filtered.length})`;
     }
-
-    async function deleteReportedContent(reportId, type, targetId) {
-        if (myRole !== 'owner') return alert('⛔');
-        const confirmMsg = { message: 'حذف الرسالة المبلّغ عنها؟', status: 'حذف الحالة المبلّغ عنها؟', avatar: 'حذف الصورة الشخصية للمستخدم؟' }[type];
-        if (!confirm(confirmMsg)) return;
-        try {
-            if (type === 'message') {
-                await db.ref('messages/' + targetId).remove();
-                await logAdminAction('report_delete_message', null, null, { report_id: reportId, message_key: targetId });
-            } else if (type === 'status') {
-                await db.ref('statuses/' + targetId).remove();
-                await logAdminAction('report_delete_status', null, null, { report_id: reportId, status_key: targetId });
-            } else if (type === 'avatar') {
-                await db.ref('users/' + targetId).update({ avatar: DEFAULT_ICON });
-                await logAdminAction('report_delete_avatar', targetId, '', { report_id: reportId });
-            }
-            await db.ref('reports/' + reportId).update({ status: 'resolved', actionTaken: 'حذف المحتوى', resolvedAt: Date.now() });
-            alert('✅ تم الحذف');
-        } catch (e) { alert('❌ ' + e.message); }
-    }
-
-    async function editReportedName(reportId, targetUid, currentName) {
-        if (myRole !== 'owner') return alert('⛔');
-        const newName = prompt('أدخل الاسم الجديد للمستخدم:', currentName);
-        if (!newName || newName.trim() === '' || newName === currentName) return;
-        try {
-            await db.ref('users/' + targetUid).update({ name: newName.trim() });
-            await logAdminAction('report_edit_name', targetUid, currentName, { report_id: reportId, new_name: newName.trim() });
-            await db.ref('reports/' + reportId).update({ status: 'resolved', actionTaken: 'تعديل الاسم', resolvedAt: Date.now() });
-            alert('✅ تم تعديل الاسم');
-        } catch (e) { alert('❌ ' + e.message); }
-    }
-
-    function deleteReport(reportId) { if (myRole !== 'owner') return alert('⛔'); if (!confirm('حذف البلاغ نهائياً؟')) return; db.ref('reports/' + reportId).remove().then(() => alert('✅')).catch(err => alert('❌ ' + err.message)); }
+    function deleteReport(reportId) { if (myRole !== 'owner') return alert('⛔'); if (!confirm('حذف البلاغ؟')) return; db.ref('reports/' + reportId).remove().then(() => alert('✅')).catch(err => alert('❌ ' + err.message)); }
     function filterReports(filter, btn) { currentReportFilter = filter; document.querySelectorAll('.filter-tabs button').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderReports(); }
     function updateReportsBadge() { const pending = Object.values(reportsCache).filter(r => r.status === 'pending').length; const badge = document.getElementById('reports-badge'); if (pending > 0) { badge.textContent = pending; badge.classList.add('active'); } else badge.classList.remove('active'); }
     function openResolveModal(reportId, action) { if (myRole !== 'owner') return alert('⛔'); const report = reportsCache[reportId]; if (!report) return alert('غير موجود'); if (report.status !== 'pending') return alert('تم الحل'); resolveTargetReportId = reportId; document.getElementById('resolve-target-name').textContent = report.targetName; document.getElementById('resolve-comment-input').value = ''; document.getElementById('resolve-modal').dataset.action = action; document.getElementById('resolve-modal').classList.add('active'); }
@@ -2863,102 +2682,6 @@
         } catch (e) { alert('❌ ' + e.message); }
     }
 
-    // ============================================================
-    //  🕵️ مراقبة الدردشات الخاصة (للمالك فقط)
-    // ============================================================
-    function openDMMonitor() {
-        if (myRole !== 'owner') return alert('⛔');
-        document.getElementById('dm-monitor-modal').classList.add('active');
-        document.getElementById('modal-overlay').classList.add('show');
-        renderDMMonitor();
-    }
-
-    function closeDMMonitor() {
-        document.getElementById('dm-monitor-modal').classList.remove('active');
-        document.getElementById('modal-overlay').classList.remove('show');
-        if (dmMonitorListener) { db.ref('private_chats').off('value', dmMonitorListener); dmMonitorListener = null; }
-    }
-
-    function renderDMMonitor() {
-        const list = document.getElementById('dm-monitor-list');
-        list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">⏳ جاري التحميل...</div>';
-        if (dmMonitorListener) db.ref('private_chats').off('value', dmMonitorListener);
-        dmMonitorListener = db.ref('private_chats').on('value', snap => {
-            list.innerHTML = '';
-            if (!snap.exists()) { list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">📭 لا توجد محادثات خاصة</div>'; return; }
-            const chats = [];
-            snap.forEach(child => {
-                const chatId = child.key;
-                const parts = chatId.split('_');
-                if (parts.length !== 2) return;
-                const u1 = allUsersData[parts[0]] || { name: 'مجهول', avatar: DEFAULT_ICON };
-                const u2 = allUsersData[parts[1]] || { name: 'مجهول', avatar: DEFAULT_ICON };
-                let lastMsg = '';
-                if (child.hasChild('messages')) {
-                    const msgs = child.child('messages');
-                    let maxTime = 0;
-                    msgs.forEach(m => { const t = Number(m.val().time) || 0; if (t > maxTime) { maxTime = t; lastMsg = m.val().text || '📎'; } });
-                }
-                chats.push({ chatId, u1, u2, lastMsg, lastTime: maxTime });
-            });
-            chats.sort((a, b) => b.lastTime - a.lastTime);
-            if (chats.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">📭 لا توجد محادثات خاصة</div>'; return; }
-            chats.forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'dm-monitor-card';
-                div.dataset.search = (c.u1.name + ' ' + c.u2.name).toLowerCase();
-                div.innerHTML = `
-                    <div class="dm-users">
-                        <img src="${c.u1.avatar || DEFAULT_ICON}">
-                        <span class="dm-arrow">↔</span>
-                        <img src="${c.u2.avatar || DEFAULT_ICON}">
-                    </div>
-                    <div class="dm-names">${escapeHtml(c.u1.name)} ↔ ${escapeHtml(c.u2.name)}</div>
-                    <div style="font-size:11px;color:#999;max-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(c.lastMsg)}</div>
-                `;
-                div.onclick = () => viewMonitoredChat(c.chatId, c.u1.name, c.u2.name);
-                list.appendChild(div);
-            });
-        });
-    }
-
-    function filterDMMonitor() {
-        const q = document.getElementById('dm-monitor-search').value.toLowerCase();
-        document.querySelectorAll('#dm-monitor-list .dm-monitor-card').forEach(c => {
-            c.style.display = (c.dataset.search || '').includes(q) ? 'flex' : 'none';
-        });
-    }
-
-    function viewMonitoredChat(chatId, name1, name2) {
-        document.getElementById('dm-monitor-view-title').textContent = '💬 ' + name1 + ' ↔ ' + name2;
-        const body = document.getElementById('dm-monitor-view-body');
-        body.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">⏳ جاري التحميل...</div>';
-        document.getElementById('dm-monitor-view-modal').classList.add('active');
-        
-        db.ref('private_chats/' + chatId + '/messages').orderByChild('time').limitToLast(200).once('value', snap => {
-            body.innerHTML = '';
-            if (!snap.exists()) { body.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">لا توجد رسائل</div>'; return; }
-            const msgs = [];
-            snap.forEach(c => { const v = c.val(); v._key = c.key; msgs.push(v); });
-            msgs.sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
-            msgs.forEach(m => {
-                const isMine = m.from === myFP;
-                const div = document.createElement('div');
-                div.className = 'monitor-msg-row ' + (isMine ? 'mine' : 'others');
-                div.innerHTML = '<div class="monitor-bubble ' + (isMine ? 'mine' : 'others') + '"><strong>' + escapeHtml(m.fromName || 'مجهول') + ':</strong> ' + escapeHtml(m.text || '') + '<div class="monitor-time">' + formatTime(m.time) + '</div></div>';
-                body.appendChild(div);
-            });
-            body.scrollTop = body.scrollHeight;
-        });
-    }
-
-    function closeDMMonitorView() {
-        document.getElementById('dm-monitor-view-modal').classList.remove('active');
-    }
-
-    // ============================================================
-    //  🎨 الألوان والإعدادات
-    // ============================================================
     let colorTargetUid = null, selectedGlow = 'none';
     function openColorControl(uid) { if (!isOwner()) return alert("⛔"); colorTargetUid = uid; const u = allUsersData[uid] || {}, n = u.name || 'مجهول', av = u.avatar || DEFAULT_ICON, r = u.role || 'user'; document.getElementById('color-target-avatar').src = av; document.getElementById('color-target-name').textContent = n; document.getElementById('color-target-role').textContent = 'رتبة: ' + r; const cc = getColor(uid), cg = getGlow(uid); selectedGlow = cg; document.getElementById('color-name-picker').value = cc.name || '#333333'; const g = document.getElementById('color-grid'); g.innerHTML = ''; COLORS.forEach((c, i) => { const d = document.createElement('div'); d.className = 'color-option'; d.style.background = c.bg; if (cc && cc.bg === c.bg) d.classList.add('selected'); d.innerHTML = '<span class="check">✓</span><span class="color-label">' + (i + 1) + '</span>'; d.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); d.classList.add('selected'); updatePreview(); }; g.appendChild(d); }); document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === cg); }); document.getElementById('color-name-picker').oninput = updatePreview; updatePreview(); document.getElementById('color-control-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); }
     function selectGlow(g) { selectedGlow = g; document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === g); }); updatePreview(); }
