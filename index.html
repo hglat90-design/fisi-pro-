@@ -423,26 +423,32 @@
         .btn-report-icon:hover { transform: scale(1.1); }
         .btn-report-icon:active { transform: scale(.9); }
         .user-card .user-actions .ctrl-btn.report-user { background: #e74c3c; }
-        /* ===== DM Monitor Styles ===== */
+        /* ===== DM Monitor Styles (Enhanced) ===== */
         #dm-monitor-btn { display: none; }
         #dm-monitor-modal .modal-header { background: #1a237e; color: #fff; }
         #dm-monitor-modal .modal-header h3 { color: #fff; }
-        .dm-monitor-card { padding: 12px; background: #fff; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-        .dm-monitor-card:active { background: #f5f5f5; }
-        .dm-monitor-card .dm-users { display: flex; align-items: center; gap: 8px; }
-        .dm-monitor-card .dm-users img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-        .dm-monitor-card .dm-users .dm-arrow { font-size: 16px; color: #999; margin: 0 4px; }
-        .dm-monitor-card .dm-names { font-size: 14px; font-weight: 700; color: #333; }
+        .dm-monitor-card { padding: 12px 15px; background: #fff; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; }
+        .dm-monitor-card:hover { background: #f9f9f9; }
+        .dm-monitor-card:active { background: #f0f0f0; }
+        .dm-monitor-card .dm-users { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+        .dm-monitor-card .dm-users img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; flex-shrink: 0; }
+        .dm-monitor-card .dm-users .dm-arrow { font-size: 18px; color: #b0b3b8; margin: 0 4px; flex-shrink: 0; }
+        .dm-monitor-card .dm-users .dm-names { font-size: 14px; font-weight: 700; color: #1a1a1a; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+        .dm-monitor-card .dm-users .dm-names span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dm-monitor-card .dm-users .dm-last-msg { font-size: 11px; color: #888; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
         #dm-monitor-view-modal .modal-header { background: #1a237e; color: #fff; }
         #dm-monitor-view-modal .modal-header h3 { color: #fff; }
         #dm-monitor-view-modal .modal-body { background: #efe7dd; }
-        .monitor-msg-row { display: flex; flex-direction: column; max-width: 85%; margin-bottom: 4px; }
+        .monitor-msg-row { display: flex; flex-direction: column; max-width: 85%; margin-bottom: 6px; }
         .monitor-msg-row.mine { align-self: flex-end; }
         .monitor-msg-row.others { align-self: flex-start; }
-        .monitor-bubble { padding: 6px 10px; border-radius: 10px; font-size: 13px; font-family: var(--font-main); word-wrap: break-word; }
+        .monitor-bubble { padding: 8px 12px; border-radius: 12px; font-size: 13px; font-family: var(--font-main); word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 4px; }
         .monitor-bubble.mine { background: #d9fdd3; color: #111; border-bottom-left-radius: 3px; }
-        .monitor-bubble.others { background: #fff; color: #111; border-bottom-right-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
-        .monitor-time { font-size: 9px; opacity: .5; text-align: left; margin-top: 1px; }
+        .monitor-bubble.others { background: #fff; color: #111; border-bottom-right-radius: 3px; }
+        .monitor-bubble .msg-header { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+        .monitor-bubble .msg-header img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; }
+        .monitor-bubble .msg-header strong { font-size: 11px; color: #666; }
+        .monitor-time { font-size: 9px; opacity: .5; text-align: left; margin-top: 2px; }
     </style>
 </head>
 <body>
@@ -2208,8 +2214,12 @@
         if (uid === myFP) return; 
         // إصلاح: إذا كان الـ uid مفقوداً، نبحث عنه بواسطة الاسم
         if (!uid || uid === 'undefined' || uid === 'null') {
-            const found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').toLowerCase() === (name || '').toLowerCase());
+            const found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').trim().toLowerCase() === (name || '').trim().toLowerCase());
             if (found) uid = found;
+        }
+        if (!uid || uid === 'undefined' || uid === 'null') {
+            // محاولة أخيرة للبحث في قاعدة البيانات
+            return alert('عذراً، لم يتم العثور على بيانات هذا المستخدم. قد يكون قد حذف حسابه.');
         }
         paTargetUid = uid; paTargetName = name; paTargetAvatar = avatar;
         document.getElementById('pa-avatar').src = avatar;
@@ -2238,7 +2248,7 @@
     function paReport(type) {
         if (!paTargetUid) {
             // محاولة أخيرة للبحث بالاسم قبل إظهار الخطأ
-            const found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').toLowerCase() === (paTargetName || '').toLowerCase());
+            const found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').trim().toLowerCase() === (paTargetName || '').trim().toLowerCase());
             if (found) paTargetUid = found;
         }
         if (!paTargetUid) return alert('خطأ: لم يتم العثور على المستخدم. يرجى المحاولة مرة أخرى.');
@@ -2512,17 +2522,26 @@
     // ============================================================
     //  🚩 نظام البلاغات المُحدَّث - إصلاح مشكلة الـ UID
     // ============================================================
-    let currentReportType = null;
-    let currentReportStatusKey = null;
-
-    function openReportModal(type, targetUid, targetName, messageKey, statusKey, avatarUrl) {
+    async function openReportModal(type, targetUid, targetName, messageKey, statusKey, avatarUrl) {
         if (!myName || !myFP) return alert('يرجى تسجيل الدخول أولاً');
         if (targetUid === myFP) return alert('لا يمكنك الإبلاغ عن نفسك');
 
         // إصلاح: البحث التلقائي عن المستخدم في حال كان الآيدي مفقوداً
         if (!targetUid || targetUid === 'undefined' || targetUid === 'null') {
             if (targetName) {
-                const found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').toLowerCase() === (targetName || '').toLowerCase());
+                // البحث في الذاكرة المؤقتة
+                let found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').trim().toLowerCase() === (targetName || '').trim().toLowerCase());
+                if (!found) {
+                    // البحث في قاعدة البيانات مباشرة
+                    try {
+                        const usersSnap = await db.ref('users').once('value');
+                        usersSnap.forEach(child => {
+                            if (!found && (child.val().name || '').trim().toLowerCase() === (targetName || '').trim().toLowerCase()) {
+                                found = child.key;
+                            }
+                        });
+                    } catch (e) { console.warn('فشل البحث في قاعدة البيانات:', e); }
+                }
                 if (found) targetUid = found;
             }
             if (!targetUid || targetUid === 'undefined' || targetUid === 'null') {
@@ -2619,7 +2638,17 @@
 
         if (!targetUid || targetUid === 'undefined' || targetUid === 'null') {
             if (targetName) {
-                const found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').toLowerCase() === (targetName || '').toLowerCase());
+                let found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').trim().toLowerCase() === (targetName || '').trim().toLowerCase());
+                if (!found) {
+                    try {
+                        const usersSnap = await db.ref('users').once('value');
+                        usersSnap.forEach(child => {
+                            if (!found && (child.val().name || '').trim().toLowerCase() === (targetName || '').trim().toLowerCase()) {
+                                found = child.key;
+                            }
+                        });
+                    } catch (e) {}
+                }
                 if (found) targetUid = found;
             }
             if (!targetUid || targetUid === 'undefined' || targetUid === 'null') {
@@ -2892,9 +2921,17 @@
         if (dmMonitorListener) { db.ref('private_chats').off('value', dmMonitorListener); dmMonitorListener = null; }
     }
 
-    function renderDMMonitor() {
+    async function renderDMMonitor() {
         const list = document.getElementById('dm-monitor-list');
         list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">⏳ جاري التحميل...</div>';
+        
+        // جلب جميع المستخدمين لضمان دقة الأسماء
+        let usersData = {};
+        try {
+            const usersSnap = await db.ref('users').once('value');
+            usersData = usersSnap.val() || {};
+        } catch (e) { console.warn('فشل جلب بيانات المستخدمين:', e); }
+
         if (dmMonitorListener) db.ref('private_chats').off('value', dmMonitorListener);
         
         dmMonitorListener = db.ref('private_chats').on('value', snap => {
@@ -2904,16 +2941,20 @@
             snap.forEach(child => {
                 const chatId = child.key;
                 const parts = chatId.split('_');
-                let u1Name = 'مجهول', u2Name = 'مجهول', u1Av = DEFAULT_ICON, u2Av = DEFAULT_ICON;
-                
-                // إصلاح: التعامل مع معرّفات المحادثات بشكل مرن
-                if (parts.length >= 2) {
-                    const u1 = allUsersData[parts[0]] || { name: parts[0].substring(0, 8), avatar: DEFAULT_ICON };
-                    const u2 = allUsersData[parts[1]] || { name: parts[1].substring(0, 8), avatar: DEFAULT_ICON };
-                    u1Name = u1.name; u2Name = u2.name; u1Av = u1.avatar; u2Av = u2.avatar;
-                } else {
-                    u1Name = chatId.substring(0, 10); u2Name = '...';
-                }
+                let u1Name = 'مستخدم غير معروف', u2Name = 'مستخدم غير معروف';
+                let u1Av = DEFAULT_ICON, u2Av = DEFAULT_ICON;
+                let u1Id = parts[0] || '', u2Id = parts[1] || '';
+
+                // دالة مساعدة لجلب الاسم والصورة
+                const getUserInfo = (uid) => {
+                    if (!uid) return { name: 'مستخدم محذوف', avatar: DEFAULT_ICON };
+                    if (usersData[uid]) return { name: usersData[uid].name || 'مستخدم ' + uid.substring(0, 5), avatar: usersData[uid].avatar || DEFAULT_ICON };
+                    if (allUsersData[uid]) return { name: allUsersData[uid].name || 'مستخدم ' + uid.substring(0, 5), avatar: allUsersData[uid].avatar || DEFAULT_ICON };
+                    return { name: 'مستخدم ' + uid.substring(0, 5), avatar: DEFAULT_ICON };
+                };
+
+                const u1Info = getUserInfo(u1Id);
+                const u2Info = getUserInfo(u2Id);
                 
                 let lastMsg = '';
                 let lastTime = 0;
@@ -2921,7 +2962,7 @@
                     const msgs = child.child('messages');
                     msgs.forEach(m => { const t = Number(m.val().time) || 0; if (t > lastTime) { lastTime = t; lastMsg = m.val().text || '📎'; } });
                 }
-                chats.push({ chatId, u1Name, u2Name, u1Av, u2Av, lastMsg, lastTime });
+                chats.push({ chatId, u1Name: u1Info.name, u2Name: u2Info.name, u1Av: u1Info.avatar, u2Av: u2Info.avatar, lastMsg, lastTime });
             });
             
             chats.sort((a, b) => b.lastTime - a.lastTime);
@@ -2937,8 +2978,12 @@
                         <span class="dm-arrow">↔</span>
                         <img src="${c.u2Av}">
                     </div>
-                    <div class="dm-names">${escapeHtml(c.u1Name)} ↔ ${escapeHtml(c.u2Name)}</div>
-                    <div style="font-size:11px;color:#999;max-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(c.lastMsg)}</div>
+                    <div class="dm-users" style="flex:1; overflow:hidden;">
+                        <div class="dm-names">
+                            <span>${escapeHtml(c.u1Name)} ↔ ${escapeHtml(c.u2Name)}</span>
+                            <span class="dm-last-msg">${escapeHtml(c.lastMsg || 'لا توجد رسائل')}</span>
+                        </div>
+                    </div>
                 `;
                 div.onclick = () => viewMonitoredChat(c.chatId, c.u1Name, c.u2Name);
                 list.appendChild(div);
@@ -2955,23 +3000,44 @@
         });
     }
 
-    function viewMonitoredChat(chatId, name1, name2) {
+    async function viewMonitoredChat(chatId, name1, name2) {
         document.getElementById('dm-monitor-view-title').textContent = '💬 ' + name1 + ' ↔ ' + name2;
         const body = document.getElementById('dm-monitor-view-body');
         body.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">⏳ جاري التحميل...</div>';
         document.getElementById('dm-monitor-view-modal').classList.add('active');
         
+        // جلب بيانات المستخدمين لضمان دقة الأسماء
+        let usersData = {};
+        try {
+            const usersSnap = await db.ref('users').once('value');
+            usersData = usersSnap.val() || {};
+        } catch (e) { console.warn(e); }
+
         db.ref('private_chats/' + chatId + '/messages').orderByChild('time').limitToLast(200).once('value', snap => {
             body.innerHTML = '';
             if (!snap.exists()) { body.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">لا توجد رسائل</div>'; return; }
             const msgs = [];
             snap.forEach(c => { const v = c.val(); v._key = c.key; msgs.push(v); });
             msgs.sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
+            
             msgs.forEach(m => {
                 const isMine = m.from === myFP;
+                const senderInfo = usersData[m.from] || allUsersData[m.from] || { name: m.fromName || 'مجهول', avatar: m.fromAvatar || DEFAULT_ICON };
+                const displayName = senderInfo.name || 'مجهول';
+                const displayAvatar = senderInfo.avatar || DEFAULT_ICON;
+
                 const div = document.createElement('div');
                 div.className = 'monitor-msg-row ' + (isMine ? 'mine' : 'others');
-                div.innerHTML = '<div class="monitor-bubble ' + (isMine ? 'mine' : 'others') + '"><strong>' + escapeHtml(m.fromName || 'مجهول') + ':</strong> ' + escapeHtml(m.text || '') + '<div class="monitor-time">' + formatTime(m.time) + '</div></div>';
+                div.innerHTML = `
+                    <div class="monitor-bubble ${isMine ? 'mine' : 'others'}">
+                        <div class="msg-header">
+                            <img src="${displayAvatar}">
+                            <strong>${escapeHtml(displayName)}</strong>
+                        </div>
+                        <div>${escapeHtml(m.text || '')}</div>
+                        <div class="monitor-time">${formatTime(m.time)}</div>
+                    </div>
+                `;
                 body.appendChild(div);
             });
             body.scrollTop = body.scrollHeight;
