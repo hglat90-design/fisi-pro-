@@ -1309,7 +1309,6 @@
     function startInAppNotificationListeners() {
         console.log('🚀 بدء مستمعي الإشعارات داخل التطبيق');
 
-        // 1️⃣ رسائل خاصة
         if (inAppNotifListeners.dms) db.ref('dm_inbox/' + myFP).off('child_changed', inAppNotifListeners.dms);
         let lastPlayedDMTime = 0;
         inAppNotifListeners.dms = db.ref('dm_inbox/' + myFP).on('child_changed', snap => {
@@ -1339,7 +1338,6 @@
             );
         });
 
-        // 2️⃣ رسائل عامة
         if (inAppNotifListeners.messages) db.ref('messages').off('child_added', inAppNotifListeners.messages);
         inAppNotifListeners.messages = db.ref('messages').limitToLast(1).on('child_added', snap => {
             const m = snap.val();
@@ -1362,7 +1360,6 @@
             notifyUser('💬 ' + (m.sender || 'مجهول'), preview, m.avatar || DEFAULT_ICON, 'chat', () => switchTab('chat'), true);
         });
 
-        // 3️⃣ حالات جديدة
         if (inAppNotifListeners.statuses) db.ref('statuses').off('child_added', inAppNotifListeners.statuses);
         inAppNotifListeners.statuses = db.ref('statuses').limitToLast(1).on('child_added', snap => {
             const s = snap.val();
@@ -1383,7 +1380,6 @@
             notifyUser('📸 ' + (s.sender || 'مجهول') + ' نشر حالة', preview, s.avatar || DEFAULT_ICON, 'status', () => { switchTab('status'); }, true);
         });
 
-        // 4️⃣ إشعارات المنظومة
         if (inAppNotifListeners.notifications) db.ref('notifications/' + myFP).off('child_added', inAppNotifListeners.notifications);
         inAppNotifListeners.notifications = db.ref('notifications/' + myFP).limitToLast(1).on('child_added', snap => {
             const n = snap.val();
@@ -1923,9 +1919,8 @@
     }
 
     // ============================================================
-    //  🔐 الأمان والدخول
-    //  ✅ مُحدَّث: الحظر يعتمد على البصمة (الجهاز) فقط
-    //  لا يحظر الأسماء عالمياً لتجنب حظر أشخاص آخرين بنفس الاسم
+    //  🔐 الأمان والدخول — النسخة النهائية
+    //  ✅ الحظر بالبصمة فقط (لا يوجد فحص للأسماء إطلاقاً)
     // ============================================================
     async function getDeviceFingerprint() {
         try {
@@ -1950,8 +1945,7 @@
                 muteEndTime = d.endTime;
             }
         }
-        // ⚠️ تم إزالة فحص banned_names و muted_names
-        // السبب: كان يحظر أي شخص آخر بنفس الاسم من جهاز مختلف
+        // ⛔ لا يوجد أي فحص لـ banned_names أو muted_names نهائياً
         return c;
     }
 
@@ -2675,66 +2669,38 @@
     function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
 
     // ============================================================
-    //  ✅ banUser مُحدَّث: حظر الجهاز فقط + الأجهزة المرتبطة بالاسم
-    //  لا يحفظ الاسم في banned_names
+    //  ✅ banUser — نهائي: يحظر البصمة فقط
+    //  ⛔ لا يحظر الأسماء أو الأجهزة المرتبطة (لتجنب حظر آخرين بنفس الاسم)
     // ============================================================
     async function banUser(u, n) {
         const tr = allUsersData[u]?.role || 'user';
         if (!canBan(myRole, tr)) return alert('⛔ لا صلاحية!');
-        if (!confirm('⚠️ حظر "' + n + '"؟')) return;
+        if (!confirm('⚠️ حظر "' + n + '"؟ (سيتم حظر هذا الجهاز فقط)')) return;
         
-        // 1️⃣ احظر الجهاز الحالي (بالـ fingerprint)
+        // ✅ حظر الجهاز الحالي بالبصمة فقط
         await db.ref('bans/' + u).set(true);
         
-        // 2️⃣ احظر كل الأجهزة الأخرى المرتبطة بنفس الاسم
-        if (n) {
-            const nameLinksSnap = await db.ref('name_links/' + n.toLowerCase()).once('value');
-            if (nameLinksSnap.exists()) {
-                const updates = {};
-                nameLinksSnap.forEach(child => {
-                    const linkedFP = child.key;
-                    updates['bans/' + linkedFP] = true;
-                });
-                if (Object.keys(updates).length > 0) {
-                    await db.ref().update(updates);
-                }
-            }
-        }
+        // ⛔ لا نلمس name_links أو banned_names إطلاقاً
+        // حتى لا يتم حظر أشخاص آخرين يستخدمون نفس الاسم
         
-        alert("✅ تم حظر الجهاز وجميع الأجهزة المرتبطة بهذا الاسم");
+        alert("✅ تم حظر هذا الجهاز بنجاح");
     }
 
     // ============================================================
-    //  ✅ unbanUser مُحدَّث: فك حظر الجهاز فقط + الأجهزة المرتبطة
+    //  ✅ unbanUser — نهائي: فك حظر البصمة فقط
     // ============================================================
     async function unbanUser(u, n) {
         if (myRole !== 'owner') return alert('⛔ فقط المالك!');
         if (!confirm('فك الحظر عن "' + n + '"؟')) return;
         
-        // 1️⃣ فك حظر الجهاز الحالي
+        // ✅ فك حظر الجهاز الحالي فقط
         await db.ref('bans/' + u).remove();
         
-        // 2️⃣ فك حظر جميع الأجهزة المرتبطة بهذا الاسم
-        if (n) {
-            const nameLinksSnap = await db.ref('name_links/' + n.toLowerCase()).once('value');
-            if (nameLinksSnap.exists()) {
-                const updates = {};
-                nameLinksSnap.forEach(child => {
-                    updates['bans/' + child.key] = null;
-                });
-                if (Object.keys(updates).length > 0) {
-                    await db.ref().update(updates);
-                }
-            }
-            // احذف أي بقايا قديمة من banned_names
-            await db.ref('banned_names/' + n.toLowerCase()).remove();
-        }
-        
-        alert("✅ تم فك الحظر عن الجهاز وجميع الأجهزة المرتبطة");
+        alert("✅ تم فك الحظر بنجاح");
     }
 
     function openMuteMenu(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canMute(myRole, tr)) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('mute-target-name').textContent = n; document.getElementById('mute-modal').classList.add('active'); }
-    async function applyMute(m) { const et = m === 999999 ? 9999999999999 : Date.now() + m * 6e4, data = { endTime: et, by: myName, at: Date.now() }; const { uid, name } = targetUserForAction; await db.ref('mutes/' + uid).set(data); const nl = await db.ref('fp_links/' + uid).once('value'); if (nl.exists()) { const updates = {}; for (let l in nl.val()) updates['mutes/' + l] = data; if (Object.keys(updates).length > 0) await db.ref().update(updates); } document.getElementById('mute-modal').classList.remove('active'); alert("✅"); }
+    async function applyMute(m) { const et = m === 999999 ? 9999999999999 : Date.now() + m * 6e4, data = { endTime: et, by: myName, at: Date.now() }; const { uid, name } = targetUserForAction; await db.ref('mutes/' + uid).set(data); document.getElementById('mute-modal').classList.remove('active'); alert("✅"); }
     async function unmuteUser(u, n) { if (!confirm('فك الكتم؟')) return; await db.ref('mutes/' + u).remove(); alert("✅"); }
     function openRoleMenu(u, n) { if (!canAssignRole(myRole, allUsersData[u]?.role || 'user')) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('role-target-name').textContent = n; document.getElementById('role-modal').classList.add('active'); }
     function setRole(r) { const { uid } = targetUserForAction; if (!canAssignRole(myRole, r)) { document.getElementById('role-modal').classList.remove('active'); return alert("⛔"); } db.ref('users/' + uid + '/role').set(r); document.getElementById('role-modal').classList.remove('active'); alert("✅"); }
