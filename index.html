@@ -1112,6 +1112,27 @@
     function getYouTubeThumbnail(v) { return 'https://img.youtube.com/vi/' + v + '/hqdefault.jpg' }
 
     // ============================================================
+    //  📜 دالة تسجيل عمليات الإدارة
+    // ============================================================
+    async function logAdminAction(type, targetUid, targetName, details) {
+        try {
+            await db.ref('admin_logs').push({
+                type: type,
+                actor_uid: myFP,
+                actor_name: myName || 'مجهول',
+                actor_role: myRole || 'user',
+                actor_avatar: myAvatar || DEFAULT_ICON,
+                target_uid: targetUid || null,
+                target_name: targetName || null,
+                details: details || {},
+                timestamp: Date.now()
+            });
+        } catch (e) {
+            console.warn('⚠️ فشل تسجيل الإجراء:', e);
+        }
+    }
+
+    // ============================================================
     //  🔊 نظام الأصوات
     // ============================================================
     let audioContext = null;
@@ -1919,8 +1940,7 @@
     }
 
     // ============================================================
-    //  🔐 الأمان والدخول — النسخة النهائية
-    //  ✅ الحظر بالبصمة فقط (لا يوجد فحص للأسماء إطلاقاً)
+    //  🔐 الأمان والدخول
     // ============================================================
     async function getDeviceFingerprint() {
         try {
@@ -1933,10 +1953,8 @@
 
     async function checkSecurity(fp, name) {
         const c = { banned: false, muted: false };
-        // ✅ فحص الحظر بالبصمة فقط (الجهاز المحدد)
         const b = await db.ref('bans/' + fp).once('value');
         if (b.exists()) { c.banned = true; return c; }
-        // ✅ فحص الكتم بالبصمة فقط (الجهاز المحدد)
         const m = await db.ref('mutes/' + fp).once('value');
         if (m.exists()) {
             const d = m.val();
@@ -1945,7 +1963,6 @@
                 muteEndTime = d.endTime;
             }
         }
-        // ⛔ لا يوجد أي فحص لـ banned_names أو muted_names نهائياً
         return c;
     }
 
@@ -2344,7 +2361,7 @@
         if (blockIfBadWord(text)) return;
         const toUid = currentDMChat.uid;
         const chatId = getChatId(myFP, toUid);
-        const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, text: text, time: firebase.database.ServerValue.TIMESTAMP };
+        const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, toName: currentDMChat.name, text: text, time: firebase.database.ServerValue.TIMESTAMP };
         input.value = '';
         playSendSound();
         try {
@@ -2587,7 +2604,52 @@
         });
         filterUsers();
     }
-    function deleteMessage(k) { const m = messagesCache[k]; if (!m) return; const tr = allUsersData[m.uid]?.role || m.role; if (!canDeleteMessage(myRole, tr) && m.uid !== myFP) return alert("⛔"); if (confirm("🗑️ حذف؟")) db.ref('messages/' + k).remove().then(() => { delete messagesCache[k]; renderMessages(); }); }
+
+    // ============================================================
+    //  ✅ deleteMessage — نسخة محدثة مع تسجيل كامل
+    // ============================================================
+    async function deleteMessage(k) {
+        const m = messagesCache[k];
+        if (!m) return;
+        const tr = allUsersData[m.uid]?.role || m.role;
+        if (!canDeleteMessage(myRole, tr) && m.uid !== myFP) return alert("⛔ لا صلاحية!");
+        if (!confirm("🗑️ حذف الرسالة؟")) return;
+
+        // 1️⃣ احفظ نسخة كاملة من الرسالة في deleted_messages
+        try {
+            await db.ref('deleted_messages').push({
+                original_msg_id: k,
+                original_sender_uid: m.uid,
+                original_sender_name: m.sender || 'مجهول',
+                original_sender_avatar: m.avatar || DEFAULT_ICON,
+                text: m.text || '',
+                media: m.media || null,
+                media_type: m.type || null,
+                sent_time: m.time || Date.now(),
+                deleted_by_uid: myFP,
+                deleted_by_name: myName || 'مجهول',
+                deleted_by_role: myRole || 'user',
+                deleted_by_avatar: myAvatar || DEFAULT_ICON,
+                deleted_time: Date.now()
+            });
+
+            // 2️⃣ سجل الإجراء في admin_logs
+            await logAdminAction('delete_message', m.uid, m.sender || 'مجهول', {
+                message_text: (m.text || '').substring(0, 200),
+                has_media: !!m.media,
+                media_type: m.type || null
+            });
+        } catch (e) {
+            console.warn('⚠️ فشل الحفظ في السجلات:', e);
+        }
+
+        // 3️⃣ احذف الرسالة فعلياً
+        db.ref('messages/' + k).remove().then(() => {
+            delete messagesCache[k];
+            renderMessages();
+        });
+    }
+
     function scrollToMessage(k) { const e = document.getElementById('msg-' + k); if (e) { e.scrollIntoView({ behavior: 'smooth', block: 'center' }); e.style.background = 'rgba(255,235,59,0.3)'; setTimeout(() => e.style.background = 'transparent', 1000); } }
     function playYouTube(v, c) { c.innerHTML = '<iframe src="https://www.youtube.com/embed/' + v + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
     function updateUserControls(u, d) {
@@ -2611,11 +2673,19 @@
             });
         });
     }
+
+    // ============================================================
+    //  ✅ permanentDeleteUser — نسخة محدثة مع تسجيل
+    // ============================================================
     async function permanentDeleteUser(uid, name) {
         if (myRole !== 'owner') return alert('⛔');
         const tr = allUsersData[uid]?.role || 'user';
         if (tr === 'owner') return alert('⛔');
         if (!confirm('⚠️ حذف "' + name + '" نهائياً؟')) return;
+
+        // 📜 سجل الإجراء قبل الحذف
+        await logAdminAction('delete_user', uid, name, { target_role: tr });
+
         try {
             await db.ref('users/' + uid).remove();
             await db.ref('bans/' + uid).remove();
@@ -2636,6 +2706,7 @@
             alert("✅");
         } catch (e) { alert('❌ ' + e.message); }
     }
+
     function filterUsers() { const t = document.getElementById('user-search').value.toLowerCase(); document.querySelectorAll('.user-card').forEach(c => { const n = c.querySelector('.user-details h4')?.innerText?.toLowerCase() || ''; c.style.display = n.includes(t) ? 'flex' : 'none'; }); }
     function updateStatusBadge() { const now = Date.now(), exp = 864e5; let unseen = 0; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (now - s.time > exp) { db.ref('statuses/' + k).remove(); return; } if (s.uid !== myFP) { const sb = s.seenBy || {}; if (!sb[myFP]) unseen++; } }); const b = document.getElementById('status-unseen-count'); if (unseen > 0) { b.textContent = unseen; b.classList.add('active'); } else b.classList.remove('active'); }
     function updateOnlineBadge() {
@@ -2669,41 +2740,77 @@
     function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
 
     // ============================================================
-    //  ✅ banUser — نهائي: يحظر البصمة فقط
-    //  ⛔ لا يحظر الأسماء أو الأجهزة المرتبطة (لتجنب حظر آخرين بنفس الاسم)
+    //  ✅ banUser — نسخة محدثة مع تسجيل
     // ============================================================
     async function banUser(u, n) {
         const tr = allUsersData[u]?.role || 'user';
         if (!canBan(myRole, tr)) return alert('⛔ لا صلاحية!');
         if (!confirm('⚠️ حظر "' + n + '"؟ (سيتم حظر هذا الجهاز فقط)')) return;
-        
-        // ✅ حظر الجهاز الحالي بالبصمة فقط
         await db.ref('bans/' + u).set(true);
-        
-        // ⛔ لا نلمس name_links أو banned_names إطلاقاً
-        // حتى لا يتم حظر أشخاص آخرين يستخدمون نفس الاسم
-        
+        await logAdminAction('ban', u, n, { target_role: tr });
         alert("✅ تم حظر هذا الجهاز بنجاح");
     }
 
     // ============================================================
-    //  ✅ unbanUser — نهائي: فك حظر البصمة فقط
+    //  ✅ unbanUser — نسخة محدثة مع تسجيل
     // ============================================================
     async function unbanUser(u, n) {
         if (myRole !== 'owner') return alert('⛔ فقط المالك!');
         if (!confirm('فك الحظر عن "' + n + '"؟')) return;
-        
-        // ✅ فك حظر الجهاز الحالي فقط
         await db.ref('bans/' + u).remove();
-        
+        await logAdminAction('unban', u, n, {});
         alert("✅ تم فك الحظر بنجاح");
     }
 
     function openMuteMenu(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canMute(myRole, tr)) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('mute-target-name').textContent = n; document.getElementById('mute-modal').classList.add('active'); }
-    async function applyMute(m) { const et = m === 999999 ? 9999999999999 : Date.now() + m * 6e4, data = { endTime: et, by: myName, at: Date.now() }; const { uid, name } = targetUserForAction; await db.ref('mutes/' + uid).set(data); document.getElementById('mute-modal').classList.remove('active'); alert("✅"); }
-    async function unmuteUser(u, n) { if (!confirm('فك الكتم؟')) return; await db.ref('mutes/' + u).remove(); alert("✅"); }
+
+    // ============================================================
+    //  ✅ applyMute — نسخة محدثة مع تسجيل
+    // ============================================================
+    async function applyMute(m) {
+        const et = m === 999999 ? 9999999999999 : Date.now() + m * 6e4;
+        const data = { endTime: et, by: myName, at: Date.now() };
+        const { uid, name } = targetUserForAction;
+        await db.ref('mutes/' + uid).set(data);
+        await logAdminAction('mute', uid, name, {
+            duration_minutes: m === 999999 ? 'forever' : m,
+            end_time: et
+        });
+        document.getElementById('mute-modal').classList.remove('active');
+        alert("✅");
+    }
+
+    // ============================================================
+    //  ✅ unmuteUser — نسخة محدثة مع تسجيل
+    // ============================================================
+    async function unmuteUser(u, n) {
+        if (!confirm('فك الكتم عن "' + n + '"؟')) return;
+        await db.ref('mutes/' + u).remove();
+        await logAdminAction('unmute', u, n, {});
+        alert("✅");
+    }
+
     function openRoleMenu(u, n) { if (!canAssignRole(myRole, allUsersData[u]?.role || 'user')) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('role-target-name').textContent = n; document.getElementById('role-modal').classList.add('active'); }
-    function setRole(r) { const { uid } = targetUserForAction; if (!canAssignRole(myRole, r)) { document.getElementById('role-modal').classList.remove('active'); return alert("⛔"); } db.ref('users/' + uid + '/role').set(r); document.getElementById('role-modal').classList.remove('active'); alert("✅"); }
+
+    // ============================================================
+    //  ✅ setRole — نسخة محدثة مع تسجيل
+    // ============================================================
+    function setRole(r) {
+        const { uid, name } = targetUserForAction;
+        if (!canAssignRole(myRole, r)) {
+            document.getElementById('role-modal').classList.remove('active');
+            return alert("⛔ لا يمكنك إعطاء رتبة مساوية أو أعلى!");
+        }
+        const oldRole = allUsersData[uid]?.role || 'user';
+        db.ref('users/' + uid + '/role').set(r);
+        logAdminAction('role_change', uid, name, {
+            from_role: oldRole,
+            to_role: r
+        });
+        document.getElementById('role-modal').classList.remove('active');
+        alert("✅");
+    }
+
     function openProfile() {
         document.getElementById('prof-img').src = myAvatar;
         document.getElementById('prof-name').value = myName;
@@ -2810,8 +2917,31 @@
         const sb = s.seenBy || {}, vw = Object.keys(sb);
         if (vw.length > 0) { const ns = vw.map(id => { const d = sb[id]; return '<span class="seen-user" onclick="event.stopPropagation();openViewer(\'' + (d.avatar || DEFAULT_ICON) + '\',\'image\',\'' + (d.name || 'مجهول') + '\')">' + (d.name || 'مجهول') + '</span>'; }).join('، '); se.innerHTML = '👁️ شاهدها: ' + ns; }
         else se.textContent = '👁️ لا مشاهدات';
-        if (canDeleteStatus(s.uid)) { db2.style.display = 'inline-block'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف؟")) { db.ref('statuses/' + s.key).remove(); if (viewerStatuses.length <= 1) closeStatusViewer(null); else { const ni = i < viewerStatuses.length - 1 ? i : i - 1; viewerStatuses.splice(i, 1); showStatusAtIndex(ni >= viewerStatuses.length ? viewerStatuses.length - 1 : ni); } } }; }
-        else db2.style.display = 'none';
+
+        // ✅ حذف الحالة مع تسجيل
+        if (canDeleteStatus(s.uid)) {
+            db2.style.display = 'inline-block';
+            db2.onclick = async (e) => {
+                e.stopPropagation();
+                if (!confirm("حذف الحالة؟")) return;
+                const statusOwnerName = ud.name || s.sender || 'مجهول';
+                const statusText = s.text || '📸 حالة';
+                // 📜 سجل الإجراء قبل الحذف
+                await logAdminAction('delete_status', s.uid, statusOwnerName, {
+                    status_text: statusText.substring(0, 200),
+                    has_media: !!s.media,
+                    media_type: s.type || null
+                });
+                db.ref('statuses/' + s.key).remove();
+                if (viewerStatuses.length <= 1) closeStatusViewer(null);
+                else {
+                    const ni = i < viewerStatuses.length - 1 ? i : i - 1;
+                    viewerStatuses.splice(i, 1);
+                    showStatusAtIndex(ni >= viewerStatuses.length ? viewerStatuses.length - 1 : ni);
+                }
+            };
+        } else db2.style.display = 'none';
+
         viewerCurrentIndex = i; v.classList.add('active');
         v.onclick = (e) => { if (e.target === v || e.target.closest('.viewer-close') || e.target.closest('.viewer-info')) return; if (i < viewerStatuses.length - 1) showStatusAtIndex(i + 1); };
         let tsx = 0; v.ontouchstart = (e) => { tsx = e.touches[0].clientX; };
@@ -2870,7 +3000,25 @@
     }
     async function handleFile(i) { if (myRole === 'user') { alert("⛔"); i.value = ''; return; } if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير!"); i.value = ''; return; } const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true; try { const u = await uploadCloudinary(f); if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); } else alert("فشل الرفع"); } catch (e) { alert("خطأ: " + e.message); } sb.textContent = "➤"; sb.disabled = false; i.value = ''; }
     async function uploadCloudinary(f) { const cn = 'nfg03aku', up = 'daufafvn', url = 'https://api.cloudinary.com/v1_1/' + cn + '/' + (f.type.startsWith('video') ? 'video' : 'image') + '/upload'; const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', up); const r = await fetch(url, { method: 'POST', body: fd }); if (!r.ok) throw new Error('HTTP ' + r.status); const d = await r.json(); return d.secure_url || null; }
-    function clearAllChat() { if (!['mod', 'manager', 'owner'].includes(myRole)) return alert("⛔"); if (confirm("⚠️ حذف كل الرسائل؟")) { db.ref('messages').remove(); messagesCache = {}; renderMessages(); } }
+
+    // ============================================================
+    //  ✅ clearAllChat — نسخة محدثة مع تسجيل
+    // ============================================================
+    async function clearAllChat() {
+        if (!['mod', 'manager', 'owner'].includes(myRole)) return alert("⛔ فقط المشرف والمدير والمالك!");
+        if (!confirm("⚠️ حذف كل الرسائل؟")) return;
+        if (!confirm("تأكيد أخير: هل أنت متأكد تماماً؟")) return;
+
+        const msgCount = Object.keys(messagesCache).length;
+        await logAdminAction('clear_chat', null, null, {
+            messages_count: msgCount
+        });
+
+        db.ref('messages').remove();
+        messagesCache = {};
+        renderMessages();
+    }
+
     function startReply(k) { const m = messagesCache[k]; if (!m) return; replyTo = { key: k, sender: m.sender, text: m.text || '[وسائط]', role: m.role }; document.getElementById('reply-sender-name').textContent = m.sender; document.getElementById('reply-content-text').textContent = m.text || '[وسائط]'; document.getElementById('reply-bar').classList.add('active'); document.getElementById('message-input').focus(); }
     function cancelReply() { replyTo = null; document.getElementById('reply-bar').classList.remove('active'); }
     function openReportModal(targetUid, targetName, messageKey) { if (!myName || !myFP) return alert('سجل الدخول أولاً'); if (targetUid === myFP) return alert('لا يمكنك الإبلاغ عن نفسك'); document.getElementById('report-target-name').textContent = targetName; document.getElementById('report-target-uid').value = targetUid; document.getElementById('report-message-key').value = messageKey || ''; document.getElementById('report-reason-input').value = ''; document.getElementById('report-modal').classList.add('active'); }
@@ -2882,7 +3030,53 @@
     function filterReports(filter, btn) { currentReportFilter = filter; document.querySelectorAll('.filter-tabs button').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderReports(); }
     function updateReportsBadge() { const pending = Object.values(reportsCache).filter(r => r.status === 'pending').length; const badge = document.getElementById('reports-badge'); if (pending > 0) { badge.textContent = pending; badge.classList.add('active'); } else badge.classList.remove('active'); }
     function openResolveModal(reportId, action) { if (myRole !== 'owner') return alert('⛔'); const report = reportsCache[reportId]; if (!report) return alert('غير موجود'); if (report.status !== 'pending') return alert('تم الحل'); resolveTargetReportId = reportId; document.getElementById('resolve-target-name').textContent = report.targetName; document.getElementById('resolve-comment-input').value = ''; document.getElementById('resolve-modal').dataset.action = action; document.getElementById('resolve-modal').classList.add('active'); }
-    async function resolveReport(action) { const reportId = resolveTargetReportId; if (!reportId) return; const comment = document.getElementById('resolve-comment-input').value.trim(); const report = reportsCache[reportId]; if (!report) return; const updates = { status: action === 'none' ? 'rejected' : 'resolved', actionTaken: action, ownerComment: comment || null, resolvedAt: Date.now() }; try { await db.ref('reports/' + reportId).update(updates); if (action !== 'none') { const targetUid = report.targetId; if (action === 'ban') { await db.ref('bans/' + targetUid).set(true); } else if (action === 'mute') { const et = Date.now() + 3600000; const data = { endTime: et, by: myName, at: Date.now() }; await db.ref('mutes/' + targetUid).set(data); } else if (action === 'kick') { await db.ref('ignores/' + targetUid).set({ endTime: Date.now() + 3600000, by: myName, at: Date.now() }); } else if (action === 'ignore') { await db.ref('ignores/' + targetUid).set({ endTime: 9999999999999, by: myName, at: Date.now() }); } if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_resolved', reportId: reportId, targetName: report.targetName, action: action, comment: comment || '', time: Date.now(), seen: false }); } else { if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_rejected', reportId: reportId, targetName: report.targetName, comment: comment || 'تم الرفض', time: Date.now(), seen: false }); } document.getElementById('resolve-modal').classList.remove('active'); alert('✅'); renderReports(); updateReportsBadge(); } catch (e) { alert('❌ ' + e.message); } }
+
+    // ============================================================
+    //  ✅ resolveReport — نسخة محدثة مع تسجيل
+    // ============================================================
+    async function resolveReport(action) {
+        const reportId = resolveTargetReportId;
+        if (!reportId) return;
+        const comment = document.getElementById('resolve-comment-input').value.trim();
+        const report = reportsCache[reportId];
+        if (!report) return;
+        const updates = {
+            status: action === 'none' ? 'rejected' : 'resolved',
+            actionTaken: action,
+            ownerComment: comment || null,
+            resolvedAt: Date.now()
+        };
+        try {
+            await db.ref('reports/' + reportId).update(updates);
+            if (action !== 'none') {
+                const targetUid = report.targetId;
+                if (action === 'ban') {
+                    await db.ref('bans/' + targetUid).set(true);
+                    await logAdminAction('report_ban', targetUid, report.targetName, { report_id: reportId });
+                } else if (action === 'mute') {
+                    const et = Date.now() + 3600000;
+                    const data = { endTime: et, by: myName, at: Date.now() };
+                    await db.ref('mutes/' + targetUid).set(data);
+                    await logAdminAction('report_mute', targetUid, report.targetName, { report_id: reportId, duration: 60 });
+                } else if (action === 'kick') {
+                    await db.ref('ignores/' + targetUid).set({ endTime: Date.now() + 3600000, by: myName, at: Date.now() });
+                    await logAdminAction('report_kick', targetUid, report.targetName, { report_id: reportId });
+                } else if (action === 'ignore') {
+                    await db.ref('ignores/' + targetUid).set({ endTime: 9999999999999, by: myName, at: Date.now() });
+                    await logAdminAction('report_ignore', targetUid, report.targetName, { report_id: reportId });
+                }
+                if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_resolved', reportId: reportId, targetName: report.targetName, action: action, comment: comment || '', time: Date.now(), seen: false });
+            } else {
+                await logAdminAction('report_reject', report.targetId, report.targetName, { report_id: reportId });
+                if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_rejected', reportId: reportId, targetName: report.targetName, comment: comment || 'تم الرفض', time: Date.now(), seen: false });
+            }
+            document.getElementById('resolve-modal').classList.remove('active');
+            alert('✅');
+            renderReports();
+            updateReportsBadge();
+        } catch (e) { alert('❌ ' + e.message); }
+    }
+
     let colorTargetUid = null, selectedGlow = 'none';
     function openColorControl(uid) { if (!isOwner()) return alert("⛔"); colorTargetUid = uid; const u = allUsersData[uid] || {}, n = u.name || 'مجهول', av = u.avatar || DEFAULT_ICON, r = u.role || 'user'; document.getElementById('color-target-avatar').src = av; document.getElementById('color-target-name').textContent = n; document.getElementById('color-target-role').textContent = 'رتبة: ' + r; const cc = getColor(uid), cg = getGlow(uid); selectedGlow = cg; document.getElementById('color-name-picker').value = cc.name || '#333333'; const g = document.getElementById('color-grid'); g.innerHTML = ''; COLORS.forEach((c, i) => { const d = document.createElement('div'); d.className = 'color-option'; d.style.background = c.bg; if (cc && cc.bg === c.bg) d.classList.add('selected'); d.innerHTML = '<span class="check">✓</span><span class="color-label">' + (i + 1) + '</span>'; d.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); d.classList.add('selected'); updatePreview(); }; g.appendChild(d); }); document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === cg); }); document.getElementById('color-name-picker').oninput = updatePreview; updatePreview(); document.getElementById('color-control-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); }
     function selectGlow(g) { selectedGlow = g; document.querySelectorAll('.glow-btn').forEach(b => b.classList.toggle('selected', b.dataset.glow === g)); updatePreview(); }
