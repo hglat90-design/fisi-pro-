@@ -537,350 +537,54 @@
         .pa-dm-btn-locked { background: #9e9e9e !important; color: #fff !important; opacity: 0.8; cursor: pointer; }
 
         /* ===================== WARNING SYSTEM STYLES ===================== */
-        #warning-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(30,20,20,0.97), rgba(10,10,15,0.99));
-            z-index: 999999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
+        #warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(30,20,20,0.97), rgba(10,10,15,0.99)); z-index: 999999; display: none; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         #warning-overlay.active { display: flex; animation: warningFadeIn 0.5s ease; }
         @keyframes warningFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .warning-fullscreen-card {
-            background: linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #2c1810 100%);
-            border: 3px solid #ff3b30;
-            border-radius: 22px;
-            max-width: 480px;
-            width: 100%;
-            padding: 28px 22px 24px;
-            text-align: center;
-            color: #fff;
-            box-shadow: 0 0 60px rgba(255,59,48,0.5), 0 0 120px rgba(255,152,0,0.25), inset 0 0 40px rgba(255,59,48,0.05);
-            position: relative;
-            animation: warningPop 0.6s cubic-bezier(0.34,1.56,0.64,1);
-            font-family: var(--font-main);
-            max-height: 92vh;
-            overflow-y: auto;
-        }
-        .warning-fullscreen-card::before {
-            content: '';
-            position: absolute;
-            top: -3px; left: -3px; right: -3px; bottom: -3px;
-            border-radius: 22px;
-            background: linear-gradient(45deg, #ff3b30, #ff9800, #f9a825, #ff3b30, #ff6b35);
-            background-size: 300% 300%;
-            z-index: -1;
-            animation: warningBorderFlow 4s ease infinite;
-            filter: blur(6px);
-            opacity: 0.7;
-        }
-        @keyframes warningBorderFlow {
-            0%,100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        @keyframes warningPop {
-            from { transform: scale(0.7) translateY(40px); opacity: 0; }
-            to { transform: scale(1) translateY(0); opacity: 1; }
-        }
-        .warning-icon-wrap {
-            width: 90px; height: 90px;
-            margin: 0 auto 16px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff3b30, #ff6b35);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 46px;
-            box-shadow: 0 0 30px rgba(255,59,48,0.7), 0 0 60px rgba(255,107,53,0.4);
-            animation: warningPulse 2s infinite;
-            position: relative;
-            border: 3px solid rgba(255,255,255,0.2);
-        }
-        .warning-icon-wrap::before, .warning-icon-wrap::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 2px solid rgba(255,59,48,0.5);
-            transform: translate(-50%,-50%);
-            animation: warningRipple 2.5s infinite;
-        }
+        .warning-fullscreen-card { background: linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #2c1810 100%); border: 3px solid #ff3b30; border-radius: 22px; max-width: 480px; width: 100%; padding: 28px 22px 24px; text-align: center; color: #fff; box-shadow: 0 0 60px rgba(255,59,48,0.5), 0 0 120px rgba(255,152,0,0.25), inset 0 0 40px rgba(255,59,48,0.05); position: relative; animation: warningPop 0.6s cubic-bezier(0.34,1.56,0.64,1); font-family: var(--font-main); max-height: 92vh; overflow-y: auto; }
+        .warning-fullscreen-card::before { content: ''; position: absolute; top: -3px; left: -3px; right: -3px; bottom: -3px; border-radius: 22px; background: linear-gradient(45deg, #ff3b30, #ff9800, #f9a825, #ff3b30, #ff6b35); background-size: 300% 300%; z-index: -1; animation: warningBorderFlow 4s ease infinite; filter: blur(6px); opacity: 0.7; }
+        @keyframes warningBorderFlow { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        @keyframes warningPop { from { transform: scale(0.7) translateY(40px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+        .warning-icon-wrap { width: 90px; height: 90px; margin: 0 auto 16px; border-radius: 50%; background: linear-gradient(135deg, #ff3b30, #ff6b35); display: flex; justify-content: center; align-items: center; font-size: 46px; box-shadow: 0 0 30px rgba(255,59,48,0.7), 0 0 60px rgba(255,107,53,0.4); animation: warningPulse 2s infinite; position: relative; border: 3px solid rgba(255,255,255,0.2); }
+        .warning-icon-wrap::before, .warning-icon-wrap::after { content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; border-radius: 50%; border: 2px solid rgba(255,59,48,0.5); transform: translate(-50%,-50%); animation: warningRipple 2.5s infinite; }
         .warning-icon-wrap::after { animation-delay: 1.25s; }
-        @keyframes warningPulse {
-            0%,100% { transform: scale(1); }
-            50% { transform: scale(1.06); }
-        }
-        @keyframes warningRipple {
-            0% { transform: translate(-50%,-50%) scale(1); opacity: 0.8; }
-            100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
-        }
-        .warning-title-fullscreen {
-            font-size: 26px;
-            font-weight: 900;
-            color: #ff3b30;
-            text-shadow: 0 0 20px rgba(255,59,48,0.7);
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
-        }
-        .warning-subtitle-fullscreen {
-            font-size: 12px;
-            color: #ff9800;
-            font-weight: 700;
-            margin-bottom: 18px;
-            opacity: 0.95;
-            letter-spacing: 0.3px;
-        }
-        .warning-sender-row {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 12px;
-            background: rgba(255,255,255,0.06);
-            padding: 12px 14px;
-            border-radius: 14px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .warning-sender-row img {
-            width: 46px; height: 46px;
-            border-radius: 50%;
-            border: 2.5px solid #ff3b30;
-            object-fit: cover;
-            box-shadow: 0 0 14px rgba(255,59,48,0.6);
-            flex-shrink: 0;
-        }
+        @keyframes warningPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+        @keyframes warningRipple { 0% { transform: translate(-50%,-50%) scale(1); opacity: 0.8; } 100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; } }
+        .warning-title-fullscreen { font-size: 26px; font-weight: 900; color: #ff3b30; text-shadow: 0 0 20px rgba(255,59,48,0.7); margin-bottom: 4px; letter-spacing: 0.5px; }
+        .warning-subtitle-fullscreen { font-size: 12px; color: #ff9800; font-weight: 700; margin-bottom: 18px; opacity: 0.95; letter-spacing: 0.3px; }
+        .warning-sender-row { display: flex; align-items: center; justify-content: flex-start; gap: 12px; background: rgba(255,255,255,0.06); padding: 12px 14px; border-radius: 14px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.1); }
+        .warning-sender-row img { width: 46px; height: 46px; border-radius: 50%; border: 2.5px solid #ff3b30; object-fit: cover; box-shadow: 0 0 14px rgba(255,59,48,0.6); flex-shrink: 0; }
         .warning-sender-info { text-align: right; flex: 1; min-width: 0; }
-        .warning-sender-info .wsn-name {
-            font-size: 15px;
-            font-weight: 800;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .warning-sender-info .wsn-role {
-            font-size: 11px;
-            color: #ff9800;
-            font-weight: 700;
-            margin-top: 3px;
-        }
-        .warning-message-box {
-            background: rgba(255,59,48,0.1);
-            border: 2px solid rgba(255,59,48,0.35);
-            border-radius: 14px;
-            padding: 22px 16px 18px;
-            margin-bottom: 16px;
-            font-size: 16px;
-            line-height: 1.7;
-            color: #fff;
-            text-align: right;
-            min-height: 70px;
-            word-break: break-word;
-            white-space: pre-wrap;
-            position: relative;
-        }
-        .warning-message-box::before {
-            content: '⚠';
-            position: absolute;
-            top: -13px;
-            right: 16px;
-            background: linear-gradient(135deg, #ff3b30, #ff6b35);
-            width: 28px; height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            box-shadow: 0 2px 10px rgba(255,59,48,0.6);
-        }
-        .warning-time-row {
-            font-size: 11px;
-            color: #aaa;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .warning-ack-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #ff3b30, #ff6b35, #f9a825);
-            color: #fff;
-            border: 0;
-            border-radius: 14px;
-            font-size: 19px;
-            font-weight: 900;
-            cursor: pointer;
-            font-family: var(--font-main);
-            letter-spacing: 0.5px;
-            box-shadow: 0 6px 24px rgba(255,59,48,0.55);
-            transition: all 0.25s;
-            position: relative;
-            overflow: hidden;
-        }
-        .warning-ack-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-            transition: left 0.6s;
-        }
+        .warning-sender-info .wsn-name { font-size: 15px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .warning-sender-info .wsn-role { font-size: 11px; color: #ff9800; font-weight: 700; margin-top: 3px; }
+        .warning-message-box { background: rgba(255,59,48,0.1); border: 2px solid rgba(255,59,48,0.35); border-radius: 14px; padding: 22px 16px 18px; margin-bottom: 16px; font-size: 16px; line-height: 1.7; color: #fff; text-align: right; min-height: 70px; word-break: break-word; white-space: pre-wrap; position: relative; }
+        .warning-message-box::before { content: '⚠'; position: absolute; top: -13px; right: 16px; background: linear-gradient(135deg, #ff3b30, #ff6b35); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 10px rgba(255,59,48,0.6); }
+        .warning-time-row { font-size: 11px; color: #aaa; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .warning-ack-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #ff3b30, #ff6b35, #f9a825); color: #fff; border: 0; border-radius: 14px; font-size: 19px; font-weight: 900; cursor: pointer; font-family: var(--font-main); letter-spacing: 0.5px; box-shadow: 0 6px 24px rgba(255,59,48,0.55); transition: all 0.25s; position: relative; overflow: hidden; }
+        .warning-ack-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent); transition: left 0.6s; }
         .warning-ack-btn:hover::before { left: 100%; }
         .warning-ack-btn:active { transform: scale(0.97); box-shadow: 0 3px 12px rgba(255,59,48,0.65); }
-        .warning-acknowledged-info {
-            font-size: 13px;
-            color: #4caf50;
-            margin-top: 14px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-weight: 700;
-            animation: fadeIn 0.4s;
-        }
+        .warning-acknowledged-info { font-size: 13px; color: #4caf50; margin-top: 14px; display: none; align-items: center; justify-content: center; gap: 6px; font-weight: 700; animation: fadeIn 0.4s; }
         .warning-acknowledged-info.show { display: flex; }
 
-        .warning-target-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        .warning-target-btn {
-            padding: 12px 8px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            background: #fff;
-            font-family: var(--font-main);
-            font-size: 12px;
-            font-weight: 700;
-            color: #555;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
+        .warning-target-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
+        .warning-target-btn { padding: 12px 8px; border: 2px solid #eee; border-radius: 10px; background: #fff; font-family: var(--font-main); font-size: 12px; font-weight: 700; color: #555; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .warning-target-btn .wt-icon { font-size: 22px; }
-        .warning-target-btn.selected {
-            border-color: #ff3b30;
-            background: linear-gradient(135deg, #fff5f5, #ffe5e5);
-            color: #ff3b30;
-            box-shadow: 0 3px 12px rgba(255,59,48,0.2);
-        }
+        .warning-target-btn.selected { border-color: #ff3b30; background: linear-gradient(135deg, #fff5f5, #ffe5e5); color: #ff3b30; box-shadow: 0 3px 12px rgba(255,59,48,0.2); }
         .warning-target-btn:active { transform: scale(0.96); }
-        .warning-role-chips, .warning-user-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin: 6px 0;
-            max-height: 180px;
-            overflow-y: auto;
-            padding: 6px;
-            background: #fafafa;
-            border-radius: 8px;
-        }
-        .warning-role-chip, .warning-user-chip {
-            padding: 6px 12px;
-            background: #fff;
-            border: 1.5px solid #ddd;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #555;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-family: var(--font-main);
-            position: relative;
-        }
-        .warning-user-chip img {
-            width: 22px; height: 22px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .warning-role-chip.selected, .warning-user-chip.selected {
-            border-color: #ff3b30;
-            background: linear-gradient(135deg, #fff5f5, #ffe5e5);
-            color: #ff3b30;
-            box-shadow: 0 2px 8px rgba(255,59,48,0.25);
-        }
-        /* ✅ زر حذف المستخدم المجهول */
-        .warning-user-chip .wuc-delete {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #ef5350;
-            color: #fff;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-right: 2px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-            line-height: 1;
-        }
+        .warning-role-chips, .warning-user-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; max-height: 180px; overflow-y: auto; padding: 6px; background: #fafafa; border-radius: 8px; }
+        .warning-role-chip, .warning-user-chip { padding: 6px 12px; background: #fff; border: 1.5px solid #ddd; border-radius: 16px; font-size: 12px; font-weight: 700; color: #555; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px; font-family: var(--font-main); position: relative; }
+        .warning-user-chip img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
+        .warning-role-chip.selected, .warning-user-chip.selected { border-color: #ff3b30; background: linear-gradient(135deg, #fff5f5, #ffe5e5); color: #ff3b30; box-shadow: 0 2px 8px rgba(255,59,48,0.25); }
+        .warning-user-chip .wuc-delete { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: #ef5350; color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; margin-right: 2px; transition: all 0.2s; flex-shrink: 0; line-height: 1; }
         .warning-user-chip .wuc-delete:hover { background: #c62828; transform: scale(1.15); }
         .warning-user-chip .wuc-delete:active { transform: scale(0.9); }
-        .warning-user-chip.is-unknown {
-            background: linear-gradient(135deg, #fff8e1, #ffecb3);
-            border-color: #ffa726;
-        }
-        .warning-user-chip.is-unknown.selected {
-            border-color: #ff3b30;
-        }
-        .warning-cleanup-bar {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 8px;
-        }
-        .warning-cleanup-btn {
-            flex: 1;
-            padding: 8px;
-            background: linear-gradient(135deg, #e53935, #b71c1c);
-            color: #fff;
-            border: 0;
-            border-radius: 8px;
-            font-family: var(--font-main);
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.15s;
-            box-shadow: 0 2px 8px rgba(229,57,53,0.3);
-        }
+        .warning-user-chip.is-unknown { background: linear-gradient(135deg, #fff8e1, #ffecb3); border-color: #ffa726; }
+        .warning-user-chip.is-unknown.selected { border-color: #ff3b30; }
+        .warning-cleanup-bar { display: flex; gap: 6px; margin-bottom: 8px; }
+        .warning-cleanup-btn { flex: 1; padding: 8px; background: linear-gradient(135deg, #e53935, #b71c1c); color: #fff; border: 0; border-radius: 8px; font-family: var(--font-main); font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.15s; box-shadow: 0 2px 8px rgba(229,57,53,0.3); }
         .warning-cleanup-btn:active { transform: scale(0.96); }
-        .warning-compose-textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            font-family: var(--font-main);
-            font-size: 14px;
-            resize: vertical;
-            min-height: 100px;
-            outline: 0;
-            transition: border 0.2s;
-        }
-        .warning-compose-textarea:focus {
-            border-color: #ff3b30;
-            box-shadow: 0 0 0 3px rgba(255,59,48,0.1);
-        }
+        .warning-compose-textarea { width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; font-family: var(--font-main); font-size: 14px; resize: vertical; min-height: 100px; outline: 0; transition: border 0.2s; }
+        .warning-compose-textarea:focus { border-color: #ff3b30; box-shadow: 0 0 0 3px rgba(255,59,48,0.1); }
 
         .warning-history-card {
             background: linear-gradient(135deg, #fff, #fafafa);
@@ -1158,8 +862,229 @@
         }
         .btn-warning-history:active { transform: scale(0.95); }
 
-        /* ✅ زر حذف المستخدم المجهول في قائمة الأعضاء */
         .ctrl-btn.delete-unknown { background: #b71c1c; font-size: 11px; }
+
+        /* ============ 🗑️ DELETE WARNING MODAL (NEW) ============ */
+        #warning-delete-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(10,10,15,0.85);
+            z-index: 9999999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        #warning-delete-modal.active { display: flex; animation: warningFadeIn 0.3s ease; }
+        .warning-delete-box {
+            background: #fff;
+            width: 100%;
+            max-width: 440px;
+            border-radius: 20px;
+            overflow: hidden;
+            animation: warningPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,59,48,0.15);
+            font-family: var(--font-main);
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .warning-delete-box .wdb-header {
+            background: linear-gradient(135deg, #e53935, #b71c1c);
+            color: #fff;
+            padding: 18px 20px 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .warning-delete-box .wdb-header::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 60%);
+            animation: rotateGlow 8s linear infinite;
+        }
+        @keyframes rotateGlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .warning-delete-box .wdb-icon {
+            width: 64px; height: 64px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 34px;
+            position: relative;
+            z-index: 1;
+            border: 3px solid rgba(255,255,255,0.3);
+            animation: warningPulse 2s infinite;
+        }
+        .warning-delete-box .wdb-title {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.3px;
+        }
+        .warning-delete-box .wdb-subtitle {
+            font-size: 12px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+        }
+        .warning-delete-box .wdb-body {
+            padding: 18px 20px 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .warning-delete-box .wdb-info-card {
+            background: linear-gradient(135deg, #fef5f5, #fff);
+            border: 1.5px solid rgba(255,59,48,0.2);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+        }
+        .warning-delete-box .wdb-info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12.5px;
+            color: #333;
+            padding: 6px 0;
+            font-weight: 600;
+        }
+        .warning-delete-box .wdb-info-row + .wdb-info-row { border-top: 1px dashed rgba(0,0,0,0.06); }
+        .warning-delete-box .wdb-info-row .wdb-label {
+            color: #777;
+            min-width: 90px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .warning-delete-box .wdb-info-row .wdb-value {
+            flex: 1;
+            color: #1a1a1a;
+            word-break: break-word;
+        }
+        .warning-delete-box .wdb-message-preview {
+            background: #f9f9f9;
+            border-right: 3px solid #ff3b30;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 12.5px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 14px;
+            max-height: 80px;
+            overflow-y: auto;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        .warning-delete-box .wdb-warning-note {
+            background: linear-gradient(135deg, #fff8e1, #fffde7);
+            border: 1.5px solid #ffc107;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            color: #7a5c00;
+            line-height: 1.7;
+            margin-bottom: 14px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .warning-delete-box .wdb-warning-note .wdb-note-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+            animation: warningPulse 2s infinite;
+        }
+        .warning-delete-box .wdb-warning-note strong {
+            color: #e65100;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+        .warning-delete-box .wdb-checklist {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .warning-delete-box .wdb-checklist li {
+            padding: 4px 0 4px 22px;
+            font-size: 12px;
+            position: relative;
+            color: #555;
+            line-height: 1.5;
+        }
+        .warning-delete-box .wdb-checklist li::before {
+            content: '✕';
+            position: absolute;
+            right: 0;
+            color: #e53935;
+            font-weight: 900;
+            font-size: 14px;
+        }
+        .warning-delete-box .wdb-actions {
+            display: flex;
+            gap: 8px;
+            padding: 0 20px 20px;
+        }
+        .warning-delete-box .wdb-btn {
+            flex: 1;
+            padding: 13px;
+            border: 0;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .warning-delete-box .wdb-btn.cancel {
+            background: #f0f0f0;
+            color: #555;
+        }
+        .warning-delete-box .wdb-btn.cancel:active { background: #e0e0e0; transform: scale(0.97); }
+        .warning-delete-box .wdb-btn.confirm {
+            background: linear-gradient(135deg, #e53935, #b71c1c);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(229,57,53,0.4);
+        }
+        .warning-delete-box .wdb-btn.confirm:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(229,57,53,0.6); }
+        .warning-delete-box .wdb-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .warning-history-header-bar {
+            display: flex;
+            gap: 6px;
+            padding: 8px 10px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+        .warning-history-header-bar .search-box { margin-bottom: 0; flex: 1; padding: 8px 12px; font-size: 12px; }
+        .whb-delete-all {
+            padding: 8px 12px;
+            background: linear-gradient(135deg,#e53935,#b71c1c);
+            color: #fff;
+            border: 0;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(229,57,53,0.3);
+        }
+        .whb-delete-all:active { transform: scale(0.95); }
+        .whb-delete-all:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -1392,6 +1317,10 @@
             <h3 style="color:#fff;">📜 سجل التحذيرات</h3>
             <button class="modal-close" onclick="closeWarningHistory()" style="color:#fff;">✕</button>
         </div>
+        <div class="warning-history-header-bar">
+            <input type="text" id="warning-history-search" class="search-box" placeholder="🔍 بحث في السجل..." oninput="filterWarningHistory()">
+            <button class="whb-delete-all" id="whb-delete-all-btn" onclick="confirmDeleteAllWarnings()" title="حذف جميع التحذيرات نهائياً">🧹 حذف الكل</button>
+        </div>
         <div class="modal-body" id="warning-history-list" style="padding:10px;background:#f5f5f5;">
             <div style="text-align:center;color:#999;padding:30px 0;font-size:14px;">لا توجد تحذيرات</div>
         </div>
@@ -1403,6 +1332,37 @@
             <button class="modal-close" onclick="closeWarningReaders()" style="color:#fff;">✕</button>
         </div>
         <div class="modal-body" id="warning-readers-list" style="padding:12px;background:#f5f5f5;"></div>
+    </div>
+
+    <!-- ============ 🗑️ نافذة تأكيد حذف التحذير (جديدة) ============ -->
+    <div id="warning-delete-modal">
+        <div class="warning-delete-box">
+            <div class="wdb-header">
+                <div class="wdb-icon">🗑️</div>
+                <div class="wdb-title" id="wdb-title">حذف التحذير نهائياً</div>
+                <div class="wdb-subtitle" id="wdb-subtitle">لا يمكن التراجع عن هذه العملية</div>
+            </div>
+            <div class="wdb-body">
+                <div class="wdb-info-card" id="wdb-info-card"></div>
+                <div class="wdb-message-preview" id="wdb-message-preview"></div>
+                <div class="wdb-warning-note">
+                    <span class="wdb-note-icon">⚠️</span>
+                    <div>
+                        <strong>تنبيه مهم:</strong>
+                        <ul class="wdb-checklist">
+                            <li>سيُحذف هذا التحذير نهائياً من السجل</li>
+                            <li>لن يظهر للمستخدمين بعد الحذف</li>
+                            <li>إذا كان التحذير نشطاً، سيُختفي فوراً من شاشات المستخدمين</li>
+                            <li>لا يمكن التراجع عن هذه العملية</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="wdb-actions">
+                <button class="wdb-btn cancel" onclick="closeWarningDeleteModal()">إلغاء</button>
+                <button class="wdb-btn confirm" id="wdb-confirm-btn" onclick="executeWarningDelete()">🗑️ حذف نهائي</button>
+            </div>
+        </div>
     </div>
 
     <div class="modal-popup" id="role-modal">
@@ -1936,6 +1896,9 @@
     let selectedWarningUserUid = null;
     let currentReadersTab = 'read';
     let currentReadersWarning = null;
+    // 🗑️ متغيرات حذف التحذير (جديدة)
+    let pendingDeleteWarningId = null;
+    let pendingDeleteAllMode = false;
 
     const COLORS = [
         { bg: 'linear-gradient(135deg,#E3F2FD,#64B5F6)', text: '#0D47A1', name: '#0D47A1' },
@@ -1982,17 +1945,13 @@
     function isYouTubeUrl(t) { return /(?:youtube\.com|youtu\.be)/i.test(t) }
     function getYouTubeThumbnail(v) { return 'https://img.youtube.com/vi/' + v + '/hqdefault.jpg' }
 
-    function roleRank(r) {
-        return { user: 0, trusted: 1, mod: 2, manager: 3, owner: 4 }[r] || 0;
-    }
+    function roleRank(r) { return { user: 0, trusted: 1, mod: 2, manager: 3, owner: 4 }[r] || 0; }
     function canUserDM(uid, role) {
         if (dmDenialsData[uid] === true) return false;
         if (allDMUsersData[uid] === true) return true;
         return roleRank(role || 'user') >= roleRank(dmGlobalSettings.min_role || 'owner');
     }
-    function getRoleLabel(role) {
-        return { owner: '👑 مالك', manager: '💎 مدير', mod: '🛡️ مشرف', trusted: '✅ موثوق', user: '👤 عادي' }[role] || role;
-    }
+    function getRoleLabel(role) { return { owner: '👑 مالك', manager: '💎 مدير', mod: '🛡️ مشرف', trusted: '✅ موثوق', user: '👤 عادي' }[role] || role; }
 
     function listenDMSettings() {
         db.ref('dm_settings/min_role').on('value', snap => {
@@ -3066,7 +3025,6 @@
         filterUsers();
     }
 
-    // ✅ إظهار زر "حذف المجهولين" عند وجود حسابات مجهولة
     function updateUnknownUsersBtnVisibility() {
         const btn = document.getElementById('cleanup-unknown-btn');
         if (!btn) return;
@@ -3111,7 +3069,6 @@
         }
         db.ref('bans/' + u).once('value', b => {
             const ib = b.exists(); let bt = '';
-            // ✅ زر حذف حساب مجهول
             if (isUnknown && myRole === 'owner') {
                 bt += '<button class="ctrl-btn delete-unknown" onclick="deleteUnknownUser(\'' + u + '\')" title="حذف الحساب المجهول نهائياً">🗑️</button>';
             }
@@ -3137,7 +3094,6 @@
         });
     }
 
-    // ✅ دالة حذف مستخدم بشكل كامل (مشتركة)
     async function cleanupUserCompletely(uid, name) {
         await db.ref('users/' + uid).remove();
         await db.ref('bans/' + uid).remove();
@@ -3162,7 +3118,6 @@
         await db.ref('notifications/' + uid).remove();
     }
 
-    // ✅ حذف مستخدم مجهول واحد
     async function deleteUnknownUser(uid) {
         if (myRole !== 'owner') return alert('⛔');
         const u = allUsersData[uid];
@@ -3178,7 +3133,6 @@
         } catch(e) { alert('❌ ' + e.message); }
     }
 
-    // ✅ حذف جميع المستخدمين المجهولين
     async function deleteAllUnknownUsers() {
         if (myRole !== 'owner') return alert('⛔');
         const unknowns = [];
@@ -4166,17 +4120,27 @@
     function handleKeyboard() { const cm = document.getElementById('chat-messages'); if (window.ResizeObserver) { const ro = new ResizeObserver(() => { const hh = document.querySelector('header')?.offsetHeight || 0, fh = document.getElementById('chat-form')?.offsetHeight || 0, nh = document.querySelector('.bottom-nav')?.offsetHeight || 0, bh = document.getElementById('mute-banner')?.offsetHeight || 0, mb = document.getElementById('maintenance-badge')?.offsetHeight || 0, ah = window.innerHeight - hh - fh - nh - bh - mb; if (cm) cm.style.minHeight = Math.max(ah, 80) + 'px'; }); ro.observe(document.body); } window.addEventListener('resize', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 80); }); document.getElementById('message-input')?.addEventListener('focus', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 200); }); }
 
     /* ============================================================
-       WARNING SYSTEM - Advanced v3
+       WARNING SYSTEM - Advanced v3 + Delete Feature
        ============================================================ */
 
     function listenWarnings() {
         if (warningListener) db.ref('warnings/current').off('value', warningListener);
         warningListener = db.ref('warnings/current').on('value', snap => {
             const w = snap.val();
-            if (!w || !w.id) { currentWarning = null; hideWarningOverlay(); return; }
+            if (!w || !w.id) {
+                currentWarning = null;
+                hideWarningOverlay();
+                return;
+            }
             currentWarning = w;
-            if (!isWarningTargetForMe(w)) { hideWarningOverlay(); return; }
-            if (w.ack && w.ack[myFP]) { hideWarningOverlay(); return; }
+            if (!isWarningTargetForMe(w)) {
+                hideWarningOverlay();
+                return;
+            }
+            if (w.ack && w.ack[myFP]) {
+                hideWarningOverlay();
+                return;
+            }
             showWarningOverlay(w);
         });
     }
@@ -4283,7 +4247,6 @@
         });
     }
 
-    // ✅ عرض قائمة المستخدمين مع زر حذف للحسابات المجهولة
     function renderWarningUsersList() {
         const c = document.getElementById('warning-user-chips');
         if (!c) return;
@@ -4296,19 +4259,17 @@
             u.uid = k;
             users.push(u);
         });
-        // ترتيب: المجهولين أولاً ثم الأسماء الأبجدية
         users.sort((a, b) => {
             const aUnknown = (!a.name || a.name.trim() === '') ? 0 : 1;
             const bUnknown = (!b.name || b.name.trim() === '') ? 0 : 1;
             if (aUnknown !== bUnknown) return aUnknown - bUnknown;
             return (a.name || '').localeCompare(b.name || '');
         });
-        
-        // عرض شريط التنظيف إذا وجد مجهولون
+
         const cleanupBar = document.getElementById('warning-cleanup-bar');
         const unknownCount = users.filter(u => !u.name || u.name.trim() === '').length;
         if (cleanupBar) cleanupBar.style.display = (unknownCount > 0 && myRole === 'owner') ? 'flex' : 'none';
-        
+
         if (users.length === 0) {
             c.innerHTML = '<div style="padding:10px;text-align:center;color:#999;font-size:12px;">لا يوجد مستخدمون</div>';
             return;
@@ -4335,7 +4296,6 @@
             const span = document.createElement('span');
             span.textContent = u.name || 'مجهول';
             btn.appendChild(span);
-            // ✅ زر حذف للمجهولين فقط
             if (isUnknown) {
                 const del = document.createElement('span');
                 del.className = 'wuc-delete';
@@ -4392,6 +4352,7 @@
         if (myRole !== 'owner') return alert('⛔');
         document.getElementById('warning-history-modal').classList.add('active');
         document.getElementById('modal-overlay').classList.add('show');
+        document.getElementById('warning-history-search').value = '';
         listenWarningHistory();
     }
 
@@ -4405,6 +4366,7 @@
         warningHistoryListener = db.ref('warnings/history').on('value', snap => {
             warningHistoryCache = snap.val() || {};
             renderWarningHistory();
+            updateHistoryDeleteAllBtn();
         });
     }
 
@@ -4454,6 +4416,16 @@
         return { targets, readList, unreadList, total: targets.length, readCount: readList.length, unreadCount: unreadList.length };
     }
 
+    // ✅ تحديث حالة زر "حذف الكل"
+    function updateHistoryDeleteAllBtn() {
+        const btn = document.getElementById('whb-delete-all-btn');
+        if (!btn) return;
+        const count = Object.keys(warningHistoryCache).length;
+        btn.textContent = count > 0 ? '🧹 حذف الكل (' + count + ')' : '🧹 حذف الكل';
+        btn.disabled = count === 0;
+    }
+
+    // ✅ رسم السجل (نفس v3 بالضبط + ربط زر الحذف بالنافذة الجديدة)
     function renderWarningHistory() {
         const list = document.getElementById('warning-history-list');
         if (!list) return;
@@ -4478,6 +4450,8 @@
             }
             const card = document.createElement('div');
             card.className = 'warning-history-card';
+            card.dataset.wid = w.id;
+            card.dataset.search = ((w.message || '') + ' ' + targetLabel + ' ' + (w.senderName || '')).toLowerCase();
             card.onclick = () => openWarningReaders(w.id);
             const header = document.createElement('div');
             header.className = 'wh-header';
@@ -4494,31 +4468,148 @@
             const del = document.createElement('button');
             del.textContent = '🗑️';
             del.style.cssText = 'position:absolute;top:8px;left:8px;background:rgba(239,83,80,0.1);border:0;color:#ef5350;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;';
-            del.onclick = (e) => { e.stopPropagation(); deleteWarningHistory(w.id); };
+            // ✅ ربط بالنافذة الاحترافية الجديدة بدلاً من confirm()
+            del.onclick = (e) => { e.stopPropagation(); confirmDeleteWarning(w.id); };
             card.appendChild(del);
             list.appendChild(card);
         });
     }
 
-    async function deleteWarningHistory(id) {
+    // ✅ بحث في السجل
+    function filterWarningHistory() {
+        const q = document.getElementById('warning-history-search').value.toLowerCase();
+        const list = document.getElementById('warning-history-list');
+        const cards = document.querySelectorAll('.warning-history-card');
+        let shown = 0;
+        cards.forEach(c => {
+            const match = (c.dataset.search || '').includes(q);
+            c.style.display = match ? '' : 'none';
+            if (match) shown++;
+        });
+        const existingEmpty = list.querySelector('.warning-history-no-results');
+        if (shown === 0 && q && !existingEmpty) {
+            const ne = document.createElement('div');
+            ne.className = 'warning-history-no-results';
+            ne.style.cssText = 'text-align:center;color:#999;padding:30px 20px;font-size:14px;background:#fff;border-radius:12px;';
+            ne.innerHTML = '<div style="font-size:42px;opacity:0.5;margin-bottom:8px;">🔍</div><div style="font-weight:700;color:#666;margin-bottom:4px;">لا توجد نتائج</div><div style="font-size:11px;color:#aaa;">جرّب كلمة بحث أخرى</div>';
+            list.appendChild(ne);
+        } else if ((shown > 0 || !q) && existingEmpty) {
+            existingEmpty.remove();
+        }
+    }
+
+    // ✅ فتح نافذة تأكيد الحذف الفردي
+    function confirmDeleteWarning(wid) {
         if (myRole !== 'owner') return alert('⛔');
-        if (!confirm('حذف هذا التحذير من السجل؟')) return;
+        const w = warningHistoryCache[wid];
+        if (!w) return alert('⚠️ التحذير غير موجود');
+        pendingDeleteWarningId = wid;
+        pendingDeleteAllMode = false;
+
+        const stats = getWarningStats(w);
+        let targetLabel = 'الجميع', targetIcon = '🌍';
+        if (w.target) {
+            if (w.target.type === 'role') { targetLabel = 'رتبة: ' + getRoleLabel(w.target.value); targetIcon = '👥'; }
+            else if (w.target.type === 'user') { const u = allUsersData[w.target.value]; targetLabel = 'مستخدم: ' + (u ? u.name : 'محذوف'); targetIcon = '👤'; }
+            else if (w.target.type === 'new_users') { targetLabel = 'حسابات جديدة'; targetIcon = '🆕'; }
+        }
+
+        document.getElementById('wdb-title').textContent = 'حذف التحذير نهائياً';
+        document.getElementById('wdb-subtitle').textContent = 'لا يمكن التراجع عن هذه العملية';
+        document.getElementById('wdb-info-card').innerHTML = `
+            <div class="wdb-info-row"><span class="wdb-label">🎯 الفئة:</span><span class="wdb-value">${targetIcon} ${escapeHtml(targetLabel)}</span></div>
+            <div class="wdb-info-row"><span class="wdb-label">👤 المُرسِل:</span><span class="wdb-value">${escapeHtml(w.senderName || 'مجهول')}</span></div>
+            <div class="wdb-info-row"><span class="wdb-label">🕒 وقت الإرسال:</span><span class="wdb-value">${formatDateFull(w.time)}</span></div>
+            <div class="wdb-info-row"><span class="wdb-label">👁️ القراء:</span><span class="wdb-value">${stats.readCount} قرأ / ${stats.unreadCount} لم يقرأ</span></div>
+        `;
+        document.getElementById('wdb-message-preview').textContent = w.message || '';
+        const btn = document.getElementById('wdb-confirm-btn');
+        btn.disabled = false;
+        btn.innerHTML = '🗑️ حذف نهائي';
+        document.getElementById('warning-delete-modal').classList.add('active');
+    }
+
+    // ✅ فتح نافذة تأكيد حذف الكل
+    function confirmDeleteAllWarnings() {
+        if (myRole !== 'owner') return alert('⛔');
+        const count = Object.keys(warningHistoryCache).length;
+        if (count === 0) return alert('⚠️ لا توجد تحذيرات لحذفها');
+        pendingDeleteAllMode = true;
+        pendingDeleteWarningId = null;
+
+        let totalAcks = 0;
+        Object.values(warningHistoryCache).forEach(w => { totalAcks += Object.keys(w.ack || {}).length; });
+
+        document.getElementById('wdb-title').textContent = 'حذف جميع التحذيرات';
+        document.getElementById('wdb-subtitle').textContent = 'عملية خطيرة - تأكد جيداً!';
+        document.getElementById('wdb-info-card').innerHTML = `
+            <div class="wdb-info-row"><span class="wdb-label">📊 العدد:</span><span class="wdb-value">${count} تحذير</span></div>
+            <div class="wdb-info-row"><span class="wdb-label">👁️ إجمالي القراء:</span><span class="wdb-value">${totalAcks} عملية قراءة</span></div>
+            <div class="wdb-info-row"><span class="wdb-label">⚠️ التحذير النشط:</span><span class="wdb-value">سيُحذف فوراً من شاشات المستخدمين</span></div>
+        `;
+        document.getElementById('wdb-message-preview').textContent = '⚠️ سيتم حذف جميع التحذيرات من السجل والتطبيق نهائياً.';
+        const btn = document.getElementById('wdb-confirm-btn');
+        btn.disabled = false;
+        btn.innerHTML = '🧹 حذف الكل نهائياً';
+        document.getElementById('warning-delete-modal').classList.add('active');
+    }
+
+    function closeWarningDeleteModal() {
+        document.getElementById('warning-delete-modal').classList.remove('active');
+        pendingDeleteWarningId = null;
+        pendingDeleteAllMode = false;
+    }
+
+    // ✅ التنفيذ الفعلي للحذف
+    async function executeWarningDelete() {
+        if (myRole !== 'owner') return alert('⛔');
+        const btn = document.getElementById('wdb-confirm-btn');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ جاري الحذف...';
+
         try {
-            await db.ref('warnings/history/' + id).remove();
-            if (currentWarning && currentWarning.id === id) { await db.ref('warnings/current').remove(); }
-            alert('✅');
-        } catch(e) { alert('❌ ' + e.message); }
+            if (pendingDeleteAllMode) {
+                const allIds = Object.keys(warningHistoryCache);
+                const updates = {};
+                allIds.forEach(id => { updates['warnings/history/' + id] = null; });
+                updates['warnings/current'] = null;
+                await db.ref().update(updates);
+                await logAdminAction('delete_all_warnings', null, null, { count: allIds.length });
+                closeWarningDeleteModal();
+                setTimeout(() => { alert('✅ تم حذف ' + allIds.length + ' تحذير نهائياً من السجل والتطبيق'); }, 300);
+            } else if (pendingDeleteWarningId) {
+                const wid = pendingDeleteWarningId;
+                const updates = {};
+                updates['warnings/history/' + wid] = null;
+                if (currentWarning && currentWarning.id === wid) {
+                    updates['warnings/current'] = null;
+                }
+                await db.ref().update(updates);
+                await logAdminAction('delete_warning', wid, null, {});
+                closeWarningDeleteModal();
+                setTimeout(() => { alert('✅ تم حذف التحذير نهائياً'); }, 300);
+            }
+        } catch (e) {
+            alert('❌ فشل الحذف: ' + e.message);
+            btn.disabled = false;
+            btn.innerHTML = pendingDeleteAllMode ? '🧹 حذف الكل نهائياً' : '🗑️ حذف نهائي';
+        }
+    }
+
+    // ✅ للتوافق مع الاستدعاءات القديمة
+    async function deleteWarningHistory(id) {
+        confirmDeleteWarning(id);
     }
 
     function openWarningReaders(wid) {
         let w = warningHistoryCache[wid];
         if (!w && currentWarning && currentWarning.id === wid) w = currentWarning;
         if (!w) return alert('غير موجود');
-        
+
         currentReadersWarning = w;
         currentReadersTab = 'read';
         const stats = getWarningStats(w);
-        
+
         let targetLabel = 'الجميع';
         let targetIcon = '🌍';
         if (w.target) {
@@ -4529,10 +4620,10 @@
             }
             else if (w.target.type === 'new_users') { targetLabel = 'حسابات جديدة (من بعد الإرسال)'; targetIcon = '🆕'; }
         }
-        
+
         const list = document.getElementById('warning-readers-list');
         list.innerHTML = '';
-        
+
         const info = document.createElement('div');
         info.className = 'warning-readers-info-card';
         info.innerHTML = `
@@ -4541,7 +4632,7 @@
             <div class="wric-meta">🕒 ${formatDateFull(w.time)} · من: ${escapeHtml(w.senderName || 'مجهول')}</div>
         `;
         list.appendChild(info);
-        
+
         const statsRow = document.createElement('div');
         statsRow.className = 'warning-stats-row';
         statsRow.innerHTML = `
@@ -4559,7 +4650,7 @@
             </div>
         `;
         list.appendChild(statsRow);
-        
+
         const tabs = document.createElement('div');
         tabs.className = 'warning-readers-tabs';
         tabs.innerHTML = `
@@ -4571,11 +4662,11 @@
             </button>
         `;
         list.appendChild(tabs);
-        
+
         const contentDiv = document.createElement('div');
         contentDiv.id = 'warning-readers-content';
         list.appendChild(contentDiv);
-        
+
         renderReadersContent();
         document.getElementById('warning-readers-modal').classList.add('active');
     }
@@ -4600,7 +4691,7 @@
         const content = document.getElementById('warning-readers-content');
         if (!content) return;
         content.innerHTML = '';
-        
+
         if (currentReadersTab === 'read') {
             if (stats.readList.length === 0) {
                 content.innerHTML = `<div class="warning-empty-readers"><span class="we-icon">📭</span>لم يقرأ أحد التحذير بعد</div>`;
@@ -4663,6 +4754,11 @@
 
     document.getElementById('warning-message-input')?.addEventListener('input', function() {
         document.getElementById('warning-char-counter').textContent = this.value.length + ' / 500';
+    });
+
+    // إغلاق نافذة تأكيد الحذف عند الضغط في الخارج
+    document.getElementById('warning-delete-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeWarningDeleteModal();
     });
 
     /* ============================================================
