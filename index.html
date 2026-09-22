@@ -2548,6 +2548,7 @@
             }
         }
 
+        targetName = targetName || 'مستخدم مجهول';
         currentReportType = type || 'message';
         currentReportStatusKey = statusKey || null;
 
@@ -2623,7 +2624,7 @@
     async function submitReport() {
         const type = document.getElementById('report-type').value || 'message';
         let targetUid = document.getElementById('report-target-uid').value;
-        const targetName = document.getElementById('report-target-name').textContent;
+        let targetName = document.getElementById('report-target-name').textContent;
         const messageKey = document.getElementById('report-message-key').value;
         const statusKey = document.getElementById('report-status-key').value;
         const avatarUrl = document.getElementById('report-avatar-url').value;
@@ -2653,6 +2654,9 @@
             if (!targetUid || targetUid === 'undefined' || targetUid === 'null') {
                 targetUid = 'legacy_' + btoa(unescape(encodeURIComponent(targetName || 'unknown'))).replace(/=/g, '');
             }
+        }
+        if (!targetName || targetName.trim() === '') {
+            targetName = 'مستخدم مجهول';
         }
 
         let itemSnapshot = null;
@@ -2764,6 +2768,7 @@
             const typeIcons = { message: '💬', status: '📸', avatar: '🖼️', name: '👤' };
             const typeNames = { message: 'رسالة', status: 'حالة', avatar: 'صورة شخصية', name: 'اسم مستخدم' };
             const rt = r.reportType || 'message';
+            const displayTargetName = r.targetName || 'مستخدم محذوف'; // إصلاح: ضمان ظهور الاسم
             
             let actionsHtml = '';
             if (isPending && myRole === 'owner') {
@@ -2775,7 +2780,7 @@
                 } else if (rt === 'avatar') {
                     actionsHtml += `<button class="action-btn-sm action-delete" onclick="deleteReportedContent('${r.key}', 'avatar', '${r.targetId}')">🗑️ حذف الصورة</button>`;
                 } else if (rt === 'name') {
-                    actionsHtml += `<button class="action-btn-sm action-edit" onclick="editReportedName('${r.key}', '${r.targetId}', '${escapeHtml(r.targetName)}')">✏️ تعديل الاسم</button>`;
+                    actionsHtml += `<button class="action-btn-sm action-edit" onclick="editReportedName('${r.key}', '${r.targetId}', '${escapeHtml(displayTargetName)}')">✏️ تعديل الاسم</button>`;
                 }
                 
                 actionsHtml += `<button class="action-btn-sm action-ban" onclick="openResolveModal('${r.key}','ban')">🚫 حضر</button>`;
@@ -2795,9 +2800,9 @@
             } else if (r.messageSnapshot) {
                 if (r.messageSnapshot.media) {
                     if (r.messageSnapshot.media_type === 'image') {
-                        msgPreview = `<img src="${escapeHtml(r.messageSnapshot.media)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','image','${escapeHtml(r.targetName)}')" onerror="this.style.display='none'">`;
+                        msgPreview = `<img src="${escapeHtml(r.messageSnapshot.media)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','image','${escapeHtml(displayTargetName)}')" onerror="this.style.display='none'">`;
                     } else if (r.messageSnapshot.media_type === 'video') {
-                        msgPreview = `🎥 <strong>فيديو</strong> <button class="action-btn-sm action-preview" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','video','${escapeHtml(r.targetName)}')">معاينة</button>`;
+                        msgPreview = `🎥 <strong>فيديو</strong> <button class="action-btn-sm action-preview" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','video','${escapeHtml(displayTargetName)}')">معاينة</button>`;
                     }
                 }
                 if (r.messageSnapshot.text) msgPreview += (msgPreview ? '<br>' : '') + escapeHtml(r.messageSnapshot.text);
@@ -2808,16 +2813,16 @@
             if (rt === 'status' && r.messageSnapshot) {
                 if (r.messageSnapshot.media) {
                     if (r.messageSnapshot.media_type === 'image') {
-                        msgPreview = `<img src="${escapeHtml(r.messageSnapshot.media)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','image','${escapeHtml(r.targetName)}')" onerror="this.style.display='none'">`;
+                        msgPreview = `<img src="${escapeHtml(r.messageSnapshot.media)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','image','${escapeHtml(displayTargetName)}')" onerror="this.style.display='none'">`;
                     } else if (r.messageSnapshot.media_type === 'video') {
-                        msgPreview = `🎥 <strong>فيديو حالة</strong> <button class="action-btn-sm action-preview" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','video','${escapeHtml(r.targetName)}')">معاينة</button>`;
+                        msgPreview = `🎥 <strong>فيديو حالة</strong> <button class="action-btn-sm action-preview" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','video','${escapeHtml(displayTargetName)}')">معاينة</button>`;
                     }
                 }
                 if (r.messageSnapshot.text) msgPreview += (msgPreview ? '<br>' : '') + escapeHtml(r.messageSnapshot.text);
             }
             
             if (rt === 'avatar' && r.messageSnapshot && r.messageSnapshot.avatar_url) {
-                msgPreview = `<img src="${escapeHtml(r.messageSnapshot.avatar_url)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.avatar_url)}','image','${escapeHtml(r.targetName)}')" onerror="this.style.display='none'">`;
+                msgPreview = `<img src="${escapeHtml(r.messageSnapshot.avatar_url)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.avatar_url)}','image','${escapeHtml(displayTargetName)}')" onerror="this.style.display='none'">`;
             }
             
             if (rt === 'name' && r.messageSnapshot && r.messageSnapshot.name) {
@@ -2828,7 +2833,7 @@
                 <div class="report-header">
                     <span class="reporter">👤 ${escapeHtml(r.reporterName)}</span>
                     <span>→</span>
-                    <span class="target">🎯 ${escapeHtml(r.targetName)}</span>
+                    <span class="target">🎯 ${escapeHtml(displayTargetName)}</span>
                     <span class="report-status status-${r.status}">${statusText}</span>
                 </div>
                 <div style="font-size:11px;color:#666;margin:4px 0;">${typeIcons[rt] || '📌'} نوع البلاغ: ${typeNames[rt] || rt}</div>
@@ -2888,7 +2893,7 @@
     function deleteReport(reportId) { if (myRole !== 'owner') return alert('⛔'); if (!confirm('حذف البلاغ نهائياً؟')) return; db.ref('reports/' + reportId).remove().then(() => alert('✅')).catch(err => alert('❌ ' + err.message)); }
     function filterReports(filter, btn) { currentReportFilter = filter; document.querySelectorAll('.filter-tabs button').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderReports(); }
     function updateReportsBadge() { const pending = Object.values(reportsCache).filter(r => r.status === 'pending').length; const badge = document.getElementById('reports-badge'); if (pending > 0) { badge.textContent = pending; badge.classList.add('active'); } else badge.classList.remove('active'); }
-    function openResolveModal(reportId, action) { if (myRole !== 'owner') return alert('⛔'); const report = reportsCache[reportId]; if (!report) return alert('غير موجود'); if (report.status !== 'pending') return alert('تم الحل'); resolveTargetReportId = reportId; document.getElementById('resolve-target-name').textContent = report.targetName; document.getElementById('resolve-comment-input').value = ''; document.getElementById('resolve-modal').dataset.action = action; document.getElementById('resolve-modal').classList.add('active'); }
+    function openResolveModal(reportId, action) { if (myRole !== 'owner') return alert('⛔'); const report = reportsCache[reportId]; if (!report) return alert('غير موجود'); if (report.status !== 'pending') return alert('تم الحل'); resolveTargetReportId = reportId; document.getElementById('resolve-target-name').textContent = report.targetName || 'مستخدم محذوف'; document.getElementById('resolve-comment-input').value = ''; document.getElementById('resolve-modal').dataset.action = action; document.getElementById('resolve-modal').classList.add('active'); }
     async function resolveReport(action) {
         const reportId = resolveTargetReportId; if (!reportId) return;
         const comment = document.getElementById('resolve-comment-input').value.trim();
@@ -2951,48 +2956,48 @@
             list.innerHTML = '';
             if (!snap.exists()) { list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">📭 لا توجد محادثات خاصة</div>'; return; }
             const chats = [];
+            
             snap.forEach(child => {
                 const chatId = child.key;
-                const parts = chatId.split('_');
-                let u1Name = 'مستخدم غير معروف', u2Name = 'مستخدم غير معروف';
+                let u1Id = null, u2Id = null;
+                let lastMsg = '', lastTime = 0;
+                let u1Name = 'مستخدم محذوف', u2Name = 'مستخدم محذوف';
                 let u1Av = DEFAULT_ICON, u2Av = DEFAULT_ICON;
-                let u1Id = parts[0] || '', u2Id = parts[1] || '';
 
-                // دالة مساعدة لجلب الاسم والصورة (مع البحث داخل الرسائل إذا كان الحساب قديماً)
-                const getUserInfo = (uid, chatSnap) => {
+                // استخراج معرّفات المستخدمين من الرسائل نفسها (الحل الجذري)
+                if (child.hasChild('messages')) {
+                    child.child('messages').forEach(msg => {
+                        const m = msg.val();
+                        if (!u1Id) u1Id = m.from;
+                        else if (u1Id !== m.from && !u2Id) u2Id = m.from;
+                        
+                        const t = Number(m.time) || 0;
+                        if (t > lastTime) { lastTime = t; lastMsg = m.text || '📎'; }
+                    });
+                }
+
+                // دالة لجلب الاسم والصورة بدقة
+                const getUserInfo = (uid) => {
                     if (!uid) return { name: 'مستخدم محذوف', avatar: DEFAULT_ICON };
-                    // 1. البحث في قاعدة البيانات المباشرة
-                    if (usersData[uid]) return { name: usersData[uid].name || 'مستخدم ' + uid.substring(0, 5), avatar: usersData[uid].avatar || DEFAULT_ICON };
-                    // 2. البحث في الذاكرة المؤقتة
-                    if (allUsersData[uid]) return { name: allUsersData[uid].name || 'مستخدم ' + uid.substring(0, 5), avatar: allUsersData[uid].avatar || DEFAULT_ICON };
-                    // 3. البحث داخل الرسائل (لحسابات قديمة أو محذوفة)
-                    let fallbackName = 'مستخدم ' + uid.substring(0, 5);
-                    let fallbackAvatar = DEFAULT_ICON;
-                    if (chatSnap && chatSnap.hasChild('messages')) {
-                        let foundInMsg = false;
-                        chatSnap.child('messages').forEach(msg => {
-                            if (foundInMsg) return;
-                            const m = msg.val();
-                            if (m.from === uid && m.fromName) {
-                                fallbackName = m.fromName;
-                                fallbackAvatar = m.fromAvatar || DEFAULT_ICON;
-                                foundInMsg = true;
-                            }
-                        });
-                    }
-                    return { name: fallbackName, avatar: fallbackAvatar };
+                    if (usersData[uid] && usersData[uid].name) return { name: usersData[uid].name, avatar: usersData[uid].avatar || DEFAULT_ICON };
+                    if (allUsersData[uid] && allUsersData[uid].name) return { name: allUsersData[uid].name, avatar: allUsersData[uid].avatar || DEFAULT_ICON };
+                    
+                    // البحث في الرسائل إذا لم يجد في قاعدة البيانات (للمستخدمين القدامى)
+                    let foundName = null, foundAvatar = null;
+                    child.child('messages').forEach(msg => {
+                        const m = msg.val();
+                        if (m.from === uid && m.fromName && !foundName) {
+                            foundName = m.fromName;
+                            foundAvatar = m.fromAvatar || DEFAULT_ICON;
+                        }
+                    });
+                    return { name: foundName || 'مستخدم محذوف', avatar: foundAvatar || DEFAULT_ICON };
                 };
 
-                const u1Info = getUserInfo(u1Id, child);
-                const u2Info = getUserInfo(u2Id, child);
-                
-                let lastMsg = '';
-                let lastTime = 0;
-                if (child.hasChild('messages')) {
-                    const msgs = child.child('messages');
-                    msgs.forEach(m => { const t = Number(m.val().time) || 0; if (t > lastTime) { lastTime = t; lastMsg = m.val().text || '📎'; } });
-                }
-                chats.push({ chatId, u1Name: u1Info.name, u2Name: u2Info.name, u1Av: u1Info.avatar, u2Av: u2Info.avatar, lastMsg, lastTime });
+                if (u1Id) { const info = getUserInfo(u1Id); u1Name = info.name; u1Av = info.avatar; }
+                if (u2Id) { const info = getUserInfo(u2Id); u2Name = info.name; u2Av = info.avatar; }
+
+                chats.push({ chatId, u1Name, u2Name, u1Av, u2Av, lastMsg, lastTime });
             });
             
             chats.sort((a, b) => b.lastTime - a.lastTime);
