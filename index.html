@@ -115,17 +115,103 @@
         .modal-close { background: 0; border: 0; font-size: 18px; cursor: pointer; color: #666; }
         .modal-body { flex: 1; overflow-y: auto; padding: 10px; }
         #users-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .user-card { padding: 8px 10px; border-radius: 6px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #eee; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03); }
-        .user-card .user-info { display: flex; align-items: center; gap: 8px; }
-        .user-card .user-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; cursor: pointer; flex-shrink: 0; }
-        .user-card .user-details h4 { font-size: 12px; display: flex; align-items: center; gap: 4px; font-family: var(--font-main); cursor: pointer; }
-        .user-card .user-status { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-left: 3px; flex-shrink: 0; }
-        .user-card .user-status.online { background: #25D366; box-shadow: 0 0 6px rgba(37, 211, 102, 0.4); }
+
+        /* ========== بطاقة المستخدم المطورة ========== */
+        .user-card { padding: 10px 12px; border-radius: 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); transition: all 0.2s; position: relative; overflow: hidden; }
+        .user-card::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #ccc; transition: width 0.2s; }
+        .user-card:hover { transform: translateX(-2px); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); }
+        /* تمييز بطاقة المالك */
+        .user-card[data-role="owner"] { border-color: rgba(255, 215, 0, 0.4); background: linear-gradient(135deg, #fffef5 0%, #fff 100%); }
+        .user-card[data-role="owner"]::before { background: linear-gradient(180deg, #FFD700, #F9A825); width: 5px; }
+        /* تمييز بطاقة المدير */
+        .user-card[data-role="manager"] { border-color: rgba(156, 39, 176, 0.3); background: linear-gradient(135deg, #fdf5ff 0%, #fff 100%); }
+        .user-card[data-role="manager"]::before { background: linear-gradient(180deg, #9C27B0, #6A1B9A); width: 5px; }
+        /* تمييز بطاقة المشرف */
+        .user-card[data-role="mod"] { border-color: rgba(33, 150, 243, 0.3); background: linear-gradient(135deg, #f5faff 0%, #fff 100%); }
+        .user-card[data-role="mod"]::before { background: linear-gradient(180deg, #2196F3, #0D47A1); width: 5px; }
+        /* تمييز بطاقة الموثوق */
+        .user-card[data-role="trusted"] { border-color: rgba(255, 152, 0, 0.3); background: linear-gradient(135deg, #fffaf5 0%, #fff 100%); }
+        .user-card[data-role="trusted"]::before { background: linear-gradient(180deg, #FF9800, #F57C00); width: 5px; }
+
+        .user-card .user-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+        .user-card .user-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; cursor: pointer; flex-shrink: 0; transition: transform 0.2s; }
+        .user-card .user-avatar:hover { transform: scale(1.05); }
+        .user-card[data-role="owner"] .user-avatar { border-color: #FFD700; box-shadow: 0 0 8px rgba(255, 215, 0, 0.4); }
+        .user-card[data-role="manager"] .user-avatar { border-color: #9C27B0; box-shadow: 0 0 8px rgba(156, 39, 176, 0.3); }
+        .user-card[data-role="mod"] .user-avatar { border-color: #2196F3; box-shadow: 0 0 8px rgba(33, 150, 243, 0.3); }
+        .user-card[data-role="trusted"] .user-avatar { border-color: #FF9800; box-shadow: 0 0 8px rgba(255, 152, 0, 0.3); }
+
+        .user-card .user-details { flex: 1; min-width: 0; }
+        .user-card .user-details h4 { font-size: 13px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; font-family: var(--font-main); cursor: pointer; font-weight: 700; color: #1a1a1a; margin-bottom: 2px; }
+        .user-card .user-status { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+        .user-card .user-status.online { background: #25D366; box-shadow: 0 0 8px rgba(37, 211, 102, 0.6); }
         .user-card .user-status.offline { background: #ccc; }
-        .user-card .user-status.away { background: #ff9800; box-shadow: 0 0 6px rgba(255, 152, 0, 0.4); }
-        .user-card .user-details .last-seen { font-size: 10px; color: #999; font-family: var(--font-main); }
+        .user-card .user-status.away { background: #ff9800; box-shadow: 0 0 8px rgba(255, 152, 0, 0.6); }
+        .user-card .user-details .last-seen { font-size: 10px; color: #888; font-family: var(--font-main); font-weight: 500; }
         .user-card .user-actions { display: flex; gap: 3px; flex-wrap: wrap; }
-        .ctrl-btn { width: 24px; height: 24px; border-radius: 50%; border: 0; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 11px; }
+
+        /* ========== شارات الرتب الاحترافية الجديدة ========== */
+        .role-badge {
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 700;
+            font-family: var(--font-main);
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            letter-spacing: 0.2px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        .role-badge::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        .role-badge:hover::before { left: 100%; }
+
+        /* شارة المالك - ذهبية فخمة */
+        .role-badge.owner {
+            background: linear-gradient(135deg, #FFD700 0%, #F9A825 50%, #E65100 100%);
+            color: #3E2723;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        /* شارة المدير - بنفسجية ملكية */
+        .role-badge.manager {
+            background: linear-gradient(135deg, #E1BEE7 0%, #9C27B0 50%, #4A148C 100%);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(156, 39, 176, 0.5);
+        }
+
+        /* شارة المشرف - زرقاء احترافية */
+        .role-badge.mod {
+            background: linear-gradient(135deg, #90CAF9 0%, #2196F3 50%, #0D47A1 100%);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.5);
+        }
+
+        /* شارة الموثوق - برتقالية دافئة */
+        .role-badge.trusted {
+            background: linear-gradient(135deg, #FFCC80 0%, #FF9800 50%, #E65100 100%);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.5);
+        }
+
+        .ctrl-btn { width: 26px; height: 26px; border-radius: 50%; border: 0; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 12px; transition: transform 0.15s; }
         .ctrl-btn:active { transform: scale(.85); }
         .ctrl-btn.ban { background: #d32f2f; }
         .ctrl-btn.unban { background: #2e7d32; }
@@ -136,7 +222,8 @@
         .ctrl-btn.dm { background: #9c27b0; }
         .ctrl-btn.dm-off { background: #616161; }
         .ctrl-btn.report { background: #e74c3c; }
-        .search-box { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; outline: 0; font-size: 13px; margin-bottom: 8px; font-family: var(--font-main); }
+        .search-box { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; outline: 0; font-size: 13px; margin-bottom: 8px; font-family: var(--font-main); background: #f9f9f9; transition: all 0.2s; }
+        .search-box:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(0, 128, 105, 0.1); }
         #color-control-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 400; display: none; justify-content: center; align-items: center; padding: 16px; }
         #color-control-modal.active { display: flex; animation: fadeIn .3s; }
         .color-control-box { background: #fff; width: 100%; max-width: 420px; border-radius: 16px; padding: 18px; max-height: 90vh; overflow-y: auto; animation: slideUp .3s; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); font-family: var(--font-main); font-size: 14px; }
@@ -366,6 +453,9 @@
             .color-control-box { padding: 12px; }
             .glow-options { grid-template-columns: repeat(3, 1fr); }
             .sound-picker { grid-template-columns: repeat(2, 1fr); }
+            .user-card .user-avatar { width: 34px; height: 34px; }
+            .role-badge { font-size: 8px; padding: 2px 6px; }
+            .user-card { padding: 8px 10px; }
         }
         @supports(height:100dvh) { .app-container { height: 100dvh; max-height: 100dvh; } }
         #chat-messages::-webkit-scrollbar, #dm-chat-messages::-webkit-scrollbar { width: 3px; }
@@ -680,10 +770,10 @@
             <p id="role-target-name" style="color:#777;margin:8px 0;font-size:14px;"></p>
             <div style="display:flex;flex-direction:column;gap:5px;margin:10px 0;">
                 <button onclick="setRole('user')" class="login-btn" style="background:#9e9e9e;padding:8px;font-size:13px;">عادي</button>
-                <button onclick="setRole('trusted')" class="login-btn" style="background:#ff9800;padding:8px;font-size:13px;">موثوق ✅</button>
-                <button onclick="setRole('mod')" class="login-btn" style="background:#2196f3;padding:8px;font-size:13px;">مشرف 🛡️</button>
-                <button onclick="setRole('manager')" class="login-btn" style="background:#9c27b0;padding:8px;font-size:13px;">مدير 💎</button>
-                <button onclick="setRole('owner')" class="login-btn" style="background:#FFD700;color:#333;padding:8px;font-size:13px;font-weight:700;">مالك 👑</button>
+                <button onclick="setRole('trusted')" class="login-btn" style="background:linear-gradient(135deg, #FFCC80, #E65100);padding:8px;font-size:13px;">✅ موثوق</button>
+                <button onclick="setRole('mod')" class="login-btn" style="background:linear-gradient(135deg, #2196F3, #0D47A1);padding:8px;font-size:13px;">🛡️ مشرف</button>
+                <button onclick="setRole('manager')" class="login-btn" style="background:linear-gradient(135deg, #9C27B0, #4A148C);padding:8px;font-size:13px;">💎 مدير</button>
+                <button onclick="setRole('owner')" class="login-btn" style="background:linear-gradient(135deg, #FFD700, #E65100);color:#3E2723;padding:8px;font-size:13px;font-weight:700;">👑 مالك</button>
             </div>
             <button onclick="document.getElementById('role-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;">إلغاء</button>
         </div>
@@ -1804,10 +1894,10 @@
             card.dataset.uid = u.uid; card.dataset.name = (u.name || '').toLowerCase();
             const avatar = u.avatar || DEFAULT_ICON;
             let roleBadge = '';
-            if (u.role === 'owner') roleBadge = '<span class="role-badge owner">مالك</span>';
-            else if (u.role === 'manager') roleBadge = '<span class="role-badge manager">مدير</span>';
-            else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">مشرف</span>';
-            else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">موثوق</span>';
+            if (u.role === 'owner') roleBadge = '<span class="role-badge owner">👑 مالك</span>';
+            else if (u.role === 'manager') roleBadge = '<span class="role-badge manager">💎 مدير</span>';
+            else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">🛡️ مشرف</span>';
+            else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">✅ موثوق</span>';
             let lockIcon = ''; if (!isDMOn) lockIcon = '<div class="dm-lock-badge">🔒</div>';
             let settingsBtn = ''; if (myRole === 'owner') settingsBtn = `<button class="dm-settings-btn" onclick="event.stopPropagation();toggleUserDM('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}')">⚙️</button>`;
             card.innerHTML = `<img src="${avatar}"><div class="dm-info"><div class="dm-name">${escapeHtml(u.name || 'مجهول')} ${roleBadge}</div><div class="dm-last">${isDMOn ? (lastMsg ? escapeHtml(lastMsg) : '💬 ابدأ') : '🔒 مغلق'}</div></div>${unread > 0 ? `<div class="dm-unread">${unread > 99 ? '99+' : unread}</div>` : ''}${lockIcon}${settingsBtn}`;
@@ -2075,13 +2165,14 @@
             if (isOnline) statusText = isAway ? '🟡 غائب' : '🟢 متصل';
             else { const lastSeen = Number(u.lastSeen) || 0; statusText = !lastSeen ? '⚪ غير متصل' : '⚪ منذ ' + formatDateShort(lastSeen); }
             let roleBadge = '';
-            if (u.role === 'owner') roleBadge = '<span class="role-badge owner">مالك</span>';
-            else if (u.role === 'manager') roleBadge = '<span class="role-badge manager">مدير</span>';
-            else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">مشرف</span>';
-            else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">موثوق</span>';
+            if (u.role === 'owner') roleBadge = '<span class="role-badge owner">👑 مالك</span>';
+            else if (u.role === 'manager') roleBadge = '<span class="role-badge manager">💎 مدير</span>';
+            else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">🛡️ مشرف</span>';
+            else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">✅ موثوق</span>';
             const avatar = u.avatar || DEFAULT_ICON;
             let hiddenBadge = ''; if (u.uid === myFP && isHidden && myRole === 'owner') hiddenBadge = '<span class="hidden-owner-badge">🙈 مخفي</span>';
             if (existing) {
+                existing.dataset.role = u.role || 'user';
                 const statusEl = existing.querySelector('.user-status');
                 if (statusEl) statusEl.className = 'user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline');
                 const nameEl = existing.querySelector('.user-details h4');
@@ -2548,7 +2639,67 @@
             }
         }
 
-        targetName = targetName || 'مستخدم مجهول';
+        // ============================================================
+        //  إصلاح جذري: البحث العميق عن الاسم الحقيقي والصورة
+        // ============================================================
+        if (!targetName || targetName.trim() === '' || targetName === 'مستخدم مجهول' || targetName === 'مستخدم محذوف') {
+            let foundName = null;
+
+            // 1. البحث في الذاكرة المؤقتة
+            if (allUsersData[targetUid] && allUsersData[targetUid].name) {
+                foundName = allUsersData[targetUid].name;
+            }
+            
+            // 2. البحث في قاعدة البيانات (المستخدمين)
+            if (!foundName) {
+                try {
+                    const snap = await db.ref('users/' + targetUid).once('value');
+                    if (snap.exists() && snap.val().name) foundName = snap.val().name;
+                } catch (e) {}
+            }
+
+            // 3. البحث في الرسائل (للمستخدمين القدامى أو المحذوفين)
+            if (!foundName) {
+                try {
+                    const msgSnap = await db.ref('messages').orderByChild('uid').equalTo(targetUid).limitToLast(1).once('value');
+                    if (msgSnap.exists()) {
+                        msgSnap.forEach(child => { if (child.val().sender) foundName = child.val().sender; });
+                    }
+                } catch (e) {}
+            }
+
+            // 4. البحث في الحالات (للمستخدمين القدامى أو المحذوفين)
+            if (!foundName) {
+                try {
+                    const statSnap = await db.ref('statuses').orderByChild('uid').equalTo(targetUid).limitToLast(1).once('value');
+                    if (statSnap.exists()) {
+                        statSnap.forEach(child => { if (child.val().sender) foundName = child.val().sender; });
+                    }
+                } catch (e) {}
+            }
+
+            // 5. استخدام الاسم من الرسالة أو الحالة الحالية كحل أخير
+            if (!foundName && messageKey && messagesCache[messageKey] && messagesCache[messageKey].sender) foundName = messagesCache[messageKey].sender;
+            if (!foundName && statusKey && statusesCache[statusKey] && statusesCache[statusKey].sender) foundName = statusesCache[statusKey].sender;
+
+            // تطبيق الاسم الذي تم العثور عليه
+            if (foundName) targetName = foundName;
+        }
+        if (!targetName || targetName.trim() === '') targetName = 'مستخدم محذوف';
+
+        // جلب الصورة الحقيقية إذا كانت مفقودة
+        if (!avatarUrl || avatarUrl === DEFAULT_ICON) {
+            let dbUser = allUsersData[targetUid];
+            if (!dbUser) {
+                try {
+                    const snap = await db.ref('users/' + targetUid).once('value');
+                    if (snap.exists()) dbUser = snap.val();
+                } catch (e) {}
+            }
+            if (dbUser && dbUser.avatar) avatarUrl = dbUser.avatar;
+        }
+        if (!avatarUrl) avatarUrl = DEFAULT_ICON;
+
         currentReportType = type || 'message';
         currentReportStatusKey = statusKey || null;
 
@@ -2655,9 +2806,21 @@
                 targetUid = 'legacy_' + btoa(unescape(encodeURIComponent(targetName || 'unknown'))).replace(/=/g, '');
             }
         }
-        if (!targetName || targetName.trim() === '') {
-            targetName = 'مستخدم مجهول';
+
+        // إصلاح: جلب الاسم الحقيقي من قاعدة البيانات أو من الرسالة إذا كان مفقوداً قبل الحفظ
+        if (!targetName || targetName.trim() === '' || targetName === 'مستخدم مجهول' || targetName === 'مستخدم محذوف') {
+            let foundName = null;
+            if (targetUid && !targetUid.startsWith('legacy_')) {
+                try {
+                    const snap = await db.ref('users/' + targetUid).once('value');
+                    if (snap.exists() && snap.val().name) foundName = snap.val().name;
+                } catch (e) {}
+            }
+            if (!foundName && messageKey && messagesCache[messageKey] && messagesCache[messageKey].sender) foundName = messagesCache[messageKey].sender;
+            if (!foundName && statusKey && statusesCache[statusKey] && statusesCache[statusKey].sender) foundName = statusesCache[statusKey].sender;
+            if (foundName) targetName = foundName;
         }
+        if (!targetName || targetName.trim() === '') targetName = 'مستخدم محذوف';
 
         let itemSnapshot = null;
 
@@ -2669,7 +2832,7 @@
                 media: rm.media || null,
                 media_type: rm.type || null,
                 youtube_id: rm.youtubeId || null,
-                sender_name: rm.sender || 'مجهول',
+                sender_name: rm.sender || targetName || 'مجهول',
                 sender_avatar: rm.avatar || DEFAULT_ICON,
                 sender_uid: rm.uid || null,
                 sender_role: rm.role || 'user',
@@ -2683,7 +2846,7 @@
                 text: rs.text || '',
                 media: rs.media || null,
                 media_type: rs.type || null,
-                sender_name: rs.sender || 'مجهول',
+                sender_name: rs.sender || targetName || 'مجهول',
                 sender_avatar: rs.avatar || DEFAULT_ICON,
                 sender_uid: rs.uid || null,
                 sent_time: rs.time || Date.now()
@@ -2762,14 +2925,60 @@
         list.innerHTML = '';
         
         filtered.forEach(r => {
-            const card = document.createElement('div'); card.className = 'report-card';
+            const card = document.createElement('div'); card.className = 'report-card'; card.dataset.key = r.key;
             const isPending = r.status === 'pending';
             const statusText = { pending: '⏳ معلق', resolved: '✅ محلول', rejected: '❌ مرفوض' }[r.status] || r.status;
             const typeIcons = { message: '💬', status: '📸', avatar: '🖼️', name: '👤' };
             const typeNames = { message: 'رسالة', status: 'حالة', avatar: 'صورة شخصية', name: 'اسم مستخدم' };
             const rt = r.reportType || 'message';
-            const displayTargetName = r.targetName || 'مستخدم محذوف'; // إصلاح: ضمان ظهور الاسم
             
+            // ============================================================
+            //  إصلاح جذري: جلب الاسم والصورة الحقيقية من مصادر متعددة
+            // ============================================================
+            let displayTargetName = r.targetName;
+            let displayAvatarUrl = (r.messageSnapshot && r.messageSnapshot.avatar_url) ? r.messageSnapshot.avatar_url : DEFAULT_ICON;
+
+            if (!displayTargetName || displayTargetName.trim() === '' || displayTargetName === 'مستخدم مجهول' || displayTargetName === 'مستخدم محذوف') {
+                if (r.messageSnapshot && r.messageSnapshot.sender_name && r.messageSnapshot.sender_name !== 'مجهول') {
+                    displayTargetName = r.messageSnapshot.sender_name;
+                } else if (allUsersData[r.targetId] && allUsersData[r.targetId].name) {
+                    displayTargetName = allUsersData[r.targetId].name;
+                    if (allUsersData[r.targetId].avatar) displayAvatarUrl = allUsersData[r.targetId].avatar;
+                } else {
+                    displayTargetName = 'جاري البحث...';
+                    (async () => {
+                        let foundName = null;
+                        let foundAvatar = null;
+                        try {
+                            const userSnap = await db.ref('users/' + r.targetId).once('value');
+                            if (userSnap.exists()) {
+                                if (userSnap.val().name) foundName = userSnap.val().name;
+                                if (userSnap.val().avatar) foundAvatar = userSnap.val().avatar;
+                            }
+                            if (!foundName) {
+                                const msgSnap = await db.ref('messages').orderByChild('uid').equalTo(r.targetId).limitToLast(1).once('value');
+                                if (msgSnap.exists()) {
+                                    msgSnap.forEach(child => { 
+                                        if (child.val().sender) foundName = child.val().sender; 
+                                        if (child.val().avatar) foundAvatar = child.val().avatar; 
+                                    });
+                                }
+                            }
+                            if (!foundName) {
+                                const statSnap = await db.ref('statuses').orderByChild('uid').equalTo(r.targetId).limitToLast(1).once('value');
+                                if (statSnap.exists()) {
+                                    statSnap.forEach(child => { 
+                                        if (child.val().sender) foundName = child.val().sender; 
+                                        if (child.val().avatar) foundAvatar = child.val().avatar; 
+                                    });
+                                }
+                            }
+                        } catch(e) { console.warn(e); }
+                        updateReportNameInUI(r.key, foundName || 'مستخدم محذوف', foundAvatar || DEFAULT_ICON);
+                    })();
+                }
+            }
+
             let actionsHtml = '';
             if (isPending && myRole === 'owner') {
                 actionsHtml = `<div class="report-actions">`;
@@ -2782,7 +2991,6 @@
                 } else if (rt === 'name') {
                     actionsHtml += `<button class="action-btn-sm action-edit" onclick="editReportedName('${r.key}', '${r.targetId}', '${escapeHtml(displayTargetName)}')">✏️ تعديل الاسم</button>`;
                 }
-                
                 actionsHtml += `<button class="action-btn-sm action-ban" onclick="openResolveModal('${r.key}','ban')">🚫 حضر</button>`;
                 actionsHtml += `<button class="action-btn-sm action-mute" onclick="openResolveModal('${r.key}','mute')">🔇 كتم</button>`;
                 actionsHtml += `<button class="action-btn-sm action-none" onclick="openResolveModal('${r.key}','none')">❌ رفض</button>`;
@@ -2849,6 +3057,16 @@
         document.getElementById('reports-count').textContent = `(${filtered.length})`;
     }
 
+    function updateReportNameInUI(reportKey, newName, newAvatar) {
+        const card = document.querySelector(`.report-card[data-key="${reportKey}"]`);
+        if (card) {
+            const targetSpan = card.querySelector('.target');
+            if (targetSpan) targetSpan.textContent = `🎯 ${escapeHtml(newName)}`;
+            const msgImg = card.querySelector('.report-msg img');
+            if (msgImg && newAvatar && newAvatar !== DEFAULT_ICON) msgImg.src = newAvatar;
+        }
+    }
+
     async function deleteReportedContent(reportId, type, targetId) {
         if (myRole !== 'owner') return alert('⛔');
         const confirmMsg = { message: 'حذف الرسالة المبلّغ عنها؟', status: 'حذف الحالة المبلّغ عنها؟', avatar: 'حذف الصورة الشخصية للمستخدم؟' }[type];
@@ -2874,13 +3092,10 @@
         const newName = prompt('أدخل الاسم الجديد للمستخدم:', currentName);
         if (!newName || newName.trim() === '' || newName === currentName) return;
         try {
-            // إذا كان الـ UID وهمياً، نبحث عن المستخدم الحقيقي بواسطة الاسم
             let realUid = targetUid;
             if (targetUid.startsWith('legacy_')) {
                 const snap = await db.ref('users').orderByChild('name').equalTo(currentName).once('value');
-                if (snap.exists()) {
-                    snap.forEach(child => { realUid = child.key; });
-                }
+                if (snap.exists()) { snap.forEach(child => { realUid = child.key; }); }
             }
             if (realUid.startsWith('legacy_')) return alert('لا يمكن تعديل الاسم لمستخدم محذوف.');
             await db.ref('users/' + realUid).update({ name: newName.trim() });
@@ -2903,7 +3118,6 @@
             await db.ref('reports/' + reportId).update(updates);
             if (action !== 'none') {
                 let targetUid = report.targetId;
-                // إذا كان الـ UID وهمياً، لا يمكن تنفيذ عقوبات (حظر/كتم) على مستخدم محذوف
                 if (targetUid.startsWith('legacy_')) {
                     alert('⚠️ تم حل البلاغ، ولكن لا يمكن تطبيق العقوبات لأن المستخدم غير موجود في قاعدة البيانات (حساب محذوف).');
                 } else {
@@ -2943,7 +3157,6 @@
         const list = document.getElementById('dm-monitor-list');
         list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">⏳ جاري التحميل...</div>';
         
-        // جلب جميع المستخدمين لضمان دقة الأسماء
         let usersData = {};
         try {
             const usersSnap = await db.ref('users').once('value');
@@ -2964,25 +3177,20 @@
                 let u1Name = 'مستخدم محذوف', u2Name = 'مستخدم محذوف';
                 let u1Av = DEFAULT_ICON, u2Av = DEFAULT_ICON;
 
-                // استخراج معرّفات المستخدمين من الرسائل نفسها (الحل الجذري)
                 if (child.hasChild('messages')) {
                     child.child('messages').forEach(msg => {
                         const m = msg.val();
                         if (!u1Id) u1Id = m.from;
                         else if (u1Id !== m.from && !u2Id) u2Id = m.from;
-                        
                         const t = Number(m.time) || 0;
                         if (t > lastTime) { lastTime = t; lastMsg = m.text || '📎'; }
                     });
                 }
 
-                // دالة لجلب الاسم والصورة بدقة
                 const getUserInfo = (uid) => {
                     if (!uid) return { name: 'مستخدم محذوف', avatar: DEFAULT_ICON };
                     if (usersData[uid] && usersData[uid].name) return { name: usersData[uid].name, avatar: usersData[uid].avatar || DEFAULT_ICON };
                     if (allUsersData[uid] && allUsersData[uid].name) return { name: allUsersData[uid].name, avatar: allUsersData[uid].avatar || DEFAULT_ICON };
-                    
-                    // البحث في الرسائل إذا لم يجد في قاعدة البيانات (للمستخدمين القدامى)
                     let foundName = null, foundAvatar = null;
                     child.child('messages').forEach(msg => {
                         const m = msg.val();
@@ -3041,7 +3249,6 @@
         body.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">⏳ جاري التحميل...</div>';
         document.getElementById('dm-monitor-view-modal').classList.add('active');
         
-        // جلب بيانات المستخدمين لضمان دقة الأسماء
         let usersData = {};
         try {
             const usersSnap = await db.ref('users').once('value');
@@ -3057,8 +3264,6 @@
             
             msgs.forEach(m => {
                 const isMine = m.from === myFP;
-                
-                // دالة مساعدة لجلب اسم المرسل في المحادثة
                 const getSenderInfo = (msg) => {
                     if (usersData[msg.from]) return { name: usersData[msg.from].name || 'مجهول', avatar: usersData[msg.from].avatar || DEFAULT_ICON };
                     if (allUsersData[msg.from]) return { name: allUsersData[msg.from].name || 'مجهول', avatar: allUsersData[msg.from].avatar || DEFAULT_ICON };
