@@ -535,6 +535,581 @@
         .dm-settings-option .dso-check { font-size: 16px; opacity: 0; transition: opacity .2s; }
         .dm-settings-option.selected .dso-check { opacity: 1; }
         .pa-dm-btn-locked { background: #9e9e9e !important; color: #fff !important; opacity: 0.8; cursor: pointer; }
+
+        /* ===================== WARNING SYSTEM STYLES ===================== */
+        #warning-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(30,20,20,0.97), rgba(10,10,15,0.99));
+            z-index: 999999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        #warning-overlay.active { display: flex; animation: warningFadeIn 0.5s ease; }
+        @keyframes warningFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .warning-fullscreen-card {
+            background: linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #2c1810 100%);
+            border: 3px solid #ff3b30;
+            border-radius: 22px;
+            max-width: 480px;
+            width: 100%;
+            padding: 28px 22px 24px;
+            text-align: center;
+            color: #fff;
+            box-shadow: 0 0 60px rgba(255,59,48,0.5), 0 0 120px rgba(255,152,0,0.25), inset 0 0 40px rgba(255,59,48,0.05);
+            position: relative;
+            animation: warningPop 0.6s cubic-bezier(0.34,1.56,0.64,1);
+            font-family: var(--font-main);
+            max-height: 92vh;
+            overflow-y: auto;
+        }
+        .warning-fullscreen-card::before {
+            content: '';
+            position: absolute;
+            top: -3px; left: -3px; right: -3px; bottom: -3px;
+            border-radius: 22px;
+            background: linear-gradient(45deg, #ff3b30, #ff9800, #f9a825, #ff3b30, #ff6b35);
+            background-size: 300% 300%;
+            z-index: -1;
+            animation: warningBorderFlow 4s ease infinite;
+            filter: blur(6px);
+            opacity: 0.7;
+        }
+        @keyframes warningBorderFlow {
+            0%,100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        @keyframes warningPop {
+            from { transform: scale(0.7) translateY(40px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .warning-icon-wrap {
+            width: 90px; height: 90px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff3b30, #ff6b35);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 46px;
+            box-shadow: 0 0 30px rgba(255,59,48,0.7), 0 0 60px rgba(255,107,53,0.4);
+            animation: warningPulse 2s infinite;
+            position: relative;
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+        .warning-icon-wrap::before, .warning-icon-wrap::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(255,59,48,0.5);
+            transform: translate(-50%,-50%);
+            animation: warningRipple 2.5s infinite;
+        }
+        .warning-icon-wrap::after { animation-delay: 1.25s; }
+        @keyframes warningPulse {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        @keyframes warningRipple {
+            0% { transform: translate(-50%,-50%) scale(1); opacity: 0.8; }
+            100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+        }
+        .warning-title-fullscreen {
+            font-size: 26px;
+            font-weight: 900;
+            color: #ff3b30;
+            text-shadow: 0 0 20px rgba(255,59,48,0.7);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .warning-subtitle-fullscreen {
+            font-size: 12px;
+            color: #ff9800;
+            font-weight: 700;
+            margin-bottom: 18px;
+            opacity: 0.95;
+            letter-spacing: 0.3px;
+        }
+        .warning-sender-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            background: rgba(255,255,255,0.06);
+            padding: 12px 14px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .warning-sender-row img {
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            border: 2.5px solid #ff3b30;
+            object-fit: cover;
+            box-shadow: 0 0 14px rgba(255,59,48,0.6);
+            flex-shrink: 0;
+        }
+        .warning-sender-info { text-align: right; flex: 1; min-width: 0; }
+        .warning-sender-info .wsn-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .warning-sender-info .wsn-role {
+            font-size: 11px;
+            color: #ff9800;
+            font-weight: 700;
+            margin-top: 3px;
+        }
+        .warning-message-box {
+            background: rgba(255,59,48,0.1);
+            border: 2px solid rgba(255,59,48,0.35);
+            border-radius: 14px;
+            padding: 22px 16px 18px;
+            margin-bottom: 16px;
+            font-size: 16px;
+            line-height: 1.7;
+            color: #fff;
+            text-align: right;
+            min-height: 70px;
+            word-break: break-word;
+            white-space: pre-wrap;
+            position: relative;
+        }
+        .warning-message-box::before {
+            content: '⚠';
+            position: absolute;
+            top: -13px;
+            right: 16px;
+            background: linear-gradient(135deg, #ff3b30, #ff6b35);
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(255,59,48,0.6);
+        }
+        .warning-time-row {
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .warning-ack-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff3b30, #ff6b35, #f9a825);
+            color: #fff;
+            border: 0;
+            border-radius: 14px;
+            font-size: 19px;
+            font-weight: 900;
+            cursor: pointer;
+            font-family: var(--font-main);
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 24px rgba(255,59,48,0.55);
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .warning-ack-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            transition: left 0.6s;
+        }
+        .warning-ack-btn:hover::before { left: 100%; }
+        .warning-ack-btn:active { transform: scale(0.97); box-shadow: 0 3px 12px rgba(255,59,48,0.65); }
+        .warning-acknowledged-info {
+            font-size: 13px;
+            color: #4caf50;
+            margin-top: 14px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-weight: 700;
+            animation: fadeIn 0.4s;
+        }
+        .warning-acknowledged-info.show { display: flex; }
+
+        .warning-target-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .warning-target-btn {
+            padding: 12px 8px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            background: #fff;
+            font-family: var(--font-main);
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .warning-target-btn .wt-icon { font-size: 22px; }
+        .warning-target-btn.selected {
+            border-color: #ff3b30;
+            background: linear-gradient(135deg, #fff5f5, #ffe5e5);
+            color: #ff3b30;
+            box-shadow: 0 3px 12px rgba(255,59,48,0.2);
+        }
+        .warning-target-btn:active { transform: scale(0.96); }
+        .warning-role-chips, .warning-user-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 6px 0;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 6px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        .warning-role-chip, .warning-user-chip {
+            padding: 6px 12px;
+            background: #fff;
+            border: 1.5px solid #ddd;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: var(--font-main);
+        }
+        .warning-user-chip img {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .warning-role-chip.selected, .warning-user-chip.selected {
+            border-color: #ff3b30;
+            background: linear-gradient(135deg, #fff5f5, #ffe5e5);
+            color: #ff3b30;
+            box-shadow: 0 2px 8px rgba(255,59,48,0.25);
+        }
+        .warning-compose-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-family: var(--font-main);
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            outline: 0;
+            transition: border 0.2s;
+        }
+        .warning-compose-textarea:focus {
+            border-color: #ff3b30;
+            box-shadow: 0 0 0 3px rgba(255,59,48,0.1);
+        }
+
+        .warning-history-card {
+            background: linear-gradient(135deg, #fff, #fafafa);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border-right: 4px solid #ff3b30;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .warning-history-card:hover {
+            transform: translateX(-3px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        .warning-history-card .wh-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .warning-history-card .wh-target {
+            font-size: 11px;
+            background: linear-gradient(135deg, #ff3b30, #ff6b35);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-family: var(--font-main);
+        }
+        .warning-history-card .wh-readers-count {
+            font-size: 11px;
+            color: #4caf50;
+            font-weight: 700;
+            font-family: var(--font-main);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .warning-history-card .wh-message {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 6px;
+            font-family: var(--font-main);
+            word-break: break-word;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .warning-history-card .wh-time {
+            font-size: 10px;
+            color: #999;
+            font-family: var(--font-main);
+        }
+
+        /* ============ NEW READERS MODAL STYLES ============ */
+        .warning-readers-info-card {
+            background: linear-gradient(135deg, #fff5f5, #ffe5e5);
+            border: 2px solid rgba(255,59,48,0.25);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            font-family: var(--font-main);
+        }
+        .warning-readers-info-card .wric-target {
+            font-size: 11px;
+            color: #999;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .warning-readers-info-card .wric-message {
+            font-size: 14px;
+            color: #1a1a1a;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        .warning-readers-info-card .wric-meta {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .warning-stats-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .warning-stat-box {
+            flex: 1;
+            padding: 12px 8px;
+            border-radius: 12px;
+            text-align: center;
+            font-family: var(--font-main);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+        }
+        .warning-stat-box.total { background: linear-gradient(135deg,#e3f2fd,#bbdefb); border-color: rgba(21,101,192,0.2); }
+        .warning-stat-box.read { background: linear-gradient(135deg,#e8f5e9,#c8e6c9); border-color: rgba(46,125,50,0.2); }
+        .warning-stat-box.unread { background: linear-gradient(135deg,#fff3e0,#ffe0b2); border-color: rgba(230,81,0,0.2); }
+        .warning-stat-box .wsb-count {
+            font-size: 26px;
+            font-weight: 900;
+            display: block;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .warning-stat-box.total .wsb-count { color: #1565c0; }
+        .warning-stat-box.read .wsb-count { color: #2e7d32; }
+        .warning-stat-box.unread .wsb-count { color: #e65100; }
+        .warning-stat-box .wsb-label {
+            font-size: 11px;
+            font-weight: 700;
+            opacity: 0.85;
+        }
+        .warning-stat-box.total .wsb-label { color: #1565c0; }
+        .warning-stat-box.read .wsb-label { color: #2e7d32; }
+        .warning-stat-box.unread .wsb-label { color: #e65100; }
+
+        .warning-readers-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .warning-readers-tab {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-weight: 700;
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .warning-readers-tab:active { transform: scale(0.97); }
+        .warning-readers-tab.active.read {
+            border-color: #4caf50;
+            background: linear-gradient(135deg,#e8f5e9,#c8e6c9);
+            color: #2e7d32;
+            box-shadow: 0 3px 12px rgba(76,175,80,0.25);
+        }
+        .warning-readers-tab.active.unread {
+            border-color: #ff9800;
+            background: linear-gradient(135deg,#fff3e0,#ffe0b2);
+            color: #e65100;
+            box-shadow: 0 3px 12px rgba(255,152,0,0.25);
+        }
+        .warning-readers-tab .wrt-count {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            min-width: 22px;
+        }
+        .warning-readers-tab.active.read .wrt-count { background: rgba(255,255,255,0.7); }
+        .warning-readers-tab.active.unread .wrt-count { background: rgba(255,255,255,0.7); }
+
+        .warning-reader-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            font-family: var(--font-main);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            margin-bottom: 6px;
+            transition: all 0.2s;
+        }
+        .warning-reader-item:active { transform: scale(0.99); }
+        .warning-reader-item.read { border-right: 4px solid #4caf50; }
+        .warning-reader-item.unread { border-right: 4px solid #ff9800; background: #fffdfa; }
+        .warning-reader-item img {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .warning-reader-item.read img { border: 2.5px solid #4caf50; }
+        .warning-reader-item.unread img { border: 2.5px solid #ff9800; opacity: 0.85; }
+        .warning-reader-item .wr-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .warning-reader-item .wr-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .warning-reader-item .wr-time {
+            font-size: 10px;
+            color: #666;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .warning-reader-item.unread .wr-time { color: #ff9800; font-weight: 700; }
+        .warning-reader-item .wr-status {
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .warning-reader-item.read .wr-status { color: #4caf50; }
+        .warning-reader-item.unread .wr-status { color: #ff9800; }
+
+        .warning-empty-readers {
+            text-align: center;
+            padding: 30px 20px;
+            color: #999;
+            font-size: 14px;
+            font-family: var(--font-main);
+            background: #fff;
+            border-radius: 12px;
+        }
+        .warning-empty-readers .we-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 8px;
+            opacity: 0.6;
+        }
+
+        .btn-warning {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ff3b30, #ff6b35);
+            color: #fff;
+            border: 0;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: var(--font-main);
+            margin-top: 8px;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 3px 12px rgba(255,59,48,0.3);
+        }
+        .btn-warning:active { transform: scale(0.95); }
+        .btn-warning-history {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #607d8b, #455a64);
+            color: #fff;
+            border: 0;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: var(--font-main);
+            margin-top: 8px;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-warning-history:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -759,6 +1334,26 @@
         </div>
     </div>
 
+    <!-- ===================== WARNING HISTORY MODAL ===================== -->
+    <div class="modal-slide" id="warning-history-modal">
+        <div class="modal-header" style="background:linear-gradient(135deg,#ff3b30,#ff6b35);color:#fff;">
+            <h3 style="color:#fff;">📜 سجل التحذيرات</h3>
+            <button class="modal-close" onclick="closeWarningHistory()" style="color:#fff;">✕</button>
+        </div>
+        <div class="modal-body" id="warning-history-list" style="padding:10px;background:#f5f5f5;">
+            <div style="text-align:center;color:#999;padding:30px 0;font-size:14px;">لا توجد تحذيرات</div>
+        </div>
+    </div>
+
+    <!-- ===================== WARNING READERS MODAL (New Professional) ===================== -->
+    <div class="modal-slide" id="warning-readers-modal">
+        <div class="modal-header" style="background:linear-gradient(135deg,#ff3b30,#ff6b35);color:#fff;">
+            <h3 style="color:#fff;" id="warning-readers-title">📊 تقرير التحذير</h3>
+            <button class="modal-close" onclick="closeWarningReaders()" style="color:#fff;">✕</button>
+        </div>
+        <div class="modal-body" id="warning-readers-list" style="padding:12px;background:#f5f5f5;"></div>
+    </div>
+
     <div class="modal-popup" id="role-modal">
         <div class="popup-box">
             <h3 style="font-size:16px;font-weight:700;">⚙️ الرتبة</h3>
@@ -918,6 +1513,8 @@
                 <button id="open-dm-settings-btn" class="btn-dm-toggle" style="background:linear-gradient(135deg,#6a1b9a,#4a148c);" onclick="openDMSettings()">⚙️ إعدادات الخاص بالرتب</button>
                 <button id="open-maintenance-btn" class="btn-maintenance" onclick="openMaintenanceSettings()">🔧 إعدادات الصيانة</button>
                 <button id="open-advanced-btn" class="btn-advanced" onclick="openAdvancedSettings()">⚙️ إعدادات متقدمة (الخط)</button>
+                <button class="btn-warning" onclick="openWarningComposer()">🚨 إرسال تحذير</button>
+                <button class="btn-warning-history" onclick="openWarningHistory()">📜 سجل التحذيرات</button>
             </div>
             <button id="profile-dm-btn" class="btn-dm-toggle" style="display:none;" onclick="openDMFromProfile()">
                 💌 الرسائل الخاصة
@@ -1024,6 +1621,62 @@
         </div>
     </div>
 
+    <!-- ===================== WARNING COMPOSER MODAL ===================== -->
+    <div class="modal-popup" id="warning-composer-modal">
+        <div class="popup-box" style="max-width:460px;">
+            <h3 style="font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;color:#ff3b30;margin-bottom:4px;">🚨 إرسال تحذير</h3>
+            <p style="font-size:11px;color:#999;margin-bottom:14px;">سيظهر التحذير بشكل ملء الشاشة للمستخدم حتى يضغط "فهمت"</p>
+            <div style="margin:12px 0;text-align:right;">
+                <label style="display:block;font-size:13px;font-weight:700;color:#555;margin-bottom:6px;">🎯 الفئة المستهدفة:</label>
+                <div class="warning-target-options">
+                    <button type="button" class="warning-target-btn" data-target="all" onclick="selectWarningTarget('all')">
+                        <span class="wt-icon">🌍</span>
+                        <span>الجميع</span>
+                    </button>
+                    <button type="button" class="warning-target-btn" data-target="role" onclick="selectWarningTarget('role')">
+                        <span class="wt-icon">👥</span>
+                        <span>رتبة معينة</span>
+                    </button>
+                    <button type="button" class="warning-target-btn" data-target="user" onclick="selectWarningTarget('user')">
+                        <span class="wt-icon">👤</span>
+                        <span>مستخدم فردي</span>
+                    </button>
+                    <button type="button" class="warning-target-btn" data-target="new_users" onclick="selectWarningTarget('new_users')">
+                        <span class="wt-icon">🆕</span>
+                        <span>الحسابات الجديدة</span>
+                    </button>
+                </div>
+                <div id="warning-role-select" style="display:none;margin-top:8px;">
+                    <label style="display:block;font-size:12px;font-weight:700;color:#777;margin-bottom:4px;">اختر الرتبة:</label>
+                    <div class="warning-role-chips" id="warning-role-chips">
+                        <button type="button" class="warning-role-chip" data-role="user" onclick="selectWarningRole('user')">👤 عادي</button>
+                        <button type="button" class="warning-role-chip" data-role="trusted" onclick="selectWarningRole('trusted')">✅ موثوق</button>
+                        <button type="button" class="warning-role-chip" data-role="mod" onclick="selectWarningRole('mod')">🛡️ مشرف</button>
+                        <button type="button" class="warning-role-chip" data-role="manager" onclick="selectWarningRole('manager')">💎 مدير</button>
+                        <button type="button" class="warning-role-chip" data-role="owner" onclick="selectWarningRole('owner')">👑 مالك</button>
+                    </div>
+                </div>
+                <div id="warning-user-select" style="display:none;margin-top:8px;">
+                    <label style="display:block;font-size:12px;font-weight:700;color:#777;margin-bottom:4px;">اختر المستخدم:</label>
+                    <input type="text" id="warning-user-search" class="search-box" placeholder="🔍 بحث..." onkeyup="filterWarningUsers()">
+                    <div class="warning-user-chips" id="warning-user-chips"></div>
+                </div>
+                <div id="warning-new-users-info" style="display:none;margin-top:8px;padding:10px 12px;background:#f0f8ff;border:1.5px solid #90caf9;border-radius:10px;font-size:12px;color:#1565c0;text-align:right;line-height:1.6;">
+                    <strong>🆕 حسابات جديدة:</strong> سيظهر التحذير لأي حساب يسجّل بعد إرسال هذا التحذير، حتى يضغط "فهمت". مثالي لتنبيه الأعضاء الجدد عند دخولهم لأول مرة.
+                </div>
+            </div>
+            <div style="margin:12px 0;text-align:right;">
+                <label style="display:block;font-size:13px;font-weight:700;color:#555;margin-bottom:6px;">📝 نص التحذير:</label>
+                <textarea id="warning-message-input" class="warning-compose-textarea" placeholder="اكتب نص التحذير هنا..." maxlength="500"></textarea>
+                <div style="text-align:left;font-size:10px;color:#999;margin-top:3px;" id="warning-char-counter">0 / 500</div>
+            </div>
+            <div style="display:flex;gap:6px;">
+                <button onclick="sendWarning()" class="login-btn" style="background:linear-gradient(135deg,#ff3b30,#ff6b35);padding:12px;font-size:15px;font-weight:900;box-shadow:0 4px 14px rgba(255,59,48,0.4);">🚨 إرسال التحذير</button>
+                <button onclick="closeWarningComposer()" class="login-btn" style="background:#f0f0f0;color:#555;padding:12px;font-size:14px;flex:0 0 90px;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <div id="color-control-modal" onclick="if(event.target===this) closeColorControl()">
         <div class="color-control-box">
             <h3>🎨 الألوان</h3>
@@ -1094,6 +1747,29 @@
         </div>
     </div>
 
+</div>
+
+<!-- ===================== WARNING FULLSCREEN OVERLAY ===================== -->
+<div id="warning-overlay">
+    <div class="warning-fullscreen-card" id="warning-card">
+        <div class="warning-icon-wrap">⚠️</div>
+        <div class="warning-title-fullscreen" id="warning-title-full">تحذير رسمي</div>
+        <div class="warning-subtitle-fullscreen" id="warning-subtitle-full">يرجى القراءة بعناية</div>
+        <div class="warning-sender-row">
+            <img id="warning-sender-avatar" src="">
+            <div class="warning-sender-info">
+                <div class="wsn-name" id="warning-sender-name">-</div>
+                <div class="wsn-role" id="warning-sender-role">-</div>
+            </div>
+        </div>
+        <div class="warning-message-box" id="warning-message-box">-</div>
+        <div class="warning-time-row" id="warning-time-row">🕒 -</div>
+        <button class="warning-ack-btn" onclick="acknowledgeWarning()">✅ فهمت</button>
+        <div class="warning-acknowledged-info" id="warning-acknowledged-info">
+            <span>✅</span>
+            <span>تم تأكيد قراءتك للتحذير بنجاح</span>
+        </div>
+    </div>
 </div>
 
 <div id="inapp-notif-container"></div>
@@ -1200,6 +1876,16 @@
     let currentReportType = 'message';
     let currentReportStatusKey = null;
 
+    // WARNING SYSTEM STATE
+    let currentWarning = null;
+    let warningListener = null;
+    let warningHistoryCache = {};
+    let warningHistoryListener = null;
+    let pendingWarningTarget = { type: null, value: null };
+    let selectedWarningUserUid = null;
+    let currentReadersTab = 'read';
+    let currentReadersWarning = null;
+
     const COLORS = [
         { bg: 'linear-gradient(135deg,#E3F2FD,#64B5F6)', text: '#0D47A1', name: '#0D47A1' },
         { bg: 'linear-gradient(135deg,#F3E5F5,#BA68C8)', text: '#4A148C', name: '#4A148C' },
@@ -1239,6 +1925,7 @@
     function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML }
     function formatTime(t) { return new Date(t).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) }
     function formatDate(t) { return new Date(t).toLocaleString('ar-EG', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) }
+    function formatDateFull(t) { return new Date(t).toLocaleString('ar-EG', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }
     function formatDateShort(t) { const d = Date.now() - t; if (d < 6e4) return 'الآن'; if (d < 36e5) return Math.floor(d / 6e4) + ' دقيقة'; if (d < 864e5) return Math.floor(d / 36e5) + ' ساعة'; return new Date(t).toLocaleDateString('ar-EG', { day: '2-digit', month: 'short' }) }
     function extractYouTubeId(u) { if (!u) return null; const p = [/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/, /^([a-zA-Z0-9_-]{11})$/]; for (let r of p) { const m = u.match(r); if (m) return m[1] } return null }
     function isYouTubeUrl(t) { return /(?:youtube\.com|youtu\.be)/i.test(t) }
@@ -1404,7 +2091,7 @@
     }
 
     function notifyUser(title, body, icon, type, onClick, skipSound) {
-        const prefMap = { dm: 'dm', chat: 'chat', status: 'status', status_seen: 'seen', new_status: 'status', report: 'chat', media: 'chat' };
+        const prefMap = { dm: 'dm', chat: 'chat', status: 'status', status_seen: 'seen', new_status: 'status', report: 'chat', media: 'chat', warning: 'chat' };
         const prefKey = prefMap[type];
         if (prefKey && currentNotificationPrefs[prefKey] === false) return;
         if (notificationMode === 'fcm') {
@@ -1421,7 +2108,7 @@
     }
 
     function getEmojiForType(type) {
-        return { dm: '💌', chat: '💬', status: '📸', status_seen: '👁️', new_status: '📸', report: '🚩', media: '📎', general: '🔔' }[type] || '🔔';
+        return { dm: '💌', chat: '💬', status: '📸', status_seen: '👁️', new_status: '📸', report: '🚩', media: '📎', general: '🔔', warning: '⚠️' }[type] || '🔔';
     }
 
     function startInAppNotificationListeners() {
@@ -1790,6 +2477,14 @@
     function enterChat() {
         document.getElementById('login-screen').style.display = 'none';
         startHeartbeat(); startPresenceChecker();
+        
+        // ✅ حفظ تاريخ إنشاء الحساب لأول مرة (مهم لتحذير الحسابات الجديدة)
+        db.ref('users/' + myFP + '/createdAt').once('value', snap => {
+            if (!snap.exists()) {
+                db.ref('users/' + myFP + '/createdAt').set(Date.now());
+            }
+        });
+        
         db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
         db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
         db.ref('users/' + myFP).on('value', snap => { if (myName && !snap.exists()) { alert("⚠️ تم حذف حسابك!"); localStorage.clear(); myName = ''; location.reload(); } });
@@ -1813,6 +2508,7 @@
         startListeners(); loadColorSettings(); listenMaintenance(); listenMyDMPermission();
         listenDMSettings(); listenDMDenials();
         listenDMInbox(); listenNotificationPrefs();
+        listenWarnings();
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', (event) => {
@@ -2423,11 +3119,10 @@
     function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { i.placeholder = "اكتب رسالة..."; i.disabled = false; b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
     function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
     function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); }
-    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('dm-monitor-modal').classList.remove('active'); document.getElementById('dm-monitor-view-modal').classList.remove('active'); document.getElementById('dm-settings-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
+    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('dm-monitor-modal').classList.remove('active'); document.getElementById('dm-monitor-view-modal').classList.remove('active'); document.getElementById('dm-settings-modal').classList.remove('active'); document.getElementById('warning-history-modal').classList.remove('active'); document.getElementById('warning-readers-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
 
     let paTargetUid = null, paTargetName = null, paTargetAvatar = null;
 
-    // ✅ فتح خيارات الحساب: يُظهر زر الخاص عند تفعيل المستقبِل (حتى لو خاصي مغلق)
     function openProfileActions(uid, name, avatar) {
         if (uid === myFP) return;
         if (!uid || uid === 'undefined' || uid === 'null') {
@@ -2477,24 +3172,19 @@
         paTargetUid = null; paTargetName = null; paTargetAvatar = null;
     }
 
-    // ✅ عرض الصورة - حفظ القيم قبل الإغلاق
     function paViewImage() {
         const avatar = paTargetAvatar;
         const name = paTargetName;
         if (!avatar) return;
-        // إغلاق نافذة خيارات الحساب يدوياً (بدون تصفير paTargetUid قبل استخدامه)
         document.getElementById('profile-actions-modal').classList.remove('active');
         document.getElementById('modal-overlay').classList.remove('show');
         paTargetUid = null; paTargetName = null; paTargetAvatar = null;
-        // فتح عارض الصورة بعد تأخير
         setTimeout(() => {
             openViewer(avatar, 'image', name);
         }, 200);
     }
 
-    // ✅ الدالة المُصلَحة لزر الخاص - تعمل الآن بشكل صحيح
     function paDM() {
-        // ⭐ نحفظ UID والبيانات محلياً BEFORE أي عملية إغلاق
         const targetUid = paTargetUid;
         const targetName = paTargetName;
 
@@ -2505,25 +3195,20 @@
         const targetRole = allUsersData[targetUid]?.role || 'user';
         const targetCanReceive = canUserDM(targetUid, targetRole);
 
-        // ⭐ الحالة 1: المستقبِل مغلق → رسالة واضحة
         if (!targetCanReceive) {
             closeProfileActions();
             return alert('🔒 لا يمكنك المحادثة مع "' + targetName + '"\n\nخاصه مغلق من قِبَل مالك التطبيق.');
         }
 
-        // ⭐ الحالة 2: أنا (المُرسِل) مغلق → رسالة واضحة
         if (!myDMEnabled) {
             closeProfileActions();
             return alert('🔒 خاصك مغلق من قِبَل مالك التطبيق\n\nلا يمكنك المحادثة مع أي مستخدم.\nراجع المالك/المدير لتفعيل خاصك (إعدادات الخاص بالرتب).');
         }
 
-        // ⭐ الحالة 3: كل شيء متاح → افتح المحادثة
-        // إغلاق نافذة خيارات الحساب يدوياً (لتفادي مشكلة z-index)
         document.getElementById('profile-actions-modal').classList.remove('active');
         document.getElementById('modal-overlay').classList.remove('show');
         paTargetUid = null; paTargetName = null; paTargetAvatar = null;
 
-        // فتح الدردشة الخاصة بعد تأخير قصير (مهم جداً لضمان الإغلاق السلس + تجاوز z-index)
         setTimeout(() => {
             openDMChat(targetUid);
         }, 250);
@@ -3361,6 +4046,524 @@
     function closeColorControl() { document.getElementById('color-control-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); colorTargetUid = null; }
     async function loadColorSettings() { const s = await colorSettingsRef.once('value'); if (s.exists()) { const d = s.val(); Object.keys(d).forEach(k => { if (d[k]) userColors[k] = d[k]; }); } const g = await glowSettingsRef.once('value'); if (g.exists()) { const d = g.val(); Object.keys(d).forEach(k => { if (d[k]) userGlow[k] = d[k]; }); } renderMessages(); }
     function handleKeyboard() { const cm = document.getElementById('chat-messages'); if (window.ResizeObserver) { const ro = new ResizeObserver(() => { const hh = document.querySelector('header')?.offsetHeight || 0, fh = document.getElementById('chat-form')?.offsetHeight || 0, nh = document.querySelector('.bottom-nav')?.offsetHeight || 0, bh = document.getElementById('mute-banner')?.offsetHeight || 0, mb = document.getElementById('maintenance-badge')?.offsetHeight || 0, ah = window.innerHeight - hh - fh - nh - bh - mb; if (cm) cm.style.minHeight = Math.max(ah, 80) + 'px'; }); ro.observe(document.body); } window.addEventListener('resize', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 80); }); document.getElementById('message-input')?.addEventListener('focus', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 200); }); }
+
+    /* ============================================================
+       WARNING SYSTEM - Advanced v2
+       ============================================================ */
+
+    function listenWarnings() {
+        if (warningListener) db.ref('warnings/current').off('value', warningListener);
+        warningListener = db.ref('warnings/current').on('value', snap => {
+            const w = snap.val();
+            if (!w || !w.id) {
+                currentWarning = null;
+                hideWarningOverlay();
+                return;
+            }
+            currentWarning = w;
+            if (!isWarningTargetForMe(w)) {
+                hideWarningOverlay();
+                return;
+            }
+            if (w.ack && w.ack[myFP]) {
+                hideWarningOverlay();
+                return;
+            }
+            showWarningOverlay(w);
+        });
+    }
+
+    // ✅ تحديد إذا كان التحذير موجّه لي
+    function isWarningTargetForMe(w) {
+        if (!w || !w.target) return false;
+        if (w.senderUid === myFP) return false;
+        const t = w.target;
+        const targetType = t.type;
+        if (targetType === 'all') return true;
+        if (targetType === 'role') return myRole === t.value;
+        if (targetType === 'user') return myFP === t.value;
+        // ✅ حسابات جديدة: فقط من أنشأ حسابه بعد وقت إرسال التحذير
+        if (targetType === 'new_users') {
+            const myCreatedAt = Number(allUsersData[myFP]?.createdAt) || 0;
+            return myCreatedAt > Number(w.time || 0);
+        }
+        return false;
+    }
+
+    function showWarningOverlay(w) {
+        document.getElementById('warning-sender-avatar').src = w.senderAvatar || DEFAULT_ICON;
+        document.getElementById('warning-sender-avatar').onerror = function() { this.src = DEFAULT_ICON; };
+        document.getElementById('warning-sender-name').textContent = w.senderName || 'مجهول';
+        document.getElementById('warning-sender-role').textContent = getRoleLabel(w.senderRole || 'owner');
+        document.getElementById('warning-message-box').textContent = w.message || '';
+        document.getElementById('warning-time-row').textContent = '🕒 ' + formatDateFull(w.time);
+
+        let subtitleText = 'يرجى القراءة بعناية';
+        if (w.target && w.target.type === 'all') subtitleText = 'تحذير عام لجميع الأعضاء';
+        else if (w.target && w.target.type === 'role') subtitleText = 'تحذير لرتبة: ' + getRoleLabel(w.target.value);
+        else if (w.target && w.target.type === 'user') subtitleText = 'تحذير شخصي لك';
+        else if (w.target && w.target.type === 'new_users') subtitleText = 'مرحباً بك! تنبيه للأعضاء الجدد';
+        document.getElementById('warning-subtitle-full').textContent = subtitleText;
+
+        document.getElementById('warning-acknowledged-info').classList.remove('show');
+        const overlay = document.getElementById('warning-overlay');
+        overlay.classList.add('active');
+        playStatusSound();
+        vibrateDevice();
+    }
+
+    function hideWarningOverlay() {
+        document.getElementById('warning-overlay').classList.remove('active');
+    }
+
+    async function acknowledgeWarning() {
+        if (!currentWarning || !currentWarning.id) return;
+        const wid = currentWarning.id;
+        const ackData = {
+            name: myName || 'مجهول',
+            avatar: myAvatar || DEFAULT_ICON,
+            role: myRole || 'user',
+            time: Date.now()
+        };
+        try {
+            await db.ref('warnings/current/ack/' + myFP).set(ackData);
+            await db.ref('warnings/history/' + wid + '/ack/' + myFP).set(ackData);
+            document.getElementById('warning-acknowledged-info').classList.add('show');
+            playTone(1046, 0.15, 'sine', 0, 0.3);
+            setTimeout(() => hideWarningOverlay(), 1500);
+        } catch(e) { console.warn('فشل تأكيد التحذير:', e); }
+    }
+
+    function openWarningComposer() {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك');
+        pendingWarningTarget = { type: null, value: null };
+        selectedWarningUserUid = null;
+        document.querySelectorAll('.warning-target-btn').forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('.warning-role-chip').forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('.warning-user-chip').forEach(b => b.classList.remove('selected'));
+        document.getElementById('warning-role-select').style.display = 'none';
+        document.getElementById('warning-user-select').style.display = 'none';
+        document.getElementById('warning-new-users-info').style.display = 'none';
+        document.getElementById('warning-message-input').value = '';
+        document.getElementById('warning-char-counter').textContent = '0 / 500';
+        document.getElementById('warning-user-search').value = '';
+        renderWarningUsersList();
+        document.getElementById('warning-composer-modal').classList.add('active');
+    }
+
+    function closeWarningComposer() {
+        document.getElementById('warning-composer-modal').classList.remove('active');
+    }
+
+    function selectWarningTarget(type) {
+        pendingWarningTarget.type = type;
+        pendingWarningTarget.value = null;
+        selectedWarningUserUid = null;
+        document.querySelectorAll('.warning-target-btn').forEach(b => {
+            b.classList.toggle('selected', b.dataset.target === type);
+        });
+        document.getElementById('warning-role-select').style.display = type === 'role' ? 'block' : 'none';
+        document.getElementById('warning-user-select').style.display = type === 'user' ? 'block' : 'none';
+        document.getElementById('warning-new-users-info').style.display = type === 'new_users' ? 'block' : 'none';
+        if (type === 'role' || type === 'user') {
+            document.querySelectorAll('.warning-role-chip, .warning-user-chip').forEach(b => b.classList.remove('selected'));
+        }
+    }
+
+    function selectWarningRole(role) {
+        pendingWarningTarget.value = role;
+        document.querySelectorAll('.warning-role-chip').forEach(b => {
+            b.classList.toggle('selected', b.dataset.role === role);
+        });
+    }
+
+    function renderWarningUsersList() {
+        const c = document.getElementById('warning-user-chips');
+        if (!c) return;
+        c.innerHTML = '';
+        const users = [];
+        Object.keys(allUsersData).forEach(k => {
+            if (k === myFP) return;
+            const u = allUsersData[k];
+            if (u.hidden === true) return;
+            u.uid = k;
+            users.push(u);
+        });
+        users.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        if (users.length === 0) {
+            c.innerHTML = '<div style="padding:10px;text-align:center;color:#999;font-size:12px;">لا يوجد مستخدمون</div>';
+            return;
+        }
+        users.forEach(u => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'warning-user-chip';
+            btn.dataset.uid = u.uid;
+            btn.dataset.name = (u.name || '').toLowerCase();
+            btn.onclick = () => {
+                selectedWarningUserUid = u.uid;
+                pendingWarningTarget.value = u.uid;
+                document.querySelectorAll('.warning-user-chip').forEach(b => {
+                    b.classList.toggle('selected', b.dataset.uid === u.uid);
+                });
+            };
+            const img = document.createElement('img');
+            img.src = u.avatar || DEFAULT_ICON;
+            img.onerror = () => { img.src = DEFAULT_ICON; };
+            btn.appendChild(img);
+            const span = document.createElement('span');
+            span.textContent = u.name || 'مجهول';
+            btn.appendChild(span);
+            c.appendChild(btn);
+        });
+    }
+
+    function filterWarningUsers() {
+        const q = document.getElementById('warning-user-search').value.toLowerCase();
+        document.querySelectorAll('#warning-user-chips .warning-user-chip').forEach(b => {
+            b.style.display = (b.dataset.name || '').includes(q) ? 'flex' : 'none';
+        });
+    }
+
+    async function sendWarning() {
+        if (myRole !== 'owner') return alert('⛔');
+        const msg = document.getElementById('warning-message-input').value.trim();
+        if (!msg) return alert('⚠️ اكتب نص التحذير');
+        if (!pendingWarningTarget.type) return alert('⚠️ اختر الفئة المستهدفة');
+        if (pendingWarningTarget.type === 'role' && !pendingWarningTarget.value) return alert('⚠️ اختر الرتبة');
+        if (pendingWarningTarget.type === 'user' && !pendingWarningTarget.value) return alert('⚠️ اختر المستخدم');
+
+        const id = 'w_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        const warningData = {
+            id: id,
+            message: msg,
+            senderUid: myFP,
+            senderName: myName || 'مجهول',
+            senderAvatar: myAvatar || DEFAULT_ICON,
+            senderRole: myRole || 'owner',
+            target: { type: pendingWarningTarget.type, value: pendingWarningTarget.value || null },
+            time: Date.now(),
+            ack: {}
+        };
+
+        try {
+            await db.ref('warnings/current').set(warningData);
+            await db.ref('warnings/history/' + id).set(warningData);
+            await logAdminAction('send_warning', pendingWarningTarget.value, null, { message: msg, target_type: pendingWarningTarget.type });
+            alert('✅ تم إرسال التحذير بنجاح');
+            closeWarningComposer();
+        } catch(e) { alert('❌ ' + e.message); }
+    }
+
+    function openWarningHistory() {
+        if (myRole !== 'owner') return alert('⛔');
+        document.getElementById('warning-history-modal').classList.add('active');
+        document.getElementById('modal-overlay').classList.add('show');
+        listenWarningHistory();
+    }
+
+    function closeWarningHistory() {
+        document.getElementById('warning-history-modal').classList.remove('active');
+        document.getElementById('modal-overlay').classList.remove('show');
+    }
+
+    function listenWarningHistory() {
+        if (warningHistoryListener) db.ref('warnings/history').off('value', warningHistoryListener);
+        warningHistoryListener = db.ref('warnings/history').on('value', snap => {
+            warningHistoryCache = snap.val() || {};
+            renderWarningHistory();
+        });
+    }
+
+    // ✅ حساب عدد المستهدفين بشكل ديناميكي
+    function computeWarningTargets(w) {
+        const targetType = w.target ? w.target.type : 'all';
+        const targetValue = w.target ? w.target.value : null;
+        const users = [];
+        Object.keys(allUsersData).forEach(uid => {
+            const u = allUsersData[uid];
+            if (uid === w.senderUid) return; // لا يرى المُرسِل تحذيره
+            if (u.hidden === true && uid !== myFP) return;
+            let isTarget = false;
+            if (targetType === 'all') isTarget = true;
+            else if (targetType === 'role') isTarget = u.role === targetValue;
+            else if (targetType === 'user') isTarget = uid === targetValue;
+            else if (targetType === 'new_users') {
+                const createdAt = Number(u.createdAt) || 0;
+                isTarget = createdAt > Number(w.time || 0);
+            }
+            if (isTarget) {
+                users.push({ uid, name: u.name || 'مجهول', avatar: u.avatar || DEFAULT_ICON, role: u.role || 'user', createdAt: Number(u.createdAt) || 0 });
+            }
+        });
+        return users;
+    }
+
+    function getWarningStats(w) {
+        const targets = computeWarningTargets(w);
+        const ack = w.ack || {};
+        const readList = [];
+        const unreadList = [];
+        targets.forEach(u => {
+            const ackData = ack[u.uid];
+            if (ackData) {
+                readList.push({ ...u, ackTime: ackData.time || 0, ackName: ackData.name || u.name, ackAvatar: ackData.avatar || u.avatar, ackRole: ackData.role || u.role });
+            } else {
+                unreadList.push(u);
+            }
+        });
+        // إضافة أي قراء غير موجودين في اللائحة (حسابات محذوفة)
+        Object.keys(ack).forEach(uid => {
+            if (!targets.find(t => t.uid === uid)) {
+                const ackData = ack[uid];
+                readList.push({ uid, name: ackData.name || 'مجهول', avatar: ackData.avatar || DEFAULT_ICON, role: ackData.role || 'user', ackTime: ackData.time || 0, ackName: ackData.name || 'مجهول', ackAvatar: ackData.avatar || DEFAULT_ICON, ackRole: ackData.role || 'user' });
+            }
+        });
+        readList.sort((a, b) => (b.ackTime || 0) - (a.ackTime || 0));
+        return { targets, readList, unreadList, total: targets.length, readCount: readList.length, unreadCount: unreadList.length };
+    }
+
+    function renderWarningHistory() {
+        const list = document.getElementById('warning-history-list');
+        if (!list) return;
+        list.innerHTML = '';
+        const arr = Object.values(warningHistoryCache);
+        if (arr.length === 0) {
+            list.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;">لا توجد تحذيرات</div>';
+            return;
+        }
+        arr.sort((a, b) => (b.time || 0) - (a.time || 0));
+        arr.forEach(w => {
+            const stats = getWarningStats(w);
+            let targetLabel = 'الجميع';
+            let targetIcon = '🌍';
+            if (w.target) {
+                if (w.target.type === 'role') { targetLabel = 'رتبة: ' + getRoleLabel(w.target.value); targetIcon = '👥'; }
+                else if (w.target.type === 'user') {
+                    const u = allUsersData[w.target.value];
+                    targetLabel = 'مستخدم: ' + (u ? u.name : 'محذوف'); targetIcon = '👤';
+                }
+                else if (w.target.type === 'new_users') { targetLabel = 'حسابات جديدة'; targetIcon = '🆕'; }
+            }
+            const card = document.createElement('div');
+            card.className = 'warning-history-card';
+            card.onclick = () => openWarningReaders(w.id);
+            const header = document.createElement('div');
+            header.className = 'wh-header';
+            header.innerHTML = `<span class="wh-target">${targetIcon} ${escapeHtml(targetLabel)}</span><span class="wh-readers-count">✅ ${stats.readCount} / 📊 ${stats.total}</span>`;
+            card.appendChild(header);
+            const msgEl = document.createElement('div');
+            msgEl.className = 'wh-message';
+            msgEl.textContent = w.message || '';
+            card.appendChild(msgEl);
+            const timeEl = document.createElement('div');
+            timeEl.className = 'wh-time';
+            timeEl.textContent = '🕒 ' + formatDateFull(w.time) + ' · من: ' + (w.senderName || 'مجهول');
+            card.appendChild(timeEl);
+            const del = document.createElement('button');
+            del.textContent = '🗑️';
+            del.style.cssText = 'position:absolute;top:8px;left:8px;background:rgba(239,83,80,0.1);border:0;color:#ef5350;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;';
+            del.onclick = (e) => { e.stopPropagation(); deleteWarningHistory(w.id); };
+            card.appendChild(del);
+            list.appendChild(card);
+        });
+    }
+
+    async function deleteWarningHistory(id) {
+        if (myRole !== 'owner') return alert('⛔');
+        if (!confirm('حذف هذا التحذير من السجل؟')) return;
+        try {
+            await db.ref('warnings/history/' + id).remove();
+            if (currentWarning && currentWarning.id === id) {
+                await db.ref('warnings/current').remove();
+            }
+            alert('✅');
+        } catch(e) { alert('❌ ' + e.message); }
+    }
+
+    // ✅ عرض تفاصيل من قرأ ولم يقرأ (احترافي مع تبويبات)
+    function openWarningReaders(wid) {
+        // البحث في السجل أو الحالي
+        let w = warningHistoryCache[wid];
+        if (!w && currentWarning && currentWarning.id === wid) w = currentWarning;
+        if (!w) return alert('غير موجود');
+        
+        currentReadersWarning = w;
+        currentReadersTab = 'read';
+        
+        const stats = getWarningStats(w);
+        
+        let targetLabel = 'الجميع';
+        let targetIcon = '🌍';
+        if (w.target) {
+            if (w.target.type === 'role') { targetLabel = 'رتبة: ' + getRoleLabel(w.target.value); targetIcon = '👥'; }
+            else if (w.target.type === 'user') {
+                const u = allUsersData[w.target.value];
+                targetLabel = 'مستخدم: ' + (u ? u.name : 'محذوف'); targetIcon = '👤';
+            }
+            else if (w.target.type === 'new_users') { targetLabel = 'حسابات جديدة (من بعد الإرسال)'; targetIcon = '🆕'; }
+        }
+        
+        const list = document.getElementById('warning-readers-list');
+        list.innerHTML = '';
+        
+        // بطاقة معلومات التحذير
+        const info = document.createElement('div');
+        info.className = 'warning-readers-info-card';
+        info.innerHTML = `
+            <div class="wric-target">${targetIcon} ${escapeHtml(targetLabel)}</div>
+            <div class="wric-message">${escapeHtml(w.message || '')}</div>
+            <div class="wric-meta">🕒 ${formatDateFull(w.time)} · من: ${escapeHtml(w.senderName || 'مجهول')}</div>
+        `;
+        list.appendChild(info);
+        
+        // صندوق الإحصائيات
+        const statsRow = document.createElement('div');
+        statsRow.className = 'warning-stats-row';
+        statsRow.innerHTML = `
+            <div class="warning-stat-box total">
+                <span class="wsb-count">${stats.total}</span>
+                <span class="wsb-label">📊 الإجمالي</span>
+            </div>
+            <div class="warning-stat-box read">
+                <span class="wsb-count">${stats.readCount}</span>
+                <span class="wsb-label">✅ قرأوا</span>
+            </div>
+            <div class="warning-stat-box unread">
+                <span class="wsb-count">${stats.unreadCount}</span>
+                <span class="wsb-label">⏳ لم يقرأوا</span>
+            </div>
+        `;
+        list.appendChild(statsRow);
+        
+        // التبويبات
+        const tabs = document.createElement('div');
+        tabs.className = 'warning-readers-tabs';
+        tabs.innerHTML = `
+            <button class="warning-readers-tab active read" onclick="switchReadersTab('read')">
+                ✅ قرأوا <span class="wrt-count">${stats.readCount}</span>
+            </button>
+            <button class="warning-readers-tab unread" onclick="switchReadersTab('unread')">
+                ⏳ لم يقرأوا <span class="wrt-count">${stats.unreadCount}</span>
+            </button>
+        `;
+        list.appendChild(tabs);
+        
+        // حاوية القائمة
+        const contentDiv = document.createElement('div');
+        contentDiv.id = 'warning-readers-content';
+        list.appendChild(contentDiv);
+        
+        renderReadersContent();
+        
+        document.getElementById('warning-readers-modal').classList.add('active');
+    }
+
+    function switchReadersTab(tab) {
+        currentReadersTab = tab;
+        document.querySelectorAll('.warning-readers-tab').forEach(t => {
+            t.classList.remove('active');
+            if (t.textContent.includes('قرأوا') && !t.textContent.includes('لم')) {
+                if (tab === 'read') t.classList.add('active', 'read');
+            } else {
+                if (tab === 'unread') t.classList.add('active', 'unread');
+            }
+        });
+        renderReadersContent();
+    }
+
+    function renderReadersContent() {
+        const w = currentReadersWarning;
+        if (!w) return;
+        const stats = getWarningStats(w);
+        const content = document.getElementById('warning-readers-content');
+        if (!content) return;
+        content.innerHTML = '';
+        
+        if (currentReadersTab === 'read') {
+            if (stats.readList.length === 0) {
+                content.innerHTML = `
+                    <div class="warning-empty-readers">
+                        <span class="we-icon">📭</span>
+                        لم يقرأ أحد التحذير بعد
+                    </div>
+                `;
+                return;
+            }
+            stats.readList.forEach(u => {
+                const item = document.createElement('div');
+                item.className = 'warning-reader-item read';
+                const img = document.createElement('img');
+                img.src = u.ackAvatar || u.avatar || DEFAULT_ICON;
+                img.onerror = () => { img.src = DEFAULT_ICON; };
+                item.appendChild(img);
+                
+                const info = document.createElement('div');
+                info.className = 'wr-info';
+                const roleBadge = getRoleLabel(u.ackRole || u.role || 'user');
+                info.innerHTML = `
+                    <div class="wr-name">${escapeHtml(u.ackName || u.name || 'مجهول')} <span style="font-size:10px;color:#999;">${roleBadge}</span></div>
+                    <div class="wr-time">✅ قرأ في ${formatDateFull(u.ackTime || Date.now())}</div>
+                `;
+                item.appendChild(info);
+                
+                const status = document.createElement('div');
+                status.className = 'wr-status';
+                status.textContent = '✅';
+                item.appendChild(status);
+                
+                content.appendChild(item);
+            });
+        } else {
+            if (stats.unreadList.length === 0) {
+                content.innerHTML = `
+                    <div class="warning-empty-readers" style="background:#e8f5e9;">
+                        <span class="we-icon">🎉</span>
+                        ممتاز! قرأ الجميع التحذير
+                    </div>
+                `;
+                return;
+            }
+            stats.unreadList.forEach(u => {
+                const item = document.createElement('div');
+                item.className = 'warning-reader-item unread';
+                const img = document.createElement('img');
+                img.src = u.avatar || DEFAULT_ICON;
+                img.onerror = () => { img.src = DEFAULT_ICON; };
+                item.appendChild(img);
+                
+                const info = document.createElement('div');
+                info.className = 'wr-info';
+                const roleBadge = getRoleLabel(u.role || 'user');
+                info.innerHTML = `
+                    <div class="wr-name">${escapeHtml(u.name || 'مجهول')} <span style="font-size:10px;color:#999;">${roleBadge}</span></div>
+                    <div class="wr-time">⏳ لم يقرأ بعد</div>
+                `;
+                item.appendChild(info);
+                
+                const status = document.createElement('div');
+                status.className = 'wr-status';
+                status.textContent = '⏳';
+                item.appendChild(status);
+                
+                content.appendChild(item);
+            });
+        }
+    }
+
+    function closeWarningReaders() {
+        document.getElementById('warning-readers-modal').classList.remove('active');
+        currentReadersWarning = null;
+    }
+
+    // Warning char counter
+    document.getElementById('warning-message-input')?.addEventListener('input', function() {
+        document.getElementById('warning-char-counter').textContent = this.value.length + ' / 500';
+    });
+
+    /* ============================================================
+       END WARNING SYSTEM
+       ============================================================ */
 
     init();
     handleKeyboard();
