@@ -805,6 +805,7 @@
             align-items: center;
             gap: 5px;
             font-family: var(--font-main);
+            position: relative;
         }
         .warning-user-chip img {
             width: 22px; height: 22px;
@@ -817,6 +818,53 @@
             color: #ff3b30;
             box-shadow: 0 2px 8px rgba(255,59,48,0.25);
         }
+        /* ✅ زر حذف المستخدم المجهول */
+        .warning-user-chip .wuc-delete {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ef5350;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-right: 2px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .warning-user-chip .wuc-delete:hover { background: #c62828; transform: scale(1.15); }
+        .warning-user-chip .wuc-delete:active { transform: scale(0.9); }
+        .warning-user-chip.is-unknown {
+            background: linear-gradient(135deg, #fff8e1, #ffecb3);
+            border-color: #ffa726;
+        }
+        .warning-user-chip.is-unknown.selected {
+            border-color: #ff3b30;
+        }
+        .warning-cleanup-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .warning-cleanup-btn {
+            flex: 1;
+            padding: 8px;
+            background: linear-gradient(135deg, #e53935, #b71c1c);
+            color: #fff;
+            border: 0;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s;
+            box-shadow: 0 2px 8px rgba(229,57,53,0.3);
+        }
+        .warning-cleanup-btn:active { transform: scale(0.96); }
         .warning-compose-textarea {
             width: 100%;
             padding: 10px;
@@ -892,7 +940,6 @@
             font-family: var(--font-main);
         }
 
-        /* ============ NEW READERS MODAL STYLES ============ */
         .warning-readers-info-card {
             background: linear-gradient(135deg, #fff5f5, #ffe5e5);
             border: 2px solid rgba(255,59,48,0.25);
@@ -1110,6 +1157,9 @@
             gap: 8px;
         }
         .btn-warning-history:active { transform: scale(0.95); }
+
+        /* ✅ زر حذف المستخدم المجهول في قائمة الأعضاء */
+        .ctrl-btn.delete-unknown { background: #b71c1c; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -1239,7 +1289,10 @@
     <div class="modal-slide" id="users-modal">
         <div class="modal-header">
             <h3>👥 الأعضاء</h3>
-            <button class="modal-close" onclick="toggleUsers()">✕</button>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <button id="cleanup-unknown-btn" onclick="deleteAllUnknownUsers()" style="background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff;border:0;padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:var(--font-main);font-weight:700;display:none;">🧹 حذف المجهولين</button>
+                <button class="modal-close" onclick="toggleUsers()">✕</button>
+            </div>
         </div>
         <div style="padding:8px;">
             <input type="text" id="user-search" class="search-box" placeholder="🔍 بحث..." onkeyup="filterUsers()">
@@ -1334,7 +1387,6 @@
         </div>
     </div>
 
-    <!-- ===================== WARNING HISTORY MODAL ===================== -->
     <div class="modal-slide" id="warning-history-modal">
         <div class="modal-header" style="background:linear-gradient(135deg,#ff3b30,#ff6b35);color:#fff;">
             <h3 style="color:#fff;">📜 سجل التحذيرات</h3>
@@ -1345,7 +1397,6 @@
         </div>
     </div>
 
-    <!-- ===================== WARNING READERS MODAL (New Professional) ===================== -->
     <div class="modal-slide" id="warning-readers-modal">
         <div class="modal-header" style="background:linear-gradient(135deg,#ff3b30,#ff6b35);color:#fff;">
             <h3 style="color:#fff;" id="warning-readers-title">📊 تقرير التحذير</h3>
@@ -1621,7 +1672,6 @@
         </div>
     </div>
 
-    <!-- ===================== WARNING COMPOSER MODAL ===================== -->
     <div class="modal-popup" id="warning-composer-modal">
         <div class="popup-box" style="max-width:460px;">
             <h3 style="font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;color:#ff3b30;margin-bottom:4px;">🚨 إرسال تحذير</h3>
@@ -1658,6 +1708,9 @@
                 </div>
                 <div id="warning-user-select" style="display:none;margin-top:8px;">
                     <label style="display:block;font-size:12px;font-weight:700;color:#777;margin-bottom:4px;">اختر المستخدم:</label>
+                    <div class="warning-cleanup-bar" id="warning-cleanup-bar" style="display:none;">
+                        <button type="button" class="warning-cleanup-btn" onclick="deleteAllUnknownUsers()">🧹 حذف جميع الحسابات المجهولة</button>
+                    </div>
                     <input type="text" id="warning-user-search" class="search-box" placeholder="🔍 بحث..." onkeyup="filterWarningUsers()">
                     <div class="warning-user-chips" id="warning-user-chips"></div>
                 </div>
@@ -1749,7 +1802,6 @@
 
 </div>
 
-<!-- ===================== WARNING FULLSCREEN OVERLAY ===================== -->
 <div id="warning-overlay">
     <div class="warning-fullscreen-card" id="warning-card">
         <div class="warning-icon-wrap">⚠️</div>
@@ -1876,7 +1928,6 @@
     let currentReportType = 'message';
     let currentReportStatusKey = null;
 
-    // WARNING SYSTEM STATE
     let currentWarning = null;
     let warningListener = null;
     let warningHistoryCache = {};
@@ -2477,14 +2528,9 @@
     function enterChat() {
         document.getElementById('login-screen').style.display = 'none';
         startHeartbeat(); startPresenceChecker();
-        
-        // ✅ حفظ تاريخ إنشاء الحساب لأول مرة (مهم لتحذير الحسابات الجديدة)
         db.ref('users/' + myFP + '/createdAt').once('value', snap => {
-            if (!snap.exists()) {
-                db.ref('users/' + myFP + '/createdAt').set(Date.now());
-            }
+            if (!snap.exists()) db.ref('users/' + myFP + '/createdAt').set(Date.now());
         });
-        
         db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
         db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
         db.ref('users/' + myFP).on('value', snap => { if (myName && !snap.exists()) { alert("⚠️ تم حذف حسابك!"); localStorage.clear(); myName = ''; location.reload(); } });
@@ -2862,7 +2908,7 @@
             if (!messagesCache[k]) { messagesCache[k] = v; const ks = Object.keys(messagesCache); if (ks.length > 300) { const o = ks.sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0))[0]; delete messagesCache[o]; } renderMessages(); }
         });
         db.ref('messages').on('child_removed', s => { const k = s.key; if (messagesCache[k]) { delete messagesCache[k]; renderMessages(); } });
-        db.ref('users').on('value', s => { const d = {}; s.forEach(c => { d[c.key] = c.val() }); allUsersData = d; updateUsersList(); renderStatuses(); renderNotifications(); updateStatusBadge(); updateOnlineBadge(); if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList(); });
+        db.ref('users').on('value', s => { const d = {}; s.forEach(c => { d[c.key] = c.val() }); allUsersData = d; updateUsersList(); renderStatuses(); renderNotifications(); updateStatusBadge(); updateOnlineBadge(); if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList(); updateUnknownUsersBtnVisibility(); });
         db.ref('statuses').on('value', s => { statusesCache = {}; s.forEach(c => { statusesCache[c.key] = c.val() }); renderStatuses(); updateStatusBadge(); });
         db.ref('notifications/' + myFP).on('value', s => { myNotifications = {}; if (s.exists()) s.forEach(c => { myNotifications[c.key] = c.val() }); renderNotifications(); updateNotifBadge(); });
         loadDMUsersList();
@@ -2988,6 +3034,8 @@
             else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">🛡️ مشرف</span>';
             else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">✅ موثوق</span>';
             const avatar = u.avatar || DEFAULT_ICON;
+            const isUnknown = !u.name || u.name.trim() === '';
+            const unknownBadge = isUnknown ? '<span class="role-badge" style="background:#e53935;">❓ مجهول</span>' : '';
             let hiddenBadge = ''; if (u.uid === myFP && isHidden && myRole === 'owner') hiddenBadge = '<span class="hidden-owner-badge">🙈 مخفي</span>';
             if (existing) {
                 existing.dataset.role = u.role || 'user';
@@ -2995,14 +3043,14 @@
                 if (statusEl) statusEl.className = 'user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline');
                 const nameEl = existing.querySelector('.user-details h4');
                 if (nameEl) {
-                    nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + escapeHtml(u.name) + ' ' + roleBadge + ' ' + hiddenBadge;
-                    nameEl.onclick = () => openProfileActions(u.uid, escapeHtml(u.name), avatar);
+                    nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + (isUnknown ? '<em style="color:#e53935;font-style:normal;">مجهول</em>' : escapeHtml(u.name)) + ' ' + roleBadge + ' ' + unknownBadge + ' ' + hiddenBadge;
+                    nameEl.onclick = () => openProfileActions(u.uid, isUnknown ? 'مجهول' : escapeHtml(u.name), avatar);
                 }
                 const lastSeenEl = existing.querySelector('.last-seen');
                 if (lastSeenEl) lastSeenEl.textContent = statusText + (isOnline ? ' - ' + formatDate(u.lastSeen) : '');
                 const avatarEl = existing.querySelector('.user-avatar');
                 if (avatarEl && avatarEl.src !== avatar) avatarEl.src = avatar;
-                if (avatarEl) avatarEl.onclick = () => openProfileActions(u.uid, escapeHtml(u.name), avatar);
+                if (avatarEl) avatarEl.onclick = () => openProfileActions(u.uid, isUnknown ? 'مجهول' : escapeHtml(u.name), avatar);
                 const actionsEl = existing.querySelector('.user-actions');
                 if (actionsEl) { actionsEl.id = 'uact-' + u.uid; updateUserControls(u.uid, u); }
                 const currentIndex = Array.from(l.children).indexOf(existing);
@@ -3010,12 +3058,29 @@
             } else {
                 const card = document.createElement('div');
                 card.className = 'user-card'; card.dataset.uid = u.uid; card.dataset.role = u.role || 'user';
-                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openProfileActions('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}','${avatar}')"><div class="user-details"><h4 onclick="openProfileActions('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}','${avatar}')"><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${escapeHtml(u.name)} ${roleBadge} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
+                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openProfileActions('${u.uid}','${escapeHtml(isUnknown ? 'مجهول' : u.name).replace(/'/g, "\\'")}','${avatar}')"><div class="user-details"><h4 onclick="openProfileActions('${u.uid}','${escapeHtml(isUnknown ? 'مجهول' : u.name).replace(/'/g, "\\'")}','${avatar}')"><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${isUnknown ? '<em style="color:#e53935;font-style:normal;">مجهول</em>' : escapeHtml(u.name)} ${roleBadge} ${unknownBadge} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
                 if (idx < l.children.length) l.insertBefore(card, l.children[idx]); else l.appendChild(card);
                 updateUserControls(u.uid, u);
             }
         });
         filterUsers();
+    }
+
+    // ✅ إظهار زر "حذف المجهولين" عند وجود حسابات مجهولة
+    function updateUnknownUsersBtnVisibility() {
+        const btn = document.getElementById('cleanup-unknown-btn');
+        if (!btn) return;
+        let count = 0;
+        Object.keys(allUsersData).forEach(k => {
+            const u = allUsersData[k];
+            if (!u.name || u.name.trim() === '') count++;
+        });
+        if (count > 0 && myRole === 'owner') {
+            btn.style.display = 'inline-block';
+            btn.textContent = '🧹 حذف المجهولين (' + count + ')';
+        } else {
+            btn.style.display = 'none';
+        }
     }
 
     async function deleteMessage(k) {
@@ -3039,17 +3104,22 @@
     function playYouTube(v, c) { c.innerHTML = '<iframe src="https://www.youtube.com/embed/' + v + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
     function updateUserControls(u, d) {
         const e = document.getElementById('uact-' + u); if (!e || u === myFP) return;
+        const isUnknown = !d.name || d.name.trim() === '';
         if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && myRole !== 'owner') {
             e.innerHTML = '';
             return;
         }
         db.ref('bans/' + u).once('value', b => {
             const ib = b.exists(); let bt = '';
-            if (canBan(myRole, d.role)) { if (ib) { if (myRole === 'owner') bt += '<button class="ctrl-btn unban" onclick="unbanUser(\'' + u + '\',\'' + d.name + '\')">↺</button>'; } else bt += '<button class="ctrl-btn ban" onclick="banUser(\'' + u + '\',\'' + d.name + '\')">🚫</button>'; }
+            // ✅ زر حذف حساب مجهول
+            if (isUnknown && myRole === 'owner') {
+                bt += '<button class="ctrl-btn delete-unknown" onclick="deleteUnknownUser(\'' + u + '\')" title="حذف الحساب المجهول نهائياً">🗑️</button>';
+            }
+            if (canBan(myRole, d.role)) { if (ib) { if (myRole === 'owner') bt += '<button class="ctrl-btn unban" onclick="unbanUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">↺</button>'; } else bt += '<button class="ctrl-btn ban" onclick="banUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🚫</button>'; }
             db.ref('mutes/' + u).once('value', m => {
                 let im = false; if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
-                if (canMute(myRole, d.role)) { if (im) bt += '<button class="ctrl-btn unmute" onclick="unmuteUser(\'' + u + '\',\'' + d.name + '\')">🔊</button>'; else bt += '<button class="ctrl-btn mute" onclick="openMuteMenu(\'' + u + '\',\'' + d.name + '\')">🔇</button>'; }
-                if (canAssignRole(myRole, d.role)) bt += '<button class="ctrl-btn role" onclick="openRoleMenu(\'' + u + '\',\'' + d.name + '\')">⚙️</button>';
+                if (canMute(myRole, d.role)) { if (im) bt += '<button class="ctrl-btn unmute" onclick="unmuteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🔊</button>'; else bt += '<button class="ctrl-btn mute" onclick="openMuteMenu(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🔇</button>'; }
+                if (canAssignRole(myRole, d.role)) bt += '<button class="ctrl-btn role" onclick="openRoleMenu(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">⚙️</button>';
                 if (myRole === 'owner' && d.role !== 'owner') {
                     bt += '<button class="ctrl-btn color" onclick="openColorControl(\'' + u + '\')">🎨</button>';
                     const isDMOn = canUserDM(u, d.role);
@@ -3059,12 +3129,75 @@
                     if (isExplicitDeny) { dmCls = 'dm-deny'; dmIcon = '🚫'; }
                     else if (isExplicitAllow) { dmCls = 'dm'; dmIcon = '💌'; }
                     else if (isDMOn) { dmCls = 'dm'; dmIcon = '💌'; }
-                    bt += '<button class="ctrl-btn ' + dmCls + '" onclick="cycleUserDMPermission(\'' + u + '\',\'' + d.name + '\')" title="افتراضي → سماح → حظر">' + dmIcon + '</button>';
-                    bt += '<button class="ctrl-btn" style="background:#b71c1c;font-size:10px;" onclick="permanentDeleteUser(\'' + u + '\',\'' + d.name + '\')">🗑️</button>';
+                    bt += '<button class="ctrl-btn ' + dmCls + '" onclick="cycleUserDMPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="افتراضي → سماح → حظر">' + dmIcon + '</button>';
+                    bt += '<button class="ctrl-btn" style="background:#b71c1c;font-size:10px;" onclick="permanentDeleteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🗑️</button>';
                 }
                 e.innerHTML = bt;
             });
         });
+    }
+
+    // ✅ دالة حذف مستخدم بشكل كامل (مشتركة)
+    async function cleanupUserCompletely(uid, name) {
+        await db.ref('users/' + uid).remove();
+        await db.ref('bans/' + uid).remove();
+        await db.ref('mutes/' + uid).remove();
+        await db.ref('fp_links/' + uid).remove();
+        await db.ref('dm_permissions/' + uid).remove();
+        await db.ref('dm_denials/' + uid).remove();
+        await db.ref('dm_inbox/' + uid).remove();
+        await db.ref('dm_clears/' + uid).remove();
+        await db.ref('maintenance/testers/' + uid).remove();
+        await db.ref('fcm_tokens/' + uid).remove();
+        await db.ref('notification_prefs/' + uid).remove();
+        await db.ref('color_settings/' + uid).remove();
+        await db.ref('glow_settings/' + uid).remove();
+        if (name && name.trim() && name !== 'مجهول') {
+            await db.ref('name_links/' + name.toLowerCase()).remove();
+        }
+        const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value');
+        if (msgs.exists()) { let u = {}; msgs.forEach(c => { u[c.key] = null; }); await db.ref('messages').update(u); }
+        const st = await db.ref('statuses').orderByChild('uid').equalTo(uid).once('value');
+        if (st.exists()) { let u = {}; st.forEach(c => { u[c.key] = null; }); await db.ref('statuses').update(u); }
+        await db.ref('notifications/' + uid).remove();
+    }
+
+    // ✅ حذف مستخدم مجهول واحد
+    async function deleteUnknownUser(uid) {
+        if (myRole !== 'owner') return alert('⛔');
+        const u = allUsersData[uid];
+        if (!u) return alert('المستخدم غير موجود');
+        if (u.name && u.name.trim() !== '') return alert('هذا المستخدم ليس مجهولاً');
+        if (!confirm('🗑️ حذف هذا الحساب المجهول نهائياً؟\n\nسيتم حذف:\n• بيانات الحساب\n• رسائله\n• حالاته\n• كل شيء متعلق به')) return;
+        try {
+            await cleanupUserCompletely(uid, 'مجهول');
+            await logAdminAction('delete_unknown_user', uid, 'مجهول', {});
+            alert('✅ تم حذف الحساب المجهول نهائياً');
+            if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
+            updateUnknownUsersBtnVisibility();
+        } catch(e) { alert('❌ ' + e.message); }
+    }
+
+    // ✅ حذف جميع المستخدمين المجهولين
+    async function deleteAllUnknownUsers() {
+        if (myRole !== 'owner') return alert('⛔');
+        const unknowns = [];
+        Object.keys(allUsersData).forEach(k => {
+            const u = allUsersData[k];
+            if (!u.name || u.name.trim() === '') unknowns.push(k);
+        });
+        if (unknowns.length === 0) return alert('✅ لا توجد حسابات مجهولة');
+        if (!confirm('🗑️ حذف ' + unknowns.length + ' حساب مجهول نهائياً؟\n\nسيتم حذف جميع بياناتهم ورسائلهم وحالاتهم من التطبيق كاملاً.')) return;
+        if (!confirm('⚠️ تأكيد أخير!\nلا يمكن التراجع عن هذه العملية.')) return;
+        let success = 0, failed = 0;
+        for (const uid of unknowns) {
+            try { await cleanupUserCompletely(uid, 'مجهول'); success++; }
+            catch(e) { failed++; console.warn('فشل حذف', uid, e); }
+        }
+        await logAdminAction('delete_all_unknown_users', null, null, { count: success, failed: failed });
+        alert('✅ تم حذف ' + success + ' من ' + unknowns.length + (failed > 0 ? '\n❌ فشل: ' + failed : ''));
+        if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
+        updateUnknownUsersBtnVisibility();
     }
 
     async function permanentDeleteUser(uid, name) {
@@ -3074,23 +3207,7 @@
         if (!confirm('⚠️ حذف "' + name + '" نهائياً؟')) return;
         await logAdminAction('delete_user', uid, name, { target_role: tr });
         try {
-            await db.ref('users/' + uid).remove();
-            await db.ref('bans/' + uid).remove();
-            await db.ref('mutes/' + uid).remove();
-            await db.ref('fp_links/' + uid).remove();
-            await db.ref('dm_permissions/' + uid).remove();
-            await db.ref('dm_denials/' + uid).remove();
-            await db.ref('dm_inbox/' + uid).remove();
-            await db.ref('dm_clears/' + uid).remove();
-            await db.ref('maintenance/testers/' + uid).remove();
-            await db.ref('fcm_tokens/' + uid).remove();
-            await db.ref('notification_prefs/' + uid).remove();
-            if (name) await db.ref('name_links/' + name.toLowerCase()).remove();
-            const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value');
-            if (msgs.exists()) { let u = {}; msgs.forEach(c => { u[c.key] = null; }); await db.ref('messages').update(u); }
-            const st = await db.ref('statuses').orderByChild('uid').equalTo(uid).once('value');
-            if (st.exists()) { let u = {}; st.forEach(c => { u[c.key] = null; }); await db.ref('statuses').update(u); }
-            await db.ref('notifications/' + uid).remove();
+            await cleanupUserCompletely(uid, name);
             alert("✅");
         } catch (e) { alert('❌ ' + e.message); }
     }
@@ -3115,10 +3232,11 @@
         else { document.getElementById('reports-btn').style.display = 'none'; document.getElementById('dm-monitor-btn').style.display = 'none'; }
         updateFCMButton(); updateSoundButton();
         updateProfileDMBtn();
+        updateUnknownUsersBtnVisibility();
     }
     function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { i.placeholder = "اكتب رسالة..."; i.disabled = false; b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
     function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
-    function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); }
+    function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); updateUnknownUsersBtnVisibility(); }
     function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('dm-monitor-modal').classList.remove('active'); document.getElementById('dm-monitor-view-modal').classList.remove('active'); document.getElementById('dm-settings-modal').classList.remove('active'); document.getElementById('warning-history-modal').classList.remove('active'); document.getElementById('warning-readers-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
 
     let paTargetUid = null, paTargetName = null, paTargetAvatar = null;
@@ -4048,32 +4166,21 @@
     function handleKeyboard() { const cm = document.getElementById('chat-messages'); if (window.ResizeObserver) { const ro = new ResizeObserver(() => { const hh = document.querySelector('header')?.offsetHeight || 0, fh = document.getElementById('chat-form')?.offsetHeight || 0, nh = document.querySelector('.bottom-nav')?.offsetHeight || 0, bh = document.getElementById('mute-banner')?.offsetHeight || 0, mb = document.getElementById('maintenance-badge')?.offsetHeight || 0, ah = window.innerHeight - hh - fh - nh - bh - mb; if (cm) cm.style.minHeight = Math.max(ah, 80) + 'px'; }); ro.observe(document.body); } window.addEventListener('resize', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 80); }); document.getElementById('message-input')?.addEventListener('focus', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 200); }); }
 
     /* ============================================================
-       WARNING SYSTEM - Advanced v2
+       WARNING SYSTEM - Advanced v3
        ============================================================ */
 
     function listenWarnings() {
         if (warningListener) db.ref('warnings/current').off('value', warningListener);
         warningListener = db.ref('warnings/current').on('value', snap => {
             const w = snap.val();
-            if (!w || !w.id) {
-                currentWarning = null;
-                hideWarningOverlay();
-                return;
-            }
+            if (!w || !w.id) { currentWarning = null; hideWarningOverlay(); return; }
             currentWarning = w;
-            if (!isWarningTargetForMe(w)) {
-                hideWarningOverlay();
-                return;
-            }
-            if (w.ack && w.ack[myFP]) {
-                hideWarningOverlay();
-                return;
-            }
+            if (!isWarningTargetForMe(w)) { hideWarningOverlay(); return; }
+            if (w.ack && w.ack[myFP]) { hideWarningOverlay(); return; }
             showWarningOverlay(w);
         });
     }
 
-    // ✅ تحديد إذا كان التحذير موجّه لي
     function isWarningTargetForMe(w) {
         if (!w || !w.target) return false;
         if (w.senderUid === myFP) return false;
@@ -4082,7 +4189,6 @@
         if (targetType === 'all') return true;
         if (targetType === 'role') return myRole === t.value;
         if (targetType === 'user') return myFP === t.value;
-        // ✅ حسابات جديدة: فقط من أنشأ حسابه بعد وقت إرسال التحذير
         if (targetType === 'new_users') {
             const myCreatedAt = Number(allUsersData[myFP]?.createdAt) || 0;
             return myCreatedAt > Number(w.time || 0);
@@ -4177,6 +4283,7 @@
         });
     }
 
+    // ✅ عرض قائمة المستخدمين مع زر حذف للحسابات المجهولة
     function renderWarningUsersList() {
         const c = document.getElementById('warning-user-chips');
         if (!c) return;
@@ -4189,18 +4296,32 @@
             u.uid = k;
             users.push(u);
         });
-        users.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        // ترتيب: المجهولين أولاً ثم الأسماء الأبجدية
+        users.sort((a, b) => {
+            const aUnknown = (!a.name || a.name.trim() === '') ? 0 : 1;
+            const bUnknown = (!b.name || b.name.trim() === '') ? 0 : 1;
+            if (aUnknown !== bUnknown) return aUnknown - bUnknown;
+            return (a.name || '').localeCompare(b.name || '');
+        });
+        
+        // عرض شريط التنظيف إذا وجد مجهولون
+        const cleanupBar = document.getElementById('warning-cleanup-bar');
+        const unknownCount = users.filter(u => !u.name || u.name.trim() === '').length;
+        if (cleanupBar) cleanupBar.style.display = (unknownCount > 0 && myRole === 'owner') ? 'flex' : 'none';
+        
         if (users.length === 0) {
             c.innerHTML = '<div style="padding:10px;text-align:center;color:#999;font-size:12px;">لا يوجد مستخدمون</div>';
             return;
         }
         users.forEach(u => {
+            const isUnknown = !u.name || u.name.trim() === '';
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'warning-user-chip';
+            btn.className = 'warning-user-chip' + (isUnknown ? ' is-unknown' : '');
             btn.dataset.uid = u.uid;
             btn.dataset.name = (u.name || '').toLowerCase();
-            btn.onclick = () => {
+            btn.onclick = (e) => {
+                if (e.target.closest('.wuc-delete')) return;
                 selectedWarningUserUid = u.uid;
                 pendingWarningTarget.value = u.uid;
                 document.querySelectorAll('.warning-user-chip').forEach(b => {
@@ -4214,6 +4335,18 @@
             const span = document.createElement('span');
             span.textContent = u.name || 'مجهول';
             btn.appendChild(span);
+            // ✅ زر حذف للمجهولين فقط
+            if (isUnknown) {
+                const del = document.createElement('span');
+                del.className = 'wuc-delete';
+                del.textContent = '✕';
+                del.title = 'حذف هذا الحساب المجهول نهائياً';
+                del.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteUnknownUser(u.uid);
+                };
+                btn.appendChild(del);
+            }
             c.appendChild(btn);
         });
     }
@@ -4275,14 +4408,13 @@
         });
     }
 
-    // ✅ حساب عدد المستهدفين بشكل ديناميكي
     function computeWarningTargets(w) {
         const targetType = w.target ? w.target.type : 'all';
         const targetValue = w.target ? w.target.value : null;
         const users = [];
         Object.keys(allUsersData).forEach(uid => {
             const u = allUsersData[uid];
-            if (uid === w.senderUid) return; // لا يرى المُرسِل تحذيره
+            if (uid === w.senderUid) return;
             if (u.hidden === true && uid !== myFP) return;
             let isTarget = false;
             if (targetType === 'all') isTarget = true;
@@ -4312,7 +4444,6 @@
                 unreadList.push(u);
             }
         });
-        // إضافة أي قراء غير موجودين في اللائحة (حسابات محذوفة)
         Object.keys(ack).forEach(uid => {
             if (!targets.find(t => t.uid === uid)) {
                 const ackData = ack[uid];
@@ -4374,23 +4505,18 @@
         if (!confirm('حذف هذا التحذير من السجل؟')) return;
         try {
             await db.ref('warnings/history/' + id).remove();
-            if (currentWarning && currentWarning.id === id) {
-                await db.ref('warnings/current').remove();
-            }
+            if (currentWarning && currentWarning.id === id) { await db.ref('warnings/current').remove(); }
             alert('✅');
         } catch(e) { alert('❌ ' + e.message); }
     }
 
-    // ✅ عرض تفاصيل من قرأ ولم يقرأ (احترافي مع تبويبات)
     function openWarningReaders(wid) {
-        // البحث في السجل أو الحالي
         let w = warningHistoryCache[wid];
         if (!w && currentWarning && currentWarning.id === wid) w = currentWarning;
         if (!w) return alert('غير موجود');
         
         currentReadersWarning = w;
         currentReadersTab = 'read';
-        
         const stats = getWarningStats(w);
         
         let targetLabel = 'الجميع';
@@ -4407,7 +4533,6 @@
         const list = document.getElementById('warning-readers-list');
         list.innerHTML = '';
         
-        // بطاقة معلومات التحذير
         const info = document.createElement('div');
         info.className = 'warning-readers-info-card';
         info.innerHTML = `
@@ -4417,7 +4542,6 @@
         `;
         list.appendChild(info);
         
-        // صندوق الإحصائيات
         const statsRow = document.createElement('div');
         statsRow.className = 'warning-stats-row';
         statsRow.innerHTML = `
@@ -4436,7 +4560,6 @@
         `;
         list.appendChild(statsRow);
         
-        // التبويبات
         const tabs = document.createElement('div');
         tabs.className = 'warning-readers-tabs';
         tabs.innerHTML = `
@@ -4449,13 +4572,11 @@
         `;
         list.appendChild(tabs);
         
-        // حاوية القائمة
         const contentDiv = document.createElement('div');
         contentDiv.id = 'warning-readers-content';
         list.appendChild(contentDiv);
         
         renderReadersContent();
-        
         document.getElementById('warning-readers-modal').classList.add('active');
     }
 
@@ -4482,12 +4603,7 @@
         
         if (currentReadersTab === 'read') {
             if (stats.readList.length === 0) {
-                content.innerHTML = `
-                    <div class="warning-empty-readers">
-                        <span class="we-icon">📭</span>
-                        لم يقرأ أحد التحذير بعد
-                    </div>
-                `;
+                content.innerHTML = `<div class="warning-empty-readers"><span class="we-icon">📭</span>لم يقرأ أحد التحذير بعد</div>`;
                 return;
             }
             stats.readList.forEach(u => {
@@ -4497,7 +4613,6 @@
                 img.src = u.ackAvatar || u.avatar || DEFAULT_ICON;
                 img.onerror = () => { img.src = DEFAULT_ICON; };
                 item.appendChild(img);
-                
                 const info = document.createElement('div');
                 info.className = 'wr-info';
                 const roleBadge = getRoleLabel(u.ackRole || u.role || 'user');
@@ -4506,22 +4621,15 @@
                     <div class="wr-time">✅ قرأ في ${formatDateFull(u.ackTime || Date.now())}</div>
                 `;
                 item.appendChild(info);
-                
                 const status = document.createElement('div');
                 status.className = 'wr-status';
                 status.textContent = '✅';
                 item.appendChild(status);
-                
                 content.appendChild(item);
             });
         } else {
             if (stats.unreadList.length === 0) {
-                content.innerHTML = `
-                    <div class="warning-empty-readers" style="background:#e8f5e9;">
-                        <span class="we-icon">🎉</span>
-                        ممتاز! قرأ الجميع التحذير
-                    </div>
-                `;
+                content.innerHTML = `<div class="warning-empty-readers" style="background:#e8f5e9;"><span class="we-icon">🎉</span>ممتاز! قرأ الجميع التحذير</div>`;
                 return;
             }
             stats.unreadList.forEach(u => {
@@ -4531,7 +4639,6 @@
                 img.src = u.avatar || DEFAULT_ICON;
                 img.onerror = () => { img.src = DEFAULT_ICON; };
                 item.appendChild(img);
-                
                 const info = document.createElement('div');
                 info.className = 'wr-info';
                 const roleBadge = getRoleLabel(u.role || 'user');
@@ -4540,12 +4647,10 @@
                     <div class="wr-time">⏳ لم يقرأ بعد</div>
                 `;
                 item.appendChild(info);
-                
                 const status = document.createElement('div');
                 status.className = 'wr-status';
                 status.textContent = '⏳';
                 item.appendChild(status);
-                
                 content.appendChild(item);
             });
         }
@@ -4556,7 +4661,6 @@
         currentReadersWarning = null;
     }
 
-    // Warning char counter
     document.getElementById('warning-message-input')?.addEventListener('input', function() {
         document.getElementById('warning-char-counter').textContent = this.value.length + ' / 500';
     });
