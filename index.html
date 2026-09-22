@@ -116,7 +116,6 @@
         .modal-body { flex: 1; overflow-y: auto; padding: 10px; }
         #users-list { flex: 1; overflow-y: auto; padding: 10px; }
 
-        /* ========== بطاقة المستخدم المطورة ========== */
         .user-card { padding: 10px 12px; border-radius: 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); transition: all 0.2s; position: relative; overflow: hidden; }
         .user-card::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #ccc; transition: width 0.2s; }
         .user-card:hover { transform: translateX(-2px); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); }
@@ -331,7 +330,7 @@
         .nav-item.active .nav-label { color: var(--primary); }
         .nav-item .nav-badge { position: absolute; top: 0; right: 2px; background: #ff3b30; color: #fff; font-size: 8px; padding: 0 5px; border-radius: 8px; min-width: 16px; text-align: center; font-weight: 700; display: none; line-height: 16px; font-family: var(--font-main); }
         .nav-item .nav-badge.active { display: block; }
-        #dm-chat-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #efe7dd; z-index: 160; display: none; flex-direction: column; }
+        #dm-chat-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #efe7dd; z-index: 400; display: none; flex-direction: column; }
         #dm-chat-modal.active { display: flex; }
         #dm-chat-header { background: #9c27b0; color: #fff; padding: 8px 12px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
         #dm-chat-header .back-btn { background: 0; border: 0; color: #fff; font-size: 22px; cursor: pointer; padding: 0 4px; }
@@ -488,9 +487,10 @@
         .btn-maintenance { width: 100%; padding: 10px; background: #f9a825; color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; }
         .btn-maintenance.on { background: #4caf50; }
         .btn-maintenance:active { transform: scale(.95); }
-        .btn-dm-toggle { width: 100%; padding: 10px; background: #9c27b0; color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; }
+        .btn-dm-toggle { width: 100%; padding: 10px; background: #9c27b0; color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-dm-toggle.on { background: #4caf50; }
         .btn-dm-toggle:active { transform: scale(.95); }
+        .btn-dm-toggle .btn-badge { background: #ff3b30; color: #fff; border-radius: 10px; padding: 1px 7px; font-size: 11px; font-weight: 700; min-width: 20px; text-align: center; }
         .btn-advanced { width: 100%; padding: 10px; background: #1976d2; color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; }
         .btn-advanced:active { transform: scale(.95); }
         .btn-notif-settings { width: 100%; padding: 10px; background: linear-gradient(135deg, #008069, #00a884); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -529,12 +529,12 @@
         .monitor-bubble .msg-header img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; }
         .monitor-bubble .msg-header strong { font-size: 11px; color: #666; }
         .monitor-time { font-size: 9px; opacity: .5; text-align: left; margin-top: 2px; }
-        /* DM settings modal styles */
         .dm-settings-option { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 2px solid #eee; border-radius: 10px; margin-bottom: 6px; cursor: pointer; transition: all .2s; font-family: var(--font-main); font-weight: 700; font-size: 13px; background: #fff; }
         .dm-settings-option:active { transform: scale(.97); }
         .dm-settings-option.selected { border-color: var(--primary); background: #e8f5e9; color: var(--primary); box-shadow: 0 0 0 3px rgba(0,128,105,0.15); }
         .dm-settings-option .dso-check { font-size: 16px; opacity: 0; transition: opacity .2s; }
         .dm-settings-option.selected .dso-check { opacity: 1; }
+        .pa-dm-btn-locked { background: #9e9e9e !important; color: #fff !important; opacity: 0.8; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -919,6 +919,10 @@
                 <button id="open-maintenance-btn" class="btn-maintenance" onclick="openMaintenanceSettings()">🔧 إعدادات الصيانة</button>
                 <button id="open-advanced-btn" class="btn-advanced" onclick="openAdvancedSettings()">⚙️ إعدادات متقدمة (الخط)</button>
             </div>
+            <button id="profile-dm-btn" class="btn-dm-toggle" style="display:none;" onclick="openDMFromProfile()">
+                💌 الرسائل الخاصة
+                <span id="profile-dm-badge" class="btn-badge" style="display:none;">0</span>
+            </button>
             <button class="btn-notif-settings" onclick="openNotificationSettings()">🔔 إعدادات الإشعارات والأصوات</button>
             <div style="text-align:center;"><span id="prof-notif-status" class="notif-status-badge disabled">غير مفعلة</span></div>
             <button onclick="saveProfile()" class="login-btn" style="padding:8px;font-size:14px;margin-top:10px;">💾 حفظ</button>
@@ -1099,9 +1103,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 
 <script>
-    // ============================================================
-    //  ⚙️ الإعدادات الأساسية
-    // ============================================================
     const firebaseConfig = {
         apiKey: "AIzaSyB5qXJOOIMs3rWwxRjDai2enpCC4UUfyR4",
         authDomain: "kiot-1ea8c.firebaseapp.com",
@@ -1243,9 +1244,6 @@
     function isYouTubeUrl(t) { return /(?:youtube\.com|youtu\.be)/i.test(t) }
     function getYouTubeThumbnail(v) { return 'https://img.youtube.com/vi/' + v + '/hqdefault.jpg' }
 
-    // ============================================================
-    //  💌 رتب رتب الخاص
-    // ============================================================
     function roleRank(r) {
         return { user: 0, trusted: 1, mod: 2, manager: 3, owner: 4 }[r] || 0;
     }
@@ -1283,9 +1281,9 @@
         myDMEnabled = canUserDM(myFP, myRole);
         updateUI();
         updateOwnerDMBtn();
+        updateProfileDMBtn();
         renderMessages();
-        if (!wasEnabled && myDMEnabled) { /* newly enabled */ }
-        if (wasEnabled && !myDMEnabled) { /* newly disabled */ closeDMChat(); }
+        if (wasEnabled && !myDMEnabled) { closeDMChat(); }
     }
 
     function openDMSettings() {
@@ -1314,9 +1312,6 @@
         } catch (e) { alert('❌ ' + e.message); }
     }
 
-    // ============================================================
-    //  📜 logAdminAction
-    // ============================================================
     async function logAdminAction(type, targetUid, targetName, details) {
         try {
             await db.ref('admin_logs').push({
@@ -1328,9 +1323,6 @@
         } catch (e) { console.warn('⚠️ فشل تسجيل الإجراء:', e); }
     }
 
-    // ============================================================
-    //  🔊 الأصوات
-    // ============================================================
     let audioContext = null;
     let audioUnlocked = false;
     function unlockAudio() {
@@ -1383,9 +1375,6 @@
         }
     }
 
-    // ============================================================
-    //  📱 إشعار داخل التطبيق
-    // ============================================================
     function showInAppNotification(opts) {
         const container = document.getElementById('inapp-notif-container');
         if (!container) return;
@@ -1435,9 +1424,6 @@
         return { dm: '💌', chat: '💬', status: '📸', status_seen: '👁️', new_status: '📸', report: '🚩', media: '📎', general: '🔔' }[type] || '🔔';
     }
 
-    // ============================================================
-    //  🔔 مستمعو الإشعارات
-    // ============================================================
     function startInAppNotificationListeners() {
         if (inAppNotifListeners.dms) db.ref('dm_inbox/' + myFP).off('child_changed', inAppNotifListeners.dms);
         let lastPlayedDMTime = 0;
@@ -1492,9 +1478,6 @@
         });
     }
 
-    // ============================================================
-    //  🌐 نظام الحضور
-    // ============================================================
     function getUserEffectiveStatus(user) {
         if (!user) return 'offline';
         const lastSeen = Number(user.lastSeen) || 0;
@@ -1533,9 +1516,6 @@
         }, PRESENCE_CHECK_INTERVAL);
     }
 
-    // ============================================================
-    //  🚫 الكلمات الممنوعة
-    // ============================================================
     function listenBadWords() {
         if (badWordsListener) db.ref('settings/bad_words').off('value', badWordsListener);
         badWordsListener = db.ref('settings/bad_words').on('value', snap => {
@@ -1561,9 +1541,6 @@
     }
     function blockIfBadWord(text) { if (!text) return false; return !!findBadWord(text); }
 
-    // ============================================================
-    //  🔔 تفضيلات الإشعارات
-    // ============================================================
     function listenNotificationPrefs() {
         if (notifPrefsListener) db.ref('notification_prefs/' + myFP).off('value', notifPrefsListener);
         notifPrefsListener = db.ref('notification_prefs/' + myFP).on('value', snap => {
@@ -1646,9 +1623,6 @@
         document.getElementById('notification-settings-modal').classList.add('active');
     }
 
-    // ============================================================
-    //  🎯 طلب الإذن + FCM
-    // ============================================================
     async function requestNotificationPermission() {
         if (ENV.isWebView || notificationMode === 'inapp') { alert('📱 الإشعارات داخل التطبيق مفعلة'); openNotificationSettings(); return; }
         if (!ENV.hasNotification) { notificationMode = 'inapp'; startInAppNotificationListeners(); alert('📱 استخدام إشعارات داخلية'); return; }
@@ -1715,9 +1689,6 @@
         else { notificationMode = 'inapp'; startInAppNotificationListeners(); }
     }
 
-    // ============================================================
-    //  الخط المخصص
-    // ============================================================
     function applyCustomFont(url, name) {
         let styleTag = document.getElementById('custom-app-font-style');
         if (!styleTag) { styleTag = document.createElement('style'); styleTag.id = 'custom-app-font-style'; document.head.appendChild(styleTag); }
@@ -1781,9 +1752,6 @@
         try { await db.ref('app_settings/font_url').remove(); alert('✅'); } catch (e) { alert('❌ ' + e.message); }
     }
 
-    // ============================================================
-    //  🔐 الأمان والدخول
-    // ============================================================
     async function getDeviceFingerprint() { try { const f = await FingerprintJS.load(), r = await f.get(); return 'fp_' + r.visitorId } catch (e) { return 'fp_fallback_' + Math.random().toString(36).substr(2, 9) } }
     async function checkSecurity(fp, name) {
         const c = { banned: false, muted: false };
@@ -1940,10 +1908,35 @@
         if (myDMEnabled) { btn.textContent = '💌 الخاص مفتوح (إغلاق)'; btn.classList.add('on'); }
         else { btn.textContent = '💌 فتح الخاص لنفسي'; btn.classList.remove('on'); }
     }
+    function updateProfileDMBtn() {
+        const btn = document.getElementById('profile-dm-btn');
+        if (!btn) return;
+        if (myDMEnabled) {
+            btn.style.display = 'flex';
+        } else {
+            btn.style.display = 'none';
+        }
+        updateProfileDMBadge();
+    }
+    function updateProfileDMBadge() {
+        const badge = document.getElementById('profile-dm-badge');
+        if (!badge) return;
+        let total = 0;
+        Object.keys(dmUnreadCounts || {}).forEach(uid => { total += Number(dmUnreadCounts[uid].count) || 0; });
+        if (total > 0) {
+            badge.textContent = total > 99 ? '99+' : total;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+    function openDMFromProfile() {
+        if (!myDMEnabled) return alert('🔒 الخاص غير مفعّل حالياً');
+        document.getElementById('profile-modal').classList.remove('active');
+        document.getElementById('modal-overlay').classList.remove('show');
+        setTimeout(() => { openDMList(); }, 180);
+    }
 
-    // ============================================================
-    //  🔄 تبديل إذن الخاص لمستخدم معين (افتراضي → سماح → حظر)
-    // ============================================================
     async function cycleUserDMPermission(uid, name) {
         if (myRole !== 'owner') return alert('⛔');
         try {
@@ -1979,7 +1972,12 @@
     }
     function listenDMInbox() {
         if (dmInboxListener) db.ref('dm_inbox/' + myFP).off('value', dmInboxListener);
-        dmInboxListener = db.ref('dm_inbox/' + myFP).on('value', snap => { dmUnreadCounts = snap.val() || {}; updateDMBadge(); if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList(); });
+        dmInboxListener = db.ref('dm_inbox/' + myFP).on('value', snap => {
+            dmUnreadCounts = snap.val() || {};
+            updateDMBadge();
+            updateProfileDMBadge();
+            if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
+        });
     }
     function updateDMBadge() {
         let total = 0; Object.keys(dmUnreadCounts).forEach(uid => { total += Number(dmUnreadCounts[uid].count) || 0; });
@@ -2028,9 +2026,9 @@
     }
     function filterDMUsers() { const t = document.getElementById('dm-search').value.toLowerCase(); document.querySelectorAll('#dm-users-list .dm-user-card').forEach(c => { c.style.display = (c.dataset.name || '').includes(t) ? 'flex' : 'none'; }); }
     function openDMChat(uid) {
-        if (!myDMEnabled) return alert('🔒');
+        if (!myDMEnabled) return alert('🔒 خاصك مغلق من قبل مالك التطبيق\nلا يمكنك المحادثة مع أي مستخدم');
         const u = allUsersData[uid]; if (!u) return;
-        if (!canUserDM(uid, u.role)) return alert('🔒');
+        if (!canUserDM(uid, u.role)) return alert('🔒 لا يمكنك المحادثة\nخاص هذا المستخدم مغلق من قبل مالك التطبيق');
         closeDMList();
         currentDMChat = { uid, name: u.name || 'مجهول', avatar: u.avatar || DEFAULT_ICON, role: u.role || 'user' };
         document.getElementById('dm-chat-avatar').src = currentDMChat.avatar;
@@ -2091,7 +2089,8 @@
         e.preventDefault();
         if (!currentDMChat) return;
         if (isMuted) return alert('🔇');
-        if (!canUserDM(currentDMChat.uid, currentDMChat.role)) return alert('🔒');
+        if (!myDMEnabled) return alert('🔒 خاصك مغلق من قبل مالك التطبيق\nلا يمكنك المحادثة مع أي مستخدم');
+        if (!canUserDM(currentDMChat.uid, currentDMChat.role)) return alert('🔒 لا يمكنك المحادثة\nخاص هذا المستخدم مغلق من قبل مالك التطبيق');
         const input = document.getElementById('dm-message-input');
         const text = input.value.trim();
         if (!text) return;
@@ -2419,15 +2418,16 @@
         if (myRole === 'owner') { document.getElementById('reports-btn').style.display = 'inline-block'; listenReports(); document.getElementById('dm-monitor-btn').style.display = 'inline-block'; }
         else { document.getElementById('reports-btn').style.display = 'none'; document.getElementById('dm-monitor-btn').style.display = 'none'; }
         updateFCMButton(); updateSoundButton();
+        updateProfileDMBtn();
     }
     function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { i.placeholder = "اكتب رسالة..."; i.disabled = false; b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
     function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
     function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); }
     function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('dm-monitor-modal').classList.remove('active'); document.getElementById('dm-monitor-view-modal').classList.remove('active'); document.getElementById('dm-settings-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
 
-    // ====== دوال خيارات الحساب ======
     let paTargetUid = null, paTargetName = null, paTargetAvatar = null;
 
+    // ✅ فتح خيارات الحساب: يُظهر زر الخاص عند تفعيل المستقبِل (حتى لو خاصي مغلق)
     function openProfileActions(uid, name, avatar) {
         if (uid === myFP) return;
         if (!uid || uid === 'undefined' || uid === 'null') {
@@ -2441,13 +2441,32 @@
         paTargetUid = uid; paTargetName = name; paTargetAvatar = avatar;
         document.getElementById('pa-avatar').src = avatar;
         document.getElementById('pa-name').textContent = name;
+
         const dmBtn = document.getElementById('pa-dm-btn');
         const targetRole = allUsersData[uid]?.role || 'user';
-        if (myDMEnabled && canUserDM(uid, targetRole)) {
+        const targetCanReceive = canUserDM(uid, targetRole);
+
+        if (targetCanReceive) {
             dmBtn.style.display = 'block';
+            if (myDMEnabled) {
+                dmBtn.innerHTML = '💌 رسالة خاصة';
+                dmBtn.style.background = '#9c27b0';
+                dmBtn.classList.remove('pa-dm-btn-locked');
+                dmBtn.title = 'اضغط لفتح محادثة خاصة';
+            } else {
+                dmBtn.innerHTML = '🔒 رسالة خاصة';
+                dmBtn.style.background = '#9e9e9e';
+                dmBtn.classList.add('pa-dm-btn-locked');
+                dmBtn.title = 'المستقبِل مُفعّل لديه الخاص، لكن خاصك غير مُفعّل من قِبَل الإدارة';
+            }
         } else {
-            dmBtn.style.display = 'none';
+            dmBtn.style.display = 'block';
+            dmBtn.innerHTML = '🔒 رسالة خاصة (مغلق)';
+            dmBtn.style.background = '#9e9e9e';
+            dmBtn.classList.add('pa-dm-btn-locked');
+            dmBtn.title = 'خاص المستقبِل مغلق من قِبَل مالك التطبيق';
         }
+
         document.getElementById('profile-actions-modal').classList.add('active');
         document.getElementById('modal-overlay').classList.add('show');
     }
@@ -2458,16 +2477,56 @@
         paTargetUid = null; paTargetName = null; paTargetAvatar = null;
     }
 
+    // ✅ عرض الصورة - حفظ القيم قبل الإغلاق
     function paViewImage() {
-        if (paTargetAvatar) openViewer(paTargetAvatar, 'image', paTargetName);
-        closeProfileActions();
+        const avatar = paTargetAvatar;
+        const name = paTargetName;
+        if (!avatar) return;
+        // إغلاق نافذة خيارات الحساب يدوياً (بدون تصفير paTargetUid قبل استخدامه)
+        document.getElementById('profile-actions-modal').classList.remove('active');
+        document.getElementById('modal-overlay').classList.remove('show');
+        paTargetUid = null; paTargetName = null; paTargetAvatar = null;
+        // فتح عارض الصورة بعد تأخير
+        setTimeout(() => {
+            openViewer(avatar, 'image', name);
+        }, 200);
     }
 
+    // ✅ الدالة المُصلَحة لزر الخاص - تعمل الآن بشكل صحيح
     function paDM() {
-        if (paTargetUid) {
-            closeProfileActions();
-            openDMChat(paTargetUid);
+        // ⭐ نحفظ UID والبيانات محلياً BEFORE أي عملية إغلاق
+        const targetUid = paTargetUid;
+        const targetName = paTargetName;
+
+        if (!targetUid) {
+            return alert('⚠️ لم يتم تحديد المستخدم، حاول مرة أخرى');
         }
+
+        const targetRole = allUsersData[targetUid]?.role || 'user';
+        const targetCanReceive = canUserDM(targetUid, targetRole);
+
+        // ⭐ الحالة 1: المستقبِل مغلق → رسالة واضحة
+        if (!targetCanReceive) {
+            closeProfileActions();
+            return alert('🔒 لا يمكنك المحادثة مع "' + targetName + '"\n\nخاصه مغلق من قِبَل مالك التطبيق.');
+        }
+
+        // ⭐ الحالة 2: أنا (المُرسِل) مغلق → رسالة واضحة
+        if (!myDMEnabled) {
+            closeProfileActions();
+            return alert('🔒 خاصك مغلق من قِبَل مالك التطبيق\n\nلا يمكنك المحادثة مع أي مستخدم.\nراجع المالك/المدير لتفعيل خاصك (إعدادات الخاص بالرتب).');
+        }
+
+        // ⭐ الحالة 3: كل شيء متاح → افتح المحادثة
+        // إغلاق نافذة خيارات الحساب يدوياً (لتفادي مشكلة z-index)
+        document.getElementById('profile-actions-modal').classList.remove('active');
+        document.getElementById('modal-overlay').classList.remove('show');
+        paTargetUid = null; paTargetName = null; paTargetAvatar = null;
+
+        // فتح الدردشة الخاصة بعد تأخير قصير (مهم جداً لضمان الإغلاق السلس + تجاوز z-index)
+        setTimeout(() => {
+            openDMChat(targetUid);
+        }, 250);
     }
 
     async function banUser(u, n) {
@@ -2520,6 +2579,7 @@
         const avatarLabel = document.getElementById('avatar-change-label'), avatarImg = document.getElementById('prof-img');
         if (myRole === 'user') { if (avatarLabel) avatarLabel.style.display = 'none'; if (avatarImg) { avatarImg.style.cursor = 'default'; avatarImg.onclick = null; } }
         else { if (avatarLabel) avatarLabel.style.display = 'inline-block'; if (avatarImg) { avatarImg.style.cursor = 'pointer'; avatarImg.onclick = () => document.getElementById('avatar-in').click(); } }
+        updateProfileDMBtn();
         updateNotifStatusBadge();
         document.getElementById('profile-modal').classList.add('active');
     }
@@ -2726,14 +2786,10 @@
     function startReply(k) { const m = messagesCache[k]; if (!m) return; replyTo = { key: k, sender: m.sender, text: m.text || '[وسائط]', role: m.role }; document.getElementById('reply-sender-name').textContent = m.sender; document.getElementById('reply-content-text').textContent = m.text || '[وسائط]'; document.getElementById('reply-bar').classList.add('active'); document.getElementById('message-input').focus(); }
     function cancelReply() { replyTo = null; document.getElementById('reply-bar').classList.remove('active'); }
 
-    // ============================================================
-    //  🚩 نظام البلاغات (رسائل + حالات فقط) - بدون بلاغ على الاسم/الصورة
-    // ============================================================
     async function openReportModal(type, targetUid, targetName, messageKey, statusKey, avatarUrl) {
         if (!myName || !myFP) return alert('يرجى تسجيل الدخول أولاً');
         if (targetUid === myFP) return alert('لا يمكنك الإبلاغ عن نفسك');
 
-        // إصلاح: فقط أنواع message و status مدعومة الآن
         if (type !== 'message' && type !== 'status') {
             return alert('⛔ هذا النوع من البلاغات تم إزالته');
         }
@@ -2954,9 +3010,6 @@
         } catch (e) { alert('❌ ' + e.message); }
     }
 
-    // ============================================================
-    //  بلاغات الأدمن (المالك فقط)
-    // ============================================================
     function listenReports() { if (myRole !== 'owner') return; db.ref('reports').on('value', snap => { reportsCache = {}; if (snap.exists()) { snap.forEach(child => { const val = child.val(); val.key = child.key; reportsCache[child.key] = val; }); } renderReports(); updateReportsBadge(); }); }
     function toggleReportsModal() { const modal = document.getElementById('reports-modal'); modal.classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); if (modal.classList.contains('active')) renderReports(); }
 
@@ -2964,7 +3017,6 @@
         const list = document.getElementById('reports-list');
         const filter = currentReportFilter;
         let filtered = Object.values(reportsCache);
-        // تصفية: عرض بلاغات الرسائل والحالات فقط (استثناء أي بلاغات قديمة على الاسم/الصورة)
         filtered = filtered.filter(r => r.reportType === 'message' || r.reportType === 'status');
         if (filter !== 'all') filtered = filtered.filter(r => r.status === filter);
         filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -3148,9 +3200,6 @@
         } catch (e) { alert('❌ ' + e.message); }
     }
 
-    // ============================================================
-    //  🕵️ مراقبة الدردشات الخاصة (للمالك فقط)
-    // ============================================================
     function openDMMonitor() {
         if (myRole !== 'owner') return alert('⛔');
         document.getElementById('dm-monitor-modal').classList.add('active');
@@ -3303,9 +3352,6 @@
         document.getElementById('dm-monitor-view-modal').classList.remove('active');
     }
 
-    // ============================================================
-    //  🎨 الألوان
-    // ============================================================
     let colorTargetUid = null, selectedGlow = 'none';
     function openColorControl(uid) { if (!isOwner()) return alert("⛔"); colorTargetUid = uid; const u = allUsersData[uid] || {}, n = u.name || 'مجهول', av = u.avatar || DEFAULT_ICON, r = u.role || 'user'; document.getElementById('color-target-avatar').src = av; document.getElementById('color-target-name').textContent = n; document.getElementById('color-target-role').textContent = 'رتبة: ' + r; const cc = getColor(uid), cg = getGlow(uid); selectedGlow = cg; document.getElementById('color-name-picker').value = cc.name || '#333333'; const g = document.getElementById('color-grid'); g.innerHTML = ''; COLORS.forEach((c, i) => { const d = document.createElement('div'); d.className = 'color-option'; d.style.background = c.bg; if (cc && cc.bg === c.bg) d.classList.add('selected'); d.innerHTML = '<span class="check">✓</span><span class="color-label">' + (i + 1) + '</span>'; d.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); d.classList.add('selected'); updatePreview(); }; g.appendChild(d); }); document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === cg); }); document.getElementById('color-name-picker').oninput = updatePreview; updatePreview(); document.getElementById('color-control-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); }
     function selectGlow(g) { selectedGlow = g; document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === g); }); updatePreview(); }
