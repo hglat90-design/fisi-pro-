@@ -133,7 +133,6 @@
         .user-card[data-role="mod"]::before { background: linear-gradient(180deg, #2196F3, #0D47A1); width: 5px; }
         .user-card[data-role="trusted"] { border-color: rgba(255, 152, 0, 0.3); background: linear-gradient(135deg, #fffaf5 0%, #fff 100%); }
         .user-card[data-role="trusted"]::before { background: linear-gradient(180deg, #FF9800, #F57C00); width: 5px; }
-        /* ✅ NEW: تمييز الحسابات غير الصالحة */
         .user-card.invalid-name { border-color: rgba(229,57,53,0.5); background: linear-gradient(135deg, #fff5f5 0%, #fff 100%); }
         .user-card.invalid-name::before { background: linear-gradient(180deg, #ef5350, #b71c1c); width: 5px; }
 
@@ -180,6 +179,7 @@
             transition: left 0.5s;
         }
         .role-badge:hover::before { left: 100%; }
+
         .role-badge.owner {
             background: linear-gradient(135deg, #FFD700 0%, #F9A825 50%, #E65100 100%);
             color: #3E2723;
@@ -187,18 +187,21 @@
             box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
             text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
         }
+
         .role-badge.manager {
             background: linear-gradient(135deg, #E1BEE7 0%, #9C27B0 50%, #4A148C 100%);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 2px 8px rgba(156, 39, 176, 0.5);
         }
+
         .role-badge.mod {
             background: linear-gradient(135deg, #90CAF9 0%, #2196F3 50%, #0D47A1 100%);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 2px 8px rgba(33, 150, 243, 0.5);
         }
+
         .role-badge.trusted {
             background: linear-gradient(135deg, #FFCC80 0%, #FF9800 50%, #E65100 100%);
             color: #fff;
@@ -231,6 +234,7 @@
         .ctrl-btn.status-off { background: #616161; }
         .ctrl-btn.status-deny { background: #b71c1c; }
         .ctrl-btn.delete-unknown { background: #b71c1c; font-size: 11px; }
+        .ctrl-btn.delete-user { background: #7f0000; font-size: 11px; }
         .search-box { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; outline: 0; font-size: 13px; margin-bottom: 8px; font-family: var(--font-main); background: #f9f9f9; transition: all 0.2s; }
         .search-box:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(0, 128, 105, 0.1); }
         #color-control-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 400; display: none; justify-content: center; align-items: center; padding: 16px; }
@@ -743,6 +747,11 @@
         .status-settings-option.selected { border-color: #f9a825; background: #fff8e1; color: #e65100; box-shadow: 0 0 0 3px rgba(249,168,37,0.15); }
         .media-settings-option .dso-check, .status-settings-option .dso-check { font-size: 16px; opacity: 0; transition: opacity .2s; }
         .media-settings-option.selected .dso-check, .status-settings-option.selected .dso-check { opacity: 1; }
+        #deletion-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a1a, #4a0000); z-index: 99999999; display: none; justify-content: center; align-items: center; color: #fff; text-align: center; padding: 20px; }
+        #deletion-overlay.active { display: flex; animation: warningFadeIn 0.3s ease; }
+        #deletion-overlay .del-icon { font-size: 70px; margin-bottom: 16px; animation: warningPulse 1.5s infinite; }
+        #deletion-overlay h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+        #deletion-overlay p { font-size: 14px; opacity: 0.85; }
     </style>
 </head>
 <body>
@@ -778,6 +787,14 @@
         <div style="font-size:80px;">🔧</div>
         <h1>التطبيق في صيانة</h1>
         <p id="maintenance-text">التطبيق تحت الصيانة المؤقتة، يرجى المحاولة لاحقاً.</p>
+    </div>
+
+    <div id="deletion-overlay">
+        <div>
+            <div class="del-icon">🗑️</div>
+            <h2 id="deletion-title">تم حذف حسابك</h2>
+            <p id="deletion-subtitle">جاري إخراجك من التطبيق...</p>
+        </div>
     </div>
 
     <header>
@@ -1599,6 +1616,10 @@
     let pendingDeleteWarningId = null;
     let pendingDeleteAllMode = false;
 
+    // ✅ نظام الطرد الفوري
+    let userDeletedListener = null;
+    let isBeingDeleted = false;
+
     const COLORS = [
         { bg: 'linear-gradient(135deg,#E3F2FD,#64B5F6)', text: '#0D47A1', name: '#0D47A1' },
         { bg: 'linear-gradient(135deg,#F3E5F5,#BA68C8)', text: '#4A148C', name: '#4A148C' },
@@ -1631,62 +1652,34 @@
     const LETTERS_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFFa-zA-Z\u00C0-\u024F]/;
 
     function validateName(rawName) {
-        if (!rawName || typeof rawName !== 'string') {
-            return { valid: false, reason: 'الرجاء إدخال اسمك', code: 'empty' };
-        }
+        if (!rawName || typeof rawName !== 'string') return { valid: false, reason: 'الرجاء إدخال اسمك', code: 'empty' };
         const cleaned = rawName.replace(INVISIBLE_CHARS_REGEX, '');
-        if (cleaned.length === 0) {
-            return { valid: false, reason: 'الاسم فارغ! لا يمكن ترك الحقل فارغاً أو بمسافات فقط.', code: 'empty_after_clean' };
-        }
-        if (cleaned.length < 2) {
-            return { valid: false, reason: 'الاسم قصير جداً! يجب أن يكون حرفين على الأقل (حروف حقيقية).', code: 'too_short' };
-        }
-        if (cleaned.length > 30) {
-            return { valid: false, reason: 'الاسم طويل جداً! الحد الأقصى 30 حرفاً.', code: 'too_long' };
-        }
-        if (!LETTERS_REGEX.test(cleaned)) {
-            return { valid: false, reason: 'الاسم يجب أن يحتوي على حروف حقيقية! لا يُسمح بالنقاط أو الرموز أو الأرقام فقط.', code: 'no_letters' };
-        }
-        if (/^\d+$/.test(cleaned)) {
-            return { valid: false, reason: 'الاسم لا يمكن أن يكون أرقاماً فقط! يرجى كتابة اسم حقيقي.', code: 'only_numbers' };
-        }
-        if (/^[.\-_+*#@!$%^&()[\]{}<>|\\/`~,;:'"?=]+$/.test(cleaned)) {
-            return { valid: false, reason: 'الاسم لا يمكن أن يكون رموزاً فقط! يرجى كتابة اسم حقيقي.', code: 'only_symbols' };
-        }
+        if (cleaned.length === 0) return { valid: false, reason: 'الاسم فارغ! لا يمكن ترك الحقل فارغاً أو بمسافات فقط.', code: 'empty_after_clean' };
+        if (cleaned.length < 2) return { valid: false, reason: 'الاسم قصير جداً! يجب أن يكون حرفين على الأقل (حروف حقيقية).', code: 'too_short' };
+        if (cleaned.length > 30) return { valid: false, reason: 'الاسم طويل جداً! الحد الأقصى 30 حرفاً.', code: 'too_long' };
+        if (!LETTERS_REGEX.test(cleaned)) return { valid: false, reason: 'الاسم يجب أن يحتوي على حروف حقيقية! لا يُسمح بالنقاط أو الرموز أو الأرقام فقط.', code: 'no_letters' };
+        if (/^\d+$/.test(cleaned)) return { valid: false, reason: 'الاسم لا يمكن أن يكون أرقاماً فقط! يرجى كتابة اسم حقيقي.', code: 'only_numbers' };
+        if (/^[.\-_+*#@!$%^&()[\]{}<>|\\/`~,;:'"?=]+$/.test(cleaned)) return { valid: false, reason: 'الاسم لا يمكن أن يكون رموزاً فقط! يرجى كتابة اسم حقيقي.', code: 'only_symbols' };
         const blockedNames = ['مجهول', 'مستخدم مجهول', 'مستخدم', 'unknown', 'null', 'undefined', 'nan', 'user', 'admin', 'administrator', 'owner', 'guest', 'زائر', 'ضيف'];
-        if (blockedNames.includes(cleaned.toLowerCase())) {
-            return { valid: false, reason: 'هذا الاسم محجوز! يرجى اختيار اسم آخر.', code: 'blocked_name' };
-        }
+        if (blockedNames.includes(cleaned.toLowerCase())) return { valid: false, reason: 'هذا الاسم محجوز! يرجى اختيار اسم آخر.', code: 'blocked_name' };
         const letterCount = (cleaned.match(new RegExp(LETTERS_REGEX.source, 'g')) || []).length;
-        if (letterCount < 2) {
-            return { valid: false, reason: 'الاسم يجب أن يحتوي على حرفين على الأقل!', code: 'few_letters' };
-        }
+        if (letterCount < 2) return { valid: false, reason: 'الاسم يجب أن يحتوي على حرفين على الأقل!', code: 'few_letters' };
         const uniqueChars = new Set(cleaned.toLowerCase().split(''));
-        if (uniqueChars.size < 2) {
-            return { valid: false, reason: 'الاسم غير صالح! يجب أن يحتوي على حروف متنوعة.', code: 'repeated_chars' };
-        }
+        if (uniqueChars.size < 2) return { valid: false, reason: 'الاسم غير صالح! يجب أن يحتوي على حروف متنوعة.', code: 'repeated_chars' };
         return { valid: true, name: rawName.trim(), cleaned: cleaned };
     }
 
-    // ✅ دالة مساعدة: هل هذا المستخدم مجهول؟
     function isUserUnknown(u) {
         if (!u) return true;
         if (!u.name || u.name.trim() === '') return true;
-        // إذا كان الاسم "مجهول" أو أي اسم محجوز → غير صالح
         return !validateName(u.name).valid;
     }
 
-    // ✅ دالة مساعدة: الحصول على اسم المستخدم للعرض
     function getDisplayName(u) {
         if (!u) return { text: 'مستخدم محذوف', valid: false };
-        if (!u.name || u.name.trim() === '') {
-            return { text: '⚠️ بدون اسم', valid: false };
-        }
+        if (!u.name || u.name.trim() === '') return { text: '⚠️ بدون اسم', valid: false };
         const v = validateName(u.name);
-        if (!v.valid) {
-            // عرض الاسم الفعلي مع علامة تحذير
-            return { text: u.name, valid: false };
-        }
+        if (!v.valid) return { text: u.name, valid: false };
         return { text: u.name, valid: true };
     }
 
@@ -1729,22 +1722,50 @@
     function getYouTubeThumbnail(v) { return 'https://img.youtube.com/vi/' + v + '/hqdefault.jpg' }
 
     function roleRank(r) { return { user: 0, trusted: 1, mod: 2, manager: 3, owner: 4 }[r] || 0; }
-    function canUserDM(uid, role) {
-        if (dmDenialsData[uid] === true) return false;
-        if (allDMUsersData[uid] === true) return true;
-        return roleRank(role || 'user') >= roleRank(dmGlobalSettings.min_role || 'owner');
-    }
-    function canUserSendMedia(uid, role) {
-        if (mediaDenialsData[uid] === true) return false;
-        if (allMediaUsersData[uid] === true) return true;
-        return roleRank(role || 'user') >= roleRank(mediaGlobalSettings.min_role || 'owner');
-    }
-    function canUserPostStatus(uid, role) {
-        if (statusDenialsData[uid] === true) return false;
-        if (allStatusUsersData[uid] === true) return true;
-        return roleRank(role || 'user') >= roleRank(statusGlobalSettings.min_role || 'owner');
-    }
+    function canUserDM(uid, role) { if (dmDenialsData[uid] === true) return false; if (allDMUsersData[uid] === true) return true; return roleRank(role || 'user') >= roleRank(dmGlobalSettings.min_role || 'owner'); }
+    function canUserSendMedia(uid, role) { if (mediaDenialsData[uid] === true) return false; if (allMediaUsersData[uid] === true) return true; return roleRank(role || 'user') >= roleRank(mediaGlobalSettings.min_role || 'owner'); }
+    function canUserPostStatus(uid, role) { if (statusDenialsData[uid] === true) return false; if (allStatusUsersData[uid] === true) return true; return roleRank(role || 'user') >= roleRank(statusGlobalSettings.min_role || 'owner'); }
     function getRoleLabel(role) { return { owner: '👑 مالك', manager: '💎 مدير', mod: '🛡️ مشرف', trusted: '✅ موثوق', user: '👤 عادي' }[role] || role; }
+
+    // ✅ دوال الطرد الفوري
+    function forceLogout(reason, isDeleted) {
+        if (isBeingDeleted) return;
+        isBeingDeleted = true;
+        const title = isDeleted ? '🗑️ تم حذف حسابك' : '⚠️ تم طردك';
+        const subtitle = isDeleted ? 'جاري إخراجك نهائياً من التطبيق...' : (reason || 'جاري إخراجك من التطبيق...');
+        document.getElementById('deletion-title').textContent = title;
+        document.getElementById('deletion-subtitle').textContent = subtitle;
+        document.getElementById('deletion-overlay').classList.add('active');
+        try { if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]); } catch(e) {}
+        // قطع الاتصال بـ Firebase فوراً
+        try { db.ref('users/' + myFP).update({ status: 'offline', lastSeen: Date.now() }); } catch(e) {}
+        try { db.ref('users/' + myFP).onDisconnect().cancel(); } catch(e) {}
+        setTimeout(() => {
+            // تنظيف كامل
+            localStorage.clear();
+            sessionStorage.clear();
+            myName = ''; myAvatar = DEFAULT_ICON; myRole = 'user';
+            // إعادة تحميل فوري
+            location.replace(location.pathname + '?t=' + Date.now());
+        }, 1800);
+    }
+
+    // ✅ مراقب الطرد الفوري - إذا تم حذف المستخدم من قاعدة البيانات
+    function startDeletionWatcher() {
+        if (userDeletedListener) db.ref('users/' + myFP).off('value', userDeletedListener);
+        userDeletedListener = db.ref('users/' + myFP).on('value', snap => {
+            if (!isBeingDeleted && myName && !snap.exists()) {
+                console.warn('⚠️ تم حذف حسابي من قاعدة البيانات - خروج فوري');
+                forceLogout('', true);
+            }
+        });
+        // ✅ مراقب الحظر المفاجئ (اختياري - يمكن تفعيله)
+        db.ref('bans/' + myFP).on('value', s => {
+            if (!isBeingDeleted && s.exists() && myName) {
+                forceLogout('تم حظرك من التطبيق', false);
+            }
+        });
+    }
 
     function listenDMSettings() {
         db.ref('dm_settings/min_role').on('value', snap => {
@@ -1799,15 +1820,8 @@
             updateUI();
         });
     }
-    function refreshMyMediaPermission() {
-        myMediaEnabled = canUserSendMedia(myFP, myRole);
-        updateUI();
-        updateDMMediaBtnVisibility();
-    }
-    function refreshMyStatusPermission() {
-        myStatusEnabled = canUserPostStatus(myFP, myRole);
-        updateUI();
-    }
+    function refreshMyMediaPermission() { myMediaEnabled = canUserSendMedia(myFP, myRole); updateUI(); updateDMMediaBtnVisibility(); }
+    function refreshMyStatusPermission() { myStatusEnabled = canUserPostStatus(myFP, myRole); updateUI(); }
     function refreshMyDMPermission() {
         const wasEnabled = myDMEnabled;
         myDMEnabled = canUserDM(myFP, myRole);
@@ -2016,7 +2030,7 @@
     function isUserOnline(user) { const st = getUserEffectiveStatus(user); return st === 'online' || st === 'away'; }
 
     function startHeartbeat() {
-        const sendHeartbeat = () => { if (!myFP || document.hidden) return; db.ref('users/' + myFP).update({ status: 'online', lastSeen: Date.now() }).catch(() => {}); };
+        const sendHeartbeat = () => { if (!myFP || document.hidden || isBeingDeleted) return; db.ref('users/' + myFP).update({ status: 'online', lastSeen: Date.now() }).catch(() => {}); };
         const goOffline = () => { if (!myFP) return; db.ref('users/' + myFP).update({ status: 'offline', lastSeen: Date.now() }).catch(() => {}); };
         const startInterval = () => { if (heartbeatInterval) clearInterval(heartbeatInterval); sendHeartbeat(); heartbeatInterval = setInterval(sendHeartbeat, HEARTBEAT_INTERVAL); };
         const stopInterval = () => { if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; } };
@@ -2031,6 +2045,7 @@
     function startPresenceChecker() {
         if (presenceCheckInterval) clearInterval(presenceCheckInterval);
         presenceCheckInterval = setInterval(() => {
+            if (isBeingDeleted) return;
             if (Object.keys(allUsersData).length > 0) {
                 updateUsersList(); updateOnlineBadge();
                 if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
@@ -2053,12 +2068,7 @@
     function findBadWord(text) {
         if (!text || badWordsList.length === 0) return null;
         const lower = String(text).toLowerCase();
-        for (const w of badWordsList) {
-            if (!w) continue;
-            const wLower = String(w).toLowerCase().trim();
-            if (!wLower) continue;
-            if (lower.includes(wLower)) return w;
-        }
+        for (const w of badWordsList) { if (!w) continue; const wLower = String(w).toLowerCase().trim(); if (!wLower) continue; if (lower.includes(wLower)) return w; }
         return null;
     }
     function blockIfBadWord(text) { if (!text) return false; return !!findBadWord(text); }
@@ -2288,10 +2298,7 @@
     document.getElementById('login-btn').onclick = async () => {
         const rawName = document.getElementById('username-input').value;
         const validation = validateName(rawName);
-        if (!validation.valid) {
-            showLoginError(validation.reason);
-            return;
-        }
+        if (!validation.valid) { showLoginError(validation.reason); return; }
         hideLoginError();
         unlockAudio();
         const n = validation.name;
@@ -2313,11 +2320,12 @@
     function enterChat() {
         document.getElementById('login-screen').style.display = 'none';
         startHeartbeat(); startPresenceChecker();
+        startDeletionWatcher(); // ✅ بدء مراقب الطرد الفوري
         db.ref('users/' + myFP + '/createdAt').once('value', snap => { if (!snap.exists()) db.ref('users/' + myFP + '/createdAt').set(Date.now()); });
         db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
         db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
-        db.ref('users/' + myFP).on('value', snap => { if (myName && !snap.exists()) { alert("⚠️ تم حذف حسابك!"); localStorage.clear(); myName = ''; location.reload(); } });
         db.ref('users/' + myFP + '/role').on('value', s => {
+            if (isBeingDeleted) return;
             myRole = s.val() || "user";
             updateUI(); refreshMyDMPermission(); refreshMyMediaPermission(); refreshMyStatusPermission();
             const hiddenControl = document.getElementById('hidden-owner-control');
@@ -2330,9 +2338,8 @@
             } else { hiddenControl.style.display = 'none'; document.getElementById('reports-btn').style.display = 'none'; document.getElementById('dm-monitor-btn').style.display = 'none'; }
             saveFCMToken();
         });
-        db.ref('users/' + myFP + '/hidden').on('value', snap => { isHidden = snap.val() || false; updateHiddenButton(); updateUsersList(); updateOnlineBadge(); });
-        db.ref('bans/' + myFP).on('value', s => { if (s.exists() && !isBanned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; } else if (!s.exists() && isBanned) { isBanned = false; document.getElementById('ban-screen').style.display = 'none'; } });
-        db.ref('mutes/' + myFP).on('value', s => { if (s.exists()) { const d = s.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { isMuted = true; muteEndTime = d.endTime; } else { isMuted = false; muteEndTime = 0; } } else { isMuted = false; muteEndTime = 0; } updateMuteUI(); });
+        db.ref('users/' + myFP + '/hidden').on('value', snap => { if (isBeingDeleted) return; isHidden = snap.val() || false; updateHiddenButton(); updateUsersList(); updateOnlineBadge(); });
+        db.ref('mutes/' + myFP).on('value', s => { if (isBeingDeleted) return; if (s.exists()) { const d = s.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { isMuted = true; muteEndTime = d.endTime; } else { isMuted = false; muteEndTime = 0; } } else { isMuted = false; muteEndTime = 0; } updateMuteUI(); });
         startListeners(); loadColorSettings(); listenMaintenance(); listenMyDMPermission();
         listenDMSettings(); listenDMDenials();
         listenMediaSettings(); listenMediaDenials();
@@ -2360,6 +2367,7 @@
     function listenMaintenance() {
         if (maintenanceListener) db.ref('maintenance').off('value', maintenanceListener);
         maintenanceListener = db.ref('maintenance').on('value', snap => {
+            if (isBeingDeleted) return;
             const d = snap.val() || {};
             maintenanceData.status = d.status === true;
             maintenanceData.message = d.message || 'التطبيق تحت الصيانة المؤقتة.';
@@ -2426,15 +2434,15 @@
     }
     function listenMyDMPermission() {
         if (myDMPermissionListener) db.ref('dm_permissions/' + myFP).off('value', myDMPermissionListener);
-        myDMPermissionListener = db.ref('dm_permissions/' + myFP).on('value', snap => { refreshMyDMPermission(); });
+        myDMPermissionListener = db.ref('dm_permissions/' + myFP).on('value', snap => { if (isBeingDeleted) return; refreshMyDMPermission(); });
     }
     function listenMyMediaPermission() {
         if (myMediaPermissionListener) db.ref('media_permissions/' + myFP).off('value', myMediaPermissionListener);
-        myMediaPermissionListener = db.ref('media_permissions/' + myFP).on('value', snap => { refreshMyMediaPermission(); });
+        myMediaPermissionListener = db.ref('media_permissions/' + myFP).on('value', snap => { if (isBeingDeleted) return; refreshMyMediaPermission(); });
     }
     function listenMyStatusPermission() {
         if (myStatusPermissionListener) db.ref('status_permissions/' + myFP).off('value', myStatusPermissionListener);
-        myStatusPermissionListener = db.ref('status_permissions/' + myFP).on('value', snap => { refreshMyStatusPermission(); });
+        myStatusPermissionListener = db.ref('status_permissions/' + myFP).on('value', snap => { if (isBeingDeleted) return; refreshMyStatusPermission(); });
     }
     function updateOwnerDMBtn() {
         const btn = document.getElementById('owner-dm-toggle-btn'); if (!btn) return;
@@ -2518,6 +2526,7 @@
     function listenDMInbox() {
         if (dmInboxListener) db.ref('dm_inbox/' + myFP).off('value', dmInboxListener);
         dmInboxListener = db.ref('dm_inbox/' + myFP).on('value', snap => {
+            if (isBeingDeleted) return;
             dmUnreadCounts = snap.val() || {};
             updateDMBadge(); updateProfileDMBadge();
             if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
@@ -2598,8 +2607,7 @@
     }
     function getChatId(uid1, uid2) { return [uid1, uid2].sort().join('_'); }
     function updateDMMediaBtnVisibility() {
-        const btn = document.getElementById('dm-media-btn');
-        if (!btn) return;
+        const btn = document.getElementById('dm-media-btn'); if (!btn) return;
         btn.classList.toggle('active', myMediaEnabled === true);
     }
     function loadDMMessages(uid) {
@@ -2620,6 +2628,7 @@
                 if (allMsgs.length === 0) box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">لا توجد رسائل</div>';
                 box.scrollTop = box.scrollHeight;
                 dmChatMessagesListener = db.ref('private_chats/' + chatId + '/messages').on('child_added', snap => {
+                    if (isBeingDeleted) return;
                     if (renderedKeys.has(snap.key)) return;
                     const m = snap.val(); const t = Number(m.time) || 0;
                     if (t <= currentDMClearedAt) { renderedKeys.add(snap.key); return; }
@@ -2638,41 +2647,26 @@
         div.className = 'dm-msg-row ' + (isMine ? 'mine' : 'others');
         div.dataset.dmkey = m._key || '';
         div.id = 'dm-msg-' + (m._key || Math.random().toString(36).substr(2,9));
-
         let inner = '';
-
         if (m.replyTo && m.replyTo.sender) {
             const rpText = m.replyTo.text || '📎 وسائط';
             inner += `<div class="dm-reply-info" onclick="scrollToDMMessage('${m.replyTo.key || ''}')"><div class="dm-rp-sender">↩ ${escapeHtml(m.replyTo.sender)}</div><div class="dm-rp-text">${escapeHtml(rpText)}</div></div>`;
         }
-
         if (m.media) {
-            if (m.type === 'video') {
-                inner += `<div class="dm-media-container" onclick="openViewer('${m.media}','video','${escapeHtml(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><video src="${m.media}"></video><div class="dm-play-icon">▶</div></div>`;
-            } else if (m.type === 'image') {
-                inner += `<div class="dm-media-container" onclick="openViewer('${m.media}','image','${escapeHtml(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><img src="${m.media}"></div>`;
-            }
+            if (m.type === 'video') inner += `<div class="dm-media-container" onclick="openViewer('${m.media}','video','${escapeHtml(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><video src="${m.media}"></video><div class="dm-play-icon">▶</div></div>`;
+            else if (m.type === 'image') inner += `<div class="dm-media-container" onclick="openViewer('${m.media}','image','${escapeHtml(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><img src="${m.media}"></div>`;
         }
-
-        if (m.text) {
-            inner += `<div>${escapeHtml(m.text)}</div>`;
-        }
-
+        if (m.text) inner += `<div>${escapeHtml(m.text)}</div>`;
         inner += `<div class="dm-time">${formatTime(m.time)} ${isMine ? '✓✓' : ''}</div>`;
-
         let acts = '<div class="dm-msg-actions">';
         acts += `<button class="dm-action-btn reply" onclick="startDMReply('${m._key || ''}')">↩ رد</button>`;
-        if (isMine) {
-            acts += `<button class="dm-action-btn del" onclick="deleteDMMessage('${m._key || ''}')">🗑️</button>`;
-        }
+        if (isMine) acts += `<button class="dm-action-btn del" onclick="deleteDMMessage('${m._key || ''}')">🗑️</button>`;
         acts += '</div>';
-
         div.innerHTML = '<div class="dm-bubble ' + (isMine ? 'mine' : 'others') + '">' + inner + '</div>' + acts;
         box.appendChild(div);
     }
     function startDMReply(key) {
-        const m = dmMessagesCache[key];
-        if (!m) return;
+        const m = dmMessagesCache[key]; if (!m) return;
         const senderName = m.from === myFP ? (myName || 'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم');
         dmReplyTo = { key: key, sender: senderName, text: m.text || '📎 وسائط', type: m.type || null };
         document.getElementById('dm-reply-sender-name').textContent = 'الرد على: ' + senderName;
@@ -2680,10 +2674,7 @@
         document.getElementById('dm-reply-bar').classList.add('active');
         document.getElementById('dm-message-input').focus();
     }
-    function cancelDMReply() {
-        dmReplyTo = null;
-        document.getElementById('dm-reply-bar').classList.remove('active');
-    }
+    function cancelDMReply() { dmReplyTo = null; document.getElementById('dm-reply-bar').classList.remove('active'); }
     function scrollToDMMessage(key) {
         if (!key) return;
         const el = document.getElementById('dm-msg-' + key);
@@ -2691,16 +2682,14 @@
     }
     async function deleteDMMessage(key) {
         if (!currentDMChat) return;
-        const m = dmMessagesCache[key];
-        if (!m) return alert('⚠️ الرسالة غير موجودة');
+        const m = dmMessagesCache[key]; if (!m) return alert('⚠️ الرسالة غير موجودة');
         if (m.from !== myFP) return alert('⛔ يمكنك حذف رسائلك فقط');
         if (!confirm('🗑️ حذف هذه الرسالة نهائياً؟')) return;
         try {
             const chatId = getChatId(myFP, currentDMChat.uid);
             await db.ref('private_chats/' + chatId + '/messages/' + key).remove();
             delete dmMessagesCache[key];
-            const el = document.getElementById('dm-msg-' + key);
-            if (el) el.remove();
+            const el = document.getElementById('dm-msg-' + key); if (el) el.remove();
         } catch (e) { alert('❌ ' + e.message); }
     }
     async function handleDMMedia(input) {
@@ -2711,20 +2700,13 @@
         const f = input.files[0];
         if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert('صورة أو فيديو فقط!'); input.value = ''; return; }
         if (f.size > 104857600) { alert('حجم كبير جداً!'); input.value = ''; return; }
-        const btn = document.getElementById('dm-media-btn');
-        const oldText = btn.textContent;
-        btn.textContent = '⏳';
+        const btn = document.getElementById('dm-media-btn'); const oldText = btn.textContent; btn.textContent = '⏳';
         try {
             const url = await uploadCloudinary(f);
             if (url) {
                 const toUid = currentDMChat.uid;
                 const chatId = getChatId(myFP, toUid);
-                const msgData = {
-                    from: myFP, fromName: myName, fromAvatar: myAvatar,
-                    to: toUid, toName: currentDMChat.name,
-                    text: '', media: url, type: f.type.startsWith('video') ? 'video' : 'image',
-                    time: firebase.database.ServerValue.TIMESTAMP
-                };
+                const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, toName: currentDMChat.name, text: '', media: url, type: f.type.startsWith('video') ? 'video' : 'image', time: firebase.database.ServerValue.TIMESTAMP };
                 if (dmReplyTo) { msgData.replyTo = { key: dmReplyTo.key, sender: dmReplyTo.sender, text: (dmReplyTo.text || '').substring(0, 100) }; cancelDMReply(); }
                 await db.ref('private_chats/' + chatId + '/messages').push(msgData);
                 const previewText = f.type.startsWith('video') ? '🎥 مقطع فيديو' : '🖼️ صورة';
@@ -2733,8 +2715,7 @@
                 playSendSound();
             } else alert('فشل الرفع');
         } catch (e) { alert('❌ ' + e.message); }
-        btn.textContent = oldText;
-        input.value = '';
+        btn.textContent = oldText; input.value = '';
     }
     async function sendDMMessage(e) {
         e.preventDefault();
@@ -2778,6 +2759,7 @@
     }
     function loadDMUsersList() {
         db.ref('dm_permissions').on('value', snap => {
+            if (isBeingDeleted) return;
             allDMUsersData = {};
             if (snap.exists()) snap.forEach(c => { allDMUsersData[c.key] = c.val() === true; });
             refreshMyDMPermission();
@@ -2787,6 +2769,7 @@
     }
     function loadMediaUsersList() {
         db.ref('media_permissions').on('value', snap => {
+            if (isBeingDeleted) return;
             allMediaUsersData = {};
             if (snap.exists()) snap.forEach(c => { allMediaUsersData[c.key] = c.val() === true; });
             refreshMyMediaPermission();
@@ -2796,6 +2779,7 @@
     }
     function loadStatusUsersList() {
         db.ref('status_permissions').on('value', snap => {
+            if (isBeingDeleted) return;
             allStatusUsersData = {};
             if (snap.exists()) snap.forEach(c => { allStatusUsersData[c.key] = c.val() === true; });
             refreshMyStatusPermission();
@@ -2803,46 +2787,345 @@
             if (document.getElementById('users-modal').classList.contains('active')) updateUsersList();
         });
     }
-    async function deleteMyAccount() {
-        if (!confirm('⚠️ حذف حسابك نهائياً؟')) return;
+
+    // ============================================================
+    // ✅✅✅ دالة الحذف الشامل النهائي - تحذف كل أثر للمستخدم ✅✅✅
+    // ============================================================
+    async function purgeUserEverywhere(uid, name, avatar) {
+        console.log('🗑️ بدء الحذف الشامل للمستخدم:', uid, name);
+        const updates = {};
+
+        // 1) جميع بيانات المستخدم المباشرة
+        updates['users/' + uid] = null;
+        updates['bans/' + uid] = null;
+        updates['mutes/' + uid] = null;
+        updates['ignores/' + uid] = null;
+        updates['dm_permissions/' + uid] = null;
+        updates['dm_denials/' + uid] = null;
+        updates['media_permissions/' + uid] = null;
+        updates['media_denials/' + uid] = null;
+        updates['status_permissions/' + uid] = null;
+        updates['status_denials/' + uid] = null;
+        updates['dm_inbox/' + uid] = null;
+        updates['dm_clears/' + uid] = null;
+        updates['maintenance/testers/' + uid] = null;
+        updates['fcm_tokens/' + uid] = null;
+        updates['notification_prefs/' + uid] = null;
+        updates['color_settings/' + uid] = null;
+        updates['glow_settings/' + uid] = null;
+        updates['notifications/' + uid] = null;
+        updates['warnings/current/ack/' + uid] = null;
+
+        // 2) روابط الاسم والبصمة
+        if (name && name.trim() && name !== 'مجهول') {
+            updates['name_links/' + name.toLowerCase()] = null;
+        }
+        updates['fp_links/' + uid] = null;
+
+        // 3) حذف جميع رسائله في الغرفة
         try {
-            const currentFP = myFP, currentName = myName;
-            await db.ref('users/' + currentFP).remove();
-            await db.ref('bans/' + currentFP).remove();
-            await db.ref('mutes/' + currentFP).remove();
-            await db.ref('fp_links/' + currentFP).remove();
-            await db.ref('dm_permissions/' + currentFP).remove();
-            await db.ref('dm_denials/' + currentFP).remove();
-            await db.ref('media_permissions/' + currentFP).remove();
-            await db.ref('media_denials/' + currentFP).remove();
-            await db.ref('status_permissions/' + currentFP).remove();
-            await db.ref('status_denials/' + currentFP).remove();
-            await db.ref('dm_inbox/' + currentFP).remove();
-            await db.ref('dm_clears/' + currentFP).remove();
-            await db.ref('fcm_tokens/' + currentFP).remove();
-            await db.ref('notification_prefs/' + currentFP).remove();
-            if (currentName) await db.ref('name_links/' + currentName.toLowerCase()).remove();
-            const messagesSnap = await db.ref('messages').orderByChild('uid').equalTo(currentFP).once('value');
-            if (messagesSnap.exists()) { const updates = {}; messagesSnap.forEach(child => { updates[child.key] = null; }); await db.ref('messages').update(updates); }
-            const statusesSnap = await db.ref('statuses').orderByChild('uid').equalTo(currentFP).once('value');
-            if (statusesSnap.exists()) { const updates = {}; statusesSnap.forEach(child => { updates[child.key] = null; }); await db.ref('statuses').update(updates); }
-            await db.ref('notifications/' + currentFP).remove();
-            localStorage.clear(); alert('✅'); window.location.reload();
-        } catch (e) { alert('❌ ' + e.message); }
+            const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value');
+            if (msgs.exists()) msgs.forEach(c => { updates['messages/' + c.key] = null; });
+        } catch(e) { console.warn('فشل حذف الرسائل:', e); }
+
+        // 4) حذف جميع حالاته
+        try {
+            const sts = await db.ref('statuses').orderByChild('uid').equalTo(uid).once('value');
+            if (sts.exists()) sts.forEach(c => { updates['statuses/' + c.key] = null; });
+        } catch(e) { console.warn('فشل حذف الحالات:', e); }
+
+        // 5) حذف جميع المحادثات الخاصة التي يشارك فيها
+        try {
+            const privateChatsSnap = await db.ref('private_chats').once('value');
+            if (privateChatsSnap.exists()) {
+                privateChatsSnap.forEach(chat => {
+                    const chatId = chat.key;
+                    // التحقق الدقيق: chatId = uid1_uid2 حيث uid1 < uid2
+                    if (chatId === uid) { updates['private_chats/' + chatId] = null; return; }
+                    if (chatId.startsWith(uid + '_')) { updates['private_chats/' + chatId] = null; return; }
+                    if (chatId.endsWith('_' + uid)) { updates['private_chats/' + chatId] = null; return; }
+                    // فحص أكثر دقة لمعرفة إن كان uid مكون كامل
+                    const parts = chatId.split('_');
+                    if (parts.length >= 2) {
+                        // جرب البحث عن uid كجزء كامل
+                        if (parts.includes(uid)) {
+                            updates['private_chats/' + chatId] = null;
+                        }
+                    }
+                });
+            }
+        } catch(e) { console.warn('فشل حذف المحادثات:', e); }
+
+        // 6) إزالة المستخدم من dm_inbox لجميع المستخدمين الآخرين
+        try {
+            const dmInboxAll = await db.ref('dm_inbox').once('value');
+            if (dmInboxAll.exists()) {
+                dmInboxAll.forEach(userInbox => {
+                    const otherUid = userInbox.key;
+                    if (otherUid === uid) return;
+                    if (userInbox.hasChild(uid)) {
+                        updates['dm_inbox/' + otherUid + '/' + uid] = null;
+                    }
+                });
+            }
+        } catch(e) { console.warn('فشل تنظيف dm_inbox:', e); }
+
+        // 7) إزالة المستخدم من dm_clears لجميع المستخدمين الآخرين
+        try {
+            const dmClearsAll = await db.ref('dm_clears').once('value');
+            if (dmClearsAll.exists()) {
+                dmClearsAll.forEach(userClears => {
+                    const otherUid = userClears.key;
+                    if (otherUid === uid) return;
+                    userClears.forEach(clearEntry => {
+                        const chatId = clearEntry.key;
+                        if (chatId === uid || chatId.startsWith(uid + '_') || chatId.endsWith('_' + uid) || chatId.split('_').includes(uid)) {
+                            updates['dm_clears/' + otherUid + '/' + chatId] = null;
+                        }
+                    });
+                });
+            }
+        } catch(e) { console.warn('فشل تنظيف dm_clears:', e); }
+
+        // 8) حذف جميع البلاغات التي يكون فيها مبلّغاً أو مُبلَّغاً عنه
+        try {
+            const reportsSnap = await db.ref('reports').once('value');
+            if (reportsSnap.exists()) {
+                reportsSnap.forEach(report => {
+                    const r = report.val();
+                    if (r.targetId === uid || r.reporterId === uid || r.messageSnapshot?.sender_uid === uid) {
+                        updates['reports/' + report.key] = null;
+                    }
+                });
+            }
+        } catch(e) { console.warn('فشل حذف البلاغات:', e); }
+
+        // 9) إزالة إشعارات من أشار إليه في notifications لجميع المستخدمين
+        try {
+            const notifsAll = await db.ref('notifications').once('value');
+            if (notifsAll.exists()) {
+                notifsAll.forEach(userNotifs => {
+                    const otherUid = userNotifs.key;
+                    userNotifs.forEach(notif => {
+                        const n = notif.val();
+                        // إشعارات المصدر (نادراً) - نحذف ما يشير له
+                        if (n.targetId === uid || n.reporterId === uid) {
+                            updates['notifications/' + otherUid + '/' + notif.key] = null;
+                        }
+                    });
+                });
+            }
+        } catch(e) { console.warn('فشل تنظيف الإشعارات:', e); }
+
+        // 10) إزالة المستخدم من ack لجميع التحذيرات
+        try {
+            const warningsSnap = await db.ref('warnings/history').once('value');
+            if (warningsSnap.exists()) {
+                warningsSnap.forEach(warning => {
+                    if (warning.hasChild('ack/' + uid)) {
+                        updates['warnings/history/' + warning.key + '/ack/' + uid] = null;
+                    }
+                });
+            }
+        } catch(e) { console.warn('فشل تنظيف التحذيرات:', e); }
+
+        // 11) إزالة من قوائم التحذيرات إذا كان مستهدفاً بمفرده
+        try {
+            const warningsSnap2 = await db.ref('warnings/history').once('value');
+            if (warningsSnap2.exists()) {
+                warningsSnap2.forEach(warning => {
+                    const w = warning.val();
+                    if (w.target && w.target.type === 'user' && w.target.value === uid) {
+                        updates['warnings/history/' + warning.key] = null;
+                    }
+                });
+            }
+            const currentWarningSnap = await db.ref('warnings/current').once('value');
+            if (currentWarningSnap.exists()) {
+                const w = currentWarningSnap.val();
+                if (w.target && w.target.type === 'user' && w.target.value === uid) {
+                    updates['warnings/current'] = null;
+                }
+            }
+        } catch(e) { console.warn('فشل تنظيف تحذيرات المستخدم:', e); }
+
+        // 10.5) إزالة من فهارس البصمة المعاكسة
+        try {
+            const fpLinksSnap = await db.ref('fp_links/' + uid).once('value');
+            if (fpLinksSnap.exists()) {
+                const fpObj = fpLinksSnap.val();
+                Object.keys(fpObj).forEach(nameKey => {
+                    updates['name_links/' + nameKey + '/' + uid] = null;
+                });
+            }
+        } catch(e) { console.warn('فشل تنظيف fp_links:', e); }
+
+        // 12) تنفيذ كل الحذف في عملية واحدة
+        try {
+            if (Object.keys(updates).length > 0) {
+                await db.ref().update(updates);
+                console.log('✅ تم تنفيذ ' + Object.keys(updates).length + ' عملية حذف');
+            }
+        } catch(e) {
+            console.warn('فشل الدفعة الأولى، جاري التنفيذ بشكل فردي...');
+            // تنفيذ بشكل فردي كـ fallback
+            for (const key in updates) {
+                try { await db.ref(key).remove(); } catch(err) { console.warn('فشل حذف:', key, err); }
+            }
+        }
+
+        console.log('✅ تم الحذف الشامل بنجاح');
     }
+
+    // ✅ دالة حذف حسابي نهائياً (المستخدم يحذف نفسه)
+    async function deleteMyAccount() {
+        if (isBeingDeleted) return;
+        if (!confirm('⚠️ هل أنت متأكد من حذف حسابك نهائياً؟\n\n• سيتم حذف جميع رسائلك\n• جميع حالاتك\n• جميع محادثاتك الخاصة\n• كل شيء متعلق بحسابك\n\n⚠️ لا يمكن التراجع!')) return;
+        if (!confirm('⚠️ تأكيد أخير!\n\nهل أنت متأكد 100%؟')) return;
+
+        const myFPcopy = myFP;
+        const myNameCopy = myName;
+        const myAvatarCopy = myAvatar;
+
+        // 1) عرض شاشة الحذف فوراً
+        isBeingDeleted = true;
+        document.getElementById('deletion-title').textContent = '🗑️ جاري حذف حسابك';
+        document.getElementById('deletion-subtitle').textContent = 'يتم حذف جميع بياناتك من السيرفر...';
+        document.getElementById('deletion-overlay').classList.add('active');
+        try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch(e) {}
+
+        // 2) تسجيل الإجراء
+        try { await logAdminAction('self_delete_account', myFPcopy, myNameCopy, {}); } catch(e) {}
+
+        // 3) حذف شامل من قاعدة البيانات
+        try {
+            await purgeUserEverywhere(myFPcopy, myNameCopy, myAvatarCopy);
+        } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
+
+        // 4) تنظيف محلي فوري
+        try {
+            localStorage.clear();
+            sessionStorage.clear();
+            // محاولة حذف IndexedDB (fingerprint)
+            if (window.indexedDB) {
+                try { indexedDB.deleteDatabase('__fpjs_d_m'); } catch(e) {}
+            }
+        } catch(e) {}
+
+        // 5) قطع الاتصال
+        try { db.ref('users/' + myFPcopy).onDisconnect().cancel(); } catch(e) {}
+
+        // 6) إعادة تحميل فورية بعد تأخير قصير
+        setTimeout(() => {
+            location.replace(location.pathname + '?deleted=' + Date.now());
+        }, 2000);
+    }
+
+    // ✅ حذف مستخدم نهائياً بواسطة المالك (يطرده فوراً)
+    async function permanentDeleteUser(uid, name) {
+        if (myRole !== 'owner') return alert('⛔');
+        const tr = allUsersData[uid]?.role || 'user';
+        if (tr === 'owner') return alert('⛔ لا يمكن حذف مالك آخر');
+        if (!confirm('⚠️ حذف "' + name + '" نهائياً؟\n\n• سيتم حذف جميع رسائله\n• جميع حالاته\n• جميع محادثاته\n• كل شيء متعلق به\n\n⚠️ سيتم إخراجه فوراً من التطبيق!')) return;
+        if (!confirm('⚠️ تأكيد أخير!\n\nلا يمكن التراجع.')) return;
+
+        const targetAvatar = allUsersData[uid]?.avatar || DEFAULT_ICON;
+
+        // 1) تسجيل الإجراء
+        try { await logAdminAction('delete_user', uid, name, { target_role: tr }); } catch(e) {}
+
+        // 2) عرض تنبيه للمالك
+        const notif = document.createElement('div');
+        notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff;padding:16px 24px;border-radius:14px;font-family:var(--font-main);font-weight:700;z-index:9999999;box-shadow:0 10px 40px rgba(0,0,0,0.4);text-align:center;font-size:14px;';
+        notif.innerHTML = '⏳ جاري حذف "' + escapeHtml(name) + '" نهائياً...<br><span style="font-size:11px;opacity:0.8;margin-top:4px;display:block;">يتم حذف كل شيء متعلق بحسابه</span>';
+        document.body.appendChild(notif);
+
+        // 3) الحذف الشامل
+        try {
+            await purgeUserEverywhere(uid, name, targetAvatar);
+            // 4) إذا كان المستخدم متصلاً الآن، سيتم طرده تلقائياً بسبب listener في تطبيقه
+            //    لأن users/{uid} تم حذفه، سيستقبل القيمة null ويفعّل forceLogout
+        } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
+
+        // 5) إزالة التنبيه
+        setTimeout(() => { if (notif.parentNode) notif.remove(); }, 1500);
+
+        alert('✅ تم حذف "' + name + '" نهائياً مع جميع بياناته من قاعدة البيانات');
+    }
+
+    // ✅ حذف الحسابات المجهولة (بدون اسم صالح)
+    async function deleteUnknownUser(uid) {
+        if (myRole !== 'owner') return alert('⛔');
+        const u = allUsersData[uid]; if (!u) return alert('المستخدم غير موجود');
+        if (!isUserUnknown(u)) return alert('هذا المستخدم ليس مجهولاً');
+        const displayName = u.name || 'بدون اسم';
+        if (!confirm('🗑️ حذف هذا الحساب نهائياً؟\n\nالاسم: "' + displayName + '"\n\n• سيتم حذف كل شيء متعلق به من التطبيق.')) return;
+
+        const targetAvatar = u.avatar || DEFAULT_ICON;
+        try {
+            await logAdminAction('delete_unknown_user', uid, displayName, {});
+            await purgeUserEverywhere(uid, u.name, targetAvatar);
+            alert('✅ تم حذف الحساب نهائياً');
+            if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
+            updateUnknownUsersBtnVisibility();
+        } catch(e) { alert('❌ ' + e.message); }
+    }
+
+    async function deleteAllUnknownUsers() {
+        if (myRole !== 'owner') return alert('⛔');
+        const unknowns = [];
+        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (isUserUnknown(u)) unknowns.push({ uid: k, name: u.name || 'بدون اسم', avatar: u.avatar || DEFAULT_ICON }); });
+        if (unknowns.length === 0) return alert('✅ لا توجد حسابات بدون اسم');
+        if (!confirm('🗑️ حذف ' + unknowns.length + ' حساب بدون اسم صالح نهائياً؟')) return;
+        if (!confirm('⚠️ تأكيد أخير!\nلا يمكن التراجع عن هذه العملية.')) return;
+
+        const notif = document.createElement('div');
+        notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff;padding:16px 24px;border-radius:14px;font-family:var(--font-main);font-weight:700;z-index:9999999;box-shadow:0 10px 40px rgba(0,0,0,0.4);text-align:center;font-size:14px;';
+        notif.innerHTML = '⏳ جاري الحذف الشامل...<br><span style="font-size:11px;opacity:0.8;margin-top:4px;display:block;">0 / ' + unknowns.length + '</span>';
+        document.body.appendChild(notif);
+        const cntEl = notif.querySelector('span');
+
+        let success = 0, failed = 0;
+        for (let i = 0; i < unknowns.length; i++) {
+            const target = unknowns[i];
+            try {
+                await purgeUserEverywhere(target.uid, target.name, target.avatar);
+                success++;
+            } catch(e) { failed++; console.warn('فشل حذف', target.uid, e); }
+            if (cntEl) cntEl.textContent = (i + 1) + ' / ' + unknowns.length;
+        }
+
+        try { await logAdminAction('delete_all_unknown_users', null, null, { count: success, failed: failed }); } catch(e) {}
+
+        setTimeout(() => { if (notif.parentNode) notif.remove(); }, 500);
+        setTimeout(() => {
+            alert('✅ تم حذف ' + success + ' من ' + unknowns.length + (failed > 0 ? '\n❌ فشل: ' + failed : ''));
+            if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
+            updateUnknownUsersBtnVisibility();
+        }, 600);
+    }
+
     function updateHiddenButton() { const btn = document.getElementById('toggle-hidden-btn'); if (!btn) return; if (isHidden) { btn.textContent = '🙈 أنا مخفي (إظهار)'; btn.style.background = '#4caf50'; } else { btn.textContent = '🙈 إخفاء نفسي'; btn.style.background = '#e91e63'; } }
     function toggleOwnerHidden() { if (myRole !== 'owner') return alert('⛔'); const n = !isHidden; db.ref('users/' + myFP + '/hidden').set(n).then(() => { isHidden = n; updateHiddenButton(); alert(n ? '✅' : '✅'); }); }
 
     function startListeners() {
         loadMessages();
         db.ref('messages').limitToLast(1).on('child_added', s => {
+            if (isBeingDeleted) return;
             const k = s.key, v = s.val();
             if (!messagesCache[k]) { messagesCache[k] = v; const ks = Object.keys(messagesCache); if (ks.length > 300) { const o = ks.sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0))[0]; delete messagesCache[o]; } renderMessages(); }
         });
-        db.ref('messages').on('child_removed', s => { const k = s.key; if (messagesCache[k]) { delete messagesCache[k]; renderMessages(); } });
-        db.ref('users').on('value', s => { const d = {}; s.forEach(c => { d[c.key] = c.val() }); allUsersData = d; updateUsersList(); renderStatuses(); renderNotifications(); updateStatusBadge(); updateOnlineBadge(); if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList(); updateUnknownUsersBtnVisibility(); });
-        db.ref('statuses').on('value', s => { statusesCache = {}; s.forEach(c => { statusesCache[c.key] = c.val() }); renderStatuses(); updateStatusBadge(); });
-        db.ref('notifications/' + myFP).on('value', s => { myNotifications = {}; if (s.exists()) s.forEach(c => { myNotifications[c.key] = c.val() }); renderNotifications(); updateNotifBadge(); });
+        db.ref('messages').on('child_removed', s => { if (isBeingDeleted) return; const k = s.key; if (messagesCache[k]) { delete messagesCache[k]; renderMessages(); } });
+        db.ref('users').on('value', s => {
+            if (isBeingDeleted) return;
+            const d = {}; s.forEach(c => { d[c.key] = c.val() });
+            allUsersData = d;
+            updateUsersList(); renderStatuses(); renderNotifications(); updateStatusBadge(); updateOnlineBadge();
+            if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
+            updateUnknownUsersBtnVisibility();
+        });
+        db.ref('statuses').on('value', s => { if (isBeingDeleted) return; statusesCache = {}; s.forEach(c => { statusesCache[c.key] = c.val() }); renderStatuses(); updateStatusBadge(); });
+        db.ref('notifications/' + myFP).on('value', s => { if (isBeingDeleted) return; myNotifications = {}; if (s.exists()) s.forEach(c => { myNotifications[c.key] = c.val() }); renderNotifications(); updateNotifBadge(); });
         loadDMUsersList();
         loadMediaUsersList();
         loadStatusUsersList();
@@ -2874,6 +3157,7 @@
         c.addEventListener('scroll', function() { if (this.scrollTop < 30 && hasMore && !loadingMore) { const oh = this.scrollHeight; loadMore(); setTimeout(() => { this.scrollTop = this.scrollHeight - oh + 5; }, 50); } });
     }
     function renderMessages() {
+        if (isBeingDeleted) return;
         const box = document.getElementById('chat-messages');
         const sp = box.scrollTop, isBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 50;
         box.innerHTML = '';
@@ -2884,7 +3168,6 @@
         dk.forEach(k => {
             const m = messagesCache[k]; if (!m) return;
             const isMine = m.uid === myFP, ud = allUsersData[m.uid] || {}, da = ud.avatar || m.avatar || DEFAULT_ICON;
-            // ✅ استخدام getDisplayName للعرض الصحيح
             const dn = getDisplayName({ name: ud.name || m.sender }).text;
             const dr = ud.role || m.role || 'user';
             const div = document.createElement('div'); div.className = 'msg-row ' + (isMine ? 'mine' : 'others'); div.id = 'msg-' + k;
@@ -2936,8 +3219,8 @@
         if (isBottom) box.scrollTop = box.scrollHeight; else box.scrollTop = sp;
     }
 
-    // ✅ تم إصلاح هذه الدالة لعرض الحسابات غير الصالحة بوضوح (بدون تكرار "مجهول")
     function updateUsersList() {
+        if (isBeingDeleted) return;
         const l = document.getElementById('users-list'); if (!l) return;
         const users = [];
         Object.keys(allUsersData).forEach(k => {
@@ -2945,14 +3228,13 @@
             if (u.hidden === true && k !== myFP) return;
             u.uid = k; u._effectiveStatus = getUserEffectiveStatus(u); u._isUnknown = isUserUnknown(u); users.push(u);
         });
-        const onlineUsers = users.filter(u => u._effectiveStatus === 'online' || u._effectiveStatus === 'away');
-        const offlineUsers = users.filter(u => u._effectiveStatus !== 'online' && u._effectiveStatus !== 'away');
-        onlineUsers.sort((a, b) => (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0));
-        offlineUsers.sort((a, b) => (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0));
-        // ✅ وضع المجهولين في نهاية القائمة
         const validUsers = users.filter(u => !u._isUnknown);
         const unknownUsers = users.filter(u => u._isUnknown);
-        const sortedUsers = [...validUsers.filter(u => u._effectiveStatus === 'online' || u._effectiveStatus === 'away'), ...validUsers.filter(u => u._effectiveStatus !== 'online' && u._effectiveStatus !== 'away'), ...unknownUsers];
+        const onlineValid = validUsers.filter(u => u._effectiveStatus === 'online' || u._effectiveStatus === 'away');
+        const offlineValid = validUsers.filter(u => u._effectiveStatus !== 'online' && u._effectiveStatus !== 'away');
+        onlineValid.sort((a, b) => (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0));
+        offlineValid.sort((a, b) => (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0));
+        const sortedUsers = [...onlineValid, ...offlineValid, ...unknownUsers];
         const onlineCount = users.filter(u => u._effectiveStatus === 'online' || u._effectiveStatus === 'away').length;
         const ob = document.getElementById('online-badge');
         if (ob) { ob.textContent = onlineCount; ob.style.display = onlineCount > 0 ? 'block' : 'none'; }
@@ -2977,23 +3259,12 @@
             else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">✅ موثوق</span>';
             const avatar = u.avatar || DEFAULT_ICON;
             let hiddenBadge = ''; if (u.uid === myFP && isHidden && myRole === 'owner') hiddenBadge = '<span class="hidden-owner-badge">🙈 مخفي</span>';
-
-            // ✅ الحل: عرض الاسم بشكل صحيح بدون تكرار
             let displayNameHtml = '';
             let invalidBadgeHtml = '';
             if (isUnknown) {
-                if (!u.name || u.name.trim() === '') {
-                    // الاسم فارغ تماماً
-                    displayNameHtml = '<em style="color:#e53935;font-style:normal;font-weight:700;">⚠️ بدون اسم</em>';
-                } else {
-                    // الاسم موجود لكنه غير صالح (مثل "مجهول")
-                    displayNameHtml = '<span style="color:#e53935;">' + escapeHtml(u.name) + '</span>';
-                    invalidBadgeHtml = '<span class="role-badge invalid">⚠️ غير صالح</span>';
-                }
-            } else {
-                displayNameHtml = escapeHtml(u.name);
-            }
-
+                if (!u.name || u.name.trim() === '') displayNameHtml = '<em style="color:#e53935;font-style:normal;font-weight:700;">⚠️ بدون اسم</em>';
+                else { displayNameHtml = '<span style="color:#e53935;">' + escapeHtml(u.name) + '</span>'; invalidBadgeHtml = '<span class="role-badge invalid">⚠️ غير صالح</span>'; }
+            } else displayNameHtml = escapeHtml(u.name);
             if (existing) {
                 existing.dataset.role = u.role || 'user';
                 existing.classList.toggle('invalid-name', isUnknown);
@@ -3052,7 +3323,7 @@
         if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && myRole !== 'owner') { e.innerHTML = ''; return; }
         db.ref('bans/' + u).once('value', b => {
             const ib = b.exists(); let bt = '';
-            if (isUnknown && myRole === 'owner') bt += '<button class="ctrl-btn delete-unknown" onclick="deleteUnknownUser(\'' + u + '\')" title="حذف الحساب غير الصالح نهائياً">🗑️</button>';
+            if (isUnknown && myRole === 'owner') bt += '<button class="ctrl-btn delete-unknown" onclick="deleteUnknownUser(\'' + u + '\')" title="حذف الحساب نهائياً">🗑️</button>';
             if (canBan(myRole, d.role)) { if (ib) { if (myRole === 'owner') bt += '<button class="ctrl-btn unban" onclick="unbanUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">↺</button>'; } else bt += '<button class="ctrl-btn ban" onclick="banUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🚫</button>'; }
             db.ref('mutes/' + u).once('value', m => {
                 let im = false; if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
@@ -3067,7 +3338,7 @@
                     if (isExplicitDeny) { dmCls = 'dm-deny'; dmIcon = '🚫'; }
                     else if (isExplicitAllow) { dmCls = 'dm'; dmIcon = '💌'; }
                     else if (isDMOn) { dmCls = 'dm'; dmIcon = '💌'; }
-                    bt += '<button class="ctrl-btn ' + dmCls + '" onclick="cycleUserDMPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الخاص: افتراضي → سماح → حظر">' + dmIcon + '</button>';
+                    bt += '<button class="ctrl-btn ' + dmCls + '" onclick="cycleUserDMPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الخاص">' + dmIcon + '</button>';
                     const isMediaOn = canUserSendMedia(u, d.role);
                     const isMediaDeny = mediaDenialsData[u] === true;
                     const isMediaAllow = allMediaUsersData[u] === true;
@@ -3075,7 +3346,7 @@
                     if (isMediaDeny) { mediaCls = 'media-deny'; mediaIcon = '🚫'; }
                     else if (isMediaAllow) { mediaCls = 'media'; mediaIcon = '📎'; }
                     else if (isMediaOn) { mediaCls = 'media'; mediaIcon = '📎'; }
-                    bt += '<button class="ctrl-btn ' + mediaCls + '" onclick="cycleUserMediaPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الوسائط: افتراضي → سماح → حظر">' + mediaIcon + '</button>';
+                    bt += '<button class="ctrl-btn ' + mediaCls + '" onclick="cycleUserMediaPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الوسائط">' + mediaIcon + '</button>';
                     const isStatusOn = canUserPostStatus(u, d.role);
                     const isStatusDeny = statusDenialsData[u] === true;
                     const isStatusAllow = allStatusUsersData[u] === true;
@@ -3083,89 +3354,27 @@
                     if (isStatusDeny) { statusCls = 'status-deny'; statusIcon = '🚫'; }
                     else if (isStatusAllow) { statusCls = 'status'; statusIcon = '📸'; }
                     else if (isStatusOn) { statusCls = 'status'; statusIcon = '📸'; }
-                    bt += '<button class="ctrl-btn ' + statusCls + '" onclick="cycleUserStatusPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الحالات: افتراضي → سماح → حظر">' + statusIcon + '</button>';
-                    bt += '<button class="ctrl-btn" style="background:#b71c1c;font-size:10px;" onclick="permanentDeleteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🗑️</button>';
+                    bt += '<button class="ctrl-btn ' + statusCls + '" onclick="cycleUserStatusPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الحالات">' + statusIcon + '</button>';
+                    bt += '<button class="ctrl-btn delete-user" onclick="permanentDeleteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="حذف المستخدم نهائياً">🗑️</button>';
                 }
                 e.innerHTML = bt;
             });
         });
     }
 
-    async function cleanupUserCompletely(uid, name) {
-        await db.ref('users/' + uid).remove();
-        await db.ref('bans/' + uid).remove();
-        await db.ref('mutes/' + uid).remove();
-        await db.ref('fp_links/' + uid).remove();
-        await db.ref('dm_permissions/' + uid).remove();
-        await db.ref('dm_denials/' + uid).remove();
-        await db.ref('media_permissions/' + uid).remove();
-        await db.ref('media_denials/' + uid).remove();
-        await db.ref('status_permissions/' + uid).remove();
-        await db.ref('status_denials/' + uid).remove();
-        await db.ref('dm_inbox/' + uid).remove();
-        await db.ref('dm_clears/' + uid).remove();
-        await db.ref('maintenance/testers/' + uid).remove();
-        await db.ref('fcm_tokens/' + uid).remove();
-        await db.ref('notification_prefs/' + uid).remove();
-        await db.ref('color_settings/' + uid).remove();
-        await db.ref('glow_settings/' + uid).remove();
-        if (name && name.trim() && name !== 'مجهول') { await db.ref('name_links/' + name.toLowerCase()).remove(); }
-        const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value');
-        if (msgs.exists()) { let u = {}; msgs.forEach(c => { u[c.key] = null; }); await db.ref('messages').update(u); }
-        const st = await db.ref('statuses').orderByChild('uid').equalTo(uid).once('value');
-        if (st.exists()) { let u = {}; st.forEach(c => { u[c.key] = null; }); await db.ref('statuses').update(u); }
-        await db.ref('notifications/' + uid).remove();
-    }
-
-    async function deleteUnknownUser(uid) {
-        if (myRole !== 'owner') return alert('⛔');
-        const u = allUsersData[uid]; if (!u) return alert('المستخدم غير موجود');
-        if (!isUserUnknown(u)) return alert('هذا المستخدم ليس مجهولاً');
-        if (!confirm('🗑️ حذف هذا الحساب نهائياً؟\n\nسيتم حذف كل شيء متعلق به من التطبيق.')) return;
-        try {
-            await cleanupUserCompletely(uid, u.name || 'مجهول');
-            await logAdminAction('delete_unknown_user', uid, u.name || 'مجهول', {});
-            alert('✅ تم حذف الحساب نهائياً');
-            if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
-            updateUnknownUsersBtnVisibility();
-        } catch(e) { alert('❌ ' + e.message); }
-    }
-
-    async function deleteAllUnknownUsers() {
-        if (myRole !== 'owner') return alert('⛔');
-        const unknowns = [];
-        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (isUserUnknown(u)) unknowns.push(k); });
-        if (unknowns.length === 0) return alert('✅ لا توجد حسابات بدون اسم');
-        if (!confirm('🗑️ حذف ' + unknowns.length + ' حساب بدون اسم صالح نهائياً؟')) return;
-        if (!confirm('⚠️ تأكيد أخير!\nلا يمكن التراجع عن هذه العملية.')) return;
-        let success = 0, failed = 0;
-        for (const uid of unknowns) {
-            try { const u = allUsersData[uid]; await cleanupUserCompletely(uid, u?.name || 'مجهول'); success++; } catch(e) { failed++; console.warn('فشل حذف', uid, e); }
-        }
-        await logAdminAction('delete_all_unknown_users', null, null, { count: success, failed: failed });
-        alert('✅ تم حذف ' + success + ' من ' + unknowns.length + (failed > 0 ? '\n❌ فشل: ' + failed : ''));
-        if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
-        updateUnknownUsersBtnVisibility();
-    }
-
-    async function permanentDeleteUser(uid, name) {
-        if (myRole !== 'owner') return alert('⛔');
-        const tr = allUsersData[uid]?.role || 'user';
-        if (tr === 'owner') return alert('⛔');
-        if (!confirm('⚠️ حذف "' + name + '" نهائياً؟')) return;
-        await logAdminAction('delete_user', uid, name, { target_role: tr });
-        try { await cleanupUserCompletely(uid, name); alert("✅"); } catch (e) { alert('❌ ' + e.message); }
-    }
+    async function deleteMyAccountOld() { /* legacy - replaced by new function above */ }
 
     function filterUsers() { const t = document.getElementById('user-search').value.toLowerCase(); document.querySelectorAll('.user-card').forEach(c => { const n = c.querySelector('.user-details h4')?.innerText?.toLowerCase() || ''; c.style.display = n.includes(t) ? 'flex' : 'none'; }); }
-    function updateStatusBadge() { const now = Date.now(), exp = 864e5; let unseen = 0; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (now - s.time > exp) { db.ref('statuses/' + k).remove(); return; } if (s.uid !== myFP) { const sb = s.seenBy || {}; if (!sb[myFP]) unseen++; } }); const b = document.getElementById('status-unseen-count'); if (unseen > 0) { b.textContent = unseen; b.classList.add('active'); } else b.classList.remove('active'); }
+    function updateStatusBadge() { if (isBeingDeleted) return; const now = Date.now(), exp = 864e5; let unseen = 0; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (now - s.time > exp) { db.ref('statuses/' + k).remove(); return; } if (s.uid !== myFP) { const sb = s.seenBy || {}; if (!sb[myFP]) unseen++; } }); const b = document.getElementById('status-unseen-count'); if (unseen > 0) { b.textContent = unseen; b.classList.add('active'); } else b.classList.remove('active'); }
     function updateOnlineBadge() {
+        if (isBeingDeleted) return;
         let on = 0;
         Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (u.hidden === true && k !== myFP) return; if (isUserOnline(u)) on++; });
         const b = document.getElementById('online-badge'); if (!b) return;
         b.textContent = on; b.style.display = on > 0 ? 'block' : 'none';
     }
     function updateUI() {
+        if (isBeingDeleted) return;
         document.getElementById('clear-chat-btn').style.display = ['mod', 'manager', 'owner'].includes(myRole) ? 'inline-block' : 'none';
         document.getElementById('btn-users').style.display = ['trusted', 'mod', 'manager', 'owner'].includes(myRole) ? 'block' : 'none';
         document.getElementById('add-status-btn').style.display = myStatusEnabled ? 'flex' : 'none';
@@ -3201,10 +3410,10 @@
         const targetCanReceive = canUserDM(uid, targetRole);
         if (targetCanReceive) {
             dmBtn.style.display = 'block';
-            if (myDMEnabled) { dmBtn.innerHTML = '💌 رسالة خاصة'; dmBtn.style.background = '#9c27b0'; dmBtn.classList.remove('pa-dm-btn-locked'); dmBtn.title = 'اضغط لفتح محادثة خاصة'; }
-            else { dmBtn.innerHTML = '🔒 رسالة خاصة'; dmBtn.style.background = '#9e9e9e'; dmBtn.classList.add('pa-dm-btn-locked'); dmBtn.title = 'المستقبِل مُفعّل لديه الخاص، لكن خاصك غير مُفعّل'; }
+            if (myDMEnabled) { dmBtn.innerHTML = '💌 رسالة خاصة'; dmBtn.style.background = '#9c27b0'; dmBtn.classList.remove('pa-dm-btn-locked'); }
+            else { dmBtn.innerHTML = '🔒 رسالة خاصة'; dmBtn.style.background = '#9e9e9e'; dmBtn.classList.add('pa-dm-btn-locked'); }
         } else {
-            dmBtn.style.display = 'block'; dmBtn.innerHTML = '🔒 رسالة خاصة (مغلق)'; dmBtn.style.background = '#9e9e9e'; dmBtn.classList.add('pa-dm-btn-locked'); dmBtn.title = 'خاص المستقبِل مغلق';
+            dmBtn.style.display = 'block'; dmBtn.innerHTML = '🔒 رسالة خاصة (مغلق)'; dmBtn.style.background = '#9e9e9e'; dmBtn.classList.add('pa-dm-btn-locked');
         }
         document.getElementById('profile-actions-modal').classList.add('active');
         document.getElementById('modal-overlay').classList.add('show');
@@ -3253,7 +3462,7 @@
     async function saveProfile() {
         const rawName = document.getElementById('prof-name').value;
         const validation = validateName(rawName);
-        if (!validation.valid) { return alert('❌ ' + validation.reason); }
+        if (!validation.valid) return alert('❌ ' + validation.reason);
         const n = validation.name;
         const src = document.getElementById('prof-img').src;
         let fa = myAvatar;
@@ -3294,6 +3503,7 @@
     function closeStatusScreen() { switchTab('chat'); }
 
     function renderStatuses() {
+        if (isBeingDeleted) return;
         const l = document.getElementById('status-list');
         l.innerHTML = '';
         const n = Date.now(), exp = 864e5;
@@ -3325,6 +3535,7 @@
     }
     function viewUserStatuses(uid, statuses) { if (!statuses || statuses.length === 0) return; statuses.sort((a, b) => a.time - b.time); viewerStatuses = statuses; viewerCurrentIndex = 0; viewerCurrentUid = uid; showStatusAtIndex(0); }
     function showStatusAtIndex(i) {
+        if (isBeingDeleted) return;
         if (i >= viewerStatuses.length || i < 0) { closeStatusViewer(null); return; }
         const s = viewerStatuses[i], ud = allUsersData[viewerCurrentUid] || {}, dn = getDisplayName({ name: ud.name || s.sender }).text;
         if (s.uid !== myFP) {
@@ -3337,8 +3548,7 @@
         }
         const v = document.getElementById('status-viewer'), c = document.getElementById('status-viewer-content'), ne = document.getElementById('status-viewer-name'), se = document.getElementById('status-viewer-seen'), db2 = document.getElementById('status-delete-btn');
         const reportBtn = document.getElementById('status-viewer-report-btn');
-        if (s.uid === myFP) reportBtn.style.display = 'none';
-        else reportBtn.style.display = 'flex';
+        if (s.uid === myFP) reportBtn.style.display = 'none'; else reportBtn.style.display = 'flex';
         ne.innerHTML = '📸 ' + escapeHtml(dn) + ' <span style="font-size:11px;color:#aaa;font-weight:400;">(' + (i + 1) + '/' + viewerStatuses.length + ')</span>';
         c.innerHTML = '';
         if (s.media) { if (s.type === 'video') c.innerHTML = '<video src="' + s.media + '" controls autoplay playsinline></video>'; else c.innerHTML = '<img src="' + s.media + '">'; }
@@ -3407,9 +3617,9 @@
     }
     function openNotifications() { document.getElementById('notifications-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); renderNotifications(); }
     function closeNotifications() { document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); }
-    function renderNotifications() { const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
+    function renderNotifications() { if (isBeingDeleted) return; const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
     function clearAllNotifications() { if (confirm("مسح الكل؟")) db.ref('notifications/' + myFP).remove(); }
-    function updateNotifBadge() { const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
+    function updateNotifBadge() { if (isBeingDeleted) return; const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
     function openYouTubeModal() { document.getElementById('youtube-modal').classList.add('active'); document.getElementById('yt-link-input').focus(); }
     function previewYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), p = document.getElementById('yt-preview'), img = document.getElementById('yt-preview-img'), t = document.getElementById('yt-preview-title'), sb = document.getElementById('yt-send-btn'), wb = document.getElementById('yt-watch-btn'), vid = extractYouTubeId(l); if (vid) { img.src = getYouTubeThumbnail(vid); t.textContent = 'https://youtu.be/' + vid; p.style.display = 'block'; sb.disabled = false; wb.disabled = false; } else { p.style.display = 'none'; sb.disabled = true; wb.disabled = true; } }
     function sendYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return alert("رابط غير صحيح!"); const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: l, type: 'youtube', youtubeId: vid, avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); document.getElementById('yt-link-input').value = ''; document.getElementById('yt-preview').style.display = 'none'; document.getElementById('yt-send-btn').disabled = true; document.getElementById('yt-watch-btn').disabled = true; document.getElementById('youtube-modal').classList.remove('active'); }
@@ -3461,15 +3671,13 @@
         if (!targetUid || targetUid === 'undefined' || targetUid === 'null') {
             if (targetName) {
                 let found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').trim().toLowerCase() === (targetName || '').trim().toLowerCase());
-                if (!found) { try { const usersSnap = await db.ref('users').once('value'); usersSnap.forEach(child => { if (!found && (child.val().name || '').trim().toLowerCase() === (targetName || '').trim().toLowerCase()) { found = child.key; } }); } catch (e) {} }
                 if (found) targetUid = found;
             }
-            if (!targetUid || targetUid === 'undefined' || targetUid === 'null') { targetUid = 'legacy_' + btoa(unescape(encodeURIComponent(targetName || 'unknown'))).replace(/=/g, ''); }
+            if (!targetUid || targetUid === 'undefined' || targetUid === 'null') targetUid = 'legacy_' + btoa(unescape(encodeURIComponent(targetName || 'unknown'))).replace(/=/g, '');
         }
         if (!targetName || targetName.trim() === '' || targetName === 'مستخدم مجهول' || targetName === 'مستخدم محذوف') {
             let foundName = null;
             if (allUsersData[targetUid] && allUsersData[targetUid].name) foundName = allUsersData[targetUid].name;
-            if (!foundName) { try { const snap = await db.ref('users/' + targetUid).once('value'); if (snap.exists() && snap.val().name) foundName = snap.val().name; } catch (e) {} }
             if (!foundName && messageKey && messagesCache[messageKey] && messagesCache[messageKey].sender) foundName = messagesCache[messageKey].sender;
             if (!foundName && statusKey && statusesCache[statusKey] && statusesCache[statusKey].sender) foundName = statusesCache[statusKey].sender;
             if (foundName) targetName = foundName;
@@ -3477,7 +3685,6 @@
         if (!targetName || targetName.trim() === '') targetName = 'مستخدم محذوف';
         if (!avatarUrl || avatarUrl === DEFAULT_ICON) {
             let dbUser = allUsersData[targetUid];
-            if (!dbUser) { try { const snap = await db.ref('users/' + targetUid).once('value'); if (snap.exists()) dbUser = snap.val(); } catch (e) {} }
             if (dbUser && dbUser.avatar) avatarUrl = dbUser.avatar;
         }
         if (!avatarUrl) avatarUrl = DEFAULT_ICON;
@@ -3535,15 +3742,13 @@
         if (!targetUid || targetUid === 'undefined' || targetUid === 'null') {
             if (targetName) {
                 let found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').trim().toLowerCase() === (targetName || '').trim().toLowerCase());
-                if (!found) { try { const usersSnap = await db.ref('users').once('value'); usersSnap.forEach(child => { if (!found && (child.val().name || '').trim().toLowerCase() === (targetName || '').trim().toLowerCase()) { found = child.key; } }); } catch (e) {} }
                 if (found) targetUid = found;
             }
-            if (!targetUid || targetUid === 'undefined' || targetUid === 'null') { targetUid = 'legacy_' + btoa(unescape(encodeURIComponent(targetName || 'unknown'))).replace(/=/g, ''); }
+            if (!targetUid || targetUid === 'undefined' || targetUid === 'null') targetUid = 'legacy_' + btoa(unescape(encodeURIComponent(targetName || 'unknown'))).replace(/=/g, '');
         }
         if (!targetName || targetName.trim() === '' || targetName === 'مستخدم مجهول' || targetName === 'مستخدم محذوف') {
             let foundName = null;
-            if (targetUid && !targetUid.startsWith('legacy_')) { try { const snap = await db.ref('users/' + targetUid).once('value'); if (snap.exists() && snap.val().name) foundName = snap.val().name; } catch (e) {} }
-            if (!foundName && messageKey && messagesCache[messageKey] && messagesCache[messageKey].sender) foundName = messagesCache[messageKey].sender;
+            if (messageKey && messagesCache[messageKey] && messagesCache[messageKey].sender) foundName = messagesCache[messageKey].sender;
             if (!foundName && statusKey && statusesCache[statusKey] && statusesCache[statusKey].sender) foundName = statusesCache[statusKey].sender;
             if (foundName) targetName = foundName;
         }
@@ -3566,9 +3771,10 @@
             closeReportModal(); alert('✅ تم إرسال البلاغ');
         } catch (e) { alert('❌ ' + e.message); }
     }
-    function listenReports() { if (myRole !== 'owner') return; db.ref('reports').on('value', snap => { reportsCache = {}; if (snap.exists()) { snap.forEach(child => { const val = child.val(); val.key = child.key; reportsCache[child.key] = val; }); } renderReports(); updateReportsBadge(); }); }
+    function listenReports() { if (myRole !== 'owner') return; db.ref('reports').on('value', snap => { if (isBeingDeleted) return; reportsCache = {}; if (snap.exists()) { snap.forEach(child => { const val = child.val(); val.key = child.key; reportsCache[child.key] = val; }); } renderReports(); updateReportsBadge(); }); }
     function toggleReportsModal() { const modal = document.getElementById('reports-modal'); modal.classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); if (modal.classList.contains('active')) renderReports(); }
     function renderReports() {
+        if (isBeingDeleted) return;
         const list = document.getElementById('reports-list');
         const filter = currentReportFilter;
         let filtered = Object.values(reportsCache);
@@ -3586,7 +3792,7 @@
             const rt = r.reportType || 'message';
             let displayTargetName = r.targetName;
             if (!displayTargetName || displayTargetName.trim() === '' || displayTargetName === 'مستخدم مجهول' || displayTargetName === 'مستخدم محذوف') {
-                if (r.messageSnapshot && r.messageSnapshot.sender_name && r.messageSnapshot.sender_name !== 'مجهول') displayTargetName = r.messageSnapshot.sender_name;
+                if (r.messageSnapshot && r.messageSnapshot.sender_name) displayTargetName = r.messageSnapshot.sender_name;
                 else if (allUsersData[r.targetId] && allUsersData[r.targetId].name) displayTargetName = allUsersData[r.targetId].name;
                 else displayTargetName = 'مستخدم محذوف';
             }
@@ -3603,8 +3809,7 @@
             let deleteBtn = '';
             if (myRole === 'owner') deleteBtn = `<button class="action-btn-sm action-delete" style="margin-top:5px;" onclick="deleteReport('${r.key}')">🗑️ حذف البلاغ نهائياً</button>`;
             let msgPreview = '';
-            if (r.messageKey && messagesCache[r.messageKey]) msgPreview = messagesCache[r.messageKey].text || '[وسائط]';
-            else if (r.messageSnapshot) {
+            if (r.messageSnapshot) {
                 if (r.messageSnapshot.media) {
                     if (r.messageSnapshot.media_type === 'image') msgPreview = `<img src="${escapeHtml(r.messageSnapshot.media)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','image','${escapeHtml(displayTargetName)}')" onerror="this.style.display='none'">`;
                     else if (r.messageSnapshot.media_type === 'video') msgPreview = `🎥 <strong>فيديو</strong> <button class="action-btn-sm action-preview" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','video','${escapeHtml(displayTargetName)}')">معاينة</button>`;
@@ -3625,10 +3830,6 @@
         });
         document.getElementById('reports-count').textContent = `(${filtered.length})`;
     }
-    function updateReportNameInUI(reportKey, newName, newAvatar) {
-        const card = document.querySelector(`.report-card[data-key="${reportKey}"]`);
-        if (card) { const ts = card.querySelector('.target'); if (ts) ts.textContent = `🎯 ${escapeHtml(newName)}`; const mi = card.querySelector('.report-msg img'); if (mi && newAvatar && newAvatar !== DEFAULT_ICON) mi.src = newAvatar; }
-    }
     async function deleteReportedContent(reportId, type, targetId) {
         if (myRole !== 'owner') return alert('⛔');
         const cm = { message: 'حذف الرسالة المبلّغ عنها؟', status: 'حذف الحالة المبلّغ عنها؟' }[type];
@@ -3642,7 +3843,7 @@
     }
     function deleteReport(reportId) { if (myRole !== 'owner') return alert('⛔'); if (!confirm('حذف البلاغ نهائياً؟')) return; db.ref('reports/' + reportId).remove().then(() => alert('✅')).catch(err => alert('❌ ' + err.message)); }
     function filterReports(filter, btn) { currentReportFilter = filter; document.querySelectorAll('.filter-tabs button').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderReports(); }
-    function updateReportsBadge() { const pending = Object.values(reportsCache).filter(r => r.status === 'pending' && (r.reportType === 'message' || r.reportType === 'status')).length; const badge = document.getElementById('reports-badge'); if (pending > 0) { badge.textContent = pending; badge.classList.add('active'); } else badge.classList.remove('active'); }
+    function updateReportsBadge() { if (isBeingDeleted) return; const pending = Object.values(reportsCache).filter(r => r.status === 'pending' && (r.reportType === 'message' || r.reportType === 'status')).length; const badge = document.getElementById('reports-badge'); if (pending > 0) { badge.textContent = pending; badge.classList.add('active'); } else badge.classList.remove('active'); }
     function openResolveModal(reportId, action) { if (myRole !== 'owner') return alert('⛔'); const report = reportsCache[reportId]; if (!report) return alert('غير موجود'); if (report.status !== 'pending') return alert('تم الحل'); resolveTargetReportId = reportId; document.getElementById('resolve-target-name').textContent = report.targetName || 'مستخدم محذوف'; document.getElementById('resolve-comment-input').value = ''; document.getElementById('resolve-modal').dataset.action = action; document.getElementById('resolve-modal').classList.add('active'); }
     async function resolveReport(action) {
         const reportId = resolveTargetReportId; if (!reportId) return;
@@ -3653,17 +3854,13 @@
             await db.ref('reports/' + reportId).update(updates);
             if (action !== 'none') {
                 let targetUid = report.targetId;
-                if (targetUid.startsWith('legacy_')) { alert('⚠️ تم حل البلاغ، ولكن لا يمكن تطبيق العقوبات.'); }
+                if (targetUid.startsWith('legacy_')) { alert('⚠️ تم حل البلاغ.'); }
                 else {
                     if (action === 'ban') { await db.ref('bans/' + targetUid).set(true); await logAdminAction('report_ban', targetUid, report.targetName, { report_id: reportId }); }
                     else if (action === 'mute') { const et = Date.now() + 3600000; const data = { endTime: et, by: myName, at: Date.now() }; await db.ref('mutes/' + targetUid).set(data); await logAdminAction('report_mute', targetUid, report.targetName, { report_id: reportId, duration: 60 }); }
-                    else if (action === 'kick') { await db.ref('ignores/' + targetUid).set({ endTime: Date.now() + 3600000, by: myName, at: Date.now() }); await logAdminAction('report_kick', targetUid, report.targetName, { report_id: reportId }); }
-                    else if (action === 'ignore') { await db.ref('ignores/' + targetUid).set({ endTime: 9999999999999, by: myName, at: Date.now() }); await logAdminAction('report_ignore', targetUid, report.targetName, { report_id: reportId }); }
                 }
-                if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_resolved', reportId: reportId, targetName: report.targetName, action: action, comment: comment || '', time: Date.now(), seen: false });
             } else {
                 await logAdminAction('report_reject', report.targetId, report.targetName, { report_id: reportId });
-                if (report.reporterId) db.ref('notifications/' + report.reporterId).push({ from: myName, fromAvatar: myAvatar, type: 'report_rejected', reportId: reportId, targetName: report.targetName, comment: comment || 'تم الرفض', time: Date.now(), seen: false });
             }
             document.getElementById('resolve-modal').classList.remove('active');
             alert('✅');
@@ -3679,6 +3876,7 @@
         try { const usersSnap = await db.ref('users').once('value'); usersData = usersSnap.val() || {}; } catch (e) { console.warn(e); }
         if (dmMonitorListener) db.ref('private_chats').off('value', dmMonitorListener);
         dmMonitorListener = db.ref('private_chats').on('value', snap => {
+            if (isBeingDeleted) return;
             list.innerHTML = '';
             if (!snap.exists()) { list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">📭 لا توجد محادثات خاصة</div>'; return; }
             const chats = [];
@@ -3771,6 +3969,7 @@
     function listenWarnings() {
         if (warningListener) db.ref('warnings/current').off('value', warningListener);
         warningListener = db.ref('warnings/current').on('value', snap => {
+            if (isBeingDeleted) return;
             const w = snap.val();
             if (!w || !w.id) { currentWarning = null; hideWarningOverlay(); return; }
             currentWarning = w;
@@ -3944,6 +4143,7 @@
     function listenWarningHistory() {
         if (warningHistoryListener) db.ref('warnings/history').off('value', warningHistoryListener);
         warningHistoryListener = db.ref('warnings/history').on('value', snap => {
+            if (isBeingDeleted) return;
             warningHistoryCache = snap.val() || {};
             renderWarningHistory();
             updateHistoryDeleteAllBtn();
@@ -3985,21 +4185,17 @@
         return { targets, readList, unreadList, total: targets.length, readCount: readList.length, unreadCount: unreadList.length };
     }
     function updateHistoryDeleteAllBtn() {
-        const btn = document.getElementById('whb-delete-all-btn');
-        if (!btn) return;
+        const btn = document.getElementById('whb-delete-all-btn'); if (!btn) return;
         const count = Object.keys(warningHistoryCache).length;
         btn.textContent = count > 0 ? '🧹 حذف الكل (' + count + ')' : '🧹 حذف الكل';
         btn.disabled = count === 0;
     }
     function renderWarningHistory() {
-        const list = document.getElementById('warning-history-list');
-        if (!list) return;
+        if (isBeingDeleted) return;
+        const list = document.getElementById('warning-history-list'); if (!list) return;
         list.innerHTML = '';
         const arr = Object.values(warningHistoryCache);
-        if (arr.length === 0) {
-            list.innerHTML = '<div class="warning-history-empty"><span class="whe-icon">📭</span><div class="whe-text">لا توجد تحذيرات</div><div class="whe-subtext">جميع التحذيرات المرسلة ستظهر هنا</div></div>';
-            return;
-        }
+        if (arr.length === 0) { list.innerHTML = '<div class="warning-history-empty"><span class="whe-icon">📭</span><div class="whe-text">لا توجد تحذيرات</div><div class="whe-subtext">جميع التحذيرات المرسلة ستظهر هنا</div></div>'; return; }
         arr.sort((a, b) => (b.time || 0) - (a.time || 0));
         arr.forEach(w => {
             const stats = getWarningStats(w);
@@ -4064,14 +4260,11 @@
             ne.className = 'warning-history-empty warning-history-no-results';
             ne.innerHTML = '<span class="whe-icon">🔍</span><div class="whe-text">لا توجد نتائج</div><div class="whe-subtext">جرّب كلمة بحث أخرى</div>';
             list.appendChild(ne);
-        } else if ((shownCount > 0 || !q) && existingEmpty) {
-            existingEmpty.remove();
-        }
+        } else if ((shownCount > 0 || !q) && existingEmpty) { existingEmpty.remove(); }
     }
     function confirmDeleteWarning(wid) {
         if (myRole !== 'owner') return alert('⛔');
-        const w = warningHistoryCache[wid];
-        if (!w) return alert('⚠️ التحذير غير موجود');
+        const w = warningHistoryCache[wid]; if (!w) return alert('⚠️ التحذير غير موجود');
         pendingDeleteWarningId = wid;
         pendingDeleteAllMode = false;
         const stats = getWarningStats(w);
@@ -4091,16 +4284,14 @@
         `;
         document.getElementById('wdb-message-preview').textContent = w.message || '';
         const btn = document.getElementById('wdb-confirm-btn');
-        btn.disabled = false;
-        btn.innerHTML = '🗑️ حذف نهائي';
+        btn.disabled = false; btn.innerHTML = '🗑️ حذف نهائي';
         document.getElementById('warning-delete-modal').classList.add('active');
     }
     function confirmDeleteAllWarnings() {
         if (myRole !== 'owner') return alert('⛔');
         const count = Object.keys(warningHistoryCache).length;
         if (count === 0) return alert('⚠️ لا توجد تحذيرات لحذفها');
-        pendingDeleteAllMode = true;
-        pendingDeleteWarningId = null;
+        pendingDeleteAllMode = true; pendingDeleteWarningId = null;
         let totalAcks = 0;
         Object.values(warningHistoryCache).forEach(w => { totalAcks += Object.keys(w.ack || {}).length; });
         document.getElementById('wdb-title').textContent = 'حذف جميع التحذيرات';
@@ -4112,20 +4303,17 @@
         `;
         document.getElementById('wdb-message-preview').textContent = '⚠️ سيتم حذف جميع التحذيرات من السجل والتطبيق نهائياً.';
         const btn = document.getElementById('wdb-confirm-btn');
-        btn.disabled = false;
-        btn.innerHTML = '🧹 حذف الكل نهائياً';
+        btn.disabled = false; btn.innerHTML = '🧹 حذف الكل نهائياً';
         document.getElementById('warning-delete-modal').classList.add('active');
     }
     function closeWarningDeleteModal() {
         document.getElementById('warning-delete-modal').classList.remove('active');
-        pendingDeleteWarningId = null;
-        pendingDeleteAllMode = false;
+        pendingDeleteWarningId = null; pendingDeleteAllMode = false;
     }
     async function executeWarningDelete() {
         if (myRole !== 'owner') return alert('⛔');
         const btn = document.getElementById('wdb-confirm-btn');
-        btn.disabled = true;
-        btn.innerHTML = '⏳ جاري الحذف...';
+        btn.disabled = true; btn.innerHTML = '⏳ جاري الحذف...';
         try {
             if (pendingDeleteAllMode) {
                 const allIds = Object.keys(warningHistoryCache);
@@ -4135,7 +4323,7 @@
                 await db.ref().update(updates);
                 await logAdminAction('delete_all_warnings', null, null, { count: allIds.length });
                 closeWarningDeleteModal();
-                setTimeout(() => { alert('✅ تم حذف ' + allIds.length + ' تحذير نهائياً من السجل والتطبيق'); }, 300);
+                setTimeout(() => { alert('✅ تم حذف ' + allIds.length + ' تحذير نهائياً'); }, 300);
             } else if (pendingDeleteWarningId) {
                 const wid = pendingDeleteWarningId;
                 const updates = {};
@@ -4157,14 +4345,13 @@
         let w = warningHistoryCache[wid];
         if (!w && currentWarning && currentWarning.id === wid) w = currentWarning;
         if (!w) return alert('غير موجود');
-        currentReadersWarning = w;
-        currentReadersTab = 'read';
+        currentReadersWarning = w; currentReadersTab = 'read';
         const stats = getWarningStats(w);
         let targetLabel = 'الجميع', targetIcon = '🌍';
         if (w.target) {
             if (w.target.type === 'role') { targetLabel = 'رتبة: ' + getRoleLabel(w.target.value); targetIcon = '👥'; }
             else if (w.target.type === 'user') { const u = allUsersData[w.target.value]; targetLabel = 'مستخدم: ' + (u ? u.name : 'محذوف'); targetIcon = '👤'; }
-            else if (w.target.type === 'new_users') { targetLabel = 'حسابات جديدة (من بعد الإرسال)'; targetIcon = '🆕'; }
+            else if (w.target.type === 'new_users') { targetLabel = 'حسابات جديدة'; targetIcon = '🆕'; }
         }
         const list = document.getElementById('warning-readers-list');
         list.innerHTML = '';
@@ -4222,8 +4409,7 @@
                 info.innerHTML = `<div class="wr-name">${escapeHtml(u.ackName || u.name || 'مجهول')} <span style="font-size:10px;color:#999;">${rb}</span></div><div class="wr-time">✅ قرأ في ${formatDateFull(u.ackTime || Date.now())}</div>`;
                 item.appendChild(info);
                 const status = document.createElement('div');
-                status.className = 'wr-status';
-                status.textContent = '✅';
+                status.className = 'wr-status'; status.textContent = '✅';
                 item.appendChild(status);
                 content.appendChild(item);
             });
@@ -4242,8 +4428,7 @@
                 info.innerHTML = `<div class="wr-name">${escapeHtml(u.name || 'مجهول')} <span style="font-size:10px;color:#999;">${rb}</span></div><div class="wr-time">⏳ لم يقرأ بعد</div>`;
                 item.appendChild(info);
                 const status = document.createElement('div');
-                status.className = 'wr-status';
-                status.textContent = '⏳';
+                status.className = 'wr-status'; status.textContent = '⏳';
                 item.appendChild(status);
                 content.appendChild(item);
             });
