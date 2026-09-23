@@ -357,6 +357,29 @@
         .dm-bubble.mine { background: #d9fdd3; color: #111; border-bottom-left-radius: 3px; }
         .dm-bubble.others { background: #fff; color: #111; border-bottom-right-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
         .dm-time { font-size: 9px; opacity: .5; text-align: left; margin-top: 1px; }
+        /* ✅ NEW: DM enhancements */
+        .dm-media-btn { width: 34px; height: 34px; border-radius: 50%; background: #fff; color: #9c27b0; border: 1px solid #ddd; display: none; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; flex-shrink: 0; }
+        .dm-media-btn:active { transform: scale(0.92); }
+        .dm-media-btn.active { display: flex; }
+        .dm-reply-bar { display: none; background: #fff; border-right: 3px solid #9c27b0; padding: 4px 10px; margin: 0 4px; border-radius: 6px 6px 0 0; flex-direction: column; gap: 2px; }
+        .dm-reply-bar.active { display: flex; }
+        .dm-reply-header { display: flex; justify-content: space-between; align-items: center; }
+        .dm-reply-sender { font-size: 11px; font-weight: 700; color: #9c27b0; font-family: var(--font-main); }
+        .dm-reply-close { background: 0; border: 0; font-size: 15px; color: #999; cursor: pointer; }
+        .dm-reply-content { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-main); }
+        .dm-reply-info { background: rgba(0,0,0,0.06); border-right: 3px solid #9c27b0; padding: 3px 8px; margin-bottom: 4px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+        .dm-reply-info .dm-rp-sender { font-weight: 700; color: #9c27b0; font-family: var(--font-main); }
+        .dm-reply-info .dm-rp-text { color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-main); }
+        .dm-msg-actions { display: none; margin-top: 3px; gap: 3px; padding: 0 3px; flex-wrap: wrap; }
+        .dm-msg-row:hover .dm-msg-actions, .dm-msg-row:active .dm-msg-actions { display: flex; }
+        .dm-action-btn { font-size: 9px; padding: 3px 8px; border: 0; border-radius: 4px; color: #fff; cursor: pointer; font-family: var(--font-main); font-weight: 600; }
+        .dm-action-btn:active { transform: scale(0.9); }
+        .dm-action-btn.del { background: #ef5350; }
+        .dm-action-btn.reply { background: #2196f3; }
+        .dm-media-container { margin-top: 4px; border-radius: 6px; overflow: hidden; cursor: pointer; background: #000; max-width: 100%; }
+        .dm-media-container img, .dm-media-container video { width: 100%; display: block; max-height: 220px; object-fit: cover; }
+        .dm-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 28px; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.5); pointer-events: none; }
+        /* END NEW */
         .dm-toast { position: fixed; top: 50px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #9c27b0, #6a1b9a); color: #fff; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-family: var(--font-main); font-weight: 600; box-shadow: 0 4px 20px rgba(156, 39, 176, 0.5); z-index: 9999; cursor: pointer; animation: slideDown 0.4s ease; max-width: 90%; text-align: center; }
         .dm-toast strong { color: #FFD700; }
         @keyframes slideDown { from { transform: translate(-50%, -100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
@@ -543,7 +566,6 @@
         .dm-settings-option.selected .dso-check { opacity: 1; }
         .pa-dm-btn-locked { background: #9e9e9e !important; color: #fff !important; opacity: 0.8; cursor: pointer; }
 
-        /* ===================== WARNING SYSTEM STYLES ===================== */
         #warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(30,20,20,0.97), rgba(10,10,15,0.99)); z-index: 999999; display: none; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         #warning-overlay.active { display: flex; animation: warningFadeIn 0.5s ease; }
         @keyframes warningFadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -593,529 +615,115 @@
         .warning-compose-textarea { width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; font-family: var(--font-main); font-size: 14px; resize: vertical; min-height: 100px; outline: 0; transition: border 0.2s; }
         .warning-compose-textarea:focus { border-color: #ff3b30; box-shadow: 0 0 0 3px rgba(255,59,48,0.1); }
 
-        .warning-history-card {
-            background: #fff;
-            border-radius: 14px;
-            padding: 0;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-            transition: all 0.25s;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #eee;
-        }
+        .warning-history-card { background: #fff; border-radius: 14px; padding: 0; margin-bottom: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: all 0.25s; position: relative; overflow: hidden; border: 1px solid #eee; }
         .warning-history-card:hover { box-shadow: 0 6px 22px rgba(0,0,0,0.1); transform: translateY(-2px); }
-        .warning-history-card .whc-header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 14px;
-            background: linear-gradient(135deg, #ff3b30, #ff6b35);
-            color: #fff;
-            font-family: var(--font-main);
-        }
-        .warning-history-card .whc-target-info {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-        .warning-history-card .whc-readers-badge {
-            background: rgba(255,255,255,0.25);
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            backdrop-filter: blur(4px);
-        }
+        .warning-history-card .whc-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: linear-gradient(135deg, #ff3b30, #ff6b35); color: #fff; font-family: var(--font-main); }
+        .warning-history-card .whc-target-info { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; }
+        .warning-history-card .whc-readers-badge { background: rgba(255,255,255,0.25); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; backdrop-filter: blur(4px); }
         .warning-history-card .whc-body { padding: 12px 14px; }
-        .warning-history-card .whc-message {
-            font-size: 13.5px;
-            color: #1a1a1a;
-            line-height: 1.65;
-            font-family: var(--font-main);
-            word-break: break-word;
-            margin-bottom: 10px;
-            padding: 8px 10px;
-            background: linear-gradient(135deg, #fef9f9, #fff);
-            border-right: 3px solid #ff3b30;
-            border-radius: 6px;
-            max-height: 90px;
-            overflow: hidden;
-            position: relative;
-        }
-        .warning-history-card .whc-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 8px;
-            border-top: 1px dashed #eee;
-            font-family: var(--font-main);
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .warning-history-card .whc-time {
-            font-size: 10px;
-            color: #888;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .warning-history-card .whc-actions {
-            display: flex;
-            gap: 6px;
-        }
-        .whc-btn {
-            padding: 6px 12px;
-            border: 0;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: var(--font-main);
-            font-size: 11px;
-            font-weight: 700;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .warning-history-card .whc-message { font-size: 13.5px; color: #1a1a1a; line-height: 1.65; font-family: var(--font-main); word-break: break-word; margin-bottom: 10px; padding: 8px 10px; background: linear-gradient(135deg, #fef9f9, #fff); border-right: 3px solid #ff3b30; border-radius: 6px; max-height: 90px; overflow: hidden; position: relative; }
+        .warning-history-card .whc-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px dashed #eee; font-family: var(--font-main); flex-wrap: wrap; gap: 6px; }
+        .warning-history-card .whc-time { font-size: 10px; color: #888; display: flex; align-items: center; gap: 4px; }
+        .warning-history-card .whc-actions { display: flex; gap: 6px; }
+        .whc-btn { padding: 6px 12px; border: 0; border-radius: 8px; cursor: pointer; font-family: var(--font-main); font-size: 11px; font-weight: 700; transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
         .whc-btn.view { background: linear-gradient(135deg,#e3f2fd,#bbdefb); color: #1565c0; }
         .whc-btn.view:hover { background: #90caf9; color: #0d47a1; }
         .whc-btn.delete { background: linear-gradient(135deg,#ffebee,#ffcdd2); color: #c62828; }
         .whc-btn.delete:hover { background: #ef5350; color: #fff; }
         .whc-btn:active { transform: scale(0.95); }
 
-        #warning-delete-modal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(10,10,15,0.85);
-            z-index: 9999999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
+        #warning-delete-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,15,0.85); z-index: 9999999; display: none; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         #warning-delete-modal.active { display: flex; animation: warningFadeIn 0.3s ease; }
-        .warning-delete-box {
-            background: #fff;
-            width: 100%;
-            max-width: 440px;
-            border-radius: 20px;
-            overflow: hidden;
-            animation: warningPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,59,48,0.15);
-            font-family: var(--font-main);
-            max-height: 92vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .warning-delete-box .wdb-header {
-            background: linear-gradient(135deg, #e53935, #b71c1c);
-            color: #fff;
-            padding: 18px 20px 16px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .warning-delete-box .wdb-header::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 60%);
-            animation: rotateGlow 8s linear infinite;
-        }
+        .warning-delete-box { background: #fff; width: 100%; max-width: 440px; border-radius: 20px; overflow: hidden; animation: warningPop 0.4s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,59,48,0.15); font-family: var(--font-main); max-height: 92vh; display: flex; flex-direction: column; }
+        .warning-delete-box .wdb-header { background: linear-gradient(135deg, #e53935, #b71c1c); color: #fff; padding: 18px 20px 16px; text-align: center; position: relative; overflow: hidden; }
+        .warning-delete-box .wdb-header::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 60%); animation: rotateGlow 8s linear infinite; }
         @keyframes rotateGlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .warning-delete-box .wdb-icon {
-            width: 64px; height: 64px;
-            margin: 0 auto 10px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 34px;
-            position: relative;
-            z-index: 1;
-            border: 3px solid rgba(255,255,255,0.3);
-            animation: warningPulse 2s infinite;
-        }
-        .warning-delete-box .wdb-title {
-            font-size: 20px;
-            font-weight: 900;
-            margin-bottom: 4px;
-            position: relative;
-            z-index: 1;
-            letter-spacing: 0.3px;
-        }
-        .warning-delete-box .wdb-subtitle {
-            font-size: 12px;
-            opacity: 0.95;
-            position: relative;
-            z-index: 1;
-            font-weight: 600;
-        }
-        .warning-delete-box .wdb-body {
-            padding: 18px 20px 16px;
-            overflow-y: auto;
-            flex: 1;
-        }
-        .warning-delete-box .wdb-info-card {
-            background: linear-gradient(135deg, #fef5f5, #fff);
-            border: 1.5px solid rgba(255,59,48,0.2);
-            border-radius: 12px;
-            padding: 12px 14px;
-            margin-bottom: 14px;
-        }
-        .warning-delete-box .wdb-info-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12.5px;
-            color: #333;
-            padding: 6px 0;
-            font-weight: 600;
-        }
+        .warning-delete-box .wdb-icon { width: 64px; height: 64px; margin: 0 auto 10px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; font-size: 34px; position: relative; z-index: 1; border: 3px solid rgba(255,255,255,0.3); animation: warningPulse 2s infinite; }
+        .warning-delete-box .wdb-title { font-size: 20px; font-weight: 900; margin-bottom: 4px; position: relative; z-index: 1; letter-spacing: 0.3px; }
+        .warning-delete-box .wdb-subtitle { font-size: 12px; opacity: 0.95; position: relative; z-index: 1; font-weight: 600; }
+        .warning-delete-box .wdb-body { padding: 18px 20px 16px; overflow-y: auto; flex: 1; }
+        .warning-delete-box .wdb-info-card { background: linear-gradient(135deg, #fef5f5, #fff); border: 1.5px solid rgba(255,59,48,0.2); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; }
+        .warning-delete-box .wdb-info-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #333; padding: 6px 0; font-weight: 600; }
         .warning-delete-box .wdb-info-row + .wdb-info-row { border-top: 1px dashed rgba(0,0,0,0.06); }
-        .warning-delete-box .wdb-info-row .wdb-label {
-            color: #777;
-            min-width: 90px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .warning-delete-box .wdb-info-row .wdb-value {
-            flex: 1;
-            color: #1a1a1a;
-            word-break: break-word;
-        }
-        .warning-delete-box .wdb-message-preview {
-            background: #f9f9f9;
-            border-right: 3px solid #ff3b30;
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 12.5px;
-            color: #333;
-            line-height: 1.6;
-            margin-bottom: 14px;
-            max-height: 80px;
-            overflow-y: auto;
-            word-break: break-word;
-            white-space: pre-wrap;
-        }
-        .warning-delete-box .wdb-warning-note {
-            background: linear-gradient(135deg, #fff8e1, #fffde7);
-            border: 1.5px solid #ffc107;
-            border-radius: 12px;
-            padding: 12px 14px;
-            font-size: 12.5px;
-            color: #7a5c00;
-            line-height: 1.7;
-            margin-bottom: 14px;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-        .warning-delete-box .wdb-warning-note .wdb-note-icon {
-            font-size: 22px;
-            flex-shrink: 0;
-            animation: warningPulse 2s infinite;
-        }
-        .warning-delete-box .wdb-warning-note strong {
-            color: #e65100;
-            display: block;
-            margin-bottom: 4px;
-            font-size: 13px;
-        }
-        .warning-delete-box .wdb-checklist {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        .warning-delete-box .wdb-checklist li {
-            padding: 4px 0 4px 22px;
-            font-size: 12px;
-            position: relative;
-            color: #555;
-            line-height: 1.5;
-        }
-        .warning-delete-box .wdb-checklist li::before {
-            content: '✕';
-            position: absolute;
-            right: 0;
-            color: #e53935;
-            font-weight: 900;
-            font-size: 14px;
-        }
-        .warning-delete-box .wdb-actions {
-            display: flex;
-            gap: 8px;
-            padding: 0 20px 20px;
-        }
-        .warning-delete-box .wdb-btn {
-            flex: 1;
-            padding: 13px;
-            border: 0;
-            border-radius: 12px;
-            font-family: var(--font-main);
-            font-size: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .warning-delete-box .wdb-btn.cancel {
-            background: #f0f0f0;
-            color: #555;
-        }
+        .warning-delete-box .wdb-info-row .wdb-label { color: #777; min-width: 90px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .warning-delete-box .wdb-info-row .wdb-value { flex: 1; color: #1a1a1a; word-break: break-word; }
+        .warning-delete-box .wdb-message-preview { background: #f9f9f9; border-right: 3px solid #ff3b30; border-radius: 6px; padding: 10px 12px; font-size: 12.5px; color: #333; line-height: 1.6; margin-bottom: 14px; max-height: 80px; overflow-y: auto; word-break: break-word; white-space: pre-wrap; }
+        .warning-delete-box .wdb-warning-note { background: linear-gradient(135deg, #fff8e1, #fffde7); border: 1.5px solid #ffc107; border-radius: 12px; padding: 12px 14px; font-size: 12.5px; color: #7a5c00; line-height: 1.7; margin-bottom: 14px; display: flex; gap: 10px; align-items: flex-start; }
+        .warning-delete-box .wdb-warning-note .wdb-note-icon { font-size: 22px; flex-shrink: 0; animation: warningPulse 2s infinite; }
+        .warning-delete-box .wdb-warning-note strong { color: #e65100; display: block; margin-bottom: 4px; font-size: 13px; }
+        .warning-delete-box .wdb-checklist { list-style: none; margin: 0; padding: 0; }
+        .warning-delete-box .wdb-checklist li { padding: 4px 0 4px 22px; font-size: 12px; position: relative; color: #555; line-height: 1.5; }
+        .warning-delete-box .wdb-checklist li::before { content: '✕'; position: absolute; right: 0; color: #e53935; font-weight: 900; font-size: 14px; }
+        .warning-delete-box .wdb-actions { display: flex; gap: 8px; padding: 0 20px 20px; }
+        .warning-delete-box .wdb-btn { flex: 1; padding: 13px; border: 0; border-radius: 12px; font-family: var(--font-main); font-size: 14px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+        .warning-delete-box .wdb-btn.cancel { background: #f0f0f0; color: #555; }
         .warning-delete-box .wdb-btn.cancel:active { background: #e0e0e0; transform: scale(0.97); }
-        .warning-delete-box .wdb-btn.confirm {
-            background: linear-gradient(135deg, #e53935, #b71c1c);
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(229,57,53,0.4);
-        }
+        .warning-delete-box .wdb-btn.confirm { background: linear-gradient(135deg, #e53935, #b71c1c); color: #fff; box-shadow: 0 4px 16px rgba(229,57,53,0.4); }
         .warning-delete-box .wdb-btn.confirm:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(229,57,53,0.6); }
         .warning-delete-box .wdb-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .warning-history-header-bar {
-            display: flex;
-            gap: 6px;
-            padding: 8px 10px;
-            background: #fff;
-            border-bottom: 1px solid #eee;
-            align-items: center;
-        }
+        .warning-history-header-bar { display: flex; gap: 6px; padding: 8px 10px; background: #fff; border-bottom: 1px solid #eee; align-items: center; }
         .warning-history-header-bar .search-box { margin-bottom: 0; flex: 1; padding: 8px 12px; font-size: 12px; }
-        .whb-delete-all {
-            padding: 8px 12px;
-            background: linear-gradient(135deg,#e53935,#b71c1c);
-            color: #fff;
-            border: 0;
-            border-radius: 8px;
-            font-family: var(--font-main);
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(229,57,53,0.3);
-        }
+        .whb-delete-all { padding: 8px 12px; background: linear-gradient(135deg,#e53935,#b71c1c); color: #fff; border: 0; border-radius: 8px; font-family: var(--font-main); font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 8px rgba(229,57,53,0.3); }
         .whb-delete-all:active { transform: scale(0.95); }
         .whb-delete-all:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .warning-history-empty {
-            text-align: center;
-            padding: 50px 20px;
-            color: #999;
-            font-family: var(--font-main);
-        }
-        .warning-history-empty .whe-icon {
-            font-size: 60px;
-            display: block;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-        .warning-history-empty .whe-text {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: #666;
-        }
-        .warning-history-empty .whe-subtext {
-            font-size: 12px;
-            color: #aaa;
-        }
+        .warning-history-empty { text-align: center; padding: 50px 20px; color: #999; font-family: var(--font-main); }
+        .warning-history-empty .whe-icon { font-size: 60px; display: block; margin-bottom: 12px; opacity: 0.5; }
+        .warning-history-empty .whe-text { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: #666; }
+        .warning-history-empty .whe-subtext { font-size: 12px; color: #aaa; }
 
-        .warning-readers-info-card {
-            background: linear-gradient(135deg, #fff5f5, #ffe5e5);
-            border: 2px solid rgba(255,59,48,0.25);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 12px;
-            font-family: var(--font-main);
-        }
-        .warning-readers-info-card .wric-target {
-            font-size: 11px;
-            color: #999;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .warning-readers-info-card .wric-message {
-            font-size: 14px;
-            color: #1a1a1a;
-            font-weight: 700;
-            line-height: 1.6;
-            margin-bottom: 8px;
-            word-break: break-word;
-            white-space: pre-wrap;
-        }
-        .warning-readers-info-card .wric-meta {
-            font-size: 10px;
-            color: #666;
-        }
+        .warning-readers-info-card { background: linear-gradient(135deg, #fff5f5, #ffe5e5); border: 2px solid rgba(255,59,48,0.25); border-radius: 12px; padding: 14px; margin-bottom: 12px; font-family: var(--font-main); }
+        .warning-readers-info-card .wric-target { font-size: 11px; color: #999; font-weight: 700; margin-bottom: 4px; }
+        .warning-readers-info-card .wric-message { font-size: 14px; color: #1a1a1a; font-weight: 700; line-height: 1.6; margin-bottom: 8px; word-break: break-word; white-space: pre-wrap; }
+        .warning-readers-info-card .wric-meta { font-size: 10px; color: #666; }
 
-        .warning-stats-row {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
-        }
-        .warning-stat-box {
-            flex: 1;
-            padding: 12px 8px;
-            border-radius: 12px;
-            text-align: center;
-            font-family: var(--font-main);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 2px solid transparent;
-        }
+        .warning-stats-row { display: flex; gap: 6px; margin-bottom: 12px; }
+        .warning-stat-box { flex: 1; padding: 12px 8px; border-radius: 12px; text-align: center; font-family: var(--font-main); box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 2px solid transparent; }
         .warning-stat-box.total { background: linear-gradient(135deg,#e3f2fd,#bbdefb); border-color: rgba(21,101,192,0.2); }
         .warning-stat-box.read { background: linear-gradient(135deg,#e8f5e9,#c8e6c9); border-color: rgba(46,125,50,0.2); }
         .warning-stat-box.unread { background: linear-gradient(135deg,#fff3e0,#ffe0b2); border-color: rgba(230,81,0,0.2); }
-        .warning-stat-box .wsb-count {
-            font-size: 26px;
-            font-weight: 900;
-            display: block;
-            line-height: 1;
-            margin-bottom: 4px;
-        }
+        .warning-stat-box .wsb-count { font-size: 26px; font-weight: 900; display: block; line-height: 1; margin-bottom: 4px; }
         .warning-stat-box.total .wsb-count { color: #1565c0; }
         .warning-stat-box.read .wsb-count { color: #2e7d32; }
         .warning-stat-box.unread .wsb-count { color: #e65100; }
-        .warning-stat-box .wsb-label {
-            font-size: 11px;
-            font-weight: 700;
-            opacity: 0.85;
-        }
+        .warning-stat-box .wsb-label { font-size: 11px; font-weight: 700; opacity: 0.85; }
         .warning-stat-box.total .wsb-label { color: #1565c0; }
         .warning-stat-box.read .wsb-label { color: #2e7d32; }
         .warning-stat-box.unread .wsb-label { color: #e65100; }
 
-        .warning-readers-tabs {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 10px;
-        }
-        .warning-readers-tab {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            background: #fff;
-            cursor: pointer;
-            font-family: var(--font-main);
-            font-weight: 700;
-            font-size: 13px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
+        .warning-readers-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+        .warning-readers-tab { flex: 1; padding: 10px; border: 2px solid #eee; border-radius: 10px; background: #fff; cursor: pointer; font-family: var(--font-main); font-weight: 700; font-size: 13px; color: #666; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
         .warning-readers-tab:active { transform: scale(0.97); }
-        .warning-readers-tab.active.read {
-            border-color: #4caf50;
-            background: linear-gradient(135deg,#e8f5e9,#c8e6c9);
-            color: #2e7d32;
-            box-shadow: 0 3px 12px rgba(76,175,80,0.25);
-        }
-        .warning-readers-tab.active.unread {
-            border-color: #ff9800;
-            background: linear-gradient(135deg,#fff3e0,#ffe0b2);
-            color: #e65100;
-            box-shadow: 0 3px 12px rgba(255,152,0,0.25);
-        }
-        .warning-readers-tab .wrt-count {
-            background: rgba(0,0,0,0.1);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 11px;
-            min-width: 22px;
-        }
+        .warning-readers-tab.active.read { border-color: #4caf50; background: linear-gradient(135deg,#e8f5e9,#c8e6c9); color: #2e7d32; box-shadow: 0 3px 12px rgba(76,175,80,0.25); }
+        .warning-readers-tab.active.unread { border-color: #ff9800; background: linear-gradient(135deg,#fff3e0,#ffe0b2); color: #e65100; box-shadow: 0 3px 12px rgba(255,152,0,0.25); }
+        .warning-readers-tab .wrt-count { background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 10px; font-size: 11px; min-width: 22px; }
         .warning-readers-tab.active.read .wrt-count { background: rgba(255,255,255,0.7); }
         .warning-readers-tab.active.unread .wrt-count { background: rgba(255,255,255,0.7); }
 
-        .warning-reader-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            background: #fff;
-            border-radius: 12px;
-            border: 1px solid #eee;
-            font-family: var(--font-main);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-            margin-bottom: 6px;
-            transition: all 0.2s;
-        }
+        .warning-reader-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border-radius: 12px; border: 1px solid #eee; font-family: var(--font-main); box-shadow: 0 1px 4px rgba(0,0,0,0.03); margin-bottom: 6px; transition: all 0.2s; }
         .warning-reader-item:active { transform: scale(0.99); }
         .warning-reader-item.read { border-right: 4px solid #4caf50; }
         .warning-reader-item.unread { border-right: 4px solid #ff9800; background: #fffdfa; }
-        .warning-reader-item img {
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
+        .warning-reader-item img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
         .warning-reader-item.read img { border: 2.5px solid #4caf50; }
         .warning-reader-item.unread img { border: 2.5px solid #ff9800; opacity: 0.85; }
-        .warning-reader-item .wr-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .warning-reader-item .wr-name {
-            font-size: 13px;
-            font-weight: 700;
-            color: #1a1a1a;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        .warning-reader-item .wr-time {
-            font-size: 10px;
-            color: #666;
-            margin-top: 3px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .warning-reader-item .wr-info { flex: 1; min-width: 0; }
+        .warning-reader-item .wr-name { font-size: 13px; font-weight: 700; color: #1a1a1a; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .warning-reader-item .wr-time { font-size: 10px; color: #666; margin-top: 3px; display: flex; align-items: center; gap: 4px; }
         .warning-reader-item.unread .wr-time { color: #ff9800; font-weight: 700; }
-        .warning-reader-item .wr-status {
-            font-size: 22px;
-            flex-shrink: 0;
-        }
+        .warning-reader-item .wr-status { font-size: 22px; flex-shrink: 0; }
         .warning-reader-item.read .wr-status { color: #4caf50; }
         .warning-reader-item.unread .wr-status { color: #ff9800; }
 
-        .warning-empty-readers {
-            text-align: center;
-            padding: 30px 20px;
-            color: #999;
-            font-size: 14px;
-            font-family: var(--font-main);
-            background: #fff;
-            border-radius: 12px;
-        }
-        .warning-empty-readers .we-icon {
-            font-size: 48px;
-            display: block;
-            margin-bottom: 8px;
-            opacity: 0.6;
-        }
+        .warning-empty-readers { text-align: center; padding: 30px 20px; color: #999; font-size: 14px; font-family: var(--font-main); background: #fff; border-radius: 12px; }
+        .warning-empty-readers .we-icon { font-size: 48px; display: block; margin-bottom: 8px; opacity: 0.6; }
 
         .btn-warning { width: 100%; padding: 12px; background: linear-gradient(135deg, #ff3b30, #ff6b35); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 3px 12px rgba(255,59,48,0.3); }
         .btn-warning:active { transform: scale(0.95); }
         .btn-warning-history { width: 100%; padding: 12px; background: linear-gradient(135deg, #607d8b, #455a64); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-warning-history:active { transform: scale(0.95); }
 
-        /* ===================== MEDIA & STATUS SETTINGS BUTTONS ===================== */
         .btn-media-settings { width: 100%; padding: 12px; background: linear-gradient(135deg, #008069, #00a884); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-media-settings:active { transform: scale(0.95); }
         .btn-status-settings { width: 100%; padding: 12px; background: linear-gradient(135deg, #f9a825, #f57c00); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -1290,8 +898,17 @@
             </div>
             <button class="dm-clear-btn" onclick="clearCurrentDMChat()" title="مسح المحادثة">🗑️</button>
         </div>
+        <div id="dm-reply-bar" class="dm-reply-bar">
+            <div class="dm-reply-header">
+                <span class="dm-reply-sender" id="dm-reply-sender-name">رد على...</span>
+                <button type="button" class="dm-reply-close" onclick="cancelDMReply()">✕</button>
+            </div>
+            <div class="dm-reply-content" id="dm-reply-content-text">...</div>
+        </div>
         <div id="dm-chat-messages"></div>
         <form id="dm-chat-form" onsubmit="sendDMMessage(event)">
+            <label for="dm-file-input" id="dm-media-btn" class="dm-media-btn" title="صورة/فيديو">📎</label>
+            <input type="file" id="dm-file-input" accept="image/*,video/*" style="display:none" onchange="handleDMMedia(this)">
             <input type="text" id="dm-message-input" placeholder="اكتب رسالة خاصة..." autocomplete="off">
             <button type="submit" id="dm-send-btn">➤</button>
         </form>
@@ -1604,7 +1221,7 @@
     <div class="modal-popup" id="media-settings-modal">
         <div class="popup-box" style="max-width:420px;">
             <h3 style="font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;">📎 إعدادات الوسائط العامة</h3>
-            <p style="font-size:12px;color:#777;margin:8px 0 12px;text-align:right;line-height:1.5;">اختر الحد الأدنى للرتبة المسموح لها بإرسال صور وفيديوهات في الغرفة. يمكنك أيضاً التحكم يدوياً لكل مستخدم من قائمة الأعضاء (الزر يتنقل بين: افتراضي → سماح → حظر).</p>
+            <p style="font-size:12px;color:#777;margin:8px 0 12px;text-align:right;line-height:1.5;">اختر الحد الأدنى للرتبة المسموح لها بإرسال صور وفيديوهات في الغرفة والخاص. يمكنك أيضاً التحكم يدوياً لكل مستخدم من قائمة الأعضاء (الزر يتنقل بين: افتراضي → سماح → حظر).</p>
             <div id="media-settings-list">
                 <div class="media-settings-option" data-role="owner" onclick="setMediaMinRole('owner')"><span>👑 المالك فقط</span><span class="dso-check">✓</span></div>
                 <div class="media-settings-option" data-role="manager" onclick="setMediaMinRole('manager')"><span>💎 المدير وما فوق</span><span class="dso-check">✓</span></div>
@@ -1905,7 +1522,6 @@
     let pendingFontFile = null;
     let fontSettingsListener = null;
 
-    // ✅ MEDIA & STATUS PERMISSIONS STATE
     let allMediaUsersData = {};
     let mediaDenialsData = {};
     let mediaGlobalSettings = { min_role: 'owner' };
@@ -1917,6 +1533,11 @@
     let statusGlobalSettings = { min_role: 'owner' };
     let myStatusEnabled = false;
     let myStatusPermissionListener = null;
+
+    // ✅ NEW: DM reply state
+    let dmReplyTo = null;
+    // ✅ NEW: DM messages cache for reply/delete
+    let dmMessagesCache = {};
 
     let badWordsList = [];
     let badWordsListener = null;
@@ -2014,13 +1635,11 @@
         if (allDMUsersData[uid] === true) return true;
         return roleRank(role || 'user') >= roleRank(dmGlobalSettings.min_role || 'owner');
     }
-    // ✅ MEDIA PERMISSION CHECK
     function canUserSendMedia(uid, role) {
         if (mediaDenialsData[uid] === true) return false;
         if (allMediaUsersData[uid] === true) return true;
         return roleRank(role || 'user') >= roleRank(mediaGlobalSettings.min_role || 'owner');
     }
-    // ✅ STATUS PERMISSION CHECK
     function canUserPostStatus(uid, role) {
         if (statusDenialsData[uid] === true) return false;
         if (allStatusUsersData[uid] === true) return true;
@@ -2047,8 +1666,6 @@
             renderMessages();
         });
     }
-
-    // ✅ MEDIA & STATUS LISTENERS
     function listenMediaSettings() {
         db.ref('media_settings/min_role').on('value', snap => {
             mediaGlobalSettings.min_role = snap.val() || 'owner';
@@ -2086,12 +1703,13 @@
     function refreshMyMediaPermission() {
         myMediaEnabled = canUserSendMedia(myFP, myRole);
         updateUI();
+        // ✅ تحديث زر الوسائط في الخاص
+        updateDMMediaBtnVisibility();
     }
     function refreshMyStatusPermission() {
         myStatusEnabled = canUserPostStatus(myFP, myRole);
         updateUI();
     }
-
     function refreshMyDMPermission() {
         const wasEnabled = myDMEnabled;
         myDMEnabled = canUserDM(myFP, myRole);
@@ -2113,8 +1731,6 @@
         try { await db.ref('dm_settings/min_role').set(role); await logAdminAction('dm_min_role_change', null, null, { new_min_role: role }); alert('✅ تم الحفظ: ' + getRoleLabel(role) + ' وما فوق'); }
         catch (e) { alert('❌ ' + e.message); }
     }
-
-    // ✅ MEDIA & STATUS SETTINGS FUNCTIONS
     function openMediaSettings() { if (myRole !== 'owner') return alert('⛔'); updateMediaSettingsUI(); document.getElementById('media-settings-modal').classList.add('active'); }
     function updateMediaSettingsUI() {
         const list = document.getElementById('media-settings-list'); if (!list) return;
@@ -2688,7 +2304,6 @@
         if (myDMPermissionListener) db.ref('dm_permissions/' + myFP).off('value', myDMPermissionListener);
         myDMPermissionListener = db.ref('dm_permissions/' + myFP).on('value', snap => { refreshMyDMPermission(); });
     }
-    // ✅ MEDIA & STATUS PERMISSION LISTENERS
     function listenMyMediaPermission() {
         if (myMediaPermissionListener) db.ref('media_permissions/' + myFP).off('value', myMediaPermissionListener);
         myMediaPermissionListener = db.ref('media_permissions/' + myFP).on('value', snap => { refreshMyMediaPermission(); });
@@ -2736,7 +2351,6 @@
             if (uid === myFP) refreshMyDMPermission();
         } catch (e) { alert('❌ ' + e.message); }
     }
-    // ✅ MEDIA PERMISSION CYCLE
     async function cycleUserMediaPermission(uid, name) {
         if (myRole !== 'owner') return alert('⛔');
         try {
@@ -2753,7 +2367,6 @@
             if (uid === myFP) refreshMyMediaPermission();
         } catch (e) { alert('❌ ' + e.message); }
     }
-    // ✅ STATUS PERMISSION CYCLE
     async function cycleUserStatusPermission(uid, name) {
         if (myRole !== 'owner') return alert('⛔');
         try {
@@ -2847,26 +2460,38 @@
         else if (currentDMChat.role === 'trusted') roleText = '✅ موثوق';
         document.getElementById('dm-chat-role').textContent = roleText;
         document.getElementById('dm-chat-modal').classList.add('active');
+        // ✅ reset reply state
+        dmReplyTo = null;
+        document.getElementById('dm-reply-bar').classList.remove('active');
+        updateDMMediaBtnVisibility();
         db.ref('dm_inbox/' + myFP + '/' + uid + '/count').set(0);
         loadDMMessages(uid);
     }
     function closeDMChat() {
         if (dmChatMessagesListener && currentDMChat) { const chatId = getChatId(myFP, currentDMChat.uid); db.ref('private_chats/' + chatId + '/messages').off('child_added', dmChatMessagesListener); dmChatMessagesListener = null; }
         document.getElementById('dm-chat-modal').classList.remove('active'); currentDMChat = null; currentDMClearedAt = 0;
+        dmReplyTo = null;
+        dmMessagesCache = {};
     }
     function getChatId(uid1, uid2) { return [uid1, uid2].sort().join('_'); }
+    function updateDMMediaBtnVisibility() {
+        const btn = document.getElementById('dm-media-btn');
+        if (!btn) return;
+        btn.classList.toggle('active', myMediaEnabled === true);
+    }
     function loadDMMessages(uid) {
         const chatId = getChatId(myFP, uid);
         const box = document.getElementById('dm-chat-messages');
         box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">⏳ جاري التحميل...</div>';
         if (dmChatMessagesListener) { db.ref('private_chats/' + chatId + '/messages').off('child_added', dmChatMessagesListener); dmChatMessagesListener = null; }
+        dmMessagesCache = {};
         const renderedKeys = new Set();
         db.ref('dm_clears/' + myFP + '/' + chatId).once('value').then(clearSnap => {
             currentDMClearedAt = clearSnap.val() || 0;
             db.ref('private_chats/' + chatId + '/messages').orderByChild('time').limitToLast(200).once('value', snap => {
                 box.innerHTML = '';
                 const allMsgs = [];
-                snap.forEach(c => { const v = c.val(); const t = Number(v.time) || 0; if (t <= currentDMClearedAt) return; renderedKeys.add(c.key); v._key = c.key; allMsgs.push(v); });
+                snap.forEach(c => { const v = c.val(); const t = Number(v.time) || 0; if (t <= currentDMClearedAt) return; renderedKeys.add(c.key); v._key = c.key; allMsgs.push(v); dmMessagesCache[c.key] = v; });
                 allMsgs.sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
                 allMsgs.forEach(m => renderDMMessage(m, false));
                 if (allMsgs.length === 0) box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">لا توجد رسائل</div>';
@@ -2875,7 +2500,7 @@
                     if (renderedKeys.has(snap.key)) return;
                     const m = snap.val(); const t = Number(m.time) || 0;
                     if (t <= currentDMClearedAt) { renderedKeys.add(snap.key); return; }
-                    renderedKeys.add(snap.key); m._key = snap.key;
+                    renderedKeys.add(snap.key); m._key = snap.key; dmMessagesCache[snap.key] = m;
                     const emptyMsg = box.querySelector('div[style*="لا توجد رسائل"]'); if (emptyMsg) emptyMsg.remove();
                     renderDMMessage(m, true); box.scrollTop = box.scrollHeight;
                     if (m.to === myFP) db.ref('dm_inbox/' + myFP + '/' + m.from + '/count').set(0);
@@ -2883,15 +2508,125 @@
             });
         });
     }
+    // ✅ NEW: render DM message with media/reply/actions
     function renderDMMessage(m, append) {
         const box = document.getElementById('dm-chat-messages');
         const isMine = m.from === myFP;
         const div = document.createElement('div');
         div.className = 'dm-msg-row ' + (isMine ? 'mine' : 'others');
         div.dataset.dmkey = m._key || '';
-        div.innerHTML = '<div class="dm-bubble ' + (isMine ? 'mine' : 'others') + '">' + escapeHtml(m.text || '') + '<div class="dm-time">' + formatTime(m.time) + '</div></div>';
+        div.id = 'dm-msg-' + (m._key || Math.random().toString(36).substr(2,9));
+
+        let inner = '';
+
+        // Reply info block
+        if (m.replyTo && m.replyTo.sender) {
+            const rpText = m.replyTo.text || '📎 وسائط';
+            inner += `<div class="dm-reply-info" onclick="scrollToDMMessage('${m.replyTo.key || ''}')"><div class="dm-rp-sender">↩ ${escapeHtml(m.replyTo.sender)}</div><div class="dm-rp-text">${escapeHtml(rpText)}</div></div>`;
+        }
+
+        // Media block
+        if (m.media) {
+            if (m.type === 'video') {
+                inner += `<div class="dm-media-container" onclick="openViewer('${m.media}','video','${escapeHtml(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><video src="${m.media}"></video><div class="dm-play-icon">▶</div></div>`;
+            } else if (m.type === 'image') {
+                inner += `<div class="dm-media-container" onclick="openViewer('${m.media}','image','${escapeHtml(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><img src="${m.media}"></div>`;
+            }
+        }
+
+        // Text block
+        if (m.text) {
+            inner += `<div>${escapeHtml(m.text)}</div>`;
+        }
+
+        inner += `<div class="dm-time">${formatTime(m.time)} ${isMine ? '✓✓' : ''}</div>`;
+
+        // Actions bar (reply/delete)
+        let acts = '<div class="dm-msg-actions">';
+        // Reply button (always for others; own too - can reply to own)
+        acts += `<button class="dm-action-btn reply" onclick="startDMReply('${m._key || ''}')">↩ رد</button>`;
+        // Delete button (only if mine)
+        if (isMine) {
+            acts += `<button class="dm-action-btn del" onclick="deleteDMMessage('${m._key || ''}')">🗑️</button>`;
+        }
+        acts += '</div>';
+
+        div.innerHTML = '<div class="dm-bubble ' + (isMine ? 'mine' : 'others') + '">' + inner + '</div>' + acts;
         box.appendChild(div);
     }
+
+    // ✅ NEW: start reply to a DM message
+    function startDMReply(key) {
+        const m = dmMessagesCache[key];
+        if (!m) return;
+        const senderName = m.from === myFP ? (myName || 'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم');
+        dmReplyTo = { key: key, sender: senderName, text: m.text || '📎 وسائط', type: m.type || null };
+        document.getElementById('dm-reply-sender-name').textContent = 'الرد على: ' + senderName;
+        document.getElementById('dm-reply-content-text').textContent = m.text || '📎 وسائط';
+        document.getElementById('dm-reply-bar').classList.add('active');
+        document.getElementById('dm-message-input').focus();
+    }
+    function cancelDMReply() {
+        dmReplyTo = null;
+        document.getElementById('dm-reply-bar').classList.remove('active');
+    }
+    function scrollToDMMessage(key) {
+        if (!key) return;
+        const el = document.getElementById('dm-msg-' + key);
+        if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.style.background = 'rgba(156,39,176,0.15)'; setTimeout(() => el.style.background = 'transparent', 1000); }
+    }
+
+    // ✅ NEW: delete my DM message
+    async function deleteDMMessage(key) {
+        if (!currentDMChat) return;
+        const m = dmMessagesCache[key];
+        if (!m) return alert('⚠️ الرسالة غير موجودة');
+        if (m.from !== myFP) return alert('⛔ يمكنك حذف رسائلك فقط');
+        if (!confirm('🗑️ حذف هذه الرسالة نهائياً؟')) return;
+        try {
+            const chatId = getChatId(myFP, currentDMChat.uid);
+            await db.ref('private_chats/' + chatId + '/messages/' + key).remove();
+            delete dmMessagesCache[key];
+            const el = document.getElementById('dm-msg-' + key);
+            if (el) el.remove();
+        } catch (e) { alert('❌ ' + e.message); }
+    }
+
+    // ✅ NEW: handle DM media upload
+    async function handleDMMedia(input) {
+        if (!currentDMChat) { input.value = ''; return; }
+        if (!myMediaEnabled) { alert('⛔ ليس لديك صلاحية إرسال الوسائط'); input.value = ''; return; }
+        if (isMuted) { alert('🔇 أنت مكتوم'); input.value = ''; return; }
+        if (!input.files || !input.files[0]) return;
+        const f = input.files[0];
+        if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert('صورة أو فيديو فقط!'); input.value = ''; return; }
+        if (f.size > 104857600) { alert('حجم كبير جداً!'); input.value = ''; return; }
+        const btn = document.getElementById('dm-media-btn');
+        const oldText = btn.textContent;
+        btn.textContent = '⏳';
+        try {
+            const url = await uploadCloudinary(f);
+            if (url) {
+                const toUid = currentDMChat.uid;
+                const chatId = getChatId(myFP, toUid);
+                const msgData = {
+                    from: myFP, fromName: myName, fromAvatar: myAvatar,
+                    to: toUid, toName: currentDMChat.name,
+                    text: '', media: url, type: f.type.startsWith('video') ? 'video' : 'image',
+                    time: firebase.database.ServerValue.TIMESTAMP
+                };
+                if (dmReplyTo) { msgData.replyTo = { key: dmReplyTo.key, sender: dmReplyTo.sender, text: (dmReplyTo.text || '').substring(0, 100) }; cancelDMReply(); }
+                await db.ref('private_chats/' + chatId + '/messages').push(msgData);
+                const previewText = f.type.startsWith('video') ? '🎥 مقطع فيديو' : '🖼️ صورة';
+                await db.ref('dm_inbox/' + toUid + '/' + myFP).update({ fromName: myName, fromAvatar: myAvatar, lastMessage: previewText, lastTime: firebase.database.ServerValue.TIMESTAMP, count: firebase.database.ServerValue.increment(1) });
+                await db.ref('dm_inbox/' + myFP + '/' + toUid).update({ fromName: currentDMChat.name, fromAvatar: currentDMChat.avatar, lastMessage: previewText, lastTime: firebase.database.ServerValue.TIMESTAMP, count: 0 });
+                playSendSound();
+            } else alert('فشل الرفع');
+        } catch (e) { alert('❌ ' + e.message); }
+        btn.textContent = oldText;
+        input.value = '';
+    }
+
     async function sendDMMessage(e) {
         e.preventDefault();
         if (!currentDMChat) return;
@@ -2905,6 +2640,8 @@
         const toUid = currentDMChat.uid;
         const chatId = getChatId(myFP, toUid);
         const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, toName: currentDMChat.name, text: text, time: firebase.database.ServerValue.TIMESTAMP };
+        // ✅ Include reply
+        if (dmReplyTo) { msgData.replyTo = { key: dmReplyTo.key, sender: dmReplyTo.sender, text: (dmReplyTo.text || '').substring(0, 100) }; cancelDMReply(); }
         input.value = ''; playSendSound();
         try {
             await db.ref('private_chats/' + chatId + '/messages').push(msgData);
@@ -2940,7 +2677,6 @@
             renderMessages();
         });
     }
-    // ✅ MEDIA & STATUS PERMISSIONS LOADERS
     function loadMediaUsersList() {
         db.ref('media_permissions').on('value', snap => {
             allMediaUsersData = {};
@@ -2969,6 +2705,10 @@
             await db.ref('fp_links/' + currentFP).remove();
             await db.ref('dm_permissions/' + currentFP).remove();
             await db.ref('dm_denials/' + currentFP).remove();
+            await db.ref('media_permissions/' + currentFP).remove();
+            await db.ref('media_denials/' + currentFP).remove();
+            await db.ref('status_permissions/' + currentFP).remove();
+            await db.ref('status_denials/' + currentFP).remove();
             await db.ref('dm_inbox/' + currentFP).remove();
             await db.ref('dm_clears/' + currentFP).remove();
             await db.ref('fcm_tokens/' + currentFP).remove();
@@ -2996,7 +2736,6 @@
         db.ref('statuses').on('value', s => { statusesCache = {}; s.forEach(c => { statusesCache[c.key] = c.val() }); renderStatuses(); updateStatusBadge(); });
         db.ref('notifications/' + myFP).on('value', s => { myNotifications = {}; if (s.exists()) s.forEach(c => { myNotifications[c.key] = c.val() }); renderNotifications(); updateNotifBadge(); });
         loadDMUsersList();
-        // ✅ تحميل بيانات الوسائط والحالات
         loadMediaUsersList();
         loadStatusUsersList();
     }
@@ -3196,7 +2935,6 @@
                     else if (isExplicitAllow) { dmCls = 'dm'; dmIcon = '💌'; }
                     else if (isDMOn) { dmCls = 'dm'; dmIcon = '💌'; }
                     bt += '<button class="ctrl-btn ' + dmCls + '" onclick="cycleUserDMPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الخاص: افتراضي → سماح → حظر">' + dmIcon + '</button>';
-                    // ✅ أزرار الوسائط والحالات
                     const isMediaOn = canUserSendMedia(u, d.role);
                     const isMediaDeny = mediaDenialsData[u] === true;
                     const isMediaAllow = allMediaUsersData[u] === true;
@@ -3307,6 +3045,7 @@
         updateFCMButton(); updateSoundButton();
         updateProfileDMBtn();
         updateUnknownUsersBtnVisibility();
+        updateDMMediaBtnVisibility();
     }
     function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { i.placeholder = "اكتب رسالة..."; i.disabled = false; b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
     function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
@@ -3869,9 +3608,14 @@
                     return { name: msg.fromName || 'مجهول', avatar: msg.fromAvatar || DEFAULT_ICON };
                 };
                 const senderInfo = getSenderInfo(m);
+                let mediaHtml = '';
+                if (m.media) {
+                    if (m.type === 'video') mediaHtml = '<div style="margin-top:6px;border-radius:8px;overflow:hidden;background:#000;"><video src="' + m.media + '" controls style="width:100%;max-height:200px;display:block;"></video></div>';
+                    else if (m.type === 'image') mediaHtml = '<div style="margin-top:6px;border-radius:8px;overflow:hidden;"><img src="' + m.media + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>';
+                }
                 const div = document.createElement('div');
                 div.className = 'monitor-msg-row ' + (isMine ? 'mine' : 'others');
-                div.innerHTML = `<div class="monitor-bubble ${isMine ? 'mine' : 'others'}"><div class="msg-header"><img src="${senderInfo.avatar}"><strong>${escapeHtml(senderInfo.name)}</strong></div><div>${escapeHtml(m.text || '')}</div><div class="monitor-time">${formatTime(m.time)}</div></div>`;
+                div.innerHTML = `<div class="monitor-bubble ${isMine ? 'mine' : 'others'}"><div class="msg-header"><img src="${senderInfo.avatar}"><strong>${escapeHtml(senderInfo.name)}</strong></div><div>${escapeHtml(m.text || '')}</div>${mediaHtml}<div class="monitor-time">${formatTime(m.time)}</div></div>`;
                 body.appendChild(div);
             });
             body.scrollTop = body.scrollHeight;
@@ -3889,9 +3633,6 @@
     async function loadColorSettings() { const s = await colorSettingsRef.once('value'); if (s.exists()) { const d = s.val(); Object.keys(d).forEach(k => { if (d[k]) userColors[k] = d[k]; }); } const g = await glowSettingsRef.once('value'); if (g.exists()) { const d = g.val(); Object.keys(d).forEach(k => { if (d[k]) userGlow[k] = d[k]; }); } renderMessages(); }
     function handleKeyboard() { const cm = document.getElementById('chat-messages'); if (window.ResizeObserver) { const ro = new ResizeObserver(() => { const hh = document.querySelector('header')?.offsetHeight || 0, fh = document.getElementById('chat-form')?.offsetHeight || 0, nh = document.querySelector('.bottom-nav')?.offsetHeight || 0, bh = document.getElementById('mute-banner')?.offsetHeight || 0, mb = document.getElementById('maintenance-badge')?.offsetHeight || 0, ah = window.innerHeight - hh - fh - nh - bh - mb; if (cm) cm.style.minHeight = Math.max(ah, 80) + 'px'; }); ro.observe(document.body); } window.addEventListener('resize', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 80); }); document.getElementById('message-input')?.addEventListener('focus', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 200); }); }
 
-    /* ============================================================
-       WARNING SYSTEM - Advanced v4
-       ============================================================ */
     function listenWarnings() {
         if (warningListener) db.ref('warnings/current').off('value', warningListener);
         warningListener = db.ref('warnings/current').on('value', snap => {
@@ -4382,10 +4123,6 @@
     document.getElementById('warning-delete-modal')?.addEventListener('click', function(e) {
         if (e.target === this) closeWarningDeleteModal();
     });
-
-    /* ============================================================
-       END WARNING SYSTEM
-       ============================================================ */
 
     init();
     handleKeyboard();
