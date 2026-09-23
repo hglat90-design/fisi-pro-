@@ -30,13 +30,6 @@
         #maintenance-screen p { font-size: 15px; color: #ddd; max-width: 300px; line-height: 1.6; }
         .login-input { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 15px; text-align: center; outline: 0; font-size: 18px; font-family: var(--font-main); transition: border .3s; }
         .login-input:focus { border-color: var(--primary); }
-        .login-input.error { border-color: #ef5350; background: #fff5f5; animation: shake 0.4s; }
-        @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
-        .login-error-box { background: linear-gradient(135deg, #ffebee, #ffcdd2); color: #b71c1c; padding: 12px 14px; border-radius: 12px; margin-bottom: 12px; font-size: 13px; font-weight: 700; font-family: var(--font-main); display: none; text-align: right; border: 1.5px solid rgba(183,28,28,0.2); line-height: 1.6; }
-        .login-error-box.show { display: block; animation: fadeIn .3s; }
-        .login-error-box ul { margin: 6px 0 0; padding-right: 20px; font-size: 12px; line-height: 1.7; }
-        .login-hint { background: #f0f8ff; border: 1.5px solid #90caf9; border-radius: 12px; padding: 10px 14px; margin-bottom: 12px; font-size: 12px; color: #1565c0; font-family: var(--font-main); text-align: right; line-height: 1.7; }
-        .login-hint strong { color: #0d47a1; }
         .login-btn { width: 100%; padding: 15px; background: var(--primary); color: #fff; border: 0; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 18px; font-family: var(--font-main); transition: transform .2s; }
         .login-btn:active { transform: scale(.97); }
         header { background: var(--primary); color: #fff; padding: 4px 10px; display: flex; justify-content: space-between; align-items: center; z-index: 10; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); min-height: 38px; flex-shrink: 0; }
@@ -364,6 +357,7 @@
         .dm-bubble.mine { background: #d9fdd3; color: #111; border-bottom-left-radius: 3px; }
         .dm-bubble.others { background: #fff; color: #111; border-bottom-right-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
         .dm-time { font-size: 9px; opacity: .5; text-align: left; margin-top: 1px; }
+        /* ✅ NEW: DM enhancements */
         .dm-media-btn { width: 34px; height: 34px; border-radius: 50%; background: #fff; color: #9c27b0; border: 1px solid #ddd; display: none; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; flex-shrink: 0; }
         .dm-media-btn:active { transform: scale(0.92); }
         .dm-media-btn.active { display: flex; }
@@ -385,6 +379,7 @@
         .dm-media-container { margin-top: 4px; border-radius: 6px; overflow: hidden; cursor: pointer; background: #000; max-width: 100%; }
         .dm-media-container img, .dm-media-container video { width: 100%; display: block; max-height: 220px; object-fit: cover; }
         .dm-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 28px; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.5); pointer-events: none; }
+        /* END NEW */
         .dm-toast { position: fixed; top: 50px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #9c27b0, #6a1b9a); color: #fff; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-family: var(--font-main); font-weight: 600; box-shadow: 0 4px 20px rgba(156, 39, 176, 0.5); z-index: 9999; cursor: pointer; animation: slideDown 0.4s ease; max-width: 90%; text-align: center; }
         .dm-toast strong { color: #FFD700; }
         @keyframes slideDown { from { transform: translate(-50%, -100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
@@ -751,17 +746,9 @@
 
     <div id="login-screen">
         <h2 style="color:var(--primary);margin-bottom:16px;font-weight:900;font-family:var(--font-main);font-size:22px;">💬 فيسي برو</h2>
-        <div class="login-hint">
-            <strong>⚠️ ملاحظة هامة:</strong><br>
-            يجب إدخال <strong>اسم حقيقي وصحيح</strong> للدخول. لا يُسمح بالأسماء الفارغة أو التي تحتوي فقط على مسافات أو رموز أو نقاط.
-        </div>
-        <div class="login-error-box" id="login-error-box">
-            <strong>❌ خطأ في الاسم:</strong>
-            <div id="login-error-text"></div>
-        </div>
-        <input type="text" id="username-input" class="login-input" placeholder="اكتب اسمك الحقيقي هنا..." autocomplete="off" maxlength="30">
+        <input type="text" id="username-input" class="login-input" placeholder="اسمك..." autocomplete="off">
         <button id="login-btn" class="login-btn">🚀 دخول</button>
-        <p style="margin-top:8px;font-size:11px;color:#999;font-family:var(--font-main);">سيتم حفظ جلستك في هذا الجهاز</p>
+        <p style="margin-top:8px;font-size:11px;color:#999;font-family:var(--font-main);">سيتم حفظ جلستك</p>
     </div>
 
     <div id="ban-screen">
@@ -1190,7 +1177,7 @@
             <img id="prof-img" src="" class="user-avatar" style="width:65px;height:65px;margin:12px auto;display:block;border:3px solid var(--primary);cursor:pointer;" onclick="onAvatarClick()">
             <label for="avatar-in" id="avatar-change-label" style="display:inline-block;padding:4px 12px;background:#f0f0f0;border-radius:14px;cursor:pointer;font-size:11px;border:1px solid #ddd;margin-bottom:8px;font-family:var(--font-main);">📷 تغيير</label>
             <input type="file" id="avatar-in" accept="image/*" style="display:none" onchange="previewProf(this)">
-            <input type="text" id="prof-name" class="login-input" placeholder="الاسم الجديد" style="margin-bottom:8px;padding:8px;font-size:14px;" maxlength="30">
+            <input type="text" id="prof-name" class="login-input" placeholder="الاسم الجديد" style="margin-bottom:8px;padding:8px;font-size:14px;">
             <div id="hidden-owner-control" style="display:none;margin-bottom:8px;">
                 <button id="toggle-hidden-btn" onclick="toggleOwnerHidden()" class="login-btn" style="padding:8px;font-size:14px;background:#e91e63;">🙈 إخفاء نفسي</button>
                 <p style="font-size:11px;color:#999;margin-top:4px;">عند الإخفاء، لن يراك أي مستخدم نهائياً، لكن حالاتك تبقى ظاهرة.</p>
@@ -1547,7 +1534,9 @@
     let myStatusEnabled = false;
     let myStatusPermissionListener = null;
 
+    // ✅ NEW: DM reply state
     let dmReplyTo = null;
+    // ✅ NEW: DM messages cache for reply/delete
     let dmMessagesCache = {};
 
     let badWordsList = [];
@@ -1619,83 +1608,6 @@
     ];
     let userColors = {}, colorIndex = 0, userGlow = {};
     const colorSettingsRef = db.ref('color_settings'), glowSettingsRef = db.ref('glow_settings');
-
-    /* ============================================================
-       ✅ NEW: نظام التحقق الصارم من الأسماء
-       ============================================================ */
-    // إزالة جميع أنواع المسافات والرموز الخفية
-    const INVISIBLE_CHARS_REGEX = /[\s\u200B-\u200D\uFEFF\u2060\u00A0\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\u180E\u061C\u200E\u200F\u202A-\u202E]/g;
-    // الحروف المسموحة: العربية (جميع النطاقات) + الإنجليزية + الفارسية + الأردية
-    const LETTERS_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFFa-zA-Z\u00C0-\u024F]/;
-
-    function validateName(rawName) {
-        // 1) التحقق من وجود النص
-        if (!rawName || typeof rawName !== 'string') {
-            return { valid: false, reason: 'الرجاء إدخال اسمك', code: 'empty' };
-        }
-        // 2) إزالة المسافات والرموز الخفية
-        const cleaned = rawName.replace(INVISIBLE_CHARS_REGEX, '');
-        // 3) التحقق من الطول بعد التنظيف
-        if (cleaned.length === 0) {
-            return { valid: false, reason: 'الاسم فارغ! لا يمكن ترك الحقل فارغاً أو بمسافات فقط.', code: 'empty_after_clean' };
-        }
-        if (cleaned.length < 2) {
-            return { valid: false, reason: 'الاسم قصير جداً! يجب أن يكون حرفين على الأقل (حروف حقيقية).', code: 'too_short' };
-        }
-        if (cleaned.length > 30) {
-            return { valid: false, reason: 'الاسم طويل جداً! الحد الأقصى 30 حرفاً.', code: 'too_long' };
-        }
-        // 4) التحقق من احتواء الاسم على حرف واحد على الأقل (عربي أو إنجليزي)
-        if (!LETTERS_REGEX.test(cleaned)) {
-            return { valid: false, reason: 'الاسم يجب أن يحتوي على حروف حقيقية! لا يُسمح بالنقاط أو الرموز أو الأرقام فقط.', code: 'no_letters' };
-        }
-        // 5) التحقق من أن الاسم ليس فقط أرقاماً
-        if (/^\d+$/.test(cleaned)) {
-            return { valid: false, reason: 'الاسم لا يمكن أن يكون أرقاماً فقط! يرجى كتابة اسم حقيقي.', code: 'only_numbers' };
-        }
-        // 6) التحقق من أن الاسم ليس فقط رموزاً
-        if (/^[.\-_+*#@!$%^&()[\]{}<>|\\/`~,;:'"?=]+$/.test(cleaned)) {
-            return { valid: false, reason: 'الاسم لا يمكن أن يكون رموزاً فقط! يرجى كتابة اسم حقيقي.', code: 'only_symbols' };
-        }
-        // 7) التحقق من عدم احتواء الاسم على كلمات محظورة عامة (تجاهل)
-        const blockedNames = ['مجهول', 'مستخدم مجهول', 'unknown', 'null', 'undefined', 'nan', 'user', 'مستخدم', 'admin', 'administrator', 'owner'];
-        if (blockedNames.includes(cleaned.toLowerCase())) {
-            return { valid: false, reason: 'هذا الاسم محجوز! يرجى اختيار اسم آخر.', code: 'blocked_name' };
-        }
-        // 8) الحد الأدنى لعدد الحروف الفعلية (2 حروف على الأقل)
-        const letterCount = (cleaned.match(new RegExp(LETTERS_REGEX.source, 'g')) || []).length;
-        if (letterCount < 2) {
-            return { valid: false, reason: 'الاسم يجب أن يحتوي على حرفين على الأقل!', code: 'few_letters' };
-        }
-        // 9) التحقق من عدم تكرار نفس الحرف فقط
-        const uniqueChars = new Set(cleaned.toLowerCase().split(''));
-        if (uniqueChars.size < 2) {
-            return { valid: false, reason: 'الاسم غير صالح! يجب أن يحتوي على حروف متنوعة.', code: 'repeated_chars' };
-        }
-        return { valid: true, name: rawName.trim(), cleaned: cleaned };
-    }
-
-    function showLoginError(reason) {
-        const box = document.getElementById('login-error-box');
-        const text = document.getElementById('login-error-text');
-        const input = document.getElementById('username-input');
-        if (box && text && input) {
-            text.innerHTML = reason;
-            box.classList.add('show');
-            input.classList.add('error');
-            setTimeout(() => input.classList.remove('error'), 600);
-        }
-    }
-    function hideLoginError() {
-        const box = document.getElementById('login-error-box');
-        const input = document.getElementById('username-input');
-        if (box) box.classList.remove('show');
-        if (input) input.classList.remove('error');
-    }
-
-    /* ============================================================
-       END NAME VALIDATION SYSTEM
-       ============================================================ */
 
     function getColor(uid) { if (!userColors[uid]) { userColors[uid] = COLORS[colorIndex % COLORS.length]; colorIndex++; } return userColors[uid]; }
     function getGlow(uid) { return userGlow[uid] || (uid === myFP && myRole === 'owner' ? 'owner-glow' : 'none'); }
@@ -1791,6 +1703,7 @@
     function refreshMyMediaPermission() {
         myMediaEnabled = canUserSendMedia(myFP, myRole);
         updateUI();
+        // ✅ تحديث زر الوسائط في الخاص
         updateDMMediaBtnVisibility();
     }
     function refreshMyStatusPermission() {
@@ -2252,40 +2165,19 @@
         myFP = await getDeviceFingerprint();
         localStorage.setItem("fp", myFP);
         listenFontSettings(); listenBadWords();
-        // ✅ التحقق من صلاحية الاسم المحفوظ
-        const storedName = localStorage.getItem("name") || "";
-        if (storedName) {
-            const validation = validateName(storedName);
-            if (validation.valid) {
-                myName = validation.name;
-                const s = await checkSecurity(myFP, myName);
-                if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
-                if (s.muted) isMuted = true;
-                await linkFingerprint(myFP, myName);
-                enterChat();
-            } else {
-                // الاسم المحفوظ غير صالح → حذفه وإجبار المستخدم على إعادة الإدخال
-                console.warn('⚠️ الاسم المحفوظ غير صالح:', validation.reason);
-                localStorage.removeItem("name");
-                myName = '';
-                document.getElementById('login-screen').style.display = 'flex';
-                setTimeout(() => { showLoginError('الاسم المحفوظ غير صالح. ' + validation.reason); }, 200);
-            }
-        } else {
-            document.getElementById('login-screen').style.display = 'flex';
-        }
+        if (myName) {
+            const s = await checkSecurity(myFP, myName);
+            if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
+            if (s.muted) isMuted = true;
+            await linkFingerprint(myFP, myName);
+            enterChat();
+        } else document.getElementById('login-screen').style.display = 'flex';
     }
 
     document.getElementById('login-btn').onclick = async () => {
-        const rawName = document.getElementById('username-input').value;
-        const validation = validateName(rawName);
-        if (!validation.valid) {
-            showLoginError(validation.reason);
-            return;
-        }
-        hideLoginError();
+        const n = document.getElementById('username-input').value.trim();
+        if (n.length < 2) return alert("الاسم قصير!");
         unlockAudio();
-        const n = validation.name;
         const s = await checkSecurity(myFP, n);
         if (s.banned) { isBanned = true; document.getElementById('login-screen').style.display = 'none'; document.getElementById('ban-screen').style.display = 'flex'; return; }
         myName = n; localStorage.setItem("name", myName);
@@ -2293,15 +2185,6 @@
         await linkFingerprint(myFP, myName);
         enterChat();
     };
-
-    // ✅ إخفاء الخطأ عند بدء الكتابة
-    document.getElementById('username-input')?.addEventListener('input', function() {
-        if (this.value.trim().length > 0) {
-            // إخفاء فقط إذا كان الإدخال الآن يبدو صحيحاً
-            const v = validateName(this.value);
-            if (v.valid) hideLoginError();
-        }
-    });
 
     function enterChat() {
         document.getElementById('login-screen').style.display = 'none';
@@ -2577,6 +2460,7 @@
         else if (currentDMChat.role === 'trusted') roleText = '✅ موثوق';
         document.getElementById('dm-chat-role').textContent = roleText;
         document.getElementById('dm-chat-modal').classList.add('active');
+        // ✅ reset reply state
         dmReplyTo = null;
         document.getElementById('dm-reply-bar').classList.remove('active');
         updateDMMediaBtnVisibility();
@@ -2624,6 +2508,7 @@
             });
         });
     }
+    // ✅ NEW: render DM message with media/reply/actions
     function renderDMMessage(m, append) {
         const box = document.getElementById('dm-chat-messages');
         const isMine = m.from === myFP;
@@ -2634,11 +2519,13 @@
 
         let inner = '';
 
+        // Reply info block
         if (m.replyTo && m.replyTo.sender) {
             const rpText = m.replyTo.text || '📎 وسائط';
             inner += `<div class="dm-reply-info" onclick="scrollToDMMessage('${m.replyTo.key || ''}')"><div class="dm-rp-sender">↩ ${escapeHtml(m.replyTo.sender)}</div><div class="dm-rp-text">${escapeHtml(rpText)}</div></div>`;
         }
 
+        // Media block
         if (m.media) {
             if (m.type === 'video') {
                 inner += `<div class="dm-media-container" onclick="openViewer('${m.media}','video','${escapeHtml(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><video src="${m.media}"></video><div class="dm-play-icon">▶</div></div>`;
@@ -2647,14 +2534,18 @@
             }
         }
 
+        // Text block
         if (m.text) {
             inner += `<div>${escapeHtml(m.text)}</div>`;
         }
 
         inner += `<div class="dm-time">${formatTime(m.time)} ${isMine ? '✓✓' : ''}</div>`;
 
+        // Actions bar (reply/delete)
         let acts = '<div class="dm-msg-actions">';
+        // Reply button (always for others; own too - can reply to own)
         acts += `<button class="dm-action-btn reply" onclick="startDMReply('${m._key || ''}')">↩ رد</button>`;
+        // Delete button (only if mine)
         if (isMine) {
             acts += `<button class="dm-action-btn del" onclick="deleteDMMessage('${m._key || ''}')">🗑️</button>`;
         }
@@ -2663,6 +2554,8 @@
         div.innerHTML = '<div class="dm-bubble ' + (isMine ? 'mine' : 'others') + '">' + inner + '</div>' + acts;
         box.appendChild(div);
     }
+
+    // ✅ NEW: start reply to a DM message
     function startDMReply(key) {
         const m = dmMessagesCache[key];
         if (!m) return;
@@ -2682,6 +2575,8 @@
         const el = document.getElementById('dm-msg-' + key);
         if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.style.background = 'rgba(156,39,176,0.15)'; setTimeout(() => el.style.background = 'transparent', 1000); }
     }
+
+    // ✅ NEW: delete my DM message
     async function deleteDMMessage(key) {
         if (!currentDMChat) return;
         const m = dmMessagesCache[key];
@@ -2696,6 +2591,8 @@
             if (el) el.remove();
         } catch (e) { alert('❌ ' + e.message); }
     }
+
+    // ✅ NEW: handle DM media upload
     async function handleDMMedia(input) {
         if (!currentDMChat) { input.value = ''; return; }
         if (!myMediaEnabled) { alert('⛔ ليس لديك صلاحية إرسال الوسائط'); input.value = ''; return; }
@@ -2729,6 +2626,7 @@
         btn.textContent = oldText;
         input.value = '';
     }
+
     async function sendDMMessage(e) {
         e.preventDefault();
         if (!currentDMChat) return;
@@ -2742,6 +2640,7 @@
         const toUid = currentDMChat.uid;
         const chatId = getChatId(myFP, toUid);
         const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, toName: currentDMChat.name, text: text, time: firebase.database.ServerValue.TIMESTAMP };
+        // ✅ Include reply
         if (dmReplyTo) { msgData.replyTo = { key: dmReplyTo.key, sender: dmReplyTo.sender, text: (dmReplyTo.text || '').substring(0, 100) }; cancelDMReply(); }
         input.value = ''; playSendSound();
         try {
@@ -2961,7 +2860,7 @@
             else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">🛡️ مشرف</span>';
             else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">✅ موثوق</span>';
             const avatar = u.avatar || DEFAULT_ICON;
-            const isUnknown = !u.name || u.name.trim() === '' || !validateName(u.name).valid;
+            const isUnknown = !u.name || u.name.trim() === '';
             const unknownBadge = isUnknown ? '<span class="role-badge" style="background:#e53935;">❓ مجهول</span>' : '';
             let hiddenBadge = ''; if (u.uid === myFP && isHidden && myRole === 'owner') hiddenBadge = '<span class="hidden-owner-badge">🙈 مخفي</span>';
             if (existing) {
@@ -2996,7 +2895,7 @@
     function updateUnknownUsersBtnVisibility() {
         const btn = document.getElementById('cleanup-unknown-btn'); if (!btn) return;
         let count = 0;
-        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (!u.name || u.name.trim() === '' || !validateName(u.name).valid) count++; });
+        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (!u.name || u.name.trim() === '') count++; });
         if (count > 0 && myRole === 'owner') { btn.style.display = 'inline-block'; btn.textContent = '🧹 حذف المجهولين (' + count + ')'; }
         else { btn.style.display = 'none'; }
     }
@@ -3016,7 +2915,7 @@
     function playYouTube(v, c) { c.innerHTML = '<iframe src="https://www.youtube.com/embed/' + v + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
     function updateUserControls(u, d) {
         const e = document.getElementById('uact-' + u); if (!e || u === myFP) return;
-        const isUnknown = !d.name || d.name.trim() === '' || !validateName(d.name).valid;
+        const isUnknown = !d.name || d.name.trim() === '';
         if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && myRole !== 'owner') { e.innerHTML = ''; return; }
         db.ref('bans/' + u).once('value', b => {
             const ib = b.exists(); let bt = '';
@@ -3088,8 +2987,7 @@
     async function deleteUnknownUser(uid) {
         if (myRole !== 'owner') return alert('⛔');
         const u = allUsersData[uid]; if (!u) return alert('المستخدم غير موجود');
-        const isUnknown = !u.name || u.name.trim() === '' || !validateName(u.name).valid;
-        if (!isUnknown) return alert('هذا المستخدم ليس مجهولاً');
+        if (u.name && u.name.trim() !== '') return alert('هذا المستخدم ليس مجهولاً');
         if (!confirm('🗑️ حذف هذا الحساب المجهول نهائياً؟\n\nسيتم حذف كل شيء متعلق به من التطبيق.')) return;
         try {
             await cleanupUserCompletely(uid, 'مجهول');
@@ -3103,7 +3001,7 @@
     async function deleteAllUnknownUsers() {
         if (myRole !== 'owner') return alert('⛔');
         const unknowns = [];
-        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (!u.name || u.name.trim() === '' || !validateName(u.name).valid) unknowns.push(k); });
+        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (!u.name || u.name.trim() === '') unknowns.push(k); });
         if (unknowns.length === 0) return alert('✅ لا توجد حسابات مجهولة');
         if (!confirm('🗑️ حذف ' + unknowns.length + ' حساب مجهول نهائياً؟')) return;
         if (!confirm('⚠️ تأكيد أخير!\nلا يمكن التراجع عن هذه العملية.')) return;
@@ -3220,13 +3118,8 @@
     function onAvatarClick() { if (myRole === 'user') return alert("⛔"); document.getElementById('avatar-in').click(); }
     function previewProf(i) { if (myRole === 'user') { alert("⛔"); i.value = ''; return; } if (i.files[0]) { const r = new FileReader(); r.onload = e => document.getElementById('prof-img').src = e.target.result; r.readAsDataURL(i.files[0]); } }
     async function saveProfile() {
-        const rawName = document.getElementById('prof-name').value;
-        // ✅ التحقق الصارم من الاسم الجديد
-        const validation = validateName(rawName);
-        if (!validation.valid) {
-            return alert('❌ ' + validation.reason);
-        }
-        const n = validation.name;
+        const n = document.getElementById('prof-name').value.trim();
+        if (n.length < 2) return alert("الاسم قصير!");
         const src = document.getElementById('prof-img').src;
         let fa = myAvatar;
         if (src.startsWith('data:image')) {
@@ -3834,17 +3727,17 @@
             u.uid = k; users.push(u);
         });
         users.sort((a, b) => {
-            const aU = (!a.name || a.name.trim() === '' || !validateName(a.name).valid) ? 0 : 1;
-            const bU = (!b.name || b.name.trim() === '' || !validateName(b.name).valid) ? 0 : 1;
+            const aU = (!a.name || a.name.trim() === '') ? 0 : 1;
+            const bU = (!b.name || b.name.trim() === '') ? 0 : 1;
             if (aU !== bU) return aU - bU;
             return (a.name || '').localeCompare(b.name || '');
         });
         const cleanupBar = document.getElementById('warning-cleanup-bar');
-        const unknownCount = users.filter(u => !u.name || u.name.trim() === '' || !validateName(u.name).valid).length;
+        const unknownCount = users.filter(u => !u.name || u.name.trim() === '').length;
         if (cleanupBar) cleanupBar.style.display = (unknownCount > 0 && myRole === 'owner') ? 'flex' : 'none';
         if (users.length === 0) { c.innerHTML = '<div style="padding:10px;text-align:center;color:#999;font-size:12px;">لا يوجد مستخدمون</div>'; return; }
         users.forEach(u => {
-            const isUnknown = !u.name || u.name.trim() === '' || !validateName(u.name).valid;
+            const isUnknown = !u.name || u.name.trim() === '';
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'warning-user-chip' + (isUnknown ? ' is-unknown' : '');
