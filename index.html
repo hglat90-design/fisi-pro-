@@ -34,7 +34,6 @@
         @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
         .login-error-box { background: linear-gradient(135deg, #ffebee, #ffcdd2); color: #b71c1c; padding: 12px 14px; border-radius: 12px; margin-bottom: 12px; font-size: 13px; font-weight: 700; font-family: var(--font-main); display: none; text-align: right; border: 1.5px solid rgba(183,28,28,0.2); line-height: 1.6; }
         .login-error-box.show { display: block; animation: fadeIn .3s; }
-        .login-error-box ul { margin: 6px 0 0; padding-right: 20px; font-size: 12px; line-height: 1.7; }
         .login-hint { background: #f0f8ff; border: 1.5px solid #90caf9; border-radius: 12px; padding: 10px 14px; margin-bottom: 12px; font-size: 12px; color: #1565c0; font-family: var(--font-main); text-align: right; line-height: 1.7; }
         .login-hint strong { color: #0d47a1; }
         .login-btn { width: 100%; padding: 15px; background: var(--primary); color: #fff; border: 0; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 18px; font-family: var(--font-main); transition: transform .2s; }
@@ -134,6 +133,9 @@
         .user-card[data-role="mod"]::before { background: linear-gradient(180deg, #2196F3, #0D47A1); width: 5px; }
         .user-card[data-role="trusted"] { border-color: rgba(255, 152, 0, 0.3); background: linear-gradient(135deg, #fffaf5 0%, #fff 100%); }
         .user-card[data-role="trusted"]::before { background: linear-gradient(180deg, #FF9800, #F57C00); width: 5px; }
+        /* ✅ NEW: تمييز الحسابات غير الصالحة */
+        .user-card.invalid-name { border-color: rgba(229,57,53,0.5); background: linear-gradient(135deg, #fff5f5 0%, #fff 100%); }
+        .user-card.invalid-name::before { background: linear-gradient(180deg, #ef5350, #b71c1c); width: 5px; }
 
         .user-card .user-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
         .user-card .user-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; cursor: pointer; flex-shrink: 0; transition: transform 0.2s; }
@@ -178,7 +180,6 @@
             transition: left 0.5s;
         }
         .role-badge:hover::before { left: 100%; }
-
         .role-badge.owner {
             background: linear-gradient(135deg, #FFD700 0%, #F9A825 50%, #E65100 100%);
             color: #3E2723;
@@ -186,26 +187,29 @@
             box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
             text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
         }
-
         .role-badge.manager {
             background: linear-gradient(135deg, #E1BEE7 0%, #9C27B0 50%, #4A148C 100%);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 2px 8px rgba(156, 39, 176, 0.5);
         }
-
         .role-badge.mod {
             background: linear-gradient(135deg, #90CAF9 0%, #2196F3 50%, #0D47A1 100%);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 2px 8px rgba(33, 150, 243, 0.5);
         }
-
         .role-badge.trusted {
             background: linear-gradient(135deg, #FFCC80 0%, #FF9800 50%, #E65100 100%);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 2px 8px rgba(255, 152, 0, 0.5);
+        }
+        .role-badge.invalid {
+            background: linear-gradient(135deg, #ef5350, #b71c1c);
+            color: #fff;
+            font-size: 8px;
+            padding: 2px 6px;
         }
 
         .ctrl-btn { width: 26px; height: 26px; border-radius: 50%; border: 0; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 12px; transition: transform 0.15s; }
@@ -753,7 +757,7 @@
         <h2 style="color:var(--primary);margin-bottom:16px;font-weight:900;font-family:var(--font-main);font-size:22px;">💬 فيسي برو</h2>
         <div class="login-hint">
             <strong>⚠️ ملاحظة هامة:</strong><br>
-            يجب إدخال <strong>اسم حقيقي وصحيح</strong> للدخول. لا يُسمح بالأسماء الفارغة أو التي تحتوي فقط على مسافات أو رموز أو نقاط.
+            يجب إدخال <strong>اسم حقيقي وصحيح</strong> للدخول. لا يُسمح بالأسماء الفارغة أو التي تحتوي فقط على مسافات أو رموز أو نقاط أو الأسماء المحجوزة مثل "مجهول".
         </div>
         <div class="login-error-box" id="login-error-box">
             <strong>❌ خطأ في الاسم:</strong>
@@ -1621,21 +1625,16 @@
     const colorSettingsRef = db.ref('color_settings'), glowSettingsRef = db.ref('glow_settings');
 
     /* ============================================================
-       ✅ NEW: نظام التحقق الصارم من الأسماء
+       نظام التحقق الصارم من الأسماء
        ============================================================ */
-    // إزالة جميع أنواع المسافات والرموز الخفية
     const INVISIBLE_CHARS_REGEX = /[\s\u200B-\u200D\uFEFF\u2060\u00A0\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\u180E\u061C\u200E\u200F\u202A-\u202E]/g;
-    // الحروف المسموحة: العربية (جميع النطاقات) + الإنجليزية + الفارسية + الأردية
     const LETTERS_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFFa-zA-Z\u00C0-\u024F]/;
 
     function validateName(rawName) {
-        // 1) التحقق من وجود النص
         if (!rawName || typeof rawName !== 'string') {
             return { valid: false, reason: 'الرجاء إدخال اسمك', code: 'empty' };
         }
-        // 2) إزالة المسافات والرموز الخفية
         const cleaned = rawName.replace(INVISIBLE_CHARS_REGEX, '');
-        // 3) التحقق من الطول بعد التنظيف
         if (cleaned.length === 0) {
             return { valid: false, reason: 'الاسم فارغ! لا يمكن ترك الحقل فارغاً أو بمسافات فقط.', code: 'empty_after_clean' };
         }
@@ -1645,34 +1644,50 @@
         if (cleaned.length > 30) {
             return { valid: false, reason: 'الاسم طويل جداً! الحد الأقصى 30 حرفاً.', code: 'too_long' };
         }
-        // 4) التحقق من احتواء الاسم على حرف واحد على الأقل (عربي أو إنجليزي)
         if (!LETTERS_REGEX.test(cleaned)) {
             return { valid: false, reason: 'الاسم يجب أن يحتوي على حروف حقيقية! لا يُسمح بالنقاط أو الرموز أو الأرقام فقط.', code: 'no_letters' };
         }
-        // 5) التحقق من أن الاسم ليس فقط أرقاماً
         if (/^\d+$/.test(cleaned)) {
             return { valid: false, reason: 'الاسم لا يمكن أن يكون أرقاماً فقط! يرجى كتابة اسم حقيقي.', code: 'only_numbers' };
         }
-        // 6) التحقق من أن الاسم ليس فقط رموزاً
         if (/^[.\-_+*#@!$%^&()[\]{}<>|\\/`~,;:'"?=]+$/.test(cleaned)) {
             return { valid: false, reason: 'الاسم لا يمكن أن يكون رموزاً فقط! يرجى كتابة اسم حقيقي.', code: 'only_symbols' };
         }
-        // 7) التحقق من عدم احتواء الاسم على كلمات محظورة عامة (تجاهل)
-        const blockedNames = ['مجهول', 'مستخدم مجهول', 'unknown', 'null', 'undefined', 'nan', 'user', 'مستخدم', 'admin', 'administrator', 'owner'];
+        const blockedNames = ['مجهول', 'مستخدم مجهول', 'مستخدم', 'unknown', 'null', 'undefined', 'nan', 'user', 'admin', 'administrator', 'owner', 'guest', 'زائر', 'ضيف'];
         if (blockedNames.includes(cleaned.toLowerCase())) {
             return { valid: false, reason: 'هذا الاسم محجوز! يرجى اختيار اسم آخر.', code: 'blocked_name' };
         }
-        // 8) الحد الأدنى لعدد الحروف الفعلية (2 حروف على الأقل)
         const letterCount = (cleaned.match(new RegExp(LETTERS_REGEX.source, 'g')) || []).length;
         if (letterCount < 2) {
             return { valid: false, reason: 'الاسم يجب أن يحتوي على حرفين على الأقل!', code: 'few_letters' };
         }
-        // 9) التحقق من عدم تكرار نفس الحرف فقط
         const uniqueChars = new Set(cleaned.toLowerCase().split(''));
         if (uniqueChars.size < 2) {
             return { valid: false, reason: 'الاسم غير صالح! يجب أن يحتوي على حروف متنوعة.', code: 'repeated_chars' };
         }
         return { valid: true, name: rawName.trim(), cleaned: cleaned };
+    }
+
+    // ✅ دالة مساعدة: هل هذا المستخدم مجهول؟
+    function isUserUnknown(u) {
+        if (!u) return true;
+        if (!u.name || u.name.trim() === '') return true;
+        // إذا كان الاسم "مجهول" أو أي اسم محجوز → غير صالح
+        return !validateName(u.name).valid;
+    }
+
+    // ✅ دالة مساعدة: الحصول على اسم المستخدم للعرض
+    function getDisplayName(u) {
+        if (!u) return { text: 'مستخدم محذوف', valid: false };
+        if (!u.name || u.name.trim() === '') {
+            return { text: '⚠️ بدون اسم', valid: false };
+        }
+        const v = validateName(u.name);
+        if (!v.valid) {
+            // عرض الاسم الفعلي مع علامة تحذير
+            return { text: u.name, valid: false };
+        }
+        return { text: u.name, valid: true };
     }
 
     function showLoginError(reason) {
@@ -1692,10 +1707,6 @@
         if (box) box.classList.remove('show');
         if (input) input.classList.remove('error');
     }
-
-    /* ============================================================
-       END NAME VALIDATION SYSTEM
-       ============================================================ */
 
     function getColor(uid) { if (!userColors[uid]) { userColors[uid] = COLORS[colorIndex % COLORS.length]; colorIndex++; } return userColors[uid]; }
     function getGlow(uid) { return userGlow[uid] || (uid === myFP && myRole === 'owner' ? 'owner-glow' : 'none'); }
@@ -2252,7 +2263,6 @@
         myFP = await getDeviceFingerprint();
         localStorage.setItem("fp", myFP);
         listenFontSettings(); listenBadWords();
-        // ✅ التحقق من صلاحية الاسم المحفوظ
         const storedName = localStorage.getItem("name") || "";
         if (storedName) {
             const validation = validateName(storedName);
@@ -2264,7 +2274,6 @@
                 await linkFingerprint(myFP, myName);
                 enterChat();
             } else {
-                // الاسم المحفوظ غير صالح → حذفه وإجبار المستخدم على إعادة الإدخال
                 console.warn('⚠️ الاسم المحفوظ غير صالح:', validation.reason);
                 localStorage.removeItem("name");
                 myName = '';
@@ -2294,10 +2303,8 @@
         enterChat();
     };
 
-    // ✅ إخفاء الخطأ عند بدء الكتابة
     document.getElementById('username-input')?.addEventListener('input', function() {
         if (this.value.trim().length > 0) {
-            // إخفاء فقط إذا كان الإدخال الآن يبدو صحيحاً
             const v = validateName(this.value);
             if (v.valid) hideLoginError();
         }
@@ -2876,7 +2883,10 @@
         const dk = ks.slice(-300);
         dk.forEach(k => {
             const m = messagesCache[k]; if (!m) return;
-            const isMine = m.uid === myFP, ud = allUsersData[m.uid] || {}, da = ud.avatar || m.avatar || DEFAULT_ICON, dn = ud.name || m.sender || 'مجهول', dr = ud.role || m.role || 'user';
+            const isMine = m.uid === myFP, ud = allUsersData[m.uid] || {}, da = ud.avatar || m.avatar || DEFAULT_ICON;
+            // ✅ استخدام getDisplayName للعرض الصحيح
+            const dn = getDisplayName({ name: ud.name || m.sender }).text;
+            const dr = ud.role || m.role || 'user';
             const div = document.createElement('div'); div.className = 'msg-row ' + (isMine ? 'mine' : 'others'); div.id = 'msg-' + k;
             let bc = '', bs = '', snc = '', gc = '';
             if (dr === 'owner') { bc = 'bubble-owner'; snc = '#5d4a00'; gc = 'owner-glow'; }
@@ -2919,27 +2929,31 @@
             if (cc) acts += '<button class="action-sm" style="background:#e91e63;font-size:9px;padding:2px 6px;" onclick="openColorControl(\'' + m.uid + '\')">🎨</button>';
             acts += '</div>';
             const sns = snc ? 'color:' + snc + ';' : '', gc2 = gc && gc !== 'none' ? 'glow ' + gc : '';
-            const safeName = escapeHtml(dn).replace(/'/g, "\\'");
+            const safeName = dn.replace(/'/g, "\\'");
             div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')">' + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '✓✓' : '') + '</div></div>' + acts;
             box.appendChild(div);
         });
         if (isBottom) box.scrollTop = box.scrollHeight; else box.scrollTop = sp;
     }
 
+    // ✅ تم إصلاح هذه الدالة لعرض الحسابات غير الصالحة بوضوح (بدون تكرار "مجهول")
     function updateUsersList() {
         const l = document.getElementById('users-list'); if (!l) return;
         const users = [];
         Object.keys(allUsersData).forEach(k => {
             const u = allUsersData[k];
             if (u.hidden === true && k !== myFP) return;
-            u.uid = k; u._effectiveStatus = getUserEffectiveStatus(u); users.push(u);
+            u.uid = k; u._effectiveStatus = getUserEffectiveStatus(u); u._isUnknown = isUserUnknown(u); users.push(u);
         });
         const onlineUsers = users.filter(u => u._effectiveStatus === 'online' || u._effectiveStatus === 'away');
         const offlineUsers = users.filter(u => u._effectiveStatus !== 'online' && u._effectiveStatus !== 'away');
         onlineUsers.sort((a, b) => (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0));
         offlineUsers.sort((a, b) => (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0));
-        const sortedUsers = [...onlineUsers, ...offlineUsers];
-        const onlineCount = onlineUsers.length;
+        // ✅ وضع المجهولين في نهاية القائمة
+        const validUsers = users.filter(u => !u._isUnknown);
+        const unknownUsers = users.filter(u => u._isUnknown);
+        const sortedUsers = [...validUsers.filter(u => u._effectiveStatus === 'online' || u._effectiveStatus === 'away'), ...validUsers.filter(u => u._effectiveStatus !== 'online' && u._effectiveStatus !== 'away'), ...unknownUsers];
+        const onlineCount = users.filter(u => u._effectiveStatus === 'online' || u._effectiveStatus === 'away').length;
         const ob = document.getElementById('online-badge');
         if (ob) { ob.textContent = onlineCount; ob.style.display = onlineCount > 0 ? 'block' : 'none'; }
         const currentCards = l.querySelectorAll('.user-card');
@@ -2952,6 +2966,7 @@
             const existing = l.querySelector('.user-card[data-uid="' + u.uid + '"]');
             const isOnline = u._effectiveStatus === 'online' || u._effectiveStatus === 'away';
             const isAway = u._effectiveStatus === 'away';
+            const isUnknown = u._isUnknown;
             let statusText;
             if (isOnline) statusText = isAway ? '🟡 غائب' : '🟢 متصل';
             else { const lastSeen = Number(u.lastSeen) || 0; statusText = !lastSeen ? '⚪ غير متصل' : '⚪ منذ ' + formatDateShort(lastSeen); }
@@ -2961,31 +2976,48 @@
             else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">🛡️ مشرف</span>';
             else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">✅ موثوق</span>';
             const avatar = u.avatar || DEFAULT_ICON;
-            const isUnknown = !u.name || u.name.trim() === '' || !validateName(u.name).valid;
-            const unknownBadge = isUnknown ? '<span class="role-badge" style="background:#e53935;">❓ مجهول</span>' : '';
             let hiddenBadge = ''; if (u.uid === myFP && isHidden && myRole === 'owner') hiddenBadge = '<span class="hidden-owner-badge">🙈 مخفي</span>';
+
+            // ✅ الحل: عرض الاسم بشكل صحيح بدون تكرار
+            let displayNameHtml = '';
+            let invalidBadgeHtml = '';
+            if (isUnknown) {
+                if (!u.name || u.name.trim() === '') {
+                    // الاسم فارغ تماماً
+                    displayNameHtml = '<em style="color:#e53935;font-style:normal;font-weight:700;">⚠️ بدون اسم</em>';
+                } else {
+                    // الاسم موجود لكنه غير صالح (مثل "مجهول")
+                    displayNameHtml = '<span style="color:#e53935;">' + escapeHtml(u.name) + '</span>';
+                    invalidBadgeHtml = '<span class="role-badge invalid">⚠️ غير صالح</span>';
+                }
+            } else {
+                displayNameHtml = escapeHtml(u.name);
+            }
+
             if (existing) {
                 existing.dataset.role = u.role || 'user';
+                existing.classList.toggle('invalid-name', isUnknown);
                 const statusEl = existing.querySelector('.user-status');
                 if (statusEl) statusEl.className = 'user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline');
                 const nameEl = existing.querySelector('.user-details h4');
                 if (nameEl) {
-                    nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + (isUnknown ? '<em style="color:#e53935;font-style:normal;">مجهول</em>' : escapeHtml(u.name)) + ' ' + roleBadge + ' ' + unknownBadge + ' ' + hiddenBadge;
-                    nameEl.onclick = () => openProfileActions(u.uid, isUnknown ? 'مجهول' : escapeHtml(u.name), avatar);
+                    nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + displayNameHtml + ' ' + roleBadge + ' ' + invalidBadgeHtml + ' ' + hiddenBadge;
+                    nameEl.onclick = () => openProfileActions(u.uid, isUnknown ? (u.name || 'بدون اسم') : escapeHtml(u.name), avatar);
                 }
                 const lastSeenEl = existing.querySelector('.last-seen');
                 if (lastSeenEl) lastSeenEl.textContent = statusText + (isOnline ? ' - ' + formatDate(u.lastSeen) : '');
                 const avatarEl = existing.querySelector('.user-avatar');
                 if (avatarEl && avatarEl.src !== avatar) avatarEl.src = avatar;
-                if (avatarEl) avatarEl.onclick = () => openProfileActions(u.uid, isUnknown ? 'مجهول' : escapeHtml(u.name), avatar);
+                if (avatarEl) avatarEl.onclick = () => openProfileActions(u.uid, isUnknown ? (u.name || 'بدون اسم') : escapeHtml(u.name), avatar);
                 const actionsEl = existing.querySelector('.user-actions');
                 if (actionsEl) { actionsEl.id = 'uact-' + u.uid; updateUserControls(u.uid, u); }
                 const currentIndex = Array.from(l.children).indexOf(existing);
                 if (currentIndex !== idx) { if (idx < l.children.length) l.insertBefore(existing, l.children[idx]); else l.appendChild(existing); }
             } else {
                 const card = document.createElement('div');
-                card.className = 'user-card'; card.dataset.uid = u.uid; card.dataset.role = u.role || 'user';
-                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openProfileActions('${u.uid}','${escapeHtml(isUnknown ? 'مجهول' : u.name).replace(/'/g, "\\'")}','${avatar}')"><div class="user-details"><h4 onclick="openProfileActions('${u.uid}','${escapeHtml(isUnknown ? 'مجهول' : u.name).replace(/'/g, "\\'")}','${avatar}')"><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${isUnknown ? '<em style="color:#e53935;font-style:normal;">مجهول</em>' : escapeHtml(u.name)} ${roleBadge} ${unknownBadge} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
+                card.className = 'user-card' + (isUnknown ? ' invalid-name' : ''); card.dataset.uid = u.uid; card.dataset.role = u.role || 'user';
+                const displayNameForClick = isUnknown ? (u.name || 'بدون اسم') : u.name;
+                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openProfileActions('${u.uid}','${escapeHtml(displayNameForClick).replace(/'/g, "\\'")}','${avatar}')"><div class="user-details"><h4 onclick="openProfileActions('${u.uid}','${escapeHtml(displayNameForClick).replace(/'/g, "\\'")}','${avatar}')"><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${displayNameHtml} ${roleBadge} ${invalidBadgeHtml} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
                 if (idx < l.children.length) l.insertBefore(card, l.children[idx]); else l.appendChild(card);
                 updateUserControls(u.uid, u);
             }
@@ -2996,8 +3028,8 @@
     function updateUnknownUsersBtnVisibility() {
         const btn = document.getElementById('cleanup-unknown-btn'); if (!btn) return;
         let count = 0;
-        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (!u.name || u.name.trim() === '' || !validateName(u.name).valid) count++; });
-        if (count > 0 && myRole === 'owner') { btn.style.display = 'inline-block'; btn.textContent = '🧹 حذف المجهولين (' + count + ')'; }
+        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (isUserUnknown(u)) count++; });
+        if (count > 0 && myRole === 'owner') { btn.style.display = 'inline-block'; btn.textContent = '🧹 حذف (' + count + ') بدون اسم'; }
         else { btn.style.display = 'none'; }
     }
 
@@ -3016,11 +3048,11 @@
     function playYouTube(v, c) { c.innerHTML = '<iframe src="https://www.youtube.com/embed/' + v + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
     function updateUserControls(u, d) {
         const e = document.getElementById('uact-' + u); if (!e || u === myFP) return;
-        const isUnknown = !d.name || d.name.trim() === '' || !validateName(d.name).valid;
+        const isUnknown = isUserUnknown(d);
         if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && myRole !== 'owner') { e.innerHTML = ''; return; }
         db.ref('bans/' + u).once('value', b => {
             const ib = b.exists(); let bt = '';
-            if (isUnknown && myRole === 'owner') bt += '<button class="ctrl-btn delete-unknown" onclick="deleteUnknownUser(\'' + u + '\')" title="حذف الحساب المجهول نهائياً">🗑️</button>';
+            if (isUnknown && myRole === 'owner') bt += '<button class="ctrl-btn delete-unknown" onclick="deleteUnknownUser(\'' + u + '\')" title="حذف الحساب غير الصالح نهائياً">🗑️</button>';
             if (canBan(myRole, d.role)) { if (ib) { if (myRole === 'owner') bt += '<button class="ctrl-btn unban" onclick="unbanUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">↺</button>'; } else bt += '<button class="ctrl-btn ban" onclick="banUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🚫</button>'; }
             db.ref('mutes/' + u).once('value', m => {
                 let im = false; if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
@@ -3088,13 +3120,12 @@
     async function deleteUnknownUser(uid) {
         if (myRole !== 'owner') return alert('⛔');
         const u = allUsersData[uid]; if (!u) return alert('المستخدم غير موجود');
-        const isUnknown = !u.name || u.name.trim() === '' || !validateName(u.name).valid;
-        if (!isUnknown) return alert('هذا المستخدم ليس مجهولاً');
-        if (!confirm('🗑️ حذف هذا الحساب المجهول نهائياً؟\n\nسيتم حذف كل شيء متعلق به من التطبيق.')) return;
+        if (!isUserUnknown(u)) return alert('هذا المستخدم ليس مجهولاً');
+        if (!confirm('🗑️ حذف هذا الحساب نهائياً؟\n\nسيتم حذف كل شيء متعلق به من التطبيق.')) return;
         try {
-            await cleanupUserCompletely(uid, 'مجهول');
-            await logAdminAction('delete_unknown_user', uid, 'مجهول', {});
-            alert('✅ تم حذف الحساب المجهول نهائياً');
+            await cleanupUserCompletely(uid, u.name || 'مجهول');
+            await logAdminAction('delete_unknown_user', uid, u.name || 'مجهول', {});
+            alert('✅ تم حذف الحساب نهائياً');
             if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
             updateUnknownUsersBtnVisibility();
         } catch(e) { alert('❌ ' + e.message); }
@@ -3103,13 +3134,13 @@
     async function deleteAllUnknownUsers() {
         if (myRole !== 'owner') return alert('⛔');
         const unknowns = [];
-        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (!u.name || u.name.trim() === '' || !validateName(u.name).valid) unknowns.push(k); });
-        if (unknowns.length === 0) return alert('✅ لا توجد حسابات مجهولة');
-        if (!confirm('🗑️ حذف ' + unknowns.length + ' حساب مجهول نهائياً؟')) return;
+        Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (isUserUnknown(u)) unknowns.push(k); });
+        if (unknowns.length === 0) return alert('✅ لا توجد حسابات بدون اسم');
+        if (!confirm('🗑️ حذف ' + unknowns.length + ' حساب بدون اسم صالح نهائياً؟')) return;
         if (!confirm('⚠️ تأكيد أخير!\nلا يمكن التراجع عن هذه العملية.')) return;
         let success = 0, failed = 0;
         for (const uid of unknowns) {
-            try { await cleanupUserCompletely(uid, 'مجهول'); success++; } catch(e) { failed++; console.warn('فشل حذف', uid, e); }
+            try { const u = allUsersData[uid]; await cleanupUserCompletely(uid, u?.name || 'مجهول'); success++; } catch(e) { failed++; console.warn('فشل حذف', uid, e); }
         }
         await logAdminAction('delete_all_unknown_users', null, null, { count: success, failed: failed });
         alert('✅ تم حذف ' + success + ' من ' + unknowns.length + (failed > 0 ? '\n❌ فشل: ' + failed : ''));
@@ -3221,11 +3252,8 @@
     function previewProf(i) { if (myRole === 'user') { alert("⛔"); i.value = ''; return; } if (i.files[0]) { const r = new FileReader(); r.onload = e => document.getElementById('prof-img').src = e.target.result; r.readAsDataURL(i.files[0]); } }
     async function saveProfile() {
         const rawName = document.getElementById('prof-name').value;
-        // ✅ التحقق الصارم من الاسم الجديد
         const validation = validateName(rawName);
-        if (!validation.valid) {
-            return alert('❌ ' + validation.reason);
-        }
+        if (!validation.valid) { return alert('❌ ' + validation.reason); }
         const n = validation.name;
         const src = document.getElementById('prof-img').src;
         let fa = myAvatar;
@@ -3285,7 +3313,7 @@
         });
         if (su.length === 0) { l.innerHTML = '<div style="text-align:center;padding:30px 0;color:#999;font-size:14px;font-family:var(--font-main);">📭 لا توجد حالات</div>'; return; }
         su.forEach(uid => {
-            const d = um[uid], ls = d.statuses.reduce((a, b) => a.time > b.time ? a : b), ud = allUsersData[uid] || {}, dn = ud.name || d.user.sender || 'مجهول', da = ud.avatar || d.user.avatar || DEFAULT_ICON, isMine = uid === myFP;
+            const d = um[uid], ls = d.statuses.reduce((a, b) => a.time > b.time ? a : b), ud = allUsersData[uid] || {}, dn = getDisplayName({ name: ud.name || d.user.sender }).text, da = ud.avatar || d.user.avatar || DEFAULT_ICON, isMine = uid === myFP;
             let hasUnseen = false, ts = d.statuses.length;
             d.statuses.forEach(s => { const sb = s.seenBy || {}; if (!sb[myFP] && s.uid !== myFP) hasUnseen = true; });
             const c = document.createElement('div');
@@ -3298,7 +3326,7 @@
     function viewUserStatuses(uid, statuses) { if (!statuses || statuses.length === 0) return; statuses.sort((a, b) => a.time - b.time); viewerStatuses = statuses; viewerCurrentIndex = 0; viewerCurrentUid = uid; showStatusAtIndex(0); }
     function showStatusAtIndex(i) {
         if (i >= viewerStatuses.length || i < 0) { closeStatusViewer(null); return; }
-        const s = viewerStatuses[i], ud = allUsersData[viewerCurrentUid] || {}, dn = ud.name || s.sender || 'مجهول';
+        const s = viewerStatuses[i], ud = allUsersData[viewerCurrentUid] || {}, dn = getDisplayName({ name: ud.name || s.sender }).text;
         if (s.uid !== myFP) {
             const sb = s.seenBy || {};
             if (!sb[myFP]) {
@@ -3834,17 +3862,17 @@
             u.uid = k; users.push(u);
         });
         users.sort((a, b) => {
-            const aU = (!a.name || a.name.trim() === '' || !validateName(a.name).valid) ? 0 : 1;
-            const bU = (!b.name || b.name.trim() === '' || !validateName(b.name).valid) ? 0 : 1;
+            const aU = isUserUnknown(a) ? 0 : 1;
+            const bU = isUserUnknown(b) ? 0 : 1;
             if (aU !== bU) return aU - bU;
             return (a.name || '').localeCompare(b.name || '');
         });
         const cleanupBar = document.getElementById('warning-cleanup-bar');
-        const unknownCount = users.filter(u => !u.name || u.name.trim() === '' || !validateName(u.name).valid).length;
+        const unknownCount = users.filter(u => isUserUnknown(u)).length;
         if (cleanupBar) cleanupBar.style.display = (unknownCount > 0 && myRole === 'owner') ? 'flex' : 'none';
         if (users.length === 0) { c.innerHTML = '<div style="padding:10px;text-align:center;color:#999;font-size:12px;">لا يوجد مستخدمون</div>'; return; }
         users.forEach(u => {
-            const isUnknown = !u.name || u.name.trim() === '' || !validateName(u.name).valid;
+            const isUnknown = isUserUnknown(u);
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'warning-user-chip' + (isUnknown ? ' is-unknown' : '');
@@ -3861,13 +3889,14 @@
             img.onerror = () => { img.src = DEFAULT_ICON; };
             btn.appendChild(img);
             const span = document.createElement('span');
-            span.textContent = u.name || 'مجهول';
+            span.textContent = !u.name || u.name.trim() === '' ? '⚠️ بدون اسم' : u.name;
+            if (isUnknown) span.style.color = '#e53935';
             btn.appendChild(span);
             if (isUnknown) {
                 const del = document.createElement('span');
                 del.className = 'wuc-delete';
                 del.textContent = '✕';
-                del.title = 'حذف هذا الحساب المجهول نهائياً';
+                del.title = 'حذف هذا الحساب نهائياً';
                 del.onclick = (e) => { e.stopPropagation(); deleteUnknownUser(u.uid); };
                 btn.appendChild(del);
             }
