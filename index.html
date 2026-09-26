@@ -13,9 +13,7 @@
             src: url('https://alfont.com/wp-content/fonts/sultan-black.woff2') format('woff2'),
                  url('https://alfont.com/wp-content/fonts/sultan-black.woff') format('woff'),
                  url('https://alfont.com/wp-content/fonts/sultan-black.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
+            font-weight: normal; font-style: normal; font-display: swap;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         :root { --primary: #008069; --bg-chat: #efe7dd; --msg-mine: #d9fdd3; --msg-other: #fff; --gold: #FFD700; --font-main: 'alfont_com_سلطان-بلاك', 'Cairo', sans-serif; }
@@ -50,7 +48,7 @@
         #sound-btn { display: inline-block; }
         #maintenance-badge { display: none; background: linear-gradient(135deg, #f9a825, #f57c00); color: #fff; padding: 5px 10px; text-align: center; font-size: 11px; font-weight: 700; flex-shrink: 0; font-family: var(--font-main); }
         #maintenance-badge.tester { background: linear-gradient(135deg, #9c27b0, #6a1b9a); }
-        #chat-messages { flex: 1; overflow-y: auto; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; background: #efe7dd; background-image: url("https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png"); background-blend-mode: overlay; position: relative; min-height: 0; height: 100%; -webkit-overflow-scrolling: touch; }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; background: #efe7dd; background-image: url("https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png"); background-blend-mode: overlay; position: relative; min-height: 0; height: 100%; -webkit-overflow-scrolling: touch; background-size: cover; background-position: center; }
         #loading-more { text-align: center; padding: 6px; color: #999; font-size: 12px; display: none; font-family: var(--font-main); }
         #loading-more.active { display: block; }
         .msg-row { display: flex; flex-direction: column; max-width: 92%; margin-bottom: 2px; position: relative; animation: fadeIn .15s; }
@@ -121,7 +119,6 @@
         .modal-close { background: 0; border: 0; font-size: 18px; cursor: pointer; color: #666; }
         .modal-body { flex: 1; overflow-y: auto; padding: 10px; }
         #users-list { flex: 1; overflow-y: auto; padding: 10px; }
-
         .user-card { padding: 10px 12px; border-radius: 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); transition: all 0.2s; position: relative; overflow: hidden; }
         .user-card::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #ccc; transition: width 0.2s; }
         .user-card:hover { transform: translateX(-2px); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); }
@@ -135,7 +132,6 @@
         .user-card[data-role="trusted"]::before { background: linear-gradient(180deg, #FF9800, #F57C00); width: 5px; }
         .user-card.invalid-name { border-color: rgba(229,57,53,0.5); background: linear-gradient(135deg, #fff5f5 0%, #fff 100%); }
         .user-card.invalid-name::before { background: linear-gradient(180deg, #ef5350, #b71c1c); width: 5px; }
-
         .user-card .user-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
         .user-card .user-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; cursor: pointer; flex-shrink: 0; transition: transform 0.2s; }
         .user-card .user-avatar:hover { transform: scale(1.05); }
@@ -143,7 +139,6 @@
         .user-card[data-role="manager"] .user-avatar { border-color: #9C27B0; box-shadow: 0 0 8px rgba(156, 39, 176, 0.3); }
         .user-card[data-role="mod"] .user-avatar { border-color: #2196F3; box-shadow: 0 0 8px rgba(33, 150, 243, 0.3); }
         .user-card[data-role="trusted"] .user-avatar { border-color: #FF9800; box-shadow: 0 0 8px rgba(255, 152, 0, 0.3); }
-
         .user-card .user-details { flex: 1; min-width: 0; }
         .user-card .user-details h4 { font-size: 13px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; font-family: var(--font-main); cursor: pointer; font-weight: 700; color: #1a1a1a; margin-bottom: 2px; }
         .user-card .user-status { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
@@ -152,69 +147,14 @@
         .user-card .user-status.away { background: #ff9800; box-shadow: 0 0 8px rgba(255, 152, 0, 0.6); }
         .user-card .user-details .last-seen { font-size: 10px; color: #888; font-family: var(--font-main); font-weight: 500; }
         .user-card .user-actions { display: flex; gap: 3px; flex-wrap: wrap; }
-
-        .role-badge {
-            font-size: 9px;
-            padding: 3px 8px;
-            border-radius: 10px;
-            color: #fff;
-            font-weight: 700;
-            font-family: var(--font-main);
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            letter-spacing: 0.2px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-            position: relative;
-            overflow: hidden;
-            line-height: 1;
-            white-space: nowrap;
-        }
-        .role-badge::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
+        .role-badge { font-size: 9px; padding: 3px 8px; border-radius: 10px; color: #fff; font-weight: 700; font-family: var(--font-main); display: inline-flex; align-items: center; gap: 3px; letter-spacing: 0.2px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); position: relative; overflow: hidden; line-height: 1; white-space: nowrap; }
+        .role-badge::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: left 0.5s; }
         .role-badge:hover::before { left: 100%; }
-
-        .role-badge.owner {
-            background: linear-gradient(135deg, #FFD700 0%, #F9A825 50%, #E65100 100%);
-            color: #3E2723;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        .role-badge.manager {
-            background: linear-gradient(135deg, #E1BEE7 0%, #9C27B0 50%, #4A148C 100%);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 2px 8px rgba(156, 39, 176, 0.5);
-        }
-
-        .role-badge.mod {
-            background: linear-gradient(135deg, #90CAF9 0%, #2196F3 50%, #0D47A1 100%);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.5);
-        }
-
-        .role-badge.trusted {
-            background: linear-gradient(135deg, #FFCC80 0%, #FF9800 50%, #E65100 100%);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.5);
-        }
-        .role-badge.invalid {
-            background: linear-gradient(135deg, #ef5350, #b71c1c);
-            color: #fff;
-            font-size: 8px;
-            padding: 2px 6px;
-        }
-
+        .role-badge.owner { background: linear-gradient(135deg, #FFD700 0%, #F9A825 50%, #E65100 100%); color: #3E2723; border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3); }
+        .role-badge.manager { background: linear-gradient(135deg, #E1BEE7 0%, #9C27B0 50%, #4A148C 100%); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 2px 8px rgba(156, 39, 176, 0.5); }
+        .role-badge.mod { background: linear-gradient(135deg, #90CAF9 0%, #2196F3 50%, #0D47A1 100%); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 2px 8px rgba(33, 150, 243, 0.5); }
+        .role-badge.trusted { background: linear-gradient(135deg, #FFCC80 0%, #FF9800 50%, #E65100 100%); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 2px 8px rgba(255, 152, 0, 0.5); }
+        .role-badge.invalid { background: linear-gradient(135deg, #ef5350, #b71c1c); color: #fff; font-size: 8px; padding: 2px 6px; }
         .ctrl-btn { width: 26px; height: 26px; border-radius: 50%; border: 0; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 12px; transition: transform 0.15s; }
         .ctrl-btn:active { transform: scale(.85); }
         .ctrl-btn.ban { background: #d32f2f; }
@@ -281,11 +221,11 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #status-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; z-index: 50; display: none; flex-direction: column; }
+        #status-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; z-index: 50; display: none; flex-direction: column; background-size: cover; background-position: center; }
         #status-screen.active { display: flex; animation: slideUp .3s; }
         .status-header { background: var(--primary); color: #fff; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; min-height: 38px; }
         .status-header h3 { font-size: 15px; display: flex; align-items: center; gap: 6px; font-family: var(--font-main); font-weight: 700; }
-        .status-list { flex: 1; overflow-y: auto; padding: 10px 14px; background: #f0f2f5; }
+        .status-list { flex: 1; overflow-y: auto; padding: 10px 14px; background: rgba(240, 242, 245, 0.85); }
         .status-user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border-radius: 8px; margin-bottom: 6px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); cursor: pointer; transition: transform .12s; border: 1px solid #eee; position: relative; }
         .status-user-card:active { transform: scale(.97); }
         .status-user-card .status-avatar-wrapper { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
@@ -352,7 +292,7 @@
         .nav-item.active .nav-label { color: var(--primary); }
         .nav-item .nav-badge { position: absolute; top: 0; right: 2px; background: #ff3b30; color: #fff; font-size: 8px; padding: 0 5px; border-radius: 8px; min-width: 16px; text-align: center; font-weight: 700; display: none; line-height: 16px; font-family: var(--font-main); }
         .nav-item .nav-badge.active { display: block; }
-        #dm-chat-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #efe7dd; z-index: 400; display: none; flex-direction: column; }
+        #dm-chat-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #efe7dd; z-index: 400; display: none; flex-direction: column; background-size: cover; background-position: center; }
         #dm-chat-modal.active { display: flex; }
         #dm-chat-header { background: #9c27b0; color: #fff; padding: 8px 12px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
         #dm-chat-header .back-btn { background: 0; border: 0; color: #fff; font-size: 22px; cursor: pointer; padding: 0 4px; }
@@ -607,7 +547,6 @@
         .warning-ack-btn:active { transform: scale(0.97); box-shadow: 0 3px 12px rgba(255,59,48,0.65); }
         .warning-acknowledged-info { font-size: 13px; color: #4caf50; margin-top: 14px; display: none; align-items: center; justify-content: center; gap: 6px; font-weight: 700; animation: fadeIn 0.4s; }
         .warning-acknowledged-info.show { display: flex; }
-
         .warning-target-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
         .warning-target-btn { padding: 12px 8px; border: 2px solid #eee; border-radius: 10px; background: #fff; font-family: var(--font-main); font-size: 12px; font-weight: 700; color: #555; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .warning-target-btn .wt-icon { font-size: 22px; }
@@ -627,7 +566,6 @@
         .warning-cleanup-btn:active { transform: scale(0.96); }
         .warning-compose-textarea { width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; font-family: var(--font-main); font-size: 14px; resize: vertical; min-height: 100px; outline: 0; transition: border 0.2s; }
         .warning-compose-textarea:focus { border-color: #ff3b30; box-shadow: 0 0 0 3px rgba(255,59,48,0.1); }
-
         .warning-history-card { background: #fff; border-radius: 14px; padding: 0; margin-bottom: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: all 0.25s; position: relative; overflow: hidden; border: 1px solid #eee; }
         .warning-history-card:hover { box-shadow: 0 6px 22px rgba(0,0,0,0.1); transform: translateY(-2px); }
         .warning-history-card .whc-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: linear-gradient(135deg, #ff3b30, #ff6b35); color: #fff; font-family: var(--font-main); }
@@ -644,7 +582,6 @@
         .whc-btn.delete { background: linear-gradient(135deg,#ffebee,#ffcdd2); color: #c62828; }
         .whc-btn.delete:hover { background: #ef5350; color: #fff; }
         .whc-btn:active { transform: scale(0.95); }
-
         #warning-delete-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,10,15,0.85); z-index: 9999999; display: none; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         #warning-delete-modal.active { display: flex; animation: warningFadeIn 0.3s ease; }
         .warning-delete-box { background: #fff; width: 100%; max-width: 440px; border-radius: 20px; overflow: hidden; animation: warningPop 0.4s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,59,48,0.15); font-family: var(--font-main); max-height: 92vh; display: flex; flex-direction: column; }
@@ -674,23 +611,19 @@
         .warning-delete-box .wdb-btn.confirm { background: linear-gradient(135deg, #e53935, #b71c1c); color: #fff; box-shadow: 0 4px 16px rgba(229,57,53,0.4); }
         .warning-delete-box .wdb-btn.confirm:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(229,57,53,0.6); }
         .warning-delete-box .wdb-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
         .warning-history-header-bar { display: flex; gap: 6px; padding: 8px 10px; background: #fff; border-bottom: 1px solid #eee; align-items: center; }
         .warning-history-header-bar .search-box { margin-bottom: 0; flex: 1; padding: 8px 12px; font-size: 12px; }
         .whb-delete-all { padding: 8px 12px; background: linear-gradient(135deg,#e53935,#b71c1c); color: #fff; border: 0; border-radius: 8px; font-family: var(--font-main); font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 8px rgba(229,57,53,0.3); }
         .whb-delete-all:active { transform: scale(0.95); }
         .whb-delete-all:disabled { opacity: 0.5; cursor: not-allowed; }
-
         .warning-history-empty { text-align: center; padding: 50px 20px; color: #999; font-family: var(--font-main); }
         .warning-history-empty .whe-icon { font-size: 60px; display: block; margin-bottom: 12px; opacity: 0.5; }
         .warning-history-empty .whe-text { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: #666; }
         .warning-history-empty .whe-subtext { font-size: 12px; color: #aaa; }
-
         .warning-readers-info-card { background: linear-gradient(135deg, #fff5f5, #ffe5e5); border: 2px solid rgba(255,59,48,0.25); border-radius: 12px; padding: 14px; margin-bottom: 12px; font-family: var(--font-main); }
         .warning-readers-info-card .wric-target { font-size: 11px; color: #999; font-weight: 700; margin-bottom: 4px; }
         .warning-readers-info-card .wric-message { font-size: 14px; color: #1a1a1a; font-weight: 700; line-height: 1.6; margin-bottom: 8px; word-break: break-word; white-space: pre-wrap; }
         .warning-readers-info-card .wric-meta { font-size: 10px; color: #666; }
-
         .warning-stats-row { display: flex; gap: 6px; margin-bottom: 12px; }
         .warning-stat-box { flex: 1; padding: 12px 8px; border-radius: 12px; text-align: center; font-family: var(--font-main); box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 2px solid transparent; }
         .warning-stat-box.total { background: linear-gradient(135deg,#e3f2fd,#bbdefb); border-color: rgba(21,101,192,0.2); }
@@ -704,7 +637,6 @@
         .warning-stat-box.total .wsb-label { color: #1565c0; }
         .warning-stat-box.read .wsb-label { color: #2e7d32; }
         .warning-stat-box.unread .wsb-label { color: #e65100; }
-
         .warning-readers-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
         .warning-readers-tab { flex: 1; padding: 10px; border: 2px solid #eee; border-radius: 10px; background: #fff; cursor: pointer; font-family: var(--font-main); font-weight: 700; font-size: 13px; color: #666; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
         .warning-readers-tab:active { transform: scale(0.97); }
@@ -713,7 +645,6 @@
         .warning-readers-tab .wrt-count { background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 10px; font-size: 11px; min-width: 22px; }
         .warning-readers-tab.active.read .wrt-count { background: rgba(255,255,255,0.7); }
         .warning-readers-tab.active.unread .wrt-count { background: rgba(255,255,255,0.7); }
-
         .warning-reader-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border-radius: 12px; border: 1px solid #eee; font-family: var(--font-main); box-shadow: 0 1px 4px rgba(0,0,0,0.03); margin-bottom: 6px; transition: all 0.2s; }
         .warning-reader-item:active { transform: scale(0.99); }
         .warning-reader-item.read { border-right: 4px solid #4caf50; }
@@ -728,15 +659,12 @@
         .warning-reader-item .wr-status { font-size: 22px; flex-shrink: 0; }
         .warning-reader-item.read .wr-status { color: #4caf50; }
         .warning-reader-item.unread .wr-status { color: #ff9800; }
-
         .warning-empty-readers { text-align: center; padding: 30px 20px; color: #999; font-size: 14px; font-family: var(--font-main); background: #fff; border-radius: 12px; }
         .warning-empty-readers .we-icon { font-size: 48px; display: block; margin-bottom: 8px; opacity: 0.6; }
-
         .btn-warning { width: 100%; padding: 12px; background: linear-gradient(135deg, #ff3b30, #ff6b35); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 3px 12px rgba(255,59,48,0.3); }
         .btn-warning:active { transform: scale(0.95); }
         .btn-warning-history { width: 100%; padding: 12px; background: linear-gradient(135deg, #607d8b, #455a64); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-warning-history:active { transform: scale(0.95); }
-
         .btn-media-settings { width: 100%; padding: 12px; background: linear-gradient(135deg, #008069, #00a884); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-media-settings:active { transform: scale(0.95); }
         .btn-status-settings { width: 100%; padding: 12px; background: linear-gradient(135deg, #f9a825, #f57c00); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -752,9 +680,81 @@
         #deletion-overlay .del-icon { font-size: 70px; margin-bottom: 16px; animation: warningPulse 1.5s infinite; }
         #deletion-overlay h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
         #deletion-overlay p { font-size: 14px; opacity: 0.85; }
+
+        /* ═══════════════════════════════════════════════════════════
+           🆕 الإضافات الجديدة - نظام الخلفيات والحركات الذكية
+           ═══════════════════════════════════════════════════════════ */
+
+        /* فواصل التاريخ الذكية في الخاص */
+        .dm-date-separator { text-align: center; margin: 12px 0 8px; position: relative; display: flex; justify-content: center; }
+        .dm-date-separator span { background: rgba(0, 0, 0, 0.12); color: #444; padding: 4px 14px; border-radius: 12px; font-size: 11px; font-family: var(--font-main); font-weight: 700; display: inline-block; backdrop-filter: blur(4px); box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        /* فواصل التاريخ الذكية في الغرفة العامة */
+        .chat-date-separator { text-align: center; margin: 12px 0 8px; position: relative; display: flex; justify-content: center; }
+        .chat-date-separator span { background: rgba(255, 255, 255, 0.85); color: #555; padding: 4px 14px; border-radius: 12px; font-size: 11px; font-family: var(--font-main); font-weight: 700; display: inline-block; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+        /* حالة الاتصال في هيدر الخاص */
+        #dm-chat-status { font-size: 10px; opacity: 0.85; font-family: var(--font-main); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        #dm-chat-status.online { color: #b8ffb8; }
+        #dm-chat-status.offline { color: rgba(255,255,255,0.7); }
+        #dm-chat-status .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; box-shadow: 0 0 6px currentColor; }
+
+        /* خلفيات ديناميكية */
+        .custom-bg { background-size: cover !important; background-position: center center !important; background-repeat: no-repeat !important; background-attachment: fixed !important; }
+        .custom-bg-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; pointer-events: none; }
+
+        /* تأثيرات الحركة */
+        #effects-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; overflow: hidden; }
+        .effect-particle { position: absolute; pointer-events: none; user-select: none; }
+        .effect-particle.falling { animation: fallDown linear infinite; }
+        .effect-particle.floating { animation: floatUp linear infinite; }
+        .effect-particle.snow { animation: snowFall linear infinite; }
+        .effect-particle.star { animation: twinkle 2s ease-in-out infinite; }
+        @keyframes fallDown { 0% { transform: translateY(-50px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+        @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.5); opacity: 0; } 10% { opacity: 0.9; } 90% { opacity: 0.9; } 100% { transform: translateY(-50px) scale(1.2); opacity: 0; } }
+        @keyframes snowFall { 0% { transform: translateY(-20px) translateX(0); opacity: 0; } 10% { opacity: 1; } 50% { transform: translateY(50vh) translateX(20px); } 100% { transform: translateY(105vh) translateX(-20px); opacity: 0; } }
+        @keyframes twinkle { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.3); } }
+
+        /* قسم اختيار الخلفية */
+        .bg-tab-bar { display: flex; gap: 6px; margin-bottom: 12px; background: #f5f5f5; padding: 4px; border-radius: 12px; }
+        .bg-tab-btn { flex: 1; padding: 8px 6px; border: 0; border-radius: 8px; background: transparent; font-family: var(--font-main); font-size: 12px; font-weight: 700; color: #777; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .bg-tab-btn .bgt-icon { font-size: 16px; }
+        .bg-tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+
+        .bg-presets-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; max-height: 200px; overflow-y: auto; padding: 4px; }
+        .bg-preset-item { aspect-ratio: 1; border-radius: 10px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; background-size: cover; background-position: center; position: relative; overflow: hidden; }
+        .bg-preset-item:active { transform: scale(0.95); }
+        .bg-preset-item.selected { border-color: var(--primary); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary); }
+        .bg-preset-item .bpi-label { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); color: #fff; font-size: 9px; padding: 3px; text-align: center; font-family: var(--font-main); font-weight: 700; }
+
+        .bg-upload-area { border: 2px dashed #ddd; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: #fafafa; margin-bottom: 10px; }
+        .bg-upload-area:hover { border-color: var(--primary); background: #f0fdf4; }
+        .bg-upload-area:active { transform: scale(0.97); }
+        .bg-upload-area .bua-icon { font-size: 32px; display: block; margin-bottom: 6px; }
+        .bg-upload-area .bua-text { color: #666; font-size: 13px; font-family: var(--font-main); font-weight: 600; }
+        .bg-upload-area .bua-hint { font-size: 10px; color: #999; margin-top: 4px; font-family: var(--font-main); }
+        .bg-upload-area .bua-preview { margin-top: 8px; max-height: 100px; border-radius: 8px; display: none; }
+        .bg-upload-area .bua-preview.active { display: inline-block; }
+
+        .bg-url-input { width: 100%; padding: 10px 12px; border: 2px solid #eee; border-radius: 10px; font-family: var(--font-main); font-size: 12px; outline: 0; margin-bottom: 8px; transition: border 0.2s; }
+        .bg-url-input:focus { border-color: var(--primary); }
+
+        .bg-preview-box { background: #f5f5f5; border-radius: 12px; padding: 12px; margin-bottom: 12px; text-align: center; border: 2px solid #eee; }
+        .bg-preview-box .bpb-label { font-size: 11px; color: #777; margin-bottom: 6px; font-weight: 700; font-family: var(--font-main); }
+        .bg-preview-box .bpb-content { min-height: 80px; border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px; font-family: var(--font-main); overflow: hidden; background-size: cover; background-position: center; }
+
+        /* معاينة التأثيرات */
+        .fx-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+        .fx-item { padding: 10px 8px; border: 2px solid #eee; border-radius: 10px; background: #fff; font-family: var(--font-main); font-size: 12px; font-weight: 700; color: #555; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; text-align: right; }
+        .fx-item:active { transform: scale(0.97); }
+        .fx-item.selected { border-color: #ff3b30; background: linear-gradient(135deg, #fff5f5, #ffe5e5); color: #ff3b30; box-shadow: 0 2px 8px rgba(255,59,48,0.2); }
+        .fx-item .fx-icon { font-size: 20px; flex-shrink: 0; }
+        .fx-item .fx-info { flex: 1; min-width: 0; }
+        .fx-item .fx-name { font-weight: 800; font-size: 12px; }
+        .fx-item .fx-desc { font-size: 9px; opacity: 0.7; font-weight: 500; margin-top: 1px; }
     </style>
 </head>
-<body>
+<body><body>
 
 <div class="app-container" id="app">
     <div id="loading-screen">
@@ -928,7 +928,7 @@
             <img id="dm-chat-avatar" src="">
             <div style="flex:1;">
                 <div class="dm-name" id="dm-chat-name">...</div>
-                <div class="dm-role" id="dm-chat-role"></div>
+                <div class="dm-role" id="dm-chat-status"><span class="status-dot"></span><span>...</span></div>
             </div>
             <button class="dm-clear-btn" onclick="clearCurrentDMChat()" title="مسح المحادثة">🗑️</button>
         </div>
@@ -1205,6 +1205,84 @@
         </div>
     </div>
 
+    <!-- 🆕 نافذة إعدادات الخلفيات -->
+    <div class="modal-popup" id="background-modal">
+        <div class="popup-box" style="max-width:480px;">
+            <h3 style="font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">🎨 إعدادات الخلفيات</h3>
+            <p style="font-size:11px;color:#888;margin:6px 0 12px;text-align:center;">خصص خلفية الغرفة والخاص والحالات</p>
+            
+            <div class="bg-tab-bar">
+                <button class="bg-tab-btn active" data-bg-target="chat" onclick="switchBgTab('chat')"><span class="bgt-icon">💬</span><span>الغرفة</span></button>
+                <button class="bg-tab-btn" data-bg-target="dm" onclick="switchBgTab('dm')"><span class="bgt-icon">💌</span><span>الخاص</span></button>
+                <button class="bg-tab-btn" data-bg-target="status" onclick="switchBgTab('status')"><span class="bgt-icon">📸</span><span>الحالات</span></button>
+            </div>
+
+            <div class="bg-preview-box">
+                <div class="bpb-label">👁️ معاينة حية</div>
+                <div class="bpb-content" id="bg-preview-content">سيظهر هنا اختيارك</div>
+            </div>
+
+            <div style="text-align:right;margin-bottom:8px;">
+                <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:6px;">🖼️ اختر من المكتبة:</div>
+            </div>
+            <div class="bg-presets-grid" id="bg-presets-grid"></div>
+
+            <div style="text-align:right;margin:12px 0 6px;">
+                <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:6px;">📤 أو ارفع من هاتفك:</div>
+            </div>
+            <div class="bg-upload-area" id="bg-upload-area" onclick="document.getElementById('bg-file-input').click()">
+                <span class="bua-icon">📱</span>
+                <div class="bua-text">اختر صورة أو فيديو متحرك</div>
+                <div class="bua-hint">يدعم: JPG, PNG, GIF, MP4, WebM</div>
+                <img class="bua-preview" id="bua-preview">
+            </div>
+            <input type="file" id="bg-file-input" accept="image/*,video/*" style="display:none" onchange="handleBgFile(this)">
+
+            <div style="text-align:right;margin:12px 0 6px;">
+                <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:6px;">🔗 أو رابط مباشر:</div>
+            </div>
+            <input type="url" id="bg-url-input" class="bg-url-input" placeholder="https://example.com/image.jpg">
+
+            <div style="display:flex;gap:6px;margin-top:12px;">
+                <button onclick="applyBackground()" class="login-btn" style="background:var(--primary);padding:10px;font-size:13px;flex:1;">✅ تطبيق</button>
+                <button onclick="resetBackground()" class="login-btn" style="background:#ef5350;color:#fff;padding:10px;font-size:13px;flex:0 0 100px;">↺ إعادة</button>
+                <button onclick="document.getElementById('background-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:10px;font-size:13px;flex:0 0 80px;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🆕 نافذة إعدادات التأثيرات -->
+    <div class="modal-popup" id="effects-modal">
+        <div class="popup-box" style="max-width:480px;">
+            <h3 style="font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">✨ التأثيرات المتحركة</h3>
+            <p style="font-size:11px;color:#888;margin:6px 0 12px;text-align:center;">أضف حركات ممتعة لكل مكان في التطبيق</p>
+            
+            <div class="bg-tab-bar">
+                <button class="bg-tab-btn active" data-fx-target="chat" onclick="switchFxTab('chat')"><span class="bgt-icon">💬</span><span>الغرفة</span></button>
+                <button class="bg-tab-btn" data-fx-target="dm" onclick="switchFxTab('dm')"><span class="bgt-icon">💌</span><span>الخاص</span></button>
+                <button class="bg-tab-btn" data-fx-target="status" onclick="switchFxTab('status')"><span class="bgt-icon">📸</span><span>الحالات</span></button>
+                <button class="bg-tab-btn" data-fx-target="users" onclick="switchFxTab('users')"><span class="bgt-icon">👥</span><span>الأعضاء</span></button>
+            </div>
+
+            <div style="text-align:right;margin:6px 0;">
+                <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:6px;">🎭 اختر تأثيراً:</div>
+            </div>
+            <div class="fx-grid" id="fx-grid"></div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:#f9f9f9;border-radius:10px;margin-top:8px;">
+                <div style="font-size:12px;font-weight:700;color:#555;">⚡ شدة التأثير (الكثافة)</div>
+                <input type="range" id="fx-intensity" min="10" max="100" value="50" style="flex:1;margin:0 10px;" oninput="updateFxIntensityLabel()">
+                <span id="fx-intensity-label" style="font-size:12px;font-weight:700;color:var(--primary);min-width:35px;">50%</span>
+            </div>
+
+            <div style="display:flex;gap:6px;margin-top:12px;">
+                <button onclick="applyEffects()" class="login-btn" style="background:linear-gradient(135deg,#9c27b0,#6a1b9a);padding:10px;font-size:13px;flex:1;">✨ تطبيق</button>
+                <button onclick="resetEffects()" class="login-btn" style="background:#ef5350;color:#fff;padding:10px;font-size:13px;flex:0 0 100px;">↺ إعادة</button>
+                <button onclick="document.getElementById('effects-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:10px;font-size:13px;flex:0 0 80px;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-popup" id="profile-modal">
         <div class="popup-box">
             <h3 style="font-size:16px;font-weight:700;">👤 الملف</h3>
@@ -1219,6 +1297,8 @@
                 <button id="open-dm-settings-btn" class="btn-dm-toggle" style="background:linear-gradient(135deg,#6a1b9a,#4a148c);" onclick="openDMSettings()">⚙️ إعدادات الخاص بالرتب</button>
                 <button id="open-media-settings-btn" class="btn-media-settings" onclick="openMediaSettings()">📎 إعدادات الوسائط (صور/فيديو)</button>
                 <button id="open-status-settings-btn" class="btn-status-settings" onclick="openStatusSettings()">📸 إعدادات نشر الحالات</button>
+                <button id="open-background-settings-btn" class="btn-status-settings" style="background:linear-gradient(135deg,#e91e63,#ad1457);" onclick="openBackgroundSettings()">🎨 إعدادات الخلفيات</button>
+                <button id="open-effects-settings-btn" class="btn-status-settings" style="background:linear-gradient(135deg,#9c27b0,#4a148c);" onclick="openEffectsSettings()">✨ إعدادات التأثيرات</button>
                 <button id="open-maintenance-btn" class="btn-maintenance" onclick="openMaintenanceSettings()">🔧 إعدادات الصيانة</button>
                 <button id="open-advanced-btn" class="btn-advanced" onclick="openAdvancedSettings()">⚙️ إعدادات متقدمة (الخط)</button>
                 <button class="btn-warning" onclick="openWarningComposer()">🚨 إرسال تحذير</button>
@@ -1487,6 +1567,7 @@
 </div>
 
 <div id="inapp-notif-container"></div>
+<div id="effects-layer"></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -1544,6 +1625,7 @@
     let dmUnreadCounts = {};
     let currentDMChat = null;
     let dmChatMessagesListener = null;
+    let dmStatusListener = null;
     let maintenanceData = { status: false, message: '', testers: {} };
     let isTester = false;
     let maintenanceListener = null;
@@ -1619,6 +1701,48 @@
     // ✅ نظام الطرد الفوري
     let userDeletedListener = null;
     let isBeingDeleted = false;
+
+    // 🆕 نظام الخلفيات والتأثيرات
+    let currentBgTab = 'chat';
+    let currentFxTab = 'chat';
+    let selectedBgPreset = null;
+    let selectedBgFile = null;
+    let bgSettings = { chat: { type: 'default', value: '' }, dm: { type: 'default', value: '' }, status: { type: 'default', value: '' } };
+    let fxSettings = { chat: { type: 'none', intensity: 50 }, dm: { type: 'none', intensity: 50 }, status: { type: 'none', intensity: 50 }, users: { type: 'none', intensity: 50 } };
+    let bgSettingsListener = null;
+    let fxSettingsListener = null;
+    let fxAnimationIntervals = { chat: null, dm: null, status: null, users: null };
+
+    const BG_PRESETS = [
+        { id: 'default', name: 'افتراضي', type: 'default', value: '' },
+        { id: 'whatsapp', name: 'واتساب', type: 'image', value: 'https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png' },
+        { id: 'dark', name: 'داكن', type: 'color', value: 'linear-gradient(135deg, #1a1a2e, #16213e)' },
+        { id: 'purple', name: 'بنفسجي', type: 'color', value: 'linear-gradient(135deg, #4a148c, #6a1b9a)' },
+        { id: 'sunset', name: 'غروب', type: 'color', value: 'linear-gradient(135deg, #ff6b6b, #feca57)' },
+        { id: 'ocean', name: 'محيط', type: 'color', value: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)' },
+        { id: 'forest', name: 'غابة', type: 'color', value: 'linear-gradient(135deg, #134e5e, #71b280)' },
+        { id: 'candy', name: 'حلويات', type: 'color', value: 'linear-gradient(135deg, #ff9a9e, #fecfef)' },
+        { id: 'night', name: 'ليل', type: 'color', value: 'linear-gradient(135deg, #0c0c1e, #1a1a3e)' },
+        { id: 'fire', name: 'نار', type: 'color', value: 'linear-gradient(135deg, #ff512f, #dd2476)' },
+        { id: 'mint', name: 'نعناع', type: 'color', value: 'linear-gradient(135deg, #00b09b, #96c93d)' },
+        { id: 'royal', name: 'ملكي', type: 'color', value: 'linear-gradient(135deg, #141E30, #243B55)' },
+        { id: 'space', name: 'فضاء', type: 'image', value: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800' },
+        { id: 'clouds', name: 'سحاب', type: 'image', value: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=800' },
+        { id: 'flowers', name: 'زهور', type: 'image', value: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800' }
+    ];
+
+    const FX_TYPES = [
+        { id: 'none', name: 'بدون', desc: 'لا توجد تأثيرات', icon: '🚫' },
+        { id: 'hearts', name: 'قلوب', desc: 'قلوب حمراء متطايرة', icon: '❤️' },
+        { id: 'stars', name: 'نجوم', desc: 'نجوم متلألئة', icon: '⭐' },
+        { id: 'snow', name: 'ثلج', desc: 'ثلج متساقط', icon: '❄️' },
+        { id: 'fire', name: 'نار', desc: 'شرارات نار', icon: '🔥' },
+        { id: 'bubbles', name: 'فقاعات', desc: 'فقاعات صاعدة', icon: '🫧' },
+        { id: 'leaves', name: 'أوراق', desc: 'أوراق خريفية', icon: '🍂' },
+        { id: 'confetti', name: 'قصاصات', desc: 'احتفال ملون', icon: '🎉' },
+        { id: 'sparkles', name: 'بريق', desc: 'بريق ذهبي', icon: '✨' },
+        { id: 'moon', name: 'قمر', desc: 'أقمار ونجوم', icon: '🌙' }
+    ];
 
     const COLORS = [
         { bg: 'linear-gradient(135deg,#E3F2FD,#64B5F6)', text: '#0D47A1', name: '#0D47A1' },
@@ -1720,6 +1844,47 @@
     function extractYouTubeId(u) { if (!u) return null; const p = [/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/, /^([a-zA-Z0-9_-]{11})$/]; for (let r of p) { const m = u.match(r); if (m) return m[1] } return null }
     function isYouTubeUrl(t) { return /(?:youtube\.com|youtu\.be)/i.test(t) }
     function getYouTubeThumbnail(v) { return 'https://img.youtube.com/vi/' + v + '/hqdefault.jpg' }
+
+    /* ============================================================
+       🆕 نظام التواريخ الذكية (اليوم، أمس، date)
+       ============================================================ */
+    function getSmartDateLabel(timestamp) {
+        const now = new Date();
+        const msgDate = new Date(timestamp);
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const yesterday = today - 86400000;
+        const msgDay = new Date(msgDate.getFullYear(), msgDate.getMonth(), msgDate.getDate()).getTime();
+        
+        if (msgDay === today) return 'اليوم';
+        if (msgDay === yesterday) return 'أمس';
+        
+        const diffDays = Math.floor((today - msgDay) / 86400000);
+        if (diffDays < 7) {
+            const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            return days[msgDate.getDay()];
+        }
+        if (msgDate.getFullYear() === now.getFullYear()) {
+            return msgDate.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long' });
+        }
+        return msgDate.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function getSmartLastSeen(timestamp) {
+        if (!timestamp) return 'آخر ظهور غير معروف';
+        const now = Date.now();
+        const diff = now - timestamp;
+        const nowDate = new Date();
+        const lastDate = new Date(timestamp);
+        const todayStart = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate()).getTime();
+        const yesterdayStart = todayStart - 86400000;
+        const timeStr = lastDate.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        
+        if (diff < 60000) return 'آخر ظهور الآن';
+        if (diff < 3600000) return 'آخر ظهور منذ ' + Math.floor(diff / 60000) + ' دقيقة';
+        if (diff < 86400000 && lastDate.getTime() >= todayStart) return 'آخر ظهور اليوم في ' + timeStr;
+        if (lastDate.getTime() >= yesterdayStart) return 'آخر ظهور أمس في ' + timeStr;
+        return 'آخر ظهور ' + lastDate.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long' }) + ' في ' + timeStr;
+    }
 
     function roleRank(r) { return { user: 0, trusted: 1, mod: 2, manager: 3, owner: 4 }[r] || 0; }
     function canUserDM(uid, role) { if (dmDenialsData[uid] === true) return false; if (allDMUsersData[uid] === true) return true; return roleRank(role || 'user') >= roleRank(dmGlobalSettings.min_role || 'owner'); }
@@ -1868,6 +2033,337 @@
         if (!valid.includes(role)) return;
         try { await db.ref('status_settings/min_role').set(role); await logAdminAction('status_min_role_change', null, null, { new_min_role: role }); alert('✅ تم الحفظ: ' + getRoleLabel(role) + ' وما فوق'); }
         catch (e) { alert('❌ ' + e.message); }
+    }
+
+    /* ============================================================
+       🆕 نظام الخلفيات والتأثيرات - دوال
+       ============================================================ */
+    function openBackgroundSettings() {
+        if (myRole !== 'owner') return alert('⛔');
+        currentBgTab = 'chat'; selectedBgFile = null; selectedBgPreset = null;
+        document.getElementById('bg-url-input').value = '';
+        document.getElementById('bua-preview').classList.remove('active');
+        document.getElementById('bua-preview').src = '';
+        document.querySelectorAll('.bg-tab-btn').forEach(b => { b.classList.toggle('active', b.dataset.bgTarget === 'chat'); });
+        renderBgPresets();
+        updateBgPreview();
+        document.getElementById('background-modal').classList.add('active');
+    }
+    function switchBgTab(tab) {
+        currentBgTab = tab;
+        document.querySelectorAll('.bg-tab-btn').forEach(b => { b.classList.toggle('active', b.dataset.bgTarget === tab); });
+        selectedBgPreset = null;
+        selectedBgFile = null;
+        document.getElementById('bua-preview').classList.remove('active');
+        document.getElementById('bua-preview').src = '';
+        document.getElementById('bg-url-input').value = '';
+        renderBgPresets();
+        updateBgPreview();
+    }
+    function renderBgPresets() {
+        const grid = document.getElementById('bg-presets-grid');
+        grid.innerHTML = '';
+        const currentSetting = bgSettings[currentBgTab] || { type: 'default', value: '' };
+        BG_PRESETS.forEach(preset => {
+            const div = document.createElement('div');
+            div.className = 'bg-preset-item';
+            if (preset.type === 'color') div.style.background = preset.value;
+            else if (preset.type === 'image') div.style.backgroundImage = `url('${preset.value}')`;
+            else div.style.background = '#efe7dd';
+            if (currentSetting.type === preset.type && currentSetting.value === preset.value) div.classList.add('selected');
+            div.innerHTML = `<span class="bpi-label">${preset.name}</span>`;
+            div.onclick = () => {
+                selectedBgPreset = preset;
+                selectedBgFile = null;
+                document.querySelectorAll('.bg-preset-item').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                updateBgPreview();
+            };
+            grid.appendChild(div);
+        });
+    }
+    function handleBgFile(input) {
+        if (!input.files || !input.files[0]) return;
+        const f = input.files[0];
+        const isVideo = f.type.startsWith('video/');
+        const isImage = f.type.startsWith('image/');
+        if (!isImage && !isVideo) { alert('⚠️ صور أو فيديو فقط!'); input.value = ''; return; }
+        if (f.size > 50 * 1024 * 1024) { alert('⚠️ الحجم كبير جداً! الحد الأقصى 50MB'); input.value = ''; return; }
+        selectedBgFile = f;
+        selectedBgPreset = null;
+        document.querySelectorAll('.bg-preset-item').forEach(el => el.classList.remove('selected'));
+        if (isImage) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const prev = document.getElementById('bua-preview');
+                prev.src = e.target.result;
+                prev.classList.add('active');
+            };
+            reader.readAsDataURL(f);
+        } else {
+            document.getElementById('bua-preview').classList.remove('active');
+        }
+        updateBgPreview();
+    }
+    function updateBgPreview() {
+        const prev = document.getElementById('bg-preview-content');
+        if (selectedBgFile) {
+            if (selectedBgFile.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => { prev.style.backgroundImage = `url('${e.target.result}')`; prev.style.background = `url('${e.target.result}') center/cover`; prev.textContent = ''; };
+                reader.readAsDataURL(selectedBgFile);
+            } else {
+                prev.style.background = 'linear-gradient(135deg, #333, #666)';
+                prev.textContent = '🎥 فيديو متحرك';
+                prev.style.color = '#fff';
+            }
+        } else if (selectedBgPreset) {
+            if (selectedBgPreset.type === 'color') { prev.style.background = selectedBgPreset.value; prev.textContent = selectedBgPreset.name; prev.style.color = '#fff'; }
+            else if (selectedBgPreset.type === 'image') { prev.style.background = `url('${selectedBgPreset.value}') center/cover`; prev.textContent = ''; }
+            else { prev.style.background = '#efe7dd'; prev.textContent = 'افتراضي'; prev.style.color = '#999'; }
+        } else {
+            const cur = bgSettings[currentBgTab];
+            if (cur.type === 'color') { prev.style.background = cur.value; prev.textContent = ''; }
+            else if (cur.type === 'image' || cur.type === 'video') { prev.style.background = `url('${cur.value}') center/cover`; prev.textContent = ''; }
+            else { prev.style.background = '#f0f0f0'; prev.textContent = 'لم تختر خلفية بعد'; prev.style.color = '#999'; }
+        }
+    }
+    async function applyBackground() {
+        if (myRole !== 'owner') return alert('⛔');
+        const url = document.getElementById('bg-url-input').value.trim();
+        let setting = null;
+        
+        if (selectedBgFile) {
+            const btn = event.target;
+            const oldText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = '⏳ جاري الرفع...';
+            try {
+                const uploadedUrl = await uploadCloudinary(selectedBgFile);
+                if (!uploadedUrl) throw new Error('فشل الرفع');
+                const type = selectedBgFile.type.startsWith('video/') ? 'video' : 'image';
+                setting = { type, value: uploadedUrl };
+            } catch (e) {
+                alert('❌ فشل الرفع: ' + e.message);
+                btn.disabled = false; btn.textContent = oldText;
+                return;
+            }
+            btn.disabled = false; btn.textContent = oldText;
+        } else if (selectedBgPreset) {
+            setting = { type: selectedBgPreset.type, value: selectedBgPreset.value };
+        } else if (url) {
+            const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(url);
+            setting = { type: isVideo ? 'video' : 'image', value: url };
+        } else {
+            return alert('⚠️ اختر خلفية أو ارفع ملف أو أدخل رابطاً');
+        }
+        
+        try {
+            await db.ref('app_settings/backgrounds/' + currentBgTab).set(setting);
+            alert('✅ تم تطبيق الخلفية بنجاح');
+            document.getElementById('background-modal').classList.remove('active');
+        } catch (e) { alert('❌ ' + e.message); }
+    }
+    async function resetBackground() {
+        if (myRole !== 'owner') return alert('⛔');
+        if (!confirm('إعادة خلفية ' + { chat: 'الغرفة', dm: 'الخاص', status: 'الحالات' }[currentBgTab] + ' إلى الوضع الافتراضي؟')) return;
+        try {
+            await db.ref('app_settings/backgrounds/' + currentBgTab).set({ type: 'default', value: '' });
+            alert('✅ تم الإرجاع للافتراضي');
+            document.getElementById('background-modal').classList.remove('active');
+        } catch (e) { alert('❌ ' + e.message); }
+    }
+    function listenBgSettings() {
+        if (bgSettingsListener) db.ref('app_settings/backgrounds').off('value', bgSettingsListener);
+        bgSettingsListener = db.ref('app_settings/backgrounds').on('value', snap => {
+            const d = snap.val() || {};
+            bgSettings.chat = d.chat || { type: 'default', value: '' };
+            bgSettings.dm = d.dm || { type: 'default', value: '' };
+            bgSettings.status = d.status || { type: 'default', value: '' };
+            applyBgToElements();
+        });
+    }
+    function applyBgToElements() {
+        applyBgToElement(document.getElementById('chat-messages'), bgSettings.chat, 'chat');
+        applyBgToElement(document.getElementById('dm-chat-modal'), bgSettings.dm, 'dm');
+        applyBgToElement(document.getElementById('status-screen'), bgSettings.status, 'status');
+    }
+    function applyBgToElement(el, setting, type) {
+        if (!el) return;
+        const oldVideo = el.querySelector('.custom-bg-video');
+        if (oldVideo) oldVideo.remove();
+        el.classList.remove('custom-bg');
+        el.style.backgroundImage = '';
+        el.style.background = '';
+        el.style.position = el.style.position || 'relative';
+        
+        if (!setting || setting.type === 'default' || !setting.value) {
+            if (type === 'chat') {
+                el.style.background = '#efe7dd';
+                el.style.backgroundImage = `url("https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png")`;
+                el.style.backgroundBlendMode = 'overlay';
+                el.style.backgroundSize = 'auto';
+                el.style.backgroundPosition = 'top left';
+            } else if (type === 'dm') {
+                el.style.background = '#efe7dd';
+            } else if (type === 'status') {
+                el.style.background = '#f5f5f5';
+            }
+            return;
+        }
+        
+        if (setting.type === 'video') {
+            el.classList.add('custom-bg');
+            const video = document.createElement('video');
+            video.className = 'custom-bg-video';
+            video.src = setting.value;
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            video.playsInline = true;
+            video.setAttribute('playsinline', '');
+            el.insertBefore(video, el.firstChild);
+            el.style.background = 'transparent';
+            el.style.position = 'relative';
+        } else if (setting.type === 'image') {
+            el.classList.add('custom-bg');
+            el.style.background = `url('${setting.value}') center/cover no-repeat`;
+        } else if (setting.type === 'color') {
+            el.classList.add('custom-bg');
+            el.style.background = setting.value;
+        }
+    }
+    function openEffectsSettings() {
+        if (myRole !== 'owner') return alert('⛔');
+        currentFxTab = 'chat';
+        document.querySelectorAll('.bg-tab-btn').forEach(b => { b.classList.toggle('active', b.dataset.fxTarget === 'chat'); });
+        const cur = fxSettings.chat || { type: 'none', intensity: 50 };
+        document.getElementById('fx-intensity').value = cur.intensity || 50;
+        updateFxIntensityLabel();
+        renderFxGrid();
+        document.getElementById('effects-modal').classList.add('active');
+    }
+    function switchFxTab(tab) {
+        currentFxTab = tab;
+        document.querySelectorAll('.bg-tab-btn').forEach(b => { b.classList.toggle('active', b.dataset.fxTarget === tab); });
+        const cur = fxSettings[tab] || { type: 'none', intensity: 50 };
+        document.getElementById('fx-intensity').value = cur.intensity || 50;
+        updateFxIntensityLabel();
+        renderFxGrid();
+    }
+    function renderFxGrid() {
+        const grid = document.getElementById('fx-grid');
+        grid.innerHTML = '';
+        const cur = fxSettings[currentFxTab] || { type: 'none', intensity: 50 };
+        FX_TYPES.forEach(fx => {
+            const div = document.createElement('div');
+            div.className = 'fx-item';
+            if (cur.type === fx.id) div.classList.add('selected');
+            div.innerHTML = `<span class="fx-icon">${fx.icon}</span><div class="fx-info"><div class="fx-name">${fx.name}</div><div class="fx-desc">${fx.desc}</div></div>`;
+            div.onclick = () => {
+                document.querySelectorAll('.fx-item').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+            };
+            grid.appendChild(div);
+        });
+    }
+    function updateFxIntensityLabel() {
+        document.getElementById('fx-intensity-label').textContent = document.getElementById('fx-intensity').value + '%';
+    }
+    async function applyEffects() {
+        if (myRole !== 'owner') return alert('⛔');
+        const selected = document.querySelector('.fx-item.selected');
+        if (!selected) return alert('⚠️ اختر تأثيراً');
+        const fxName = selected.querySelector('.fx-name').textContent;
+        const fxType = FX_TYPES.find(f => f.name === fxName);
+        if (!fxType) return;
+        const intensity = parseInt(document.getElementById('fx-intensity').value) || 50;
+        try {
+            await db.ref('app_settings/effects/' + currentFxTab).set({ type: fxType.id, intensity });
+            alert('✅ تم تطبيق التأثير: ' + fxType.name);
+            document.getElementById('effects-modal').classList.remove('active');
+        } catch (e) { alert('❌ ' + e.message); }
+    }
+    async function resetEffects() {
+        if (myRole !== 'owner') return alert('⛔');
+        if (!confirm('إزالة التأثير من هذا القسم؟')) return;
+        try {
+            await db.ref('app_settings/effects/' + currentFxTab).set({ type: 'none', intensity: 50 });
+            alert('✅ تم إزالة التأثير');
+            document.getElementById('effects-modal').classList.remove('active');
+        } catch (e) { alert('❌ ' + e.message); }
+    }
+    function listenFxSettings() {
+        if (fxSettingsListener) db.ref('app_settings/effects').off('value', fxSettingsListener);
+        fxSettingsListener = db.ref('app_settings/effects').on('value', snap => {
+            const d = snap.val() || {};
+            fxSettings.chat = d.chat || { type: 'none', intensity: 50 };
+            fxSettings.dm = d.dm || { type: 'none', intensity: 50 };
+            fxSettings.status = d.status || { type: 'none', intensity: 50 };
+            fxSettings.users = d.users || { type: 'none', intensity: 50 };
+            applyFxToAll();
+        });
+    }
+    function applyFxToAll() {
+        applyFxToLayer('chat');
+        applyFxToLayer('dm');
+        applyFxToLayer('status');
+    }
+    function applyFxToLayer(target) {
+        const layer = document.getElementById('effects-layer');
+        if (!layer) return;
+        if (fxAnimationIntervals[target]) { clearInterval(fxAnimationIntervals[target]); fxAnimationIntervals[target] = null; }
+        const setting = fxSettings[target];
+        if (!setting || setting.type === 'none') {
+            if (target === 'chat') layer.innerHTML = '';
+            return;
+        }
+        if (target !== 'chat') return;
+        layer.innerHTML = '';
+        const icons = {
+            hearts: ['❤️', '💖', '💕', '💗', '💓'],
+            stars: ['⭐', '✨', '🌟', '💫'],
+            snow: ['❄️', '❅', '❆', '🌨️'],
+            fire: ['🔥', '💥', '✨'],
+            bubbles: ['🫧', '⚪', '🔵'],
+            leaves: ['🍂', '🍁', '🍃'],
+            confetti: ['🎉', '🎊', '🎈', '🌟'],
+            sparkles: ['✨', '💫', '⭐'],
+            moon: ['🌙', '⭐', '✨']
+        };
+        const iconList = icons[setting.type] || ['✨'];
+        const intensity = setting.intensity || 50;
+        const count = Math.max(5, Math.floor(intensity / 5));
+        
+        const createParticle = () => {
+            const p = document.createElement('div');
+            p.className = 'effect-particle';
+            const icon = iconList[Math.floor(Math.random() * iconList.length)];
+            p.textContent = icon;
+            p.style.left = Math.random() * 100 + '%';
+            p.style.fontSize = (12 + Math.random() * 18) + 'px';
+            p.style.opacity = 0.5 + Math.random() * 0.5;
+            
+            if (setting.type === 'hearts' || setting.type === 'stars' || setting.type === 'confetti' || setting.type === 'sparkles' || setting.type === 'moon') {
+                p.classList.add('falling');
+                p.style.animationDuration = (6 + Math.random() * 8) + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+            } else if (setting.type === 'snow') {
+                p.classList.add('snow');
+                p.style.animationDuration = (7 + Math.random() * 8) + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+            } else if (setting.type === 'fire' || setting.type === 'bubbles' || setting.type === 'leaves') {
+                p.classList.add('floating');
+                p.style.animationDuration = (6 + Math.random() * 8) + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+            }
+            
+            layer.appendChild(p);
+            setTimeout(() => { if (p.parentNode) p.remove(); }, 16000);
+        };
+        
+        for (let i = 0; i < count; i++) setTimeout(createParticle, i * 300);
+        fxAnimationIntervals[target] = setInterval(createParticle, 800);
     }
 
     async function logAdminAction(type, targetUid, targetName, details) {
@@ -2045,6 +2541,7 @@
             if (Object.keys(allUsersData).length > 0) {
                 updateUsersList(); updateOnlineBadge();
                 if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
+                if (currentDMChat && document.getElementById('dm-chat-modal').classList.contains('active')) updateDMHeaderStatus();
             }
         }, PRESENCE_CHECK_INTERVAL);
     }
@@ -2269,6 +2766,7 @@
         myFP = await getDeviceFingerprint();
         localStorage.setItem("fp", myFP);
         listenFontSettings(); listenBadWords();
+        listenBgSettings(); listenFxSettings();
         const storedName = localStorage.getItem("name") || "";
         if (storedName) {
             const validation = validateName(storedName);
@@ -2321,7 +2819,6 @@
         db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
         db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
 
-        // ⭐ مراقبة الاسم (مزامنة فورية مع index.html)
         db.ref('users/' + myFP + '/name').on('value', s => {
             if (isBeingDeleted) return;
             const newName = s.val();
@@ -2334,12 +2831,10 @@
                     if (document.getElementById('users-modal').classList.contains('active')) updateUsersList();
                     const profName = document.getElementById('prof-name');
                     if (profName && document.getElementById('profile-modal').classList.contains('active')) profName.value = myName;
-                    console.log('🔄 تم تحديث الاسم من الواجهة:', myName);
                 }
             }
         });
 
-        // ⭐ مراقبة الصورة (مزامنة فورية مع index.html)
         db.ref('users/' + myFP + '/avatar').on('value', s => {
             if (isBeingDeleted) return;
             const newAvatar = s.val();
@@ -2348,11 +2843,9 @@
                 localStorage.setItem('avatar', myAvatar);
                 renderMessages();
                 if (document.getElementById('users-modal').classList.contains('active')) updateUsersList();
-                console.log('🔄 تم تحديث الصورة من الواجهة');
             }
         });
 
-        // ⭐ مراقبة الرتبة (مع إعادة رسم الرسائل)
         db.ref('users/' + myFP + '/role').on('value', s => {
             if (isBeingDeleted) return;
             myRole = s.val() || "user";
@@ -2617,21 +3110,37 @@
         currentDMChat = { uid, name: u.name || 'مجهول', avatar: u.avatar || DEFAULT_ICON, role: u.role || 'user' };
         document.getElementById('dm-chat-avatar').src = currentDMChat.avatar;
         document.getElementById('dm-chat-name').textContent = currentDMChat.name;
-        let roleText = 'مستخدم عادي';
-        if (currentDMChat.role === 'owner') roleText = '👑 مالك';
-        else if (currentDMChat.role === 'manager') roleText = '💎 مدير';
-        else if (currentDMChat.role === 'mod') roleText = '🛡️ مشرف';
-        else if (currentDMChat.role === 'trusted') roleText = '✅ موثوق';
-        document.getElementById('dm-chat-role').textContent = roleText;
+        updateDMHeaderStatus();
         document.getElementById('dm-chat-modal').classList.add('active');
         dmReplyTo = null;
         document.getElementById('dm-reply-bar').classList.remove('active');
         updateDMMediaBtnVisibility();
         db.ref('dm_inbox/' + myFP + '/' + uid + '/count').set(0);
         loadDMMessages(uid);
+        watchDMChatStatus(uid);
+    }
+    function updateDMHeaderStatus() {
+        if (!currentDMChat) return;
+        const u = allUsersData[currentDMChat.uid] || {};
+        const el = document.getElementById('dm-chat-status');
+        if (!el) return;
+        const st = getUserEffectiveStatus(u);
+        const dot = '<span class="status-dot"></span>';
+        if (st === 'online') { el.className = 'dm-role online'; el.innerHTML = dot + '<span>متصل الآن</span>'; }
+        else if (st === 'away') { el.className = 'dm-role'; el.innerHTML = dot + '<span>غائب</span>'; el.style.color = '#ffcc80'; }
+        else {
+            const lastSeen = Number(u.lastSeen) || 0;
+            el.className = 'dm-role offline';
+            el.innerHTML = dot + '<span>' + getSmartLastSeen(lastSeen) + '</span>';
+        }
+    }
+    function watchDMChatStatus(uid) {
+        if (dmStatusListener) db.ref('users/' + uid).off('value', dmStatusListener);
+        dmStatusListener = db.ref('users/' + uid).on('value', () => { updateDMHeaderStatus(); });
     }
     function closeDMChat() {
         if (dmChatMessagesListener && currentDMChat) { const chatId = getChatId(myFP, currentDMChat.uid); db.ref('private_chats/' + chatId + '/messages').off('child_added', dmChatMessagesListener); dmChatMessagesListener = null; }
+        if (dmStatusListener && currentDMChat) { db.ref('users/' + currentDMChat.uid).off('value', dmStatusListener); dmStatusListener = null; }
         document.getElementById('dm-chat-modal').classList.remove('active'); currentDMChat = null; currentDMClearedAt = 0;
         dmReplyTo = null;
         dmMessagesCache = {};
@@ -2655,7 +3164,21 @@
                 const allMsgs = [];
                 snap.forEach(c => { const v = c.val(); const t = Number(v.time) || 0; if (t <= currentDMClearedAt) return; renderedKeys.add(c.key); v._key = c.key; allMsgs.push(v); dmMessagesCache[c.key] = v; });
                 allMsgs.sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
-                allMsgs.forEach(m => renderDMMessage(m, false));
+                // 🆕 إضافة فواصل التواريخ الذكية
+                let lastDayKey = '';
+                allMsgs.forEach(m => {
+                    const t = Number(m.time) || Date.now();
+                    const d = new Date(t);
+                    const dayKey = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+                    if (dayKey !== lastDayKey) {
+                        lastDayKey = dayKey;
+                        const sep = document.createElement('div');
+                        sep.className = 'dm-date-separator';
+                        sep.innerHTML = '<span>' + getSmartDateLabel(t) + '</span>';
+                        box.appendChild(sep);
+                    }
+                    renderDMMessage(m, false);
+                });
                 if (allMsgs.length === 0) box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">لا توجد رسائل</div>';
                 box.scrollTop = box.scrollHeight;
                 dmChatMessagesListener = db.ref('private_chats/' + chatId + '/messages').on('child_added', snap => {
@@ -2665,6 +3188,31 @@
                     if (t <= currentDMClearedAt) { renderedKeys.add(snap.key); return; }
                     renderedKeys.add(snap.key); m._key = snap.key; dmMessagesCache[snap.key] = m;
                     const emptyMsg = box.querySelector('div[style*="لا توجد رسائل"]'); if (emptyMsg) emptyMsg.remove();
+                    // 🆕 إضافة فاصل تاريخ إذا تغير اليوم
+                    const d = new Date(t);
+                    const dayKey = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+                    const lastSep = box.querySelector('.dm-date-separator:last-of-type span');
+                    const lastDayLabel = lastSep ? lastSep.textContent : '';
+                    const todayLabel = getSmartDateLabel(t);
+                    const lastMsgEl = box.querySelector('.dm-msg-row:last-of-type');
+                    let needSeparator = false;
+                    if (!lastMsgEl && !lastSep) needSeparator = true;
+                    else if (lastMsgEl) {
+                        const lastMsgKey = lastMsgEl.dataset.dmkey;
+                        const lastMsg = dmMessagesCache[lastMsgKey];
+                        if (lastMsg) {
+                            const lastTime = Number(lastMsg.time) || 0;
+                            const lastD = new Date(lastTime);
+                            const lastDayKey = lastD.getFullYear() + '-' + lastD.getMonth() + '-' + lastD.getDate();
+                            if (lastDayKey !== dayKey) needSeparator = true;
+                        }
+                    }
+                    if (needSeparator) {
+                        const sep = document.createElement('div');
+                        sep.className = 'dm-date-separator';
+                        sep.innerHTML = '<span>' + todayLabel + '</span>';
+                        box.appendChild(sep);
+                    }
                     renderDMMessage(m, true); box.scrollTop = box.scrollHeight;
                     if (m.to === myFP) db.ref('dm_inbox/' + myFP + '/' + m.from + '/count').set(0);
                 });
@@ -2822,7 +3370,6 @@
     async function purgeUserEverywhere(uid, name, avatar) {
         console.log('🗑️ بدء الحذف الشامل للمستخدم:', uid, name);
         const updates = {};
-
         updates['users/' + uid] = null;
         updates['bans/' + uid] = null;
         updates['mutes/' + uid] = null;
@@ -2842,22 +3389,16 @@
         updates['glow_settings/' + uid] = null;
         updates['notifications/' + uid] = null;
         updates['warnings/current/ack/' + uid] = null;
-
-        if (name && name.trim() && name !== 'مجهول') {
-            updates['name_links/' + name.toLowerCase()] = null;
-        }
+        if (name && name.trim() && name !== 'مجهول') { updates['name_links/' + name.toLowerCase()] = null; }
         updates['fp_links/' + uid] = null;
-
         try {
             const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value');
             if (msgs.exists()) msgs.forEach(c => { updates['messages/' + c.key] = null; });
         } catch(e) { console.warn('فشل حذف الرسائل:', e); }
-
         try {
             const sts = await db.ref('statuses').orderByChild('uid').equalTo(uid).once('value');
             if (sts.exists()) sts.forEach(c => { updates['statuses/' + c.key] = null; });
         } catch(e) { console.warn('فشل حذف الحالات:', e); }
-
         try {
             const privateChatsSnap = await db.ref('private_chats').once('value');
             if (privateChatsSnap.exists()) {
@@ -2867,26 +3408,20 @@
                     if (chatId.startsWith(uid + '_')) { updates['private_chats/' + chatId] = null; return; }
                     if (chatId.endsWith('_' + uid)) { updates['private_chats/' + chatId] = null; return; }
                     const parts = chatId.split('_');
-                    if (parts.length >= 2 && parts.includes(uid)) {
-                        updates['private_chats/' + chatId] = null;
-                    }
+                    if (parts.length >= 2 && parts.includes(uid)) { updates['private_chats/' + chatId] = null; }
                 });
             }
         } catch(e) { console.warn('فشل حذف المحادثات:', e); }
-
         try {
             const dmInboxAll = await db.ref('dm_inbox').once('value');
             if (dmInboxAll.exists()) {
                 dmInboxAll.forEach(userInbox => {
                     const otherUid = userInbox.key;
                     if (otherUid === uid) return;
-                    if (userInbox.hasChild(uid)) {
-                        updates['dm_inbox/' + otherUid + '/' + uid] = null;
-                    }
+                    if (userInbox.hasChild(uid)) { updates['dm_inbox/' + otherUid + '/' + uid] = null; }
                 });
             }
         } catch(e) { console.warn('فشل تنظيف dm_inbox:', e); }
-
         try {
             const dmClearsAll = await db.ref('dm_clears').once('value');
             if (dmClearsAll.exists()) {
@@ -2902,19 +3437,15 @@
                 });
             }
         } catch(e) { console.warn('فشل تنظيف dm_clears:', e); }
-
         try {
             const reportsSnap = await db.ref('reports').once('value');
             if (reportsSnap.exists()) {
                 reportsSnap.forEach(report => {
                     const r = report.val();
-                    if (r.targetId === uid || r.reporterId === uid || r.messageSnapshot?.sender_uid === uid) {
-                        updates['reports/' + report.key] = null;
-                    }
+                    if (r.targetId === uid || r.reporterId === uid || r.messageSnapshot?.sender_uid === uid) { updates['reports/' + report.key] = null; }
                 });
             }
         } catch(e) { console.warn('فشل حذف البلاغات:', e); }
-
         try {
             const notifsAll = await db.ref('notifications').once('value');
             if (notifsAll.exists()) {
@@ -2922,54 +3453,38 @@
                     const otherUid = userNotifs.key;
                     userNotifs.forEach(notif => {
                         const n = notif.val();
-                        if (n.targetId === uid || n.reporterId === uid) {
-                            updates['notifications/' + otherUid + '/' + notif.key] = null;
-                        }
+                        if (n.targetId === uid || n.reporterId === uid) { updates['notifications/' + otherUid + '/' + notif.key] = null; }
                     });
                 });
             }
         } catch(e) { console.warn('فشل تنظيف الإشعارات:', e); }
-
         try {
             const warningsSnap = await db.ref('warnings/history').once('value');
             if (warningsSnap.exists()) {
-                warningsSnap.forEach(warning => {
-                    if (warning.hasChild('ack/' + uid)) {
-                        updates['warnings/history/' + warning.key + '/ack/' + uid] = null;
-                    }
-                });
+                warningsSnap.forEach(warning => { if (warning.hasChild('ack/' + uid)) { updates['warnings/history/' + warning.key + '/ack/' + uid] = null; } });
             }
         } catch(e) { console.warn('فشل تنظيف التحذيرات:', e); }
-
         try {
             const warningsSnap2 = await db.ref('warnings/history').once('value');
             if (warningsSnap2.exists()) {
                 warningsSnap2.forEach(warning => {
                     const w = warning.val();
-                    if (w.target && w.target.type === 'user' && w.target.value === uid) {
-                        updates['warnings/history/' + warning.key] = null;
-                    }
+                    if (w.target && w.target.type === 'user' && w.target.value === uid) { updates['warnings/history/' + warning.key] = null; }
                 });
             }
             const currentWarningSnap = await db.ref('warnings/current').once('value');
             if (currentWarningSnap.exists()) {
                 const w = currentWarningSnap.val();
-                if (w.target && w.target.type === 'user' && w.target.value === uid) {
-                    updates['warnings/current'] = null;
-                }
+                if (w.target && w.target.type === 'user' && w.target.value === uid) { updates['warnings/current'] = null; }
             }
         } catch(e) { console.warn('فشل تنظيف تحذيرات المستخدم:', e); }
-
         try {
             const fpLinksSnap = await db.ref('fp_links/' + uid).once('value');
             if (fpLinksSnap.exists()) {
                 const fpObj = fpLinksSnap.val();
-                Object.keys(fpObj).forEach(nameKey => {
-                    updates['name_links/' + nameKey + '/' + uid] = null;
-                });
+                Object.keys(fpObj).forEach(nameKey => { updates['name_links/' + nameKey + '/' + uid] = null; });
             }
         } catch(e) { console.warn('فشل تنظيف fp_links:', e); }
-
         try {
             if (Object.keys(updates).length > 0) {
                 await db.ref().update(updates);
@@ -2981,7 +3496,6 @@
                 try { await db.ref(key).remove(); } catch(err) { console.warn('فشل حذف:', key, err); }
             }
         }
-
         console.log('✅ تم الحذف الشامل بنجاح');
     }
 
@@ -2989,36 +3503,23 @@
         if (isBeingDeleted) return;
         if (!confirm('⚠️ هل أنت متأكد من حذف حسابك نهائياً؟\n\n• سيتم حذف جميع رسائلك\n• جميع حالاتك\n• جميع محادثاتك الخاصة\n• كل شيء متعلق بحسابك\n\n⚠️ لا يمكن التراجع!')) return;
         if (!confirm('⚠️ تأكيد أخير!\n\nهل أنت متأكد 100%؟')) return;
-
         const myFPcopy = myFP;
         const myNameCopy = myName;
         const myAvatarCopy = myAvatar;
-
         isBeingDeleted = true;
         document.getElementById('deletion-title').textContent = '🗑️ جاري حذف حسابك';
         document.getElementById('deletion-subtitle').textContent = 'يتم حذف جميع بياناتك من السيرفر...';
         document.getElementById('deletion-overlay').classList.add('active');
         try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch(e) {}
-
         try { await logAdminAction('self_delete_account', myFPcopy, myNameCopy, {}); } catch(e) {}
-
-        try {
-            await purgeUserEverywhere(myFPcopy, myNameCopy, myAvatarCopy);
-        } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
-
+        try { await purgeUserEverywhere(myFPcopy, myNameCopy, myAvatarCopy); } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
         try {
             localStorage.clear();
             sessionStorage.clear();
-            if (window.indexedDB) {
-                try { indexedDB.deleteDatabase('__fpjs_d_m'); } catch(e) {}
-            }
+            if (window.indexedDB) { try { indexedDB.deleteDatabase('__fpjs_d_m'); } catch(e) {} }
         } catch(e) {}
-
         try { db.ref('users/' + myFPcopy).onDisconnect().cancel(); } catch(e) {}
-
-        setTimeout(() => {
-            location.replace(location.pathname + '?deleted=' + Date.now());
-        }, 2000);
+        setTimeout(() => { location.replace(location.pathname + '?deleted=' + Date.now()); }, 2000);
     }
 
     async function permanentDeleteUser(uid, name) {
@@ -3027,22 +3528,14 @@
         if (tr === 'owner') return alert('⛔ لا يمكن حذف مالك آخر');
         if (!confirm('⚠️ حذف "' + name + '" نهائياً؟\n\n• سيتم حذف جميع رسائله\n• جميع حالاته\n• جميع محادثاته\n• كل شيء متعلق به\n\n⚠️ سيتم إخراجه فوراً من التطبيق!')) return;
         if (!confirm('⚠️ تأكيد أخير!\n\nلا يمكن التراجع.')) return;
-
         const targetAvatar = allUsersData[uid]?.avatar || DEFAULT_ICON;
-
         try { await logAdminAction('delete_user', uid, name, { target_role: tr }); } catch(e) {}
-
         const notif = document.createElement('div');
         notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff;padding:16px 24px;border-radius:14px;font-family:var(--font-main);font-weight:700;z-index:9999999;box-shadow:0 10px 40px rgba(0,0,0,0.4);text-align:center;font-size:14px;';
         notif.innerHTML = '⏳ جاري حذف "' + escapeHtml(name) + '" نهائياً...<br><span style="font-size:11px;opacity:0.8;margin-top:4px;display:block;">يتم حذف كل شيء متعلق بحسابه</span>';
         document.body.appendChild(notif);
-
-        try {
-            await purgeUserEverywhere(uid, name, targetAvatar);
-        } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
-
+        try { await purgeUserEverywhere(uid, name, targetAvatar); } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
         setTimeout(() => { if (notif.parentNode) notif.remove(); }, 1500);
-
         alert('✅ تم حذف "' + name + '" نهائياً مع جميع بياناته من قاعدة البيانات');
     }
 
@@ -3052,7 +3545,6 @@
         if (!isUserUnknown(u)) return alert('هذا المستخدم ليس مجهولاً');
         const displayName = u.name || 'بدون اسم';
         if (!confirm('🗑️ حذف هذا الحساب نهائياً؟\n\nالاسم: "' + displayName + '"\n\n• سيتم حذف كل شيء متعلق به من التطبيق.')) return;
-
         const targetAvatar = u.avatar || DEFAULT_ICON;
         try {
             await logAdminAction('delete_unknown_user', uid, displayName, {});
@@ -3070,25 +3562,18 @@
         if (unknowns.length === 0) return alert('✅ لا توجد حسابات بدون اسم');
         if (!confirm('🗑️ حذف ' + unknowns.length + ' حساب بدون اسم صالح نهائياً؟')) return;
         if (!confirm('⚠️ تأكيد أخير!\nلا يمكن التراجع عن هذه العملية.')) return;
-
         const notif = document.createElement('div');
         notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff;padding:16px 24px;border-radius:14px;font-family:var(--font-main);font-weight:700;z-index:9999999;box-shadow:0 10px 40px rgba(0,0,0,0.4);text-align:center;font-size:14px;';
         notif.innerHTML = '⏳ جاري الحذف الشامل...<br><span style="font-size:11px;opacity:0.8;margin-top:4px;display:block;">0 / ' + unknowns.length + '</span>';
         document.body.appendChild(notif);
         const cntEl = notif.querySelector('span');
-
         let success = 0, failed = 0;
         for (let i = 0; i < unknowns.length; i++) {
             const target = unknowns[i];
-            try {
-                await purgeUserEverywhere(target.uid, target.name, target.avatar);
-                success++;
-            } catch(e) { failed++; console.warn('فشل حذف', target.uid, e); }
+            try { await purgeUserEverywhere(target.uid, target.name, target.avatar); success++; } catch(e) { failed++; console.warn('فشل حذف', target.uid, e); }
             if (cntEl) cntEl.textContent = (i + 1) + ' / ' + unknowns.length;
         }
-
         try { await logAdminAction('delete_all_unknown_users', null, null, { count: success, failed: failed }); } catch(e) {}
-
         setTimeout(() => { if (notif.parentNode) notif.remove(); }, 500);
         setTimeout(() => {
             alert('✅ تم حذف ' + success + ' من ' + unknowns.length + (failed > 0 ? '\n❌ فشل: ' + failed : ''));
@@ -3157,8 +3642,20 @@
         const ks = Object.keys(messagesCache).sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0));
         if (ks.length === 0) { box.innerHTML += '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">✨ لا توجد رسائل</div>'; return; }
         const dk = ks.slice(-300);
+        // 🆕 إضافة فواصل التواريخ الذكية في الغرفة العامة
+        let lastDayKey = '';
         dk.forEach(k => {
             const m = messagesCache[k]; if (!m) return;
+            const t = Number(m.time) || Date.now();
+            const d = new Date(t);
+            const dayKey = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+            if (dayKey !== lastDayKey) {
+                lastDayKey = dayKey;
+                const sep = document.createElement('div');
+                sep.className = 'chat-date-separator';
+                sep.innerHTML = '<span>' + getSmartDateLabel(t) + '</span>';
+                box.appendChild(sep);
+            }
             const isMine = m.uid === myFP, ud = allUsersData[m.uid] || {}, da = ud.avatar || m.avatar || DEFAULT_ICON;
             const dn = getDisplayName({ name: ud.name || m.sender }).text;
             const dr = ud.role || m.role || 'user';
@@ -3242,8 +3739,8 @@
             const isAway = u._effectiveStatus === 'away';
             const isUnknown = u._isUnknown;
             let statusText;
-            if (isOnline) statusText = isAway ? '🟡 غائب' : '🟢 متصل';
-            else { const lastSeen = Number(u.lastSeen) || 0; statusText = !lastSeen ? '⚪ غير متصل' : '⚪ منذ ' + formatDateShort(lastSeen); }
+            if (isOnline) statusText = isAway ? '🟡 غائب' : '🟢 متصل الآن';
+            else { const lastSeen = Number(u.lastSeen) || 0; statusText = '⚪ ' + getSmartLastSeen(lastSeen); }
             let roleBadge = '';
             if (u.role === 'owner') roleBadge = '<span class="role-badge owner">👑 مالك</span>';
             else if (u.role === 'manager') roleBadge = '<span class="role-badge manager">💎 مدير</span>';
@@ -3268,7 +3765,7 @@
                     nameEl.onclick = () => openProfileActions(u.uid, isUnknown ? (u.name || 'بدون اسم') : escapeHtml(u.name), avatar);
                 }
                 const lastSeenEl = existing.querySelector('.last-seen');
-                if (lastSeenEl) lastSeenEl.textContent = statusText + (isOnline ? ' - ' + formatDate(u.lastSeen) : '');
+                if (lastSeenEl) lastSeenEl.textContent = statusText;
                 const avatarEl = existing.querySelector('.user-avatar');
                 if (avatarEl && avatarEl.src !== avatar) avatarEl.src = avatar;
                 if (avatarEl) avatarEl.onclick = () => openProfileActions(u.uid, isUnknown ? (u.name || 'بدون اسم') : escapeHtml(u.name), avatar);
@@ -3280,7 +3777,7 @@
                 const card = document.createElement('div');
                 card.className = 'user-card' + (isUnknown ? ' invalid-name' : ''); card.dataset.uid = u.uid; card.dataset.role = u.role || 'user';
                 const displayNameForClick = isUnknown ? (u.name || 'بدون اسم') : u.name;
-                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openProfileActions('${u.uid}','${escapeHtml(displayNameForClick).replace(/'/g, "\\'")}','${avatar}')"><div class="user-details"><h4 onclick="openProfileActions('${u.uid}','${escapeHtml(displayNameForClick).replace(/'/g, "\\'")}','${avatar}')"><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${displayNameHtml} ${roleBadge} ${invalidBadgeHtml} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
+                card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openProfileActions('${u.uid}','${escapeHtml(displayNameForClick).replace(/'/g, "\\'")}','${avatar}')"><div class="user-details"><h4 onclick="openProfileActions('${u.uid}','${escapeHtml(displayNameForClick).replace(/'/g, "\\'")}','${avatar}')"><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${displayNameHtml} ${roleBadge} ${invalidBadgeHtml} ${hiddenBadge}</h4><div class="last-seen">${statusText}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
                 if (idx < l.children.length) l.insertBefore(card, l.children[idx]); else l.appendChild(card);
                 updateUserControls(u.uid, u);
             }
@@ -3384,7 +3881,7 @@
     function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { i.placeholder = "اكتب رسالة..."; i.disabled = false; b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
     function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
     function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); updateUnknownUsersBtnVisibility(); }
-    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('dm-monitor-modal').classList.remove('active'); document.getElementById('dm-monitor-view-modal').classList.remove('active'); document.getElementById('dm-settings-modal').classList.remove('active'); document.getElementById('media-settings-modal').classList.remove('active'); document.getElementById('status-settings-modal').classList.remove('active'); document.getElementById('warning-history-modal').classList.remove('active'); document.getElementById('warning-readers-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
+    function closeAllModals() { document.getElementById('users-modal').classList.remove('active'); document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('reports-modal').classList.remove('active'); document.getElementById('dm-list-modal').classList.remove('active'); document.getElementById('notification-settings-modal').classList.remove('active'); document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('dm-monitor-modal').classList.remove('active'); document.getElementById('dm-monitor-view-modal').classList.remove('active'); document.getElementById('dm-settings-modal').classList.remove('active'); document.getElementById('media-settings-modal').classList.remove('active'); document.getElementById('status-settings-modal').classList.remove('active'); document.getElementById('warning-history-modal').classList.remove('active'); document.getElementById('warning-readers-modal').classList.remove('active'); document.getElementById('background-modal').classList.remove('active'); document.getElementById('effects-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active')); closeColorControl(); }
 
     let paTargetUid = null, paTargetName = null, paTargetAvatar = null;
     function openProfileActions(uid, name, avatar) {
@@ -3521,7 +4018,7 @@
             const c = document.createElement('div');
             c.className = 'status-user-card ' + (hasUnseen ? 'unseen' : 'seen');
             c.onclick = () => viewUserStatuses(uid, d.statuses);
-            c.innerHTML = '<div class="status-avatar-wrapper"><img src="' + da + '" class="status-avatar" onclick="event.stopPropagation();openViewer(\'' + da + '\',\'image\',\'' + dn + '\')"><div class="status-ring"></div></div><div class="status-user-info"><div class="status-username">' + escapeHtml(dn) + (isMine ? '<span style="font-size:10px;color:#999;font-family:var(--font-main);">(حالتي)</span>' : '') + '</div><div class="status-time">' + formatDateShort(ls.time) + '</div><div class="status-preview">' + (ls.text || '📸') + '</div></div>' + (ts > 1 ? '<div class="status-count ' + (hasUnseen ? '' : 'seen') + '">' + ts + '</div>' : '');
+            c.innerHTML = '<div class="status-avatar-wrapper"><img src="' + da + '" class="status-avatar" onclick="event.stopPropagation();openViewer(\'' + da + '\',\'image\',\'' + dn + '\')"><div class="status-ring"></div></div><div class="status-user-info"><div class="status-username">' + escapeHtml(dn) + (isMine ? '<span style="font-size:10px;color:#999;font-family:var(--font-main);">(حالتي)</span>' : '') + '</div><div class="status-time">' + getSmartDateLabel(ls.time) + ' - ' + formatTime(ls.time) + '</div><div class="status-preview">' + (ls.text || '📸') + '</div></div>' + (ts > 1 ? '<div class="status-count ' + (hasUnseen ? '' : 'seen') + '">' + ts + '</div>' : '');
             l.appendChild(c);
         });
     }
@@ -3609,7 +4106,7 @@
     }
     function openNotifications() { document.getElementById('notifications-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); renderNotifications(); }
     function closeNotifications() { document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); }
-    function renderNotifications() { if (isBeingDeleted) return; const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
+    function renderNotifications() { if (isBeingDeleted) return; const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + getSmartDateLabel(n.time) + ' - ' + formatTime(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
     function clearAllNotifications() { if (confirm("مسح الكل؟")) db.ref('notifications/' + myFP).remove(); }
     function updateNotifBadge() { if (isBeingDeleted) return; const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
     function openYouTubeModal() { document.getElementById('youtube-modal').classList.add('active'); document.getElementById('yt-link-input').focus(); }
@@ -3876,7 +4373,6 @@
                 const chatId = child.key;
                 let u1Id = null, u2Id = null;
                 let lastMsg = '', lastTime = 0;
-                // ✅ إصلاح: استخراج المستخدمين من from و to معاً
                 if (child.hasChild('messages')) {
                     child.child('messages').forEach(msg => {
                         const m = msg.val();
@@ -3889,7 +4385,6 @@
                         if (t > lastTime) { lastTime = t; lastMsg = m.text || '📎'; }
                     });
                 }
-                // ✅ دالة محسّنة لجلب معلومات المستخدم
                 const getUserInfo = (uid) => {
                     if (!uid) return { name: 'مستخدم محذوف', avatar: DEFAULT_ICON };
                     if (usersData[uid] && usersData[uid].name) {
@@ -3945,7 +4440,18 @@
             const msgs = [];
             snap.forEach(c => { const v = c.val(); v._key = c.key; msgs.push(v); });
             msgs.sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
+            let lastDayKey = '';
             msgs.forEach(m => {
+                const t = Number(m.time) || Date.now();
+                const d = new Date(t);
+                const dayKey = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+                if (dayKey !== lastDayKey) {
+                    lastDayKey = dayKey;
+                    const sep = document.createElement('div');
+                    sep.className = 'dm-date-separator';
+                    sep.innerHTML = '<span>' + getSmartDateLabel(t) + '</span>';
+                    body.appendChild(sep);
+                }
                 const isMine = m.from === myFP;
                 const getSenderInfo = (msg) => {
                     if (usersData[msg.from]) return { name: usersData[msg.from].name || 'مجهول', avatar: usersData[msg.from].avatar || DEFAULT_ICON };
