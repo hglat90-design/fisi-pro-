@@ -3876,25 +3876,45 @@
                 const chatId = child.key;
                 let u1Id = null, u2Id = null;
                 let lastMsg = '', lastTime = 0;
-                let u1Name = 'مستخدم محذوف', u2Name = 'مستخدم محذوف';
-                let u1Av = DEFAULT_ICON, u2Av = DEFAULT_ICON;
+                // ✅ إصلاح: استخراج المستخدمين من from و to معاً
                 if (child.hasChild('messages')) {
                     child.child('messages').forEach(msg => {
                         const m = msg.val();
-                        if (!u1Id) u1Id = m.from;
-                        else if (u1Id !== m.from && !u2Id) u2Id = m.from;
+                        const candidates = [m.from, m.to].filter(Boolean);
+                        candidates.forEach(uid => {
+                            if (!u1Id) u1Id = uid;
+                            else if (u1Id !== uid && !u2Id) u2Id = uid;
+                        });
                         const t = Number(m.time) || 0;
                         if (t > lastTime) { lastTime = t; lastMsg = m.text || '📎'; }
                     });
                 }
+                // ✅ دالة محسّنة لجلب معلومات المستخدم
                 const getUserInfo = (uid) => {
                     if (!uid) return { name: 'مستخدم محذوف', avatar: DEFAULT_ICON };
-                    if (usersData[uid] && usersData[uid].name) return { name: usersData[uid].name, avatar: usersData[uid].avatar || DEFAULT_ICON };
-                    if (allUsersData[uid] && allUsersData[uid].name) return { name: allUsersData[uid].name, avatar: allUsersData[uid].avatar || DEFAULT_ICON };
+                    if (usersData[uid] && usersData[uid].name) {
+                        return { name: usersData[uid].name, avatar: usersData[uid].avatar || DEFAULT_ICON };
+                    }
+                    if (allUsersData[uid] && allUsersData[uid].name) {
+                        return { name: allUsersData[uid].name, avatar: allUsersData[uid].avatar || DEFAULT_ICON };
+                    }
                     let foundName = null, foundAvatar = null;
-                    child.child('messages').forEach(msg => { const m = msg.val(); if (m.from === uid && m.fromName && !foundName) { foundName = m.fromName; foundAvatar = m.fromAvatar || DEFAULT_ICON; } });
+                    child.child('messages').forEach(msg => {
+                        const m = msg.val();
+                        if (m.from === uid && !foundName && m.fromName) {
+                            foundName = m.fromName;
+                            foundAvatar = m.fromAvatar || DEFAULT_ICON;
+                        }
+                        if (m.to === uid && !foundName && m.toName) {
+                            foundName = m.toName;
+                        }
+                    });
+                    if (!foundName && usersData[uid]) foundName = usersData[uid].name || '⚠️ بدون اسم';
+                    if (!foundName && allUsersData[uid]) foundName = allUsersData[uid].name || '⚠️ بدون اسم';
                     return { name: foundName || 'مستخدم محذوف', avatar: foundAvatar || DEFAULT_ICON };
                 };
+                let u1Name = 'مستخدم محذوف', u2Name = 'مستخدم محذوف';
+                let u1Av = DEFAULT_ICON, u2Av = DEFAULT_ICON;
                 if (u1Id) { const info = getUserInfo(u1Id); u1Name = info.name; u1Av = info.avatar; }
                 if (u2Id) { const info = getUserInfo(u2Id); u2Name = info.name; u2Av = info.avatar; }
                 chats.push({ chatId, u1Name, u2Name, u1Av, u2Av, lastMsg, lastTime });
