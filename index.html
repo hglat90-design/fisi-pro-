@@ -259,25 +259,13 @@
         .anim-option.selected{border-color:var(--primary);background:#e8f5e9;color:var(--primary)}
         .anim-option .anim-demo{display:block;font-size:22px;margin-bottom:4px;animation:fadeSlideIn 1s infinite alternate}
         .anim-option .anim-name{font-size:11px}
-        .effect-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+        .effect-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;max-height:300px;overflow-y:auto;padding:4px}
         .effect-option{padding:10px 6px;border:2px solid #eee;border-radius:10px;background:#fff;cursor:pointer;text-align:center;font-family:var(--font-main);font-size:11px;font-weight:700;transition:all .2s}
         .effect-option:active{transform:scale(.95)}
         .effect-option.selected{border-color:#6a1b9a;background:#f3e5f5;color:#6a1b9a;box-shadow:0 0 0 3px rgba(106,27,154,.15)}
-        .effect-option .eff-icon{display:block;font-size:20px;margin-bottom:3px}
+        .effect-option .eff-icon{display:block;font-size:22px;margin-bottom:3px}
         .effect-option .eff-name{font-size:10px}
         .effect-option.none-effect{background:linear-gradient(135deg,#f5f5f5,#e0e0e0)}
-        .chat-effects{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
-        .chat-effects .particle{position:absolute;top:-60px;font-size:20px;user-select:none;pointer-events:none;will-change:transform,opacity;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))}
-        @keyframes effectFall{0%{transform:translateY(-60px) rotate(0deg);opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
-        @keyframes effectRise{0%{transform:translateY(110vh) scale(.4);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-80px) scale(1.2);opacity:0}}
-        @keyframes effectSway{0%,100%{margin-left:0}50%{margin-left:40px}}
-        @keyframes effectPulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-        @keyframes effectTwinkle{0%,100%{opacity:.3;filter:brightness(1)}50%{opacity:1;filter:brightness(1.6)}}
-        .particle.fall{animation:effectFall linear infinite}
-        .particle.rise{animation:effectRise linear infinite}
-        .particle.pulse{animation:effectPulse 2s ease-in-out infinite}
-        .particle.twinkle{animation:effectTwinkle 1.5s ease-in-out infinite}
-        .particle.sway{animation-name:effectFall,effectSway;animation-timing-function:linear,ease-in-out;animation-iteration-count:infinite,infinite}
         #status-screen{position:absolute;top:0;left:0;width:100%;height:100%;background:#f5f5f5;z-index:50;display:none;flex-direction:column}
         #status-screen.active{display:flex;animation:slideUp .3s}
         .status-header{background:var(--primary);color:#fff;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;min-height:38px}
@@ -372,6 +360,9 @@
         .dm-bubble.mine{background:#d9fdd3;color:#111;border-bottom-left-radius:3px}
         .dm-bubble.others{background:#fff;color:#111;border-bottom-right-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
         .dm-time{font-size:9px;opacity:.5;text-align:left;margin-top:1px;display:flex;align-items:center;gap:2px;justify-content:flex-end}
+        .tick-single{color:#999;font-size:11px;font-weight:600;margin-right:3px}
+        .tick-double{color:#999;font-size:13px;font-weight:900;margin-right:3px;letter-spacing:-2px}
+        .tick-double.read{color:#53bdeb;text-shadow:0 0 8px rgba(83,189,235,.6);font-weight:900}
         .dm-media-btn{width:34px;height:34px;border-radius:50%;background:#fff;color:#9c27b0;border:1px solid #ddd;display:none;align-items:center;justify-content:center;cursor:pointer;font-size:15px;flex-shrink:0}
         .dm-media-btn:active{transform:scale(.92)}
         .dm-media-btn.active{display:flex}
@@ -400,14 +391,17 @@
         .dm-user-card:active{background:#f5f5f5}
         .dm-user-card img{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0}
         .dm-user-card .dm-info{flex:1;min-width:0}
-        .dm-user-card .dm-info .dm-name{font-weight:700;font-size:14px;color:#111;display:flex;align-items:center;gap:4px}
+        .dm-user-card .dm-info .dm-name{font-weight:700;font-size:14px;color:#111;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
         .dm-user-card .dm-info .dm-last{font-size:12px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-        .dm-user-card .dm-unread{background:#ff3b30;color:#fff;border-radius:50%;min-width:20px;height:20px;display:flex;justify-content:center;align-items:center;font-size:11px;font-weight:700;padding:0 5px;flex-shrink:0}
+        .dm-user-card .dm-unread{background:#ff3b30;color:#fff;border-radius:12px;min-width:22px;height:22px;display:flex;justify-content:center;align-items:center;font-size:11px;font-weight:900;padding:0 7px;flex-shrink:0}
         .dm-user-card .dm-settings-btn{background:#f0f0f0;border:0;color:#333;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto}
         .dm-user-card .dm-settings-btn:active{background:#e0e0e0}
         .dm-user-card .dm-lock-badge{font-size:16px;flex-shrink:0}
         .dm-user-card.closed{opacity:.65}
         .dm-user-card.closed .dm-info .dm-name{color:#999}
+        .dm-user-card .dm-online-dot{position:absolute;bottom:10px;right:52px;width:12px;height:12px;border-radius:50%;background:#25D366;border:2px solid #fff;box-shadow:0 0 6px rgba(37,211,102,.8)}
+        .dm-user-card .dm-time-badge{font-size:10px;color:#999;flex-shrink:0;align-self:flex-start;margin-top:8px}
+        @keyframes dmBadgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
         .tester-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #f0f0f0;cursor:pointer}
         .tester-item:hover{background:#fafafa}
         .tester-item input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:#9c27b0}
@@ -748,6 +742,16 @@
         #deletion-overlay p{font-size:14px;opacity:.85}
         .btn-reset-default{width:100%;padding:10px;background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;font-family:var(--font-main);margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .2s}
         .btn-reset-default:active{transform:scale(.96)}
+        .chat-effects{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+        .chat-effects .particle{position:absolute;top:-60px;font-size:20px;user-select:none;pointer-events:none;will-change:transform,opacity;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))}
+        @keyframes effectFall{0%{transform:translateY(-60px) rotate(0deg);opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
+        @keyframes effectRise{0%{transform:translateY(110vh) scale(.4);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-80px) scale(1.2);opacity:0}}
+        @keyframes effectSway{0%,100%{margin-left:0}50%{margin-left:40px}}
+        @keyframes effectPulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+        .particle.fall{animation:effectFall linear infinite}
+        .particle.rise{animation:effectRise linear infinite}
+        .particle.pulse{animation:effectPulse 2s ease-in-out infinite}
+        .particle.sway{animation-name:effectFall,effectSway;animation-timing-function:linear,ease-in-out;animation-iteration-count:infinite,infinite}
     </style>
 </head>
 <body>
@@ -936,7 +940,9 @@
             </div>
             <div class="dm-reply-content" id="dm-reply-content-text">...</div>
         </div>
-        <div id="dm-chat-messages"><div class="chat-effects" id="dm-effects"></div></div>
+        <div id="dm-chat-messages">
+            <div class="chat-effects" id="dm-effects"></div>
+        </div>
         <form id="dm-chat-form" onsubmit="sendDMMessage(event)">
             <label for="dm-file-input" id="dm-media-btn" class="dm-media-btn" title="صورة/فيديو">📎</label>
             <input type="file" id="dm-file-input" accept="image/*,video/*" style="display:none" onchange="handleDMMedia(this)">
@@ -1667,10 +1673,9 @@
 
     let chatBgSettings = { general: null, dm: null };
     let animSettings = { arrive: 'fadeSlideIn', send: 'sendPop', glowEffect: false, heartEffect: false };
-    let effectsSettings = { general: 'none', dm: 'none' };
-    let bgSettingsListener = null, animSettingsListener = null, effectsSettingsListener = null;
+    let bgSettingsListener = null;
+    let animSettingsListener = null;
     let tempAnimSettings = {};
-    let tempEffectsSettings = { general: 'none', dm: 'none' };
 
     const animatedMsgIds = new Set();
     const animatedDMMsgIds = new Set();
@@ -1758,6 +1763,10 @@
         { id: 'flowers', name: 'زهور', icon: '🌸', particles: ['🌸', '🌼', '🌻', '💮', '🏵️'], anim: 'fall' },
         { id: 'candy', name: 'حلويات', icon: '🍬', particles: ['🍬', '🍭', '🍫', '🍩', '🧁'], anim: 'fall' }
     ];
+
+    let effectsSettings = { general: 'none', dm: 'none' };
+    let effectsSettingsListener = null;
+    let tempEffectsSettings = { general: 'none', dm: 'none' };
 
     const INVISIBLE_CHARS_REGEX = /[\s\u200B-\u200D\uFEFF\u2060\u00A0\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\u180E\u061C\u200E\u200F\u202A-\u202E]/g;
     const LETTERS_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFFa-zA-Z\u00C0-\u024F]/;
@@ -2559,32 +2568,21 @@
         } catch (e) { alert('❌ ' + e.message); }
     }
 
-    function listenEffectsSettings() {
-        if (effectsSettingsListener) db.ref('app_settings/effects').off('value', effectsSettingsListener);
-        effectsSettingsListener = db.ref('app_settings/effects').on('value', snap => {
-            const d = snap.val() || {};
-            effectsSettings.general = d.general || 'none';
-            effectsSettings.dm = d.dm || 'none';
-            renderChatEffects('general', effectsSettings.general);
-            renderChatEffects('dm', effectsSettings.dm);
-        });
-    }
-
     function renderChatEffects(type, effectId) {
-        const container = document.getElementById(type === 'general' ? 'general-effects' : 'dm-effects');
+        const containerId = type === 'general' ? 'general-effects' : 'dm-effects';
+        const container = document.getElementById(containerId);
         if (!container) return;
         container.innerHTML = '';
         if (!effectId || effectId === 'none') return;
         const preset = EFFECT_PRESETS.find(p => p.id === effectId);
         if (!preset || preset.particles.length === 0) return;
-        const count = type === 'general' ? 18 : 14;
+        const count = type === 'general' ? 22 : 16;
         for (let i = 0; i < count; i++) {
             const el = document.createElement('div');
             el.className = 'particle ' + preset.anim;
             const emoji = preset.particles[Math.floor(Math.random() * preset.particles.length)];
             el.textContent = emoji;
-            const size = 14 + Math.random() * 18;
-            el.style.fontSize = size + 'px';
+            el.style.fontSize = (14 + Math.random() * 18) + 'px';
             el.style.left = (Math.random() * 95) + '%';
             const duration = 6 + Math.random() * 8;
             const delay = Math.random() * 8;
@@ -2600,6 +2598,17 @@
             el.style.opacity = '0';
             container.appendChild(el);
         }
+    }
+
+    function listenEffectsSettings() {
+        if (effectsSettingsListener) db.ref('app_settings/effects').off('value', effectsSettingsListener);
+        effectsSettingsListener = db.ref('app_settings/effects').on('value', snap => {
+            const d = snap.val() || {};
+            effectsSettings.general = d.general || 'none';
+            effectsSettings.dm = d.dm || 'none';
+            renderChatEffects('general', effectsSettings.general);
+            renderChatEffects('dm', effectsSettings.dm);
+        });
     }
 
     function openEffectsSettings() {
@@ -2619,14 +2628,22 @@
             el.className = 'effect-option' + (preset.id === 'none' ? ' none-effect' : '');
             if (preset.id === current) el.classList.add('selected');
             el.innerHTML = `<span class="eff-icon">${preset.icon}</span><span class="eff-name">${preset.name}</span>`;
-            el.onclick = () => { if (type === 'general') tempEffectsSettings.general = preset.id; else tempEffectsSettings.dm = preset.id; renderEffectGrid(type); };
+            el.onclick = () => {
+                if (type === 'general') tempEffectsSettings.general = preset.id;
+                else tempEffectsSettings.dm = preset.id;
+                renderEffectGrid(type);
+            };
             container.appendChild(el);
         });
     }
     async function saveEffectsSettings() {
         if (myRole !== 'owner') return alert('⛔');
         try {
-            await db.ref('app_settings/effects').set({ general: tempEffectsSettings.general || 'none', dm: tempEffectsSettings.dm || 'none', by: myName, at: Date.now() });
+            await db.ref('app_settings/effects').set({
+                general: tempEffectsSettings.general || 'none',
+                dm: tempEffectsSettings.dm || 'none',
+                by: myName, at: Date.now()
+            });
             effectsSettings.general = tempEffectsSettings.general || 'none';
             effectsSettings.dm = tempEffectsSettings.dm || 'none';
             renderChatEffects('general', effectsSettings.general);
@@ -2640,10 +2657,14 @@
         if (!confirm('إرجاع التأثيرات للوضع الافتراضي (بدون تأثير)؟')) return;
         try {
             await db.ref('app_settings/effects').remove();
-            effectsSettings.general = 'none'; effectsSettings.dm = 'none';
-            renderChatEffects('general', 'none'); renderChatEffects('dm', 'none');
-            renderEffectGrid('general'); renderEffectGrid('dm');
-            alert('✅ تم إرجاع التأثيرات للوضع الافتراضي');
+            effectsSettings.general = 'none';
+            effectsSettings.dm = 'none';
+            tempEffectsSettings = { general: 'none', dm: 'none' };
+            renderChatEffects('general', 'none');
+            renderChatEffects('dm', 'none');
+            renderEffectGrid('general');
+            renderEffectGrid('dm');
+            alert('✅ تم الإرجاع');
         } catch (e) { alert('❌ ' + e.message); }
     }
 
@@ -2968,17 +2989,25 @@
             u.uid = k; u._dmCanReceive = canUserDM(k, u.role); users.push(u);
         });
         users.sort((a, b) => {
+            const aTime = (dmUnreadCounts[a.uid] && Number(dmUnreadCounts[a.uid].lastTime)) || 0;
+            const bTime = (dmUnreadCounts[b.uid] && Number(dmUnreadCounts[b.uid].lastTime)) || 0;
+            if (bTime !== aTime) return bTime - aTime;
             const aU = (dmUnreadCounts[a.uid] && Number(dmUnreadCounts[a.uid].count)) || 0;
             const bU = (dmUnreadCounts[b.uid] && Number(dmUnreadCounts[b.uid].count)) || 0;
             if (bU !== aU) return bU - aU;
-            return ((dmUnreadCounts[b.uid] && dmUnreadCounts[b.uid].lastTime) || 0) - ((dmUnreadCounts[a.uid] && dmUnreadCounts[a.uid].lastTime) || 0);
+            const aOn = isUserOnline(a) ? 1 : 0;
+            const bOn = isUserOnline(b) ? 1 : 0;
+            if (bOn !== aOn) return bOn - aOn;
+            return (a.name || '').localeCompare(b.name || '');
         });
         if (users.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px;font-size:14px;">لا يوجد مستخدمون</div>'; return; }
         users.forEach(u => {
             const unreadData = dmUnreadCounts[u.uid] || {};
             const unread = Number(unreadData.count) || 0;
             const lastMsg = unreadData.lastMessage || '';
+            const lastTime = Number(unreadData.lastTime) || 0;
             const isDMOn = u._dmCanReceive;
+            const isOnline = isUserOnline(u);
             const card = document.createElement('div');
             card.className = 'dm-user-card' + (isDMOn ? '' : ' closed');
             card.dataset.uid = u.uid; card.dataset.name = (u.name || '').toLowerCase();
@@ -2990,12 +3019,37 @@
             else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">✅ موثوق</span>';
             let lockIcon = ''; if (!isDMOn) lockIcon = '<div class="dm-lock-badge">🔒</div>';
             let settingsBtn = ''; if (myRole === 'owner') settingsBtn = `<button class="dm-settings-btn" onclick="event.stopPropagation();cycleUserDMPermission('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}')">⚙️</button>`;
-            card.innerHTML = `<img src="${avatar}"><div class="dm-info"><div class="dm-name">${escapeHtml(u.name || 'مجهول')} ${roleBadge}</div><div class="dm-last">${isDMOn ? (lastMsg ? escapeHtml(lastMsg) : '💬 ابدأ') : '🔒 مغلق'}</div></div>${unread > 0 ? `<div class="dm-unread">${unread > 99 ? '99+' : unread}</div>` : ''}${lockIcon}${settingsBtn}`;
-            card.onclick = (e) => { if (e.target.closest('.dm-settings-btn')) return; if (!isDMOn) return alert('🔒'); openDMChat(u.uid); };
+            const onlineDot = isOnline ? '<div class="dm-online-dot"></div>' : '';
+            const timeLabel = lastTime ? formatDateShort(lastTime) : '';
+            let unreadBadge = '';
+            if (unread > 0) {
+                unreadBadge = `<div class="dm-unread" style="background:linear-gradient(135deg,#ff3b30,#b71c1c);box-shadow:0 0 12px rgba(255,59,48,.6);animation:dmBadgePulse 1.4s infinite ease-in-out;">${unread > 99 ? '99+' : unread}</div>`;
+            }
+            const previewStyle = unread > 0 ? 'color:#9c27b0;font-weight:700;' : '';
+            card.innerHTML = `
+                <div style="position:relative;flex-shrink:0;">
+                    <img src="${avatar}" onerror="this.src='${DEFAULT_ICON}'">
+                    ${onlineDot}
+                </div>
+                <div class="dm-info">
+                    <div class="dm-name">${escapeHtml(u.name || 'مجهول')} ${roleBadge}</div>
+                    <div class="dm-last" style="${previewStyle}">${isDMOn ? (lastMsg ? escapeHtml(lastMsg) : '💬 ابدأ') : '🔒 مغلق'}</div>
+                </div>
+                ${timeLabel ? `<div class="dm-time-badge">${timeLabel}</div>` : ''}
+                ${unreadBadge}
+                ${lockIcon}
+                ${settingsBtn}
+            `;
+            card.onclick = (e) => {
+                if (e.target.closest('.dm-settings-btn')) return;
+                if (!isDMOn) return alert('🔒');
+                openDMChat(u.uid);
+            };
             l.appendChild(card);
         });
     }
     function filterDMUsers() { const t = document.getElementById('dm-search').value.toLowerCase(); document.querySelectorAll('#dm-users-list .dm-user-card').forEach(c => { c.style.display = (c.dataset.name || '').includes(t) ? 'flex' : 'none'; }); }
+
     function openDMChat(uid) {
         if (!myDMEnabled) return alert('🔒 خاصك مغلق من قبل مالك التطبيق\nلا يمكنك المحادثة مع أي مستخدم');
         const u = allUsersData[uid]; if (!u) return;
@@ -3010,6 +3064,7 @@
         document.getElementById('dm-reply-bar').classList.remove('active');
         updateDMMediaBtnVisibility();
         db.ref('dm_inbox/' + myFP + '/' + uid + '/count').set(0);
+        renderChatEffects('dm', effectsSettings.dm);
         loadDMMessages(uid);
         startDMReadReceipts(uid);
         startDMPresenceListener(uid);
@@ -3148,7 +3203,7 @@
             if (m && m.read && m.from === myFP) {
                 const el = document.getElementById('dm-msg-' + snap.key);
                 if (el) {
-                    const tick = el.querySelector('.dm-tick');
+                    const tick = el.querySelector('.tick-double');
                     if (tick) { tick.classList.add('read'); tick.textContent = '✓✓'; }
                 }
             }
@@ -3165,9 +3220,16 @@
     function loadDMMessages(uid) {
         const chatId = getChatId(myFP, uid);
         const box = document.getElementById('dm-chat-messages');
-        box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">⏳ جاري التحميل...</div>';
-        const effectsDiv = document.createElement('div'); effectsDiv.className = 'chat-effects'; effectsDiv.id = 'dm-effects'; box.appendChild(effectsDiv);
+        box.innerHTML = '';
+        const effectsDiv = document.createElement('div');
+        effectsDiv.className = 'chat-effects';
+        effectsDiv.id = 'dm-effects';
+        box.appendChild(effectsDiv);
         if (effectsSettings.dm !== 'none') renderChatEffects('dm', effectsSettings.dm);
+        const loadingEl = document.createElement('div');
+        loadingEl.style.cssText = 'text-align:center;color:#999;padding:20px;font-size:12px;';
+        loadingEl.textContent = '⏳ جاري التحميل...';
+        box.appendChild(loadingEl);
         if (dmChatMessagesListener) { db.ref('private_chats/' + chatId + '/messages').off('child_added', dmChatMessagesListener); dmChatMessagesListener = null; }
         dmMessagesCache = {};
         const renderedKeys = new Set();
@@ -3175,7 +3237,7 @@
             currentDMClearedAt = clearSnap.val() || 0;
             db.ref('private_chats/' + chatId + '/messages').orderByChild('time').limitToLast(200).once('value', snap => {
                 box.innerHTML = '';
-                const effects2 = document.createElement('div'); effects2.className = 'chat-effects'; effects2.id = 'dm-effects'; box.appendChild(effects2);
+                const effectsDiv2 = document.createElement('div'); effectsDiv2.className = 'chat-effects'; effectsDiv2.id = 'dm-effects'; box.appendChild(effectsDiv2);
                 if (effectsSettings.dm !== 'none') renderChatEffects('dm', effectsSettings.dm);
                 const allMsgs = [];
                 snap.forEach(c => { const v = c.val(); const t = Number(v.time) || 0; if (t <= currentDMClearedAt) return; renderedKeys.add(c.key); v._key = c.key; allMsgs.push(v); dmMessagesCache[c.key] = v; });
@@ -3247,8 +3309,11 @@
         if (m.text) inner += `<div>${escapeHtml(m.text)}</div>`;
         let tickHtml = '';
         if (isMine) {
-            if (m.read) tickHtml = '<span class="dm-tick read">✓✓</span>';
-            else tickHtml = '<span class="dm-tick">✓✓</span>';
+            if (m.read) {
+                tickHtml = '<span class="tick-double read">✓✓</span>';
+            } else {
+                tickHtml = '<span class="tick-single">✓</span>';
+            }
         }
         inner += `<div class="dm-time">${formatTime(m.time)} ${tickHtml}</div>`;
         let acts = '<div class="dm-msg-actions">';
@@ -3407,9 +3472,7 @@
         updates['glow_settings/' + uid] = null;
         updates['notifications/' + uid] = null;
         updates['warnings/current/ack/' + uid] = null;
-        if (name && name.trim() && name !== 'مجهول') {
-            updates['name_links/' + name.toLowerCase()] = null;
-        }
+        if (name && name.trim() && name !== 'مجهول') { updates['name_links/' + name.toLowerCase()] = null; }
         updates['fp_links/' + uid] = null;
         try {
             const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value');
@@ -3671,7 +3734,10 @@
         const box = document.getElementById('chat-messages');
         const sp = box.scrollTop, isBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 50;
         box.innerHTML = '';
-        const effectsDiv = document.createElement('div'); effectsDiv.className = 'chat-effects'; effectsDiv.id = 'general-effects'; box.appendChild(effectsDiv);
+        const effectsDiv = document.createElement('div');
+        effectsDiv.className = 'chat-effects';
+        effectsDiv.id = 'general-effects';
+        box.appendChild(effectsDiv);
         if (effectsSettings.general !== 'none') renderChatEffects('general', effectsSettings.general);
         const ld = document.createElement('div'); ld.id = 'loading-more'; ld.textContent = '⏳ جاري التحميل...'; ld.style.display = 'none'; box.appendChild(ld);
         const ks = Object.keys(messagesCache).sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0));
@@ -3735,7 +3801,7 @@
             acts += '</div>';
             const sns = snc ? 'color:' + snc + ';' : '', gc2 = gc && gc !== 'none' ? 'glow ' + gc : '';
             const safeName = dn.replace(/'/g, "\\'");
-            div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')">' + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '✓✓' : '') + '</div></div>' + acts;
+            div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')">' + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '<span class="tick-single">✓</span>' : '') + '</div></div>' + acts;
             if (animSettings.glowEffect) div.classList.add('effect-glow-pulse');
             if (animSettings.heartEffect) div.classList.add('effect-heartbeat');
             box.appendChild(div);
