@@ -564,10 +564,8 @@
         .btn-anim-settings:active{transform:scale(.95)}
         .btn-effects-settings{width:100%;padding:10px;background:linear-gradient(135deg,#f9a825,#f57c00);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
         .btn-effects-settings:active{transform:scale(.95)}
-        /* === 🎨 زر ألوان الواجهة الجديد === */
         .btn-theme-settings{width:100%;padding:10px;background:linear-gradient(135deg,#00897B,#00695C);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
         .btn-theme-settings:active{transform:scale(.95)}
-        /* === نافذة ألوان الواجهة === */
         .theme-section{background:#f9f9f9;border-radius:12px;padding:14px;margin-bottom:12px;text-align:right;border:1px solid #eee}
         .theme-section h4{font-size:14px;font-weight:800;margin-bottom:10px;color:#333;display:flex;align-items:center;gap:6px;justify-content:flex-start}
         .theme-section label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:6px;margin-top:10px}
@@ -753,6 +751,21 @@
         .warning-reader-item.unread .wr-status{color:#ff9800}
         .warning-empty-readers{text-align:center;padding:30px 20px;color:#999;font-size:14px;font-family:var(--font-main);background:#fff;border-radius:12px}
         .warning-empty-readers .we-icon{font-size:48px;display:block;margin-bottom:8px;opacity:.6}
+
+        /* ===== تحديث مراقبة الخاص - تنسيق الصور ===== */
+        .dm-monitor-card{padding:12px 15px;background:#fff;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .2s;gap:8px;}
+        .dm-monitor-card:hover{background:#f9f9f9}
+        .dm-monitor-card:active{background:#f0f0f0}
+        .dm-monitor-card .dm-users{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+        .dm-monitor-card .dm-users img{width:40px !important;height:40px !important;max-width:40px !important;max-height:40px !important;border-radius:50%;object-fit:cover;border:2px solid #eee;flex-shrink:0;display:block;}
+        .dm-monitor-card .dm-users .dm-arrow{font-size:18px;color:#b0b3b8;margin:0 4px;flex-shrink:0}
+        .dm-monitor-card .dm-users .dm-names{font-size:14px;font-weight:700;color:#1a1a1a;display:flex;flex-direction:column;gap:2px;overflow:hidden;flex:1;min-width:0;}
+        .dm-monitor-card .dm-users .dm-names span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .dm-monitor-card .dm-users .dm-last-msg{font-size:11px;color:#888;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        #dm-monitor-list img{max-width:44px !important;max-height:44px !important;}
+        /* شريط التبويبات في مراقبة الخاص */
+        .dm-mon-tabs{display:flex;gap:0;background:#f5f5f5;padding:0;border-bottom:1px solid #ddd;flex-shrink:0;}
+        .dm-mon-tab{flex:1;padding:12px 8px;border:0;font-family:var(--font-main);font-weight:700;font-size:12px;cursor:pointer;transition:all .2s;border-radius:0;}
     </style>
 </head>
 <body>
@@ -960,7 +973,7 @@
         <div style="padding:8px;">
             <input type="text" id="dm-monitor-search" class="search-box" placeholder="🔍 بحث عن مستخدم..." onkeyup="filterDMMonitor()">
         </div>
-        <div id="dm-monitor-list" style="flex:1;overflow-y:auto;"></div>
+        <div id="dm-monitor-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;"></div>
     </div>
 
     <div class="modal-slide" id="dm-monitor-view-modal">
@@ -1298,7 +1311,6 @@
         </div>
     </div>
 
-    <!-- 🎨 نافذة ألوان الواجهة (جديد) -->
     <div class="modal-popup" id="theme-settings-modal">
         <div class="popup-box" style="max-width:480px;">
             <h3 style="font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;color:#00897B;margin-bottom:4px;">🎨 ألوان الواجهة</h3>
@@ -1359,7 +1371,6 @@
                 <button id="open-bg-settings-btn" class="btn-bg-settings" onclick="openBgSettings()">🎨 خلفيات الدردشة (عام/خاص)</button>
                 <button id="open-anim-settings-btn" class="btn-anim-settings" onclick="openAnimSettings()">✨ حركات الرسائل</button>
                 <button id="open-effects-settings-btn" class="btn-effects-settings" onclick="openEffectsSettings()">🎆 التأثيرات المتحركة (نجوم، قلوب، ورد...)</button>
-                <!-- 🎨 زر ألوان الواجهة الجديد -->
                 <button id="open-theme-settings-btn" class="btn-theme-settings" onclick="openThemeSettings()">🎨 ألوان الواجهة (العلوي/السفلي)</button>
                 <button id="open-maintenance-btn" class="btn-maintenance" onclick="openMaintenanceSettings()">🔧 إعدادات الصيانة</button>
                 <button id="open-advanced-btn" class="btn-advanced" onclick="openAdvancedSettings()">⚙️ إعدادات متقدمة (الخط)</button>
@@ -1725,7 +1736,7 @@
     let tempAnimSettings = {};
 
     /* ============================================================
-       🎨 إعدادات ألوان الواجهة (جديد)
+       🎨 إعدادات ألوان الواجهة
        ============================================================ */
     let themeSettings = {
         headerBg: '#008069',
@@ -1791,7 +1802,6 @@
         document.documentElement.style.setProperty('--header-text', t.headerText);
         document.documentElement.style.setProperty('--bottom-nav-bg', t.bottomBg);
         document.documentElement.style.setProperty('--bottom-nav-text', t.bottomText);
-        // تحديث شريط المتصفح (theme-color)
         try {
             let meta = document.querySelector('meta[name="theme-color"]');
             if (meta && t.headerBg && t.headerBg.startsWith('#')) meta.setAttribute('content', t.headerBg);
@@ -1806,7 +1816,6 @@
             bottomBg: themeSettings.bottomBg,
             bottomText: themeSettings.bottomText
         };
-        // تعيين مدخلات الألوان (فقط إن كانت hex)
         setThemeColorInput('theme-header-bg', tempTheme.headerBg);
         setThemeColorInput('theme-header-text', tempTheme.headerText);
         setThemeColorInput('theme-bottom-bg', tempTheme.bottomBg);
@@ -1833,11 +1842,7 @@
             const el = document.createElement('div');
             el.className = 'theme-preset';
             el.title = p.name;
-            if (p.value.startsWith('linear-gradient')) {
-                el.style.background = p.value;
-            } else {
-                el.style.background = p.value;
-            }
+            el.style.background = p.value;
             if (p.value === current) el.classList.add('selected');
             el.onclick = () => {
                 if (kind === 'header') tempTheme.headerBg = p.value;
@@ -1862,7 +1867,6 @@
         }
     }
 
-    // Bind color pickers
     document.getElementById('theme-header-bg')?.addEventListener('input', function() {
         tempTheme.headerBg = this.value;
         renderThemePresets('header');
@@ -1933,9 +1937,6 @@
     function closeThemeSettings() {
         document.getElementById('theme-settings-modal').classList.remove('active');
     }
-    /* ============================================================
-       نهاية ألوان الواجهة
-       ============================================================ */
 
     const animatedMsgIds = new Set();
     const animatedDMMsgIds = new Set();
@@ -1976,6 +1977,10 @@
     let dmMonitorListener = null;
     let currentReportType = 'message';
     let currentReportStatusKey = null;
+
+    /* ===== متغيرات مراقبة الخاص ===== */
+    let currentDMMonitorTab = 'chats';
+    let dmMonitorDataCache = { chats: [], allUsers: [] };
 
     let currentWarning = null;
     let warningListener = null;
@@ -2984,7 +2989,6 @@
         document.getElementById('loading-screen').style.display = 'none';
         myFP = await getDeviceFingerprint();
         localStorage.setItem("fp", myFP);
-        // تحميل إعدادات الألوان والخط والخلفيات والحركات
         listenThemeSettings();
         listenFontSettings(); listenBadWords(); listenChatBgSettings(); listenAnimSettings(); listenEffectsSettings();
         const storedName = localStorage.getItem("name") || "";
@@ -4751,68 +4755,229 @@
             renderReports(); updateReportsBadge();
         } catch (e) { alert('❌ ' + e.message); }
     }
-    function openDMMonitor() { if (myRole !== 'owner') return alert('⛔'); document.getElementById('dm-monitor-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); renderDMMonitor(); }
-    function closeDMMonitor() { document.getElementById('dm-monitor-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); if (dmMonitorListener) { db.ref('private_chats').off('value', dmMonitorListener); dmMonitorListener = null; } }
-    async function renderDMMonitor() {
-        const list = document.getElementById('dm-monitor-list');
-        list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">⏳ جاري التحميل...</div>';
-        let usersData = {};
-        try { const usersSnap = await db.ref('users').once('value'); usersData = usersSnap.val() || {}; } catch (e) { console.warn(e); }
-        if (dmMonitorListener) db.ref('private_chats').off('value', dmMonitorListener);
-        dmMonitorListener = db.ref('private_chats').on('value', snap => {
-            if (isBeingDeleted) return;
-            list.innerHTML = '';
-            if (!snap.exists()) { list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">📭 لا توجد محادثات خاصة</div>'; return; }
-            const chats = [];
-            snap.forEach(child => {
-                const chatId = child.key;
-                let u1Id = null, u2Id = null;
-                let lastMsg = '', lastTime = 0;
-                if (child.hasChild('messages')) {
-                    child.child('messages').forEach(msg => {
-                        const m = msg.val();
-                        const candidates = [m.from, m.to].filter(Boolean);
-                        candidates.forEach(uid => {
-                            if (!u1Id) u1Id = uid;
-                            else if (u1Id !== uid && !u2Id) u2Id = uid;
-                        });
-                        const t = Number(m.time) || 0;
-                        if (t > lastTime) { lastTime = t; lastMsg = m.text || '📎'; }
-                    });
-                }
-                const getUserInfo = (uid) => {
-                    if (!uid) return { name: 'مستخدم محذوف', avatar: DEFAULT_ICON };
-                    if (usersData[uid] && usersData[uid].name) { return { name: usersData[uid].name, avatar: usersData[uid].avatar || DEFAULT_ICON }; }
-                    if (allUsersData[uid] && allUsersData[uid].name) { return { name: allUsersData[uid].name, avatar: allUsersData[uid].avatar || DEFAULT_ICON }; }
-                    let foundName = null, foundAvatar = null;
-                    child.child('messages').forEach(msg => {
-                        const m = msg.val();
-                        if (m.from === uid && !foundName && m.fromName) { foundName = m.fromName; foundAvatar = m.fromAvatar || DEFAULT_ICON; }
-                        if (m.to === uid && !foundName && m.toName) { foundName = m.toName; }
-                    });
-                    if (!foundName && usersData[uid]) foundName = usersData[uid].name || '⚠️ بدون اسم';
-                    if (!foundName && allUsersData[uid]) foundName = allUsersData[uid].name || '⚠️ بدون اسم';
-                    return { name: foundName || 'مستخدم محذوف', avatar: foundAvatar || DEFAULT_ICON };
-                };
-                let u1Name = 'مستخدم محذوف', u2Name = 'مستخدم محذوف';
-                let u1Av = DEFAULT_ICON, u2Av = DEFAULT_ICON;
-                if (u1Id) { const info = getUserInfo(u1Id); u1Name = info.name; u1Av = info.avatar; }
-                if (u2Id) { const info = getUserInfo(u2Id); u2Name = info.name; u2Av = info.avatar; }
-                chats.push({ chatId, u1Name, u2Name, u1Av, u2Av, lastMsg, lastTime });
-            });
-            chats.sort((a, b) => b.lastTime - a.lastTime);
-            if (chats.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">📭 لا توجد محادثات خاصة</div>'; return; }
+
+    /* ============================================================
+       🕵️ مراقبة الخاص - دوال محدّثة
+       ============================================================ */
+    function openDMMonitor() {
+        if (myRole !== 'owner') return alert('⛔');
+        currentDMMonitorTab = 'chats';
+        document.getElementById('dm-monitor-modal').classList.add('active');
+        document.getElementById('modal-overlay').classList.add('show');
+        renderDMMonitor();
+    }
+
+    function closeDMMonitor() {
+        document.getElementById('dm-monitor-modal').classList.remove('active');
+        document.getElementById('modal-overlay').classList.remove('show');
+        if (dmMonitorListener) { db.ref('private_chats').off('value', dmMonitorListener); dmMonitorListener = null; }
+        dmMonitorDataCache = { chats: [], allUsers: [] };
+    }
+
+    function switchDMMonitorTab(tab) {
+        currentDMMonitorTab = tab;
+        const chatsBtn = document.getElementById('dm-mon-tab-chats');
+        const usersBtn = document.getElementById('dm-mon-tab-users');
+        if (!chatsBtn || !usersBtn) return;
+        if (tab === 'chats') {
+            chatsBtn.style.color = '#fff';
+            chatsBtn.style.background = '#1a237e';
+            usersBtn.style.color = '#1a237e';
+            usersBtn.style.background = '#f0f0f0';
+        } else {
+            usersBtn.style.color = '#fff';
+            usersBtn.style.background = '#1a237e';
+            chatsBtn.style.color = '#1a237e';
+            chatsBtn.style.background = '#f0f0f0';
+        }
+        renderDMMonitorContent();
+    }
+
+    function renderDMMonitorContent() {
+        const content = document.getElementById('dm-mon-content');
+        if (!content) return;
+        content.innerHTML = '';
+        if (currentDMMonitorTab === 'chats') {
+            const chats = dmMonitorDataCache.chats || [];
+            if (chats.length === 0) {
+                content.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#999;font-family:var(--font-main);font-size:14px;">📭 لا توجد محادثات خاصة بعد</div>';
+                return;
+            }
             chats.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'dm-monitor-card';
                 div.dataset.search = (c.u1Name + ' ' + c.u2Name).toLowerCase();
-                div.innerHTML = `<div class="dm-users"><img src="${c.u1Av}"><span class="dm-arrow">↔</span><img src="${c.u2Av}"></div><div class="dm-users" style="flex:1; overflow:hidden;"><div class="dm-names"><span>${escapeHtml(c.u1Name)} ↔ ${escapeHtml(c.u2Name)}</span><span class="dm-last-msg">${escapeHtml(c.lastMsg || 'لا توجد رسائل')}</span></div></div>`;
+                div.innerHTML = `
+                    <div class="dm-users" style="flex:0 0 auto;">
+                        <img src="${c.u1Av || DEFAULT_ICON}" onerror="this.src='${DEFAULT_ICON}'" style="width:40px;height:40px;">
+                        <span class="dm-arrow">↔</span>
+                        <img src="${c.u2Av || DEFAULT_ICON}" onerror="this.src='${DEFAULT_ICON}'" style="width:40px;height:40px;">
+                    </div>
+                    <div class="dm-users" style="flex:1;overflow:hidden;gap:8px;">
+                        <div class="dm-names" style="flex:1;min-width:0;">
+                            <span style="font-size:13px;font-weight:700;">${escapeHtml(c.u1Name)} ↔ ${escapeHtml(c.u2Name)}</span>
+                            <span class="dm-last-msg" style="font-size:11px;color:#888;">${escapeHtml(c.lastMsg || 'لا توجد رسائل')}</span>
+                        </div>
+                    </div>
+                `;
                 div.onclick = () => viewMonitoredChat(c.chatId, c.u1Name, c.u2Name);
-                list.appendChild(div);
+                content.appendChild(div);
             });
-        }, error => { list.innerHTML = '<div style="text-align:center;padding:20px;color:#d32f2f;font-size:14px;">⚠️ خطأ: ' + error.message + '</div>'; });
+        } else {
+            const users = dmMonitorDataCache.allUsers || [];
+            if (users.length === 0) {
+                content.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#999;font-family:var(--font-main);font-size:14px;">📭 لا يوجد مستخدمون</div>';
+                return;
+            }
+            users.forEach(u => {
+                const roleLabel = { owner: '👑 مالك', manager: '💎 مدير', mod: '🛡️ مشرف', trusted: '✅ موثوق', user: '👤 عادي' }[u.role] || '👤 عادي';
+                const canDM = canUserDM(u.uid, u.role);
+                const statusText = canDM ? '💌 الخاص مفتوح' : '🔒 الخاص مغلق';
+                const statusColor = canDM ? '#4caf50' : '#ef5350';
+                const isOnline = isUserOnline(u);
+                const div = document.createElement('div');
+                div.className = 'dm-monitor-card';
+                div.dataset.search = (u.name || '').toLowerCase();
+                div.innerHTML = `
+                    <div class="dm-users" style="flex:0 0 auto;position:relative;">
+                        <img src="${u.avatar || DEFAULT_ICON}" onerror="this.src='${DEFAULT_ICON}'" style="width:44px;height:44px;">
+                        ${isOnline ? '<span style="position:absolute;bottom:0;right:0;width:12px;height:12px;background:#25D366;border:2px solid #fff;border-radius:50%;box-shadow:0 0 6px rgba(37,211,102,.7);"></span>' : ''}
+                    </div>
+                    <div class="dm-users" style="flex:1;overflow:hidden;gap:8px;">
+                        <div class="dm-names" style="flex:1;min-width:0;">
+                            <span style="font-size:13px;font-weight:700;">${escapeHtml(u.name)} <span style="font-size:10px;color:#999;font-weight:400;">${roleLabel}</span></span>
+                            <span class="dm-last-msg" style="color:${statusColor};font-weight:700;font-size:11px;">${statusText}</span>
+                        </div>
+                    </div>
+                    <button onclick="event.stopPropagation();cycleUserDMPermission('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}');setTimeout(renderDMMonitor,400);" style="background:#f0f0f0;border:0;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:14px;flex-shrink:0;" title="تعديل صلاحية الخاص">⚙️</button>
+                `;
+                content.appendChild(div);
+            });
+        }
     }
-    function filterDMMonitor() { const q = document.getElementById('dm-monitor-search').value.toLowerCase(); document.querySelectorAll('#dm-monitor-list .dm-monitor-card').forEach(c => { c.style.display = (c.dataset.search || '').includes(q) ? 'flex' : 'none'; }); }
+
+    async function renderDMMonitor() {
+        const list = document.getElementById('dm-monitor-list');
+        if (!list) return;
+        list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;font-family:var(--font-main);">⏳ جاري التحميل...</div>';
+
+        let usersData = {};
+        try {
+            const usersSnap = await db.ref('users').once('value');
+            usersData = usersSnap.val() || {};
+        } catch (e) {
+            console.warn('فشل تحميل المستخدمين:', e);
+            list.innerHTML = '<div style="text-align:center;padding:20px;color:#d32f2f;font-family:var(--font-main);">⚠️ فشل تحميل البيانات</div>';
+            return;
+        }
+
+        if (dmMonitorListener) db.ref('private_chats').off('value', dmMonitorListener);
+
+        dmMonitorListener = db.ref('private_chats').on('value', snap => {
+            if (isBeingDeleted) return;
+
+            const chats = [];
+            const allUsers = [];
+
+            // جمع كل المستخدمين
+            Object.keys(usersData).forEach(uid => {
+                const u = usersData[uid];
+                if (!u) return;
+                if (u.hidden === true) return;
+                if (!u.name || u.name.trim() === '') return;
+                allUsers.push({
+                    uid: uid,
+                    name: u.name,
+                    avatar: u.avatar || DEFAULT_ICON,
+                    role: u.role || 'user',
+                    lastSeen: Number(u.lastSeen) || 0,
+                    status: u.status || 'offline'
+                });
+            });
+
+            // جمع المحادثات
+            if (snap.exists()) {
+                snap.forEach(child => {
+                    const chatId = child.key;
+                    let u1Id = null, u2Id = null;
+                    let lastMsg = '', lastTime = 0;
+                    let msgCount = 0;
+
+                    if (child.hasChild('messages')) {
+                        child.child('messages').forEach(msg => {
+                            const m = msg.val();
+                            msgCount++;
+                            const candidates = [m.from, m.to].filter(Boolean);
+                            candidates.forEach(uid => {
+                                if (!u1Id) u1Id = uid;
+                                else if (u1Id !== uid && !u2Id) u2Id = uid;
+                            });
+                            const t = Number(m.time) || 0;
+                            if (t > lastTime) { lastTime = t; lastMsg = m.text || '📎 وسائط'; }
+                        });
+                    }
+
+                    if (msgCount === 0) return;
+
+                    const getUserInfo = (uid) => {
+                        if (!uid) return { name: 'مستخدم محذوف', avatar: DEFAULT_ICON };
+                        if (usersData[uid] && usersData[uid].name) return { name: usersData[uid].name, avatar: usersData[uid].avatar || DEFAULT_ICON };
+                        if (allUsersData[uid] && allUsersData[uid].name) return { name: allUsersData[uid].name, avatar: allUsersData[uid].avatar || DEFAULT_ICON };
+                        return { name: 'مجهول', avatar: DEFAULT_ICON };
+                    };
+
+                    const u1Info = getUserInfo(u1Id);
+                    const u2Info = getUserInfo(u2Id);
+                    chats.push({
+                        chatId: chatId,
+                        u1Id: u1Id,
+                        u2Id: u2Id,
+                        u1Name: u1Info.name,
+                        u2Name: u2Info.name,
+                        u1Av: u1Info.avatar,
+                        u2Av: u2Info.avatar,
+                        lastMsg: lastMsg,
+                        lastTime: lastTime
+                    });
+                });
+            }
+
+            chats.sort((a, b) => b.lastTime - a.lastTime);
+            dmMonitorDataCache = { chats: chats, allUsers: allUsers };
+
+            // بناء الواجهة مع التبويبات
+            list.innerHTML = `
+                <div style="display:flex;gap:0;background:#f5f5f5;padding:0;border-bottom:1px solid #ddd;flex-shrink:0;">
+                    <button id="dm-mon-tab-chats" onclick="switchDMMonitorTab('chats')"
+                        style="flex:1;padding:12px 8px;border:0;font-family:var(--font-main);font-weight:700;font-size:12px;cursor:pointer;transition:all .2s;color:#fff;background:#1a237e;">
+                        💬 المحادثات (${chats.length})
+                    </button>
+                    <button id="dm-mon-tab-users" onclick="switchDMMonitorTab('users')"
+                        style="flex:1;padding:12px 8px;border:0;font-family:var(--font-main);font-weight:700;font-size:12px;cursor:pointer;transition:all .2s;color:#1a237e;background:#f0f0f0;">
+                        👥 المستخدمون (${allUsers.length})
+                    </button>
+                </div>
+                <div id="dm-mon-content" style="flex:1;overflow-y:auto;"></div>
+            `;
+
+            // استعادة التبويب الحالي
+            if (currentDMMonitorTab === 'users') {
+                switchDMMonitorTab('users');
+            } else {
+                switchDMMonitorTab('chats');
+            }
+        }, error => {
+            list.innerHTML = '<div style="text-align:center;padding:20px;color:#d32f2f;font-size:14px;font-family:var(--font-main);">⚠️ خطأ: ' + error.message + '</div>';
+        });
+    }
+
+    function filterDMMonitor() {
+        const q = document.getElementById('dm-monitor-search').value.toLowerCase();
+        document.querySelectorAll('#dm-mon-content .dm-monitor-card').forEach(c => {
+            c.style.display = (c.dataset.search || '').includes(q) ? 'flex' : 'none';
+        });
+    }
+
     async function viewMonitoredChat(chatId, name1, name2) {
         document.getElementById('dm-monitor-view-title').textContent = '💬 ' + name1 + ' ↔ ' + name2;
         const body = document.getElementById('dm-monitor-view-body');
