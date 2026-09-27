@@ -10,7 +10,22 @@
     <style>
         @font-face{font-family:'alfont_com_سلطان-بلاك';src:url('https://alfont.com/wp-content/fonts/sultan-black.woff2') format('woff2'),url('https://alfont.com/wp-content/fonts/sultan-black.woff') format('woff'),url('https://alfont.com/wp-content/fonts/sultan-black.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap}
         *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-        :root{--primary:#008069;--bg-chat:#efe7dd;--msg-mine:#d9fdd3;--msg-other:#fff;--gold:#FFD700;--font-main:'alfont_com_سلطان-بلاك','Cairo',sans-serif;--chat-bg-image:none;--dm-bg-image:none;--msg-arrive-anim:fadeSlideIn;--msg-send-anim:sendPop}
+        :root{
+            --primary:#008069;
+            --bg-chat:#efe7dd;
+            --msg-mine:#d9fdd3;
+            --msg-other:#fff;
+            --gold:#FFD700;
+            --header-bg:#008069;
+            --header-text:#ffffff;
+            --bottom-nav-bg:#ffffff;
+            --bottom-nav-text:#666666;
+            --font-main:'alfont_com_سلطان-بلاك','Cairo',sans-serif;
+            --chat-bg-image:none;
+            --dm-bg-image:none;
+            --msg-arrive-anim:fadeSlideIn;
+            --msg-send-anim:sendPop
+        }
         html,body{height:100%;overflow:hidden;touch-action:manipulation}
         body{background:#d1d7db;display:flex;justify-content:center;height:100vh;overflow:hidden;position:fixed;width:100%;top:0;left:0;font-family:var(--font-main)}
         .app-container{width:100%;max-width:600px;height:100%;max-height:100vh;background:#f0f2f5;display:flex;flex-direction:column;position:relative;box-shadow:0 0 30px rgba(0,0,0,.3);overflow:hidden;height:100dvh}
@@ -30,11 +45,11 @@
         .login-hint strong{color:#0d47a1}
         .login-btn{width:100%;padding:15px;background:var(--primary);color:#fff;border:0;border-radius:15px;font-weight:700;cursor:pointer;font-size:18px;font-family:var(--font-main);transition:transform .2s}
         .login-btn:active{transform:scale(.97)}
-        header{background:var(--primary);color:#fff;padding:4px 10px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.15);min-height:38px;flex-shrink:0;position:relative}
+        header{background:var(--header-bg);color:var(--header-text);padding:4px 10px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.15);min-height:38px;flex-shrink:0;position:relative;transition:background .3s ease,color .3s ease}
         .header-title{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px}
-        .header-title button{background:rgba(255,255,255,.15);border:0;color:#fff;padding:2px 8px;border-radius:8px;font-size:10px;cursor:pointer;display:none;font-family:var(--font-main)}
+        .header-title button{background:rgba(255,255,255,.15);border:0;color:var(--header-text);padding:2px 8px;border-radius:8px;font-size:10px;cursor:pointer;display:none;font-family:var(--font-main)}
         .header-actions{display:flex;gap:4px;align-items:center}
-        .icon-btn{background:0;border:0;color:#fff;font-size:17px;cursor:pointer;padding:3px 6px;border-radius:5px;transition:background .2s;position:relative}
+        .icon-btn{background:0;border:0;color:var(--header-text);font-size:17px;cursor:pointer;padding:3px 6px;border-radius:5px;transition:background .2s;position:relative}
         .icon-btn:active{background:rgba(255,255,255,.15)}
         #reports-btn .notif-badge,#dm-btn .notif-badge{background:#ff3b30}
         #dm-btn{display:none}
@@ -45,55 +60,13 @@
         #chat-messages{flex:1;overflow-y:auto;padding:6px 8px;display:flex;flex-direction:column;gap:3px;background-color:#efe7dd;background-image:var(--chat-bg-image);background-size:cover;background-position:center center;background-repeat:no-repeat;background-attachment:fixed;position:relative;min-height:0;height:100%;-webkit-overflow-scrolling:touch}
         #chat-messages.bg-overlay::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.35);pointer-events:none;z-index:0}
         #chat-messages > * { position: relative; z-index: 2; }
-        /* 🎆 حاويات التأثيرات المتحركة - خارج مناطق التمرير */
-        .chat-effects {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 5;
-            display: none;
-        }
-        .chat-effects.active {
-            display: block;
-        }
-        .chat-effects .particle {
-            position: absolute;
-            top: -80px;
-            font-size: 22px;
-            user-select: none;
-            pointer-events: none;
-            will-change: transform, opacity;
-            filter: drop-shadow(0 2px 6px rgba(0,0,0,.2));
-            opacity: 0;
-        }
-        @keyframes effectFall {
-            0%   { transform: translateY(-80px) rotate(0deg) scale(0.8); opacity: 0; }
-            5%   { opacity: 1; }
-            10%  { transform: translateY(10vh) rotate(45deg) scale(1); }
-            90%  { opacity: 1; }
-            100% { transform: translateY(110vh) rotate(720deg) scale(0.9); opacity: 0; }
-        }
-        @keyframes effectRise {
-            0%   { transform: translateY(110vh) scale(0.3) rotate(0deg); opacity: 0; }
-            5%   { opacity: 1; }
-            15%  { transform: translateY(80vh) scale(0.6) rotate(30deg); }
-            85%  { opacity: 1; }
-            100% { transform: translateY(-100px) scale(1.3) rotate(360deg); opacity: 0; }
-        }
-        @keyframes effectSway {
-            0%, 100% { margin-left: 0; }
-            25%      { margin-left: 30px; }
-            50%      { margin-left: 0; }
-            75%      { margin-left: -30px; }
-        }
-        @keyframes effectPulse {
-            0%, 100% { opacity: 0.3; transform: scale(0.7) rotate(0deg); }
-            50%      { opacity: 1; transform: scale(1.3) rotate(180deg); }
-        }
+        .chat-effects {position: absolute;top: 0;left: 0;right: 0;bottom: 0;pointer-events: none;overflow: hidden;z-index: 5;display: none;}
+        .chat-effects.active {display: block;}
+        .chat-effects .particle {position: absolute;top: -80px;font-size: 22px;user-select: none;pointer-events: none;will-change: transform, opacity;filter: drop-shadow(0 2px 6px rgba(0,0,0,.2));opacity: 0;}
+        @keyframes effectFall {0%{transform:translateY(-80px) rotate(0deg) scale(0.8);opacity:0}5%{opacity:1}10%{transform:translateY(10vh) rotate(45deg) scale(1)}90%{opacity:1}100%{transform:translateY(110vh) rotate(720deg) scale(0.9);opacity:0}}
+        @keyframes effectRise {0%{transform:translateY(110vh) scale(0.3) rotate(0deg);opacity:0}5%{opacity:1}15%{transform:translateY(80vh) scale(0.6) rotate(30deg)}85%{opacity:1}100%{transform:translateY(-100px) scale(1.3) rotate(360deg);opacity:0}}
+        @keyframes effectSway {0%,100%{margin-left:0}25%{margin-left:30px}50%{margin-left:0}75%{margin-left:-30px}}
+        @keyframes effectPulse {0%,100%{opacity:0.3;transform:scale(0.7) rotate(0deg)}50%{opacity:1;transform:scale(1.3) rotate(180deg)}}
         .particle.fall{animation:effectFall linear infinite}
         .particle.rise{animation:effectRise linear infinite}
         .particle.pulse{animation:effectPulse 2s ease-in-out infinite}
@@ -385,11 +358,11 @@
         #status-viewer .viewer-info .seen-by .seen-user:active{background:rgba(255,255,255,.15)}
         .notif-badge{position:absolute;top:-1px;right:-1px;background:#ff3b30;color:#fff;font-size:8px;padding:0 5px;border-radius:8px;min-width:16px;text-align:center;font-weight:700;display:none;line-height:16px;font-family:var(--font-main)}
         .notif-badge.active{display:block}
-        .bottom-nav{display:flex;justify-content:space-around;align-items:center;background:#fff;padding:4px 0;border-top:1px solid #e0e0e0;flex-shrink:0;box-shadow:0 -1px 6px rgba(0,0,0,.04);position:relative;z-index:10}
+        .bottom-nav{display:flex;justify-content:space-around;align-items:center;background:var(--bottom-nav-bg);padding:4px 0;border-top:1px solid #e0e0e0;flex-shrink:0;box-shadow:0 -1px 6px rgba(0,0,0,.04);position:relative;z-index:10;transition:background .3s ease}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:3px 12px;border-radius:6px;transition:background .2s;position:relative;background:0;border:0;font-family:var(--font-main)}
         .nav-item:active{background:rgba(0,0,0,.04)}
-        .nav-item .nav-icon{font-size:20px;line-height:1}
-        .nav-item .nav-label{font-size:9px;color:#666;font-family:var(--font-main);font-weight:600}
+        .nav-item .nav-icon{font-size:20px;line-height:1;color:var(--bottom-nav-text)}
+        .nav-item .nav-label{font-size:9px;color:var(--bottom-nav-text);font-family:var(--font-main);font-weight:600}
         .nav-item.active .nav-label{color:var(--primary)}
         .nav-item .nav-badge{position:absolute;top:0;right:2px;background:#ff3b30;color:#fff;font-size:8px;padding:0 5px;border-radius:8px;min-width:16px;text-align:center;font-weight:700;display:none;line-height:16px;font-family:var(--font-main)}
         .nav-item .nav-badge.active{display:block}
@@ -591,46 +564,53 @@
         .btn-anim-settings:active{transform:scale(.95)}
         .btn-effects-settings{width:100%;padding:10px;background:linear-gradient(135deg,#f9a825,#f57c00);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
         .btn-effects-settings:active{transform:scale(.95)}
-        .notif-status-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;margin-top:6px}
-        .notif-status-badge.enabled{background:#e8f5e9;color:#2e7d32}
-        .notif-status-badge.disabled{background:#ffebee;color:#c62828}
-        .notif-status-badge.not-supported{background:#fff3e0;color:#e65100}
-        .notif-status-badge.inapp{background:#e3f2fd;color:#1565c0}
-        .btn-report-icon{background:linear-gradient(135deg,#e74c3c,#c0392b);border:0;color:#fff;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
-        .btn-report-icon:hover{transform:scale(1.1)}
-        .btn-report-icon:active{transform:scale(.9)}
-        .user-card .user-actions .ctrl-btn.report-user{background:#e74c3c}
-        #dm-monitor-btn{display:none}
-        #dm-monitor-modal .modal-header{background:#1a237e;color:#fff}
-        #dm-monitor-modal .modal-header h3{color:#fff}
-        .dm-monitor-card{padding:12px 15px;background:#fff;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .2s}
-        .dm-monitor-card:hover{background:#f9f9f9}
-        .dm-monitor-card:active{background:#f0f0f0}
-        .dm-monitor-card .dm-users{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-        .dm-monitor-card .dm-users img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #eee;flex-shrink:0}
-        .dm-monitor-card .dm-users .dm-arrow{font-size:18px;color:#b0b3b8;margin:0 4px;flex-shrink:0}
-        .dm-monitor-card .dm-users .dm-names{font-size:14px;font-weight:700;color:#1a1a1a;display:flex;flex-direction:column;gap:2px;overflow:hidden}
-        .dm-monitor-card .dm-users .dm-names span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .dm-monitor-card .dm-users .dm-last-msg{font-size:11px;color:#888;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
-        #dm-monitor-view-modal .modal-header{background:#1a237e;color:#fff}
-        #dm-monitor-view-modal .modal-header h3{color:#fff}
-        #dm-monitor-view-modal .modal-body{background:#efe7dd}
-        .monitor-msg-row{display:flex;flex-direction:column;max-width:85%;margin-bottom:6px}
-        .monitor-msg-row.mine{align-self:flex-end}
-        .monitor-msg-row.others{align-self:flex-start}
-        .monitor-bubble{padding:8px 12px;border-radius:12px;font-size:13px;font-family:var(--font-main);word-wrap:break-word;box-shadow:0 1px 2px rgba(0,0,0,.05);display:flex;flex-direction:column;gap:4px}
-        .monitor-bubble.mine{background:#d9fdd3;color:#111;border-bottom-left-radius:3px}
-        .monitor-bubble.others{background:#fff;color:#111;border-bottom-right-radius:3px}
-        .monitor-bubble .msg-header{display:flex;align-items:center;gap:6px;margin-bottom:2px}
-        .monitor-bubble .msg-header img{width:18px;height:18px;border-radius:50%;object-fit:cover}
-        .monitor-bubble .msg-header strong{font-size:11px;color:#666}
-        .monitor-time{font-size:9px;opacity:.5;text-align:left;margin-top:2px}
-        .dm-settings-option{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:2px solid #eee;border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .2s;font-family:var(--font-main);font-weight:700;font-size:13px;background:#fff}
-        .dm-settings-option:active{transform:scale(.97)}
-        .dm-settings-option.selected{border-color:var(--primary);background:#e8f5e9;color:var(--primary);box-shadow:0 0 0 3px rgba(0,128,105,.15)}
-        .dm-settings-option .dso-check{font-size:16px;opacity:0;transition:opacity .2s}
-        .dm-settings-option.selected .dso-check{opacity:1}
-        .pa-dm-btn-locked{background:#9e9e9e!important;color:#fff!important;opacity:.8;cursor:pointer}
+        /* === 🎨 زر ألوان الواجهة الجديد === */
+        .btn-theme-settings{width:100%;padding:10px;background:linear-gradient(135deg,#00897B,#00695C);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-theme-settings:active{transform:scale(.95)}
+        /* === نافذة ألوان الواجهة === */
+        .theme-section{background:#f9f9f9;border-radius:12px;padding:14px;margin-bottom:12px;text-align:right;border:1px solid #eee}
+        .theme-section h4{font-size:14px;font-weight:800;margin-bottom:10px;color:#333;display:flex;align-items:center;gap:6px;justify-content:flex-start}
+        .theme-section label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:6px;margin-top:10px}
+        .theme-section label:first-of-type{margin-top:0}
+        .theme-section input[type="color"]{width:100%;height:42px;border:2px solid #ddd;border-radius:10px;padding:2px;cursor:pointer;background:#fff;transition:border .2s}
+        .theme-section input[type="color"]:focus{border-color:var(--primary);outline:0}
+        .theme-presets{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px}
+        .theme-preset{aspect-ratio:1;border-radius:8px;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.15);transition:all .15s;position:relative;overflow:hidden}
+        .theme-preset:active{transform:scale(.9)}
+        .theme-preset.selected{border-color:#333;box-shadow:0 0 0 3px rgba(0,128,105,.35)}
+        .theme-preview{display:flex;flex-direction:column;gap:0;border-radius:12px;overflow:hidden;margin:14px 0;box-shadow:0 4px 16px rgba(0,0,0,.18);border:1px solid #e0e0e0}
+        .theme-preview .tp-header{padding:10px 14px;font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-main);transition:all .3s}
+        .theme-preview .tp-body{padding:14px;background:#efe7dd;color:#666;font-size:11px;text-align:center;font-family:var(--font-main)}
+        .theme-preview .tp-bottom{padding:8px 14px;display:flex;justify-content:space-around;font-size:11px;font-weight:700;font-family:var(--font-main);transition:all .3s;border-top:1px solid #e0e0e0}
+        .theme-preview .tp-bottom span{display:flex;flex-direction:column;align-items:center;gap:2px}
+        .theme-preview .tp-bottom .tp-emoji{font-size:15px}
+        .theme-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+        .theme-actions button{flex:1;padding:10px;border:0;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-main);min-width:70px;transition:transform .15s}
+        .theme-actions button:active{transform:scale(.95)}
+        .theme-actions .btn-apply{background:linear-gradient(135deg,#008069,#00a884);color:#fff}
+        .theme-actions .btn-reset{background:linear-gradient(135deg,#ef5350,#c62828);color:#fff}
+        .theme-actions .btn-cancel{background:#f0f0f0;color:#555}
+        .btn-warning{width:100%;padding:12px;background:linear-gradient(135deg,#ff3b30,#ff6b35);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 12px rgba(255,59,48,.3)}
+        .btn-warning:active{transform:scale(.95)}
+        .btn-warning-history{width:100%;padding:12px;background:linear-gradient(135deg,#607d8b,#455a64);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-warning-history:active{transform:scale(.95)}
+        .btn-media-settings{width:100%;padding:12px;background:linear-gradient(135deg,#008069,#00a884);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-media-settings:active{transform:scale(.95)}
+        .btn-status-settings{width:100%;padding:12px;background:linear-gradient(135deg,#f9a825,#f57c00);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-status-settings:active{transform:scale(.95)}
+        .media-settings-option,.status-settings-option{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:2px solid #eee;border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .2s;font-family:var(--font-main);font-weight:700;font-size:13px;background:#fff}
+        .media-settings-option:active,.status-settings-option:active{transform:scale(.97)}
+        .media-settings-option.selected{border-color:#008069;background:#e8f5e9;color:#008069;box-shadow:0 0 0 3px rgba(0,128,105,.15)}
+        .status-settings-option.selected{border-color:#f9a825;background:#fff8e1;color:#e65100;box-shadow:0 0 0 3px rgba(249,168,37,.15)}
+        .media-settings-option .dso-check,.status-settings-option .dso-check{font-size:16px;opacity:0;transition:opacity .2s}
+        .media-settings-option.selected .dso-check,.status-settings-option.selected .dso-check{opacity:1}
+        #deletion-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#4a0000);z-index:99999999;display:none;justify-content:center;align-items:center;color:#fff;text-align:center;padding:20px}
+        #deletion-overlay.active{display:flex;animation:warningFadeIn .3s ease}
+        #deletion-overlay .del-icon{font-size:70px;margin-bottom:16px;animation:warningPulse 1.5s infinite}
+        #deletion-overlay h2{font-size:22px;font-weight:900;margin-bottom:8px}
+        #deletion-overlay p{font-size:14px;opacity:.85}
+        .btn-reset-default{width:100%;padding:10px;background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;font-family:var(--font-main);margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .2s}
+        .btn-reset-default:active{transform:scale(.96)}
         #warning-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at center,rgba(30,20,20,.97),rgba(10,10,15,.99));z-index:999999;display:none;justify-content:center;align-items:center;padding:16px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
         #warning-overlay.active{display:flex;animation:warningFadeIn .5s ease}
         @keyframes warningFadeIn{from{opacity:0}to{opacity:1}}
@@ -773,27 +753,6 @@
         .warning-reader-item.unread .wr-status{color:#ff9800}
         .warning-empty-readers{text-align:center;padding:30px 20px;color:#999;font-size:14px;font-family:var(--font-main);background:#fff;border-radius:12px}
         .warning-empty-readers .we-icon{font-size:48px;display:block;margin-bottom:8px;opacity:.6}
-        .btn-warning{width:100%;padding:12px;background:linear-gradient(135deg,#ff3b30,#ff6b35);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 12px rgba(255,59,48,.3)}
-        .btn-warning:active{transform:scale(.95)}
-        .btn-warning-history{width:100%;padding:12px;background:linear-gradient(135deg,#607d8b,#455a64);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-        .btn-warning-history:active{transform:scale(.95)}
-        .btn-media-settings{width:100%;padding:12px;background:linear-gradient(135deg,#008069,#00a884);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-        .btn-media-settings:active{transform:scale(.95)}
-        .btn-status-settings{width:100%;padding:12px;background:linear-gradient(135deg,#f9a825,#f57c00);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-        .btn-status-settings:active{transform:scale(.95)}
-        .media-settings-option,.status-settings-option{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:2px solid #eee;border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .2s;font-family:var(--font-main);font-weight:700;font-size:13px;background:#fff}
-        .media-settings-option:active,.status-settings-option:active{transform:scale(.97)}
-        .media-settings-option.selected{border-color:#008069;background:#e8f5e9;color:#008069;box-shadow:0 0 0 3px rgba(0,128,105,.15)}
-        .status-settings-option.selected{border-color:#f9a825;background:#fff8e1;color:#e65100;box-shadow:0 0 0 3px rgba(249,168,37,.15)}
-        .media-settings-option .dso-check,.status-settings-option .dso-check{font-size:16px;opacity:0;transition:opacity .2s}
-        .media-settings-option.selected .dso-check,.status-settings-option.selected .dso-check{opacity:1}
-        #deletion-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#4a0000);z-index:99999999;display:none;justify-content:center;align-items:center;color:#fff;text-align:center;padding:20px}
-        #deletion-overlay.active{display:flex;animation:warningFadeIn .3s ease}
-        #deletion-overlay .del-icon{font-size:70px;margin-bottom:16px;animation:warningPulse 1.5s infinite}
-        #deletion-overlay h2{font-size:22px;font-weight:900;margin-bottom:8px}
-        #deletion-overlay p{font-size:14px;opacity:.85}
-        .btn-reset-default{width:100%;padding:10px;background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;font-family:var(--font-main);margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .2s}
-        .btn-reset-default:active{transform:scale(.96)}
     </style>
 </head>
 <body>
@@ -1339,6 +1298,50 @@
         </div>
     </div>
 
+    <!-- 🎨 نافذة ألوان الواجهة (جديد) -->
+    <div class="modal-popup" id="theme-settings-modal">
+        <div class="popup-box" style="max-width:480px;">
+            <h3 style="font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;color:#00897B;margin-bottom:4px;">🎨 ألوان الواجهة</h3>
+            <p style="font-size:11px;color:#999;margin-bottom:12px;">تحكم كامل بألوان الشريط العلوي (الهيدر) والشريط السفلي — تُطبق على جميع المستخدمين</p>
+
+            <div class="theme-preview" id="theme-preview">
+                <div class="tp-header" id="tp-header">
+                    <span>💬 الغرفة</span>
+                    <span>👤 🔔 ⚙️</span>
+                </div>
+                <div class="tp-body">معاينة مباشرة للألوان المختارة</div>
+                <div class="tp-bottom" id="tp-bottom">
+                    <span><span class="tp-emoji">💬</span>دردشة</span>
+                    <span><span class="tp-emoji">📸</span>حالات</span>
+                </div>
+            </div>
+
+            <div class="theme-section">
+                <h4>🔝 الشريط العلوي (الهيدر)</h4>
+                <label>لون الخلفية:</label>
+                <input type="color" id="theme-header-bg" value="#008069">
+                <div class="theme-presets" id="theme-header-presets"></div>
+                <label>لون النص والأيقونات:</label>
+                <input type="color" id="theme-header-text" value="#ffffff">
+            </div>
+
+            <div class="theme-section">
+                <h4>🔻 الشريط السفلي</h4>
+                <label>لون الخلفية:</label>
+                <input type="color" id="theme-bottom-bg" value="#ffffff">
+                <div class="theme-presets" id="theme-bottom-presets"></div>
+                <label>لون النص والأيقونات:</label>
+                <input type="color" id="theme-bottom-text" value="#666666">
+            </div>
+
+            <div class="theme-actions">
+                <button class="btn-apply" onclick="saveThemeSettings()">💾 حفظ</button>
+                <button class="btn-reset" onclick="resetThemeSettings()">↺ إعادة</button>
+                <button class="btn-cancel" onclick="closeThemeSettings()">✕ إغلاق</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-popup" id="profile-modal">
         <div class="popup-box">
             <h3 style="font-size:16px;font-weight:700;">👤 الملف</h3>
@@ -1356,6 +1359,8 @@
                 <button id="open-bg-settings-btn" class="btn-bg-settings" onclick="openBgSettings()">🎨 خلفيات الدردشة (عام/خاص)</button>
                 <button id="open-anim-settings-btn" class="btn-anim-settings" onclick="openAnimSettings()">✨ حركات الرسائل</button>
                 <button id="open-effects-settings-btn" class="btn-effects-settings" onclick="openEffectsSettings()">🎆 التأثيرات المتحركة (نجوم، قلوب، ورد...)</button>
+                <!-- 🎨 زر ألوان الواجهة الجديد -->
+                <button id="open-theme-settings-btn" class="btn-theme-settings" onclick="openThemeSettings()">🎨 ألوان الواجهة (العلوي/السفلي)</button>
                 <button id="open-maintenance-btn" class="btn-maintenance" onclick="openMaintenanceSettings()">🔧 إعدادات الصيانة</button>
                 <button id="open-advanced-btn" class="btn-advanced" onclick="openAdvancedSettings()">⚙️ إعدادات متقدمة (الخط)</button>
                 <button class="btn-warning" onclick="openWarningComposer()">🚨 إرسال تحذير</button>
@@ -1599,7 +1604,6 @@
         </div>
     </div>
 
-    <!-- 🎆 حاويات التأثيرات المتحركة - خارج أي منطقة تمرير -->
     <div class="chat-effects" id="general-effects"></div>
     <div class="chat-effects" id="dm-effects"></div>
 
@@ -1719,6 +1723,219 @@
     let bgSettingsListener = null;
     let animSettingsListener = null;
     let tempAnimSettings = {};
+
+    /* ============================================================
+       🎨 إعدادات ألوان الواجهة (جديد)
+       ============================================================ */
+    let themeSettings = {
+        headerBg: '#008069',
+        headerText: '#ffffff',
+        bottomBg: '#ffffff',
+        bottomText: '#666666'
+    };
+    let themeSettingsListener = null;
+    let tempTheme = {};
+
+    const HEADER_COLOR_PRESETS = [
+        { name: 'واتساب', value: '#008069' },
+        { name: 'أخضر داكن', value: '#1B5E20' },
+        { name: 'تركواز', value: '#00695C' },
+        { name: 'أزرق', value: '#1565C0' },
+        { name: 'نيلي', value: '#1A237E' },
+        { name: 'بنفسجي', value: '#6A1B9A' },
+        { name: 'أرجواني', value: '#4A148C' },
+        { name: 'وردي', value: '#AD1457' },
+        { name: 'أحمر', value: '#C62828' },
+        { name: 'برتقالي', value: '#E65100' },
+        { name: 'عسلي', value: '#F9A825' },
+        { name: 'بني', value: '#4E342E' },
+        { name: 'رمادي', value: '#37474F' },
+        { name: 'أسود', value: '#1A1A1A' },
+        { name: 'أزرق سماوي', value: '#0288D1' },
+        { name: 'أخضر فاتح', value: '#2E7D32' },
+        { name: 'تدرج ملكي', value: 'linear-gradient(135deg, #1a1a2e, #16213e)' },
+        { name: 'تدرج ذهبي', value: 'linear-gradient(135deg, #B8860B, #FFD700)' }
+    ];
+
+    const BOTTOM_COLOR_PRESETS = [
+        { name: 'أبيض', value: '#FFFFFF' },
+        { name: 'فاتح جداً', value: '#F9F9F9' },
+        { name: 'فاتح', value: '#F0F2F5' },
+        { name: 'رمادي فاتح', value: '#E0E0E0' },
+        { name: 'رمادي', value: '#BDBDBD' },
+        { name: 'أسود', value: '#1A1A1A' },
+        { name: 'داكن', value: '#263238' },
+        { name: 'كحلي', value: '#0D1B2A' },
+        { name: 'أخضر داكن', value: '#1B2A1B' },
+        { name: 'بنفسجي داكن', value: '#2A1B2E' },
+        { name: 'بني داكن', value: '#2E1B1B' },
+        { name: 'تدرج داكن', value: 'linear-gradient(135deg, #1a1a2e, #0f0f1e)' }
+    ];
+
+    function listenThemeSettings() {
+        if (themeSettingsListener) db.ref('app_settings/theme').off('value', themeSettingsListener);
+        themeSettingsListener = db.ref('app_settings/theme').on('value', snap => {
+            const d = snap.val() || {};
+            themeSettings = {
+                headerBg: d.headerBg || '#008069',
+                headerText: d.headerText || '#ffffff',
+                bottomBg: d.bottomBg || '#ffffff',
+                bottomText: d.bottomText || '#666666'
+            };
+            applyTheme(themeSettings);
+        });
+    }
+
+    function applyTheme(t) {
+        document.documentElement.style.setProperty('--header-bg', t.headerBg);
+        document.documentElement.style.setProperty('--header-text', t.headerText);
+        document.documentElement.style.setProperty('--bottom-nav-bg', t.bottomBg);
+        document.documentElement.style.setProperty('--bottom-nav-text', t.bottomText);
+        // تحديث شريط المتصفح (theme-color)
+        try {
+            let meta = document.querySelector('meta[name="theme-color"]');
+            if (meta && t.headerBg && t.headerBg.startsWith('#')) meta.setAttribute('content', t.headerBg);
+        } catch(e) {}
+    }
+
+    function openThemeSettings() {
+        if (myRole !== 'owner') return alert('⛔ فقط المالك');
+        tempTheme = {
+            headerBg: themeSettings.headerBg,
+            headerText: themeSettings.headerText,
+            bottomBg: themeSettings.bottomBg,
+            bottomText: themeSettings.bottomText
+        };
+        // تعيين مدخلات الألوان (فقط إن كانت hex)
+        setThemeColorInput('theme-header-bg', tempTheme.headerBg);
+        setThemeColorInput('theme-header-text', tempTheme.headerText);
+        setThemeColorInput('theme-bottom-bg', tempTheme.bottomBg);
+        setThemeColorInput('theme-bottom-text', tempTheme.bottomText);
+        renderThemePresets('header');
+        renderThemePresets('bottom');
+        updateThemePreview();
+        document.getElementById('theme-settings-modal').classList.add('active');
+    }
+
+    function setThemeColorInput(id, val) {
+        const el = document.getElementById(id);
+        if (el && val && val.startsWith('#')) el.value = val;
+    }
+
+    function renderThemePresets(kind) {
+        const containerId = kind === 'header' ? 'theme-header-presets' : 'theme-bottom-presets';
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        const list = kind === 'header' ? HEADER_COLOR_PRESETS : BOTTOM_COLOR_PRESETS;
+        const current = kind === 'header' ? tempTheme.headerBg : tempTheme.bottomBg;
+        list.forEach(p => {
+            const el = document.createElement('div');
+            el.className = 'theme-preset';
+            el.title = p.name;
+            if (p.value.startsWith('linear-gradient')) {
+                el.style.background = p.value;
+            } else {
+                el.style.background = p.value;
+            }
+            if (p.value === current) el.classList.add('selected');
+            el.onclick = () => {
+                if (kind === 'header') tempTheme.headerBg = p.value;
+                else tempTheme.bottomBg = p.value;
+                renderThemePresets(kind);
+                updateThemePreview();
+            };
+            container.appendChild(el);
+        });
+    }
+
+    function updateThemePreview() {
+        const tp = document.getElementById('tp-header');
+        const bp = document.getElementById('tp-bottom');
+        if (tp) {
+            tp.style.background = tempTheme.headerBg;
+            tp.style.color = tempTheme.headerText;
+        }
+        if (bp) {
+            bp.style.background = tempTheme.bottomBg;
+            bp.style.color = tempTheme.bottomText;
+        }
+    }
+
+    // Bind color pickers
+    document.getElementById('theme-header-bg')?.addEventListener('input', function() {
+        tempTheme.headerBg = this.value;
+        renderThemePresets('header');
+        updateThemePreview();
+    });
+    document.getElementById('theme-header-text')?.addEventListener('input', function() {
+        tempTheme.headerText = this.value;
+        updateThemePreview();
+    });
+    document.getElementById('theme-bottom-bg')?.addEventListener('input', function() {
+        tempTheme.bottomBg = this.value;
+        renderThemePresets('bottom');
+        updateThemePreview();
+    });
+    document.getElementById('theme-bottom-text')?.addEventListener('input', function() {
+        tempTheme.bottomText = this.value;
+        updateThemePreview();
+    });
+
+    async function saveThemeSettings() {
+        if (myRole !== 'owner') return alert('⛔');
+        try {
+            await db.ref('app_settings/theme').set({
+                headerBg: tempTheme.headerBg,
+                headerText: tempTheme.headerText,
+                bottomBg: tempTheme.bottomBg,
+                bottomText: tempTheme.bottomText,
+                by: myName,
+                at: Date.now()
+            });
+            themeSettings = { ...tempTheme };
+            applyTheme(themeSettings);
+            await logAdminAction('theme_settings_change', null, null, { ...tempTheme });
+            alert('✅ تم تطبيق الألوان على جميع المستخدمين');
+            closeThemeSettings();
+        } catch(e) {
+            alert('❌ ' + e.message);
+        }
+    }
+
+    async function resetThemeSettings() {
+        if (myRole !== 'owner') return alert('⛔');
+        if (!confirm('↺ إرجاع الألوان للوضع الافتراضي؟')) return;
+        try {
+            await db.ref('app_settings/theme').remove();
+            themeSettings = {
+                headerBg: '#008069',
+                headerText: '#ffffff',
+                bottomBg: '#ffffff',
+                bottomText: '#666666'
+            };
+            applyTheme(themeSettings);
+            tempTheme = { ...themeSettings };
+            setThemeColorInput('theme-header-bg', tempTheme.headerBg);
+            setThemeColorInput('theme-header-text', tempTheme.headerText);
+            setThemeColorInput('theme-bottom-bg', tempTheme.bottomBg);
+            setThemeColorInput('theme-bottom-text', tempTheme.bottomText);
+            renderThemePresets('header');
+            renderThemePresets('bottom');
+            updateThemePreview();
+            await logAdminAction('theme_settings_reset', null, null, {});
+            alert('✅ تم الإرجاع للوضع الافتراضي');
+        } catch(e) {
+            alert('❌ ' + e.message);
+        }
+    }
+
+    function closeThemeSettings() {
+        document.getElementById('theme-settings-modal').classList.remove('active');
+    }
+    /* ============================================================
+       نهاية ألوان الواجهة
+       ============================================================ */
 
     const animatedMsgIds = new Set();
     const animatedDMMsgIds = new Set();
@@ -2611,9 +2828,6 @@
         } catch (e) { alert('❌ ' + e.message); }
     }
 
-    /* ============================================================
-       🎆 رسم التأثيرات المتحركة الاحترافية
-       ============================================================ */
     function renderChatEffects(type, effectId) {
         const containerId = type === 'general' ? 'general-effects' : 'dm-effects';
         const container = document.getElementById(containerId);
@@ -2770,6 +2984,8 @@
         document.getElementById('loading-screen').style.display = 'none';
         myFP = await getDeviceFingerprint();
         localStorage.setItem("fp", myFP);
+        // تحميل إعدادات الألوان والخط والخلفيات والحركات
+        listenThemeSettings();
         listenFontSettings(); listenBadWords(); listenChatBgSettings(); listenAnimSettings(); listenEffectsSettings();
         const storedName = localStorage.getItem("name") || "";
         if (storedName) {
@@ -2891,7 +3107,6 @@
             else { updateFCMButton(); updateNotifStatusBadge(); }
         }, 1500);
 
-        // 🎆 تفعيل تأثيرات الدردشة العامة افتراضياً
         setTimeout(() => { activateGeneralEffects(); }, 300);
     }
 
@@ -3188,7 +3403,6 @@
         document.getElementById('dm-chat-modal').classList.remove('active'); currentDMChat = null; currentDMClearedAt = 0;
         dmReplyTo = null;
         dmMessagesCache = {};
-        // 🎆 إعادة تفعيل تأثيرات الدردشة العامة
         setTimeout(() => { activateGeneralEffects(); }, 50);
     }
     function getChatId(uid1, uid2) { return [uid1, uid2].sort().join('_'); }
@@ -4058,7 +4272,7 @@
     function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
     function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); updateUnknownUsersBtnVisibility(); }
     function closeAllModals() {
-        ['users-modal','notifications-modal','reports-modal','dm-list-modal','notification-settings-modal','profile-actions-modal','dm-monitor-modal','dm-monitor-view-modal','dm-settings-modal','media-settings-modal','status-settings-modal','warning-history-modal','warning-readers-modal','bg-settings-modal','anim-settings-modal','effects-settings-modal'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('active'); });
+        ['users-modal','notifications-modal','reports-modal','dm-list-modal','notification-settings-modal','profile-actions-modal','dm-monitor-modal','dm-monitor-view-modal','dm-settings-modal','media-settings-modal','status-settings-modal','warning-history-modal','warning-readers-modal','bg-settings-modal','anim-settings-modal','effects-settings-modal','theme-settings-modal'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('active'); });
         document.getElementById('modal-overlay').classList.remove('show');
         document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active'));
         closeColorControl();
