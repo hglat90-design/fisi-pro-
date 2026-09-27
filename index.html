@@ -1778,33 +1778,29 @@
         return d.getDate() === yest.getDate() && d.getMonth() === yest.getMonth() && d.getFullYear() === yest.getFullYear();
     }
     function formatChatDateLabel(t) {
-        try {
-            if (isToday(t)) return 'اليوم';
-            if (isYesterday(t)) return 'أمس';
-            const d = new Date(Number(t));
-            const now = new Date();
-            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const msgDayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-            const diffDays = Math.round((todayStart - msgDayStart) / 86400000);
-            if (diffDays >= 0 && diffDays < 7) {
-                const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-                return days[d.getDay()] || '';
-            }
-            const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-            if (d.getFullYear() === now.getFullYear()) {
-                return d.getDate() + ' ' + months[d.getMonth()];
-            }
-            return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-        } catch (e) { return ''; }
+        if (isToday(t)) return 'اليوم';
+        if (isYesterday(t)) return 'أمس';
+        const d = new Date(Number(t));
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const msgDayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+        const diffDays = Math.round((todayStart - msgDayStart) / 86400000);
+        if (diffDays >= 0 && diffDays < 7) {
+            const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            return days[d.getDay()];
+        }
+        const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        if (d.getFullYear() === now.getFullYear()) {
+            return d.getDate() + ' ' + months[d.getMonth()];
+        }
+        return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
     }
     function formatLastSeen(ts) {
         if (!ts || ts <= 0) return 'آخر ظهور غير معروف';
-        try {
-            const time = new Date(Number(ts)).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-            if (isToday(ts)) return 'آخر ظهور اليوم في ' + time;
-            if (isYesterday(ts)) return 'آخر ظهور أمس في ' + time;
-            return 'آخر ظهور ' + formatChatDateLabel(ts) + ' في ' + time;
-        } catch (e) { return 'آخر ظهور غير معروف'; }
+        const time = new Date(Number(ts)).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        if (isToday(ts)) return 'آخر ظهور اليوم في ' + time;
+        if (isYesterday(ts)) return 'آخر ظهور أمس في ' + time;
+        return 'آخر ظهور ' + formatChatDateLabel(ts) + ' في ' + time;
     }
     function createDateSeparator(timestamp) {
         const div = document.createElement('div');
@@ -2859,31 +2855,29 @@
         } catch (e) { alert('❌ ' + e.message); }
     }
     async function handleDMMedia(input) {
+        if (!currentDMChat) { input.value = ''; return; }
+        if (!myMediaEnabled) { alert('⛔ ليس لديك صلاحية إرسال الوسائط'); input.value = ''; return; }
+        if (isMuted) { alert('🔇 أنت مكتوم'); input.value = ''; return; }
+        if (!input.files || !input.files[0]) return;
+        const f = input.files[0];
+        if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert('صورة أو فيديو فقط!'); input.value = ''; return; }
+        if (f.size > 104857600) { alert('حجم كبير جداً!'); input.value = ''; return; }
+        const btn = document.getElementById('dm-media-btn'); const oldText = btn.textContent; btn.textContent = '⏳';
         try {
-            if (!currentDMChat) { input.value = ''; return; }
-            if (!myMediaEnabled) { alert('⛔ ليس لديك صلاحية إرسال الوسائط'); input.value = ''; return; }
-            if (isMuted) { alert('🔇 أنت مكتوم'); input.value = ''; return; }
-            if (!input.files || !input.files[0]) return;
-            const f = input.files[0];
-            if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert('صورة أو فيديو فقط!'); input.value = ''; return; }
-            if (f.size > 104857600) { alert('حجم كبير جداً!'); input.value = ''; return; }
-            const btn = document.getElementById('dm-media-btn'); const oldText = btn.textContent; btn.textContent = '⏳';
-            try {
-                const url = await uploadCloudinary(f);
-                if (url) {
-                    const toUid = currentDMChat.uid;
-                    const chatId = getChatId(myFP, toUid);
-                    const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, toName: currentDMChat.name, text: '', media: url, type: f.type.startsWith('video') ? 'video' : 'image', time: firebase.database.ServerValue.TIMESTAMP };
-                    if (dmReplyTo) { msgData.replyTo = { key: dmReplyTo.key, sender: dmReplyTo.sender, text: (dmReplyTo.text || '').substring(0, 100) }; cancelDMReply(); }
-                    await db.ref('private_chats/' + chatId + '/messages').push(msgData);
-                    const previewText = f.type.startsWith('video') ? '🎥 مقطع فيديو' : '🖼️ صورة';
-                    await db.ref('dm_inbox/' + toUid + '/' + myFP).update({ fromName: myName, fromAvatar: myAvatar, lastMessage: previewText, lastTime: firebase.database.ServerValue.TIMESTAMP, count: firebase.database.ServerValue.increment(1) });
-                    await db.ref('dm_inbox/' + myFP + '/' + toUid).update({ fromName: currentDMChat.name, fromAvatar: currentDMChat.avatar, lastMessage: previewText, lastTime: firebase.database.ServerValue.TIMESTAMP, count: 0 });
-                    playSendSound();
-                } else alert('فشل الرفع');
-            } catch (e) { alert('❌ ' + e.message); }
-            btn.textContent = oldText; input.value = '';
-        } catch (outerErr) { console.error('handleDMMedia error:', outerErr); try { input.value = ''; } catch(e) {} }
+            const url = await uploadCloudinary(f);
+            if (url) {
+                const toUid = currentDMChat.uid;
+                const chatId = getChatId(myFP, toUid);
+                const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, toName: currentDMChat.name, text: '', media: url, type: f.type.startsWith('video') ? 'video' : 'image', time: firebase.database.ServerValue.TIMESTAMP };
+                if (dmReplyTo) { msgData.replyTo = { key: dmReplyTo.key, sender: dmReplyTo.sender, text: (dmReplyTo.text || '').substring(0, 100) }; cancelDMReply(); }
+                await db.ref('private_chats/' + chatId + '/messages').push(msgData);
+                const previewText = f.type.startsWith('video') ? '🎥 مقطع فيديو' : '🖼️ صورة';
+                await db.ref('dm_inbox/' + toUid + '/' + myFP).update({ fromName: myName, fromAvatar: myAvatar, lastMessage: previewText, lastTime: firebase.database.ServerValue.TIMESTAMP, count: firebase.database.ServerValue.increment(1) });
+                await db.ref('dm_inbox/' + myFP + '/' + toUid).update({ fromName: currentDMChat.name, fromAvatar: currentDMChat.avatar, lastMessage: previewText, lastTime: firebase.database.ServerValue.TIMESTAMP, count: 0 });
+                playSendSound();
+            } else alert('فشل الرفع');
+        } catch (e) { alert('❌ ' + e.message); }
+        btn.textContent = oldText; input.value = '';
     }
     async function sendDMMessage(e) {
         e.preventDefault();
@@ -3297,7 +3291,7 @@
         if (ks.length === 0) { box.innerHTML += '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">✨ لا توجد رسائل</div>'; return; }
         const dk = ks.slice(-300);
         let lastDayKey = null;
-        dk.forEach(k => {
+        dk.forEach((k, idx) => {
             const m = messagesCache[k]; if (!m) return;
             const msgTime = Number(m.time) || 0;
             const dayKey = getDayKey(msgTime);
@@ -3740,18 +3734,7 @@
     function closeAddStatus() { document.getElementById('add-status-modal').classList.remove('active'); }
     function selectStatusType(t) { selectedStatusType = t; document.querySelectorAll('.status-options button').forEach(b => b.classList.remove('active')); if (t === 'text') { document.getElementById('status-type-text').classList.add('active'); document.getElementById('status-text-area').classList.add('active'); document.getElementById('status-media-area').classList.remove('active'); } else { document.getElementById('status-type-media').classList.add('active'); document.getElementById('status-media-area').classList.add('active'); document.getElementById('status-text-area').classList.remove('active'); } }
     document.getElementById('status-text-input')?.addEventListener('input', function() { document.getElementById('text-counter').textContent = this.value.length + ' / 500'; });
-    function handleStatusFile(i) {
-        try {
-            if (!i.files || !i.files[0]) return;
-            const f = i.files[0];
-            if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; }
-            if (f.size > 104857600) { alert("حجم كبير!"); i.value = ''; return; }
-            statusFileData = f; statusFileType = f.type.startsWith('video') ? 'video' : 'image';
-            document.getElementById('selected-filename').textContent = '📎 ' + f.name;
-            document.getElementById('selected-filename').classList.add('active');
-            document.getElementById('publish-status-btn').disabled = false;
-        } catch (e) { console.warn('handleStatusFile error:', e); try { i.value = ''; } catch(e2) {} }
-    }
+    function handleStatusFile(i) { if (!i.files || !i.files[0]) return; const f = i.files[0]; if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; } if (f.size > 104857600) { alert("حجم كبير!"); i.value = ''; return; } statusFileData = f; statusFileType = f.type.startsWith('video') ? 'video' : 'image'; document.getElementById('selected-filename').textContent = '📎 ' + f.name; document.getElementById('selected-filename').classList.add('active'); document.getElementById('publish-status-btn').disabled = false; }
     async function publishStatus() {
         if (!myStatusEnabled) return alert('⛔ ليس لديك صلاحية نشر الحالات');
         if (isMuted) return alert("🔇");
@@ -3793,19 +3776,17 @@
         input.focus();
     }
     async function handleFile(i) {
+        if (!myMediaEnabled) { alert('⛔ ليس لديك صلاحية إرسال الوسائط'); i.value = ''; return; }
+        if (!i.files || !i.files[0]) return;
+        const f = i.files[0];
+        if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; }
+        if (f.size > 104857600) { alert("حجم كبير!"); i.value = ''; return; }
+        const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true;
         try {
-            if (!myMediaEnabled) { alert('⛔ ليس لديك صلاحية إرسال الوسائط'); i.value = ''; return; }
-            if (!i.files || !i.files[0]) return;
-            const f = i.files[0];
-            if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) { alert("صورة أو فيديو فقط!"); i.value = ''; return; }
-            if (f.size > 104857600) { alert("حجم كبير!"); i.value = ''; return; }
-            const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true;
-            try {
-                const u = await uploadCloudinary(f);
-                if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); } else alert("فشل الرفع");
-            } catch (e) { alert("خطأ: " + e.message); }
-            sb.textContent = "➤"; sb.disabled = false; i.value = '';
-        } catch (outerErr) { console.error('handleFile error:', outerErr); try { i.value = ''; } catch(e) {} }
+            const u = await uploadCloudinary(f);
+            if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); } else alert("فشل الرفع");
+        } catch (e) { alert("خطأ: " + e.message); }
+        sb.textContent = "➤"; sb.disabled = false; i.value = '';
     }
     async function uploadCloudinary(f) { const cn = 'nfg03aku', up = 'daufafvn', url = 'https://api.cloudinary.com/v1_1/' + cn + '/' + (f.type.startsWith('video') ? 'video' : 'image') + '/upload'; const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', up); const r = await fetch(url, { method: 'POST', body: fd }); if (!r.ok) throw new Error('HTTP ' + r.status); const d = await r.json(); return d.secure_url || null; }
     async function clearAllChat() {
@@ -4625,48 +4606,27 @@
         if (e.target === this) closeWarningDeleteModal();
     });
 
-    /* ⭐⭐⭐ مؤقت آمن جداً: فقط يُحدّث نصوص فواصل التاريخ كل دقيقة ⭐⭐⭐ */
-    /* لا يلمس الرسائل ولا حقول الملفات - آمن 100% */
-    setInterval(function() {
-        try {
-            if (isBeingDeleted) return;
-            // تحديث فواصل تاريخ الشات العام فقط
-            var box1 = document.getElementById('chat-messages');
-            if (box1) {
-                var seps1 = box1.querySelectorAll('.date-separator');
-                seps1.forEach(function(sep) {
-                    try {
-                        var key = sep.dataset.daykey;
-                        if (!key) return;
-                        var parts = key.split('-');
-                        if (parts.length !== 3) return;
-                        var ts = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 12, 0, 0).getTime();
-                        var newLabel = formatChatDateLabel(ts);
-                        var span = sep.querySelector('span');
-                        if (span && span.textContent !== newLabel) span.textContent = newLabel;
-                    } catch (e) {}
-                });
-            }
-            // تحديث فواصل تاريخ الشات الخاص فقط
-            var box2 = document.getElementById('dm-chat-messages');
-            if (box2) {
-                var seps2 = box2.querySelectorAll('.date-separator');
-                seps2.forEach(function(sep) {
-                    try {
-                        var key = sep.dataset.daykey;
-                        if (!key) return;
-                        var parts = key.split('-');
-                        if (parts.length !== 3) return;
-                        var ts = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 12, 0, 0).getTime();
-                        var newLabel = formatChatDateLabel(ts);
-                        var span = sep.querySelector('span');
-                        if (span && span.textContent !== newLabel) span.textContent = newLabel;
-                    } catch (e) {}
-                });
-            }
-        } catch (e) { /* صامت تماماً */ }
+    // ⭐ تحديث تلقائي كل دقيقة لتحديث الحالات وفواصل التاريخ (اليوم → أمس)
+    setInterval(() => {
+        if (isBeingDeleted) return;
+        if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
+        if (currentTab === 'chat') renderMessages();
+        if (currentDMChat && document.getElementById('dm-chat-modal').classList.contains('active')) {
+            const box = document.getElementById('dm-chat-messages');
+            const sp = box.scrollTop;
+            const isBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 50;
+            const separators = box.querySelectorAll('.date-separator');
+            separators.forEach(sep => {
+                const key = sep.dataset.daykey;
+                const parts = key.split('-');
+                const ts = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 12, 0, 0).getTime();
+                const newLabel = formatChatDateLabel(ts);
+                const span = sep.querySelector('span');
+                if (span && span.textContent !== newLabel) span.textContent = newLabel;
+            });
+            if (isBottom) box.scrollTop = box.scrollHeight; else box.scrollTop = sp;
+        }
     }, 60000);
-    /* ⭐⭐⭐ نهاية المؤقت الآمن ⭐⭐⭐ */
 
     init();
     handleKeyboard();
