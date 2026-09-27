@@ -30,7 +30,7 @@
         .login-hint strong{color:#0d47a1}
         .login-btn{width:100%;padding:15px;background:var(--primary);color:#fff;border:0;border-radius:15px;font-weight:700;cursor:pointer;font-size:18px;font-family:var(--font-main);transition:transform .2s}
         .login-btn:active{transform:scale(.97)}
-        header{background:var(--primary);color:#fff;padding:4px 10px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.15);min-height:38px;flex-shrink:0}
+        header{background:var(--primary);color:#fff;padding:4px 10px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.15);min-height:38px;flex-shrink:0;position:relative}
         .header-title{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px}
         .header-title button{background:rgba(255,255,255,.15);border:0;color:#fff;padding:2px 8px;border-radius:8px;font-size:10px;cursor:pointer;display:none;font-family:var(--font-main)}
         .header-actions{display:flex;gap:4px;align-items:center}
@@ -44,7 +44,46 @@
         #maintenance-badge.tester{background:linear-gradient(135deg,#9c27b0,#6a1b9a)}
         #chat-messages{flex:1;overflow-y:auto;padding:6px 8px;display:flex;flex-direction:column;gap:3px;background-color:#efe7dd;background-image:var(--chat-bg-image);background-size:cover;background-position:center center;background-repeat:no-repeat;background-attachment:fixed;position:relative;min-height:0;height:100%;-webkit-overflow-scrolling:touch}
         #chat-messages.bg-overlay::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.35);pointer-events:none;z-index:0}
-        #chat-messages>*{position:relative;z-index:2}
+        #chat-messages > *:not(.chat-effects),
+        #dm-chat-messages > *:not(.chat-effects),
+        #dm-chat-modal > *:not(.chat-effects) {
+            position: relative;
+            z-index: 2;
+        }
+        .chat-effects {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 600px;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 5;
+        }
+        .chat-effects .particle {
+            position: absolute;
+            top: -80px;
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            will-change: transform, opacity;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,.15));
+        }
+        header { z-index: 10; }
+        #chat-form { position: relative; z-index: 10; }
+        .bottom-nav { position: relative; z-index: 10; }
+        #dm-chat-header { z-index: 10 !important; }
+        #dm-chat-form { z-index: 10 !important; }
+        @keyframes effectFall{0%{transform:translateY(-80px) rotate(0deg);opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
+        @keyframes effectRise{0%{transform:translateY(110vh) scale(.4);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-80px) scale(1.2);opacity:0}}
+        @keyframes effectSway{0%,100%{margin-left:0}50%{margin-left:40px}}
+        @keyframes effectPulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+        .particle.fall{animation:effectFall linear infinite}
+        .particle.rise{animation:effectRise linear infinite}
+        .particle.pulse{animation:effectPulse 2s ease-in-out infinite}
+        .particle.sway{animation-name:effectFall,effectSway;animation-timing-function:linear,ease-in-out;animation-iteration-count:infinite,infinite}
         #loading-more{text-align:center;padding:6px;color:#999;font-size:12px;display:none;font-family:var(--font-main)}
         #loading-more.active{display:block}
         .msg-row{display:flex;flex-direction:column;max-width:92%;margin-bottom:2px;position:relative;will-change:transform,opacity}
@@ -244,6 +283,9 @@
         @keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
         .dm-tick{font-size:11px;color:#999;margin-right:4px;letter-spacing:-2px}
         .dm-tick.read{color:#53bdeb}
+        .tick-single{color:#999;font-size:11px;font-weight:600;margin-right:3px}
+        .tick-double{color:#999;font-size:13px;font-weight:900;margin-right:3px;letter-spacing:-2px}
+        .tick-double.read{color:#53bdeb;text-shadow:0 0 8px rgba(83,189,235,.6);font-weight:900}
         .dm-status-text{font-size:11px;opacity:.9;font-family:var(--font-main)}
         .dm-status-text.online{color:#25D366}
         .dm-status-text.typing{color:#FFD700;font-style:italic}
@@ -337,19 +379,18 @@
         .nav-item.active .nav-label{color:var(--primary)}
         .nav-item .nav-badge{position:absolute;top:0;right:2px;background:#ff3b30;color:#fff;font-size:8px;padding:0 5px;border-radius:8px;min-width:16px;text-align:center;font-weight:700;display:none;line-height:16px;font-family:var(--font-main)}
         .nav-item .nav-badge.active{display:block}
-        #dm-chat-modal{position:absolute;top:0;left:0;width:100%;height:100%;background-color:#efe7dd;background-image:var(--dm-bg-image);background-size:cover;background-position:center center;background-repeat:no-repeat;background-attachment:fixed;z-index:400;display:none;flex-direction:column}
+        #dm-chat-modal{position:absolute;top:0;left:0;width:100%;height:100%;background-color:#efe7dd;background-image:var(--dm-bg-image);background-size:cover;background-position:center center;background-repeat:no-repeat;background-attachment:fixed;z-index:400;display:none;flex-direction:column;overflow:hidden}
         #dm-chat-modal.active{display:flex}
-        #dm-chat-modal.bg-overlay::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.4);pointer-events:none;z-index:0}
-        #dm-chat-modal>*{position:relative;z-index:2}
-        #dm-chat-header{background:#9c27b0;color:#fff;padding:8px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.15);position:relative;z-index:5}
+        #dm-chat-modal.bg-overlay::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.4);pointer-events:none;z-index:1}
+        #dm-chat-header{background:#9c27b0;color:#fff;padding:8px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.15);position:relative;z-index:10}
         #dm-chat-header .back-btn{background:0;border:0;color:#fff;font-size:22px;cursor:pointer;padding:0 4px}
         #dm-chat-header img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3)}
         #dm-chat-header .dm-name{font-weight:700;font-size:14px;font-family:var(--font-main)}
         #dm-chat-header .dm-role{font-size:10px;opacity:.8;font-family:var(--font-main)}
         #dm-chat-header .dm-clear-btn{background:rgba(255,255,255,.15);border:0;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:auto}
         #dm-chat-header .dm-clear-btn:active{background:rgba(255,255,255,.3)}
-        #dm-chat-messages{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px;position:relative}
-        #dm-chat-form{background:#f0f2f5;padding:6px 8px;border-top:1px solid #ddd;display:flex;gap:6px;align-items:center;flex-shrink:0;position:relative;z-index:5}
+        #dm-chat-messages{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px;position:relative;z-index:2}
+        #dm-chat-form{background:#f0f2f5;padding:6px 8px;border-top:1px solid #ddd;display:flex;gap:6px;align-items:center;flex-shrink:0;position:relative;z-index:10}
         #dm-message-input{flex:1;padding:8px 12px;border-radius:20px;border:0;outline:0;font-size:14px;background:#fff;box-shadow:inset 0 1px 3px rgba(0,0,0,.06);font-family:var(--font-main);min-height:34px}
         #dm-send-btn{width:34px;height:34px;border-radius:50%;background:#9c27b0;color:#fff;border:0;font-size:15px;cursor:pointer}
         .dm-msg-row{display:flex;flex-direction:column;max-width:85%;margin-bottom:3px;will-change:transform,opacity}
@@ -360,9 +401,6 @@
         .dm-bubble.mine{background:#d9fdd3;color:#111;border-bottom-left-radius:3px}
         .dm-bubble.others{background:#fff;color:#111;border-bottom-right-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
         .dm-time{font-size:9px;opacity:.5;text-align:left;margin-top:1px;display:flex;align-items:center;gap:2px;justify-content:flex-end}
-        .tick-single{color:#999;font-size:11px;font-weight:600;margin-right:3px}
-        .tick-double{color:#999;font-size:13px;font-weight:900;margin-right:3px;letter-spacing:-2px}
-        .tick-double.read{color:#53bdeb;text-shadow:0 0 8px rgba(83,189,235,.6);font-weight:900}
         .dm-media-btn{width:34px;height:34px;border-radius:50%;background:#fff;color:#9c27b0;border:1px solid #ddd;display:none;align-items:center;justify-content:center;cursor:pointer;font-size:15px;flex-shrink:0}
         .dm-media-btn:active{transform:scale(.92)}
         .dm-media-btn.active{display:flex}
@@ -742,16 +780,6 @@
         #deletion-overlay p{font-size:14px;opacity:.85}
         .btn-reset-default{width:100%;padding:10px;background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;font-family:var(--font-main);margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .2s}
         .btn-reset-default:active{transform:scale(.96)}
-        .chat-effects{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
-        .chat-effects .particle{position:absolute;top:-60px;font-size:20px;user-select:none;pointer-events:none;will-change:transform,opacity;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))}
-        @keyframes effectFall{0%{transform:translateY(-60px) rotate(0deg);opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
-        @keyframes effectRise{0%{transform:translateY(110vh) scale(.4);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-80px) scale(1.2);opacity:0}}
-        @keyframes effectSway{0%,100%{margin-left:0}50%{margin-left:40px}}
-        @keyframes effectPulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-        .particle.fall{animation:effectFall linear infinite}
-        .particle.rise{animation:effectRise linear infinite}
-        .particle.pulse{animation:effectPulse 2s ease-in-out infinite}
-        .particle.sway{animation-name:effectFall,effectSway;animation-timing-function:linear,ease-in-out;animation-iteration-count:infinite,infinite}
     </style>
 </head>
 <body>
@@ -940,9 +968,8 @@
             </div>
             <div class="dm-reply-content" id="dm-reply-content-text">...</div>
         </div>
-        <div id="dm-chat-messages">
-            <div class="chat-effects" id="dm-effects"></div>
-        </div>
+        <div id="dm-chat-messages"></div>
+        <div class="chat-effects" id="dm-effects"></div>
         <form id="dm-chat-form" onsubmit="sendDMMessage(event)">
             <label for="dm-file-input" id="dm-media-btn" class="dm-media-btn" title="صورة/فيديو">📎</label>
             <input type="file" id="dm-file-input" accept="image/*,video/*" style="display:none" onchange="handleDMMedia(this)">
@@ -3049,7 +3076,6 @@
         });
     }
     function filterDMUsers() { const t = document.getElementById('dm-search').value.toLowerCase(); document.querySelectorAll('#dm-users-list .dm-user-card').forEach(c => { c.style.display = (c.dataset.name || '').includes(t) ? 'flex' : 'none'; }); }
-
     function openDMChat(uid) {
         if (!myDMEnabled) return alert('🔒 خاصك مغلق من قبل مالك التطبيق\nلا يمكنك المحادثة مع أي مستخدم');
         const u = allUsersData[uid]; if (!u) return;
@@ -3064,8 +3090,8 @@
         document.getElementById('dm-reply-bar').classList.remove('active');
         updateDMMediaBtnVisibility();
         db.ref('dm_inbox/' + myFP + '/' + uid + '/count').set(0);
-        renderChatEffects('dm', effectsSettings.dm);
         loadDMMessages(uid);
+        setTimeout(() => { renderChatEffects('dm', effectsSettings.dm); }, 50);
         startDMReadReceipts(uid);
         startDMPresenceListener(uid);
         startTypingListener(uid);
@@ -3220,16 +3246,7 @@
     function loadDMMessages(uid) {
         const chatId = getChatId(myFP, uid);
         const box = document.getElementById('dm-chat-messages');
-        box.innerHTML = '';
-        const effectsDiv = document.createElement('div');
-        effectsDiv.className = 'chat-effects';
-        effectsDiv.id = 'dm-effects';
-        box.appendChild(effectsDiv);
-        if (effectsSettings.dm !== 'none') renderChatEffects('dm', effectsSettings.dm);
-        const loadingEl = document.createElement('div');
-        loadingEl.style.cssText = 'text-align:center;color:#999;padding:20px;font-size:12px;';
-        loadingEl.textContent = '⏳ جاري التحميل...';
-        box.appendChild(loadingEl);
+        box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">⏳ جاري التحميل...</div>';
         if (dmChatMessagesListener) { db.ref('private_chats/' + chatId + '/messages').off('child_added', dmChatMessagesListener); dmChatMessagesListener = null; }
         dmMessagesCache = {};
         const renderedKeys = new Set();
@@ -3237,8 +3254,6 @@
             currentDMClearedAt = clearSnap.val() || 0;
             db.ref('private_chats/' + chatId + '/messages').orderByChild('time').limitToLast(200).once('value', snap => {
                 box.innerHTML = '';
-                const effectsDiv2 = document.createElement('div'); effectsDiv2.className = 'chat-effects'; effectsDiv2.id = 'dm-effects'; box.appendChild(effectsDiv2);
-                if (effectsSettings.dm !== 'none') renderChatEffects('dm', effectsSettings.dm);
                 const allMsgs = [];
                 snap.forEach(c => { const v = c.val(); const t = Number(v.time) || 0; if (t <= currentDMClearedAt) return; renderedKeys.add(c.key); v._key = c.key; allMsgs.push(v); dmMessagesCache[c.key] = v; });
                 allMsgs.sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
@@ -3251,7 +3266,7 @@
                     const isRecent = (Date.now() - t) < RECENT_MSG_WINDOW;
                     renderDMMessage(m, false, isRecent);
                 });
-                if (allMsgs.length === 0) box.innerHTML += '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">لا توجد رسائل</div>';
+                if (allMsgs.length === 0) box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">لا توجد رسائل</div>';
                 box.scrollTop = box.scrollHeight;
                 dmChatMessagesListener = db.ref('private_chats/' + chatId + '/messages').on('child_added', snap => {
                     if (isBeingDeleted) return;
@@ -3734,11 +3749,6 @@
         const box = document.getElementById('chat-messages');
         const sp = box.scrollTop, isBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 50;
         box.innerHTML = '';
-        const effectsDiv = document.createElement('div');
-        effectsDiv.className = 'chat-effects';
-        effectsDiv.id = 'general-effects';
-        box.appendChild(effectsDiv);
-        if (effectsSettings.general !== 'none') renderChatEffects('general', effectsSettings.general);
         const ld = document.createElement('div'); ld.id = 'loading-more'; ld.textContent = '⏳ جاري التحميل...'; ld.style.display = 'none'; box.appendChild(ld);
         const ks = Object.keys(messagesCache).sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0));
         if (ks.length === 0) { box.innerHTML += '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">✨ لا توجد رسائل</div>'; return; }
