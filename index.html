@@ -49,11 +49,13 @@
         #maintenance-badge { display: none; background: linear-gradient(135deg, #f9a825, #f57c00); color: #fff; padding: 5px 10px; text-align: center; font-size: 11px; font-weight: 700; flex-shrink: 0; font-family: var(--font-main); }
         #maintenance-badge.tester { background: linear-gradient(135deg, #9c27b0, #6a1b9a); }
 
-        /* ═══ خلفيات الدردشة مع دعم كامل للتخصيص (Inline styles تتغلب) ═══ */
+        /* ═══════ خلفية الشات مع دعم طبقات التأثيرات ═══════ */
         #chat-messages {
             flex: 1; overflow-y: auto; padding: 6px 8px;
             display: flex; flex-direction: column; gap: 3px;
             background: #efe7dd;
+            background-image: url("https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png");
+            background-blend-mode: overlay;
             background-size: cover;
             background-position: center;
             background-attachment: local;
@@ -65,57 +67,81 @@
             flex: 1; overflow-y: auto; padding: 8px;
             display: flex; flex-direction: column; gap: 4px;
             background: #efe7dd;
+            background-image: url("https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png");
+            background-blend-mode: overlay;
             background-size: cover;
             background-position: center;
             background-attachment: local;
-            position: relative;
         }
+        /* طبقة تأثيرات متحركة */
         .bg-effect-layer {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             pointer-events: none; z-index: 0; overflow: hidden;
         }
-        #chat-messages > .msg-row, #chat-messages > .date-separator, #chat-messages > #loading-more,
+        #chat-messages > .msg-row, #chat-messages > .date-separator,
         #dm-chat-messages > .dm-msg-row, #dm-chat-messages > .date-separator {
             position: relative; z-index: 1;
         }
+        /* تأثير الجزيئات */
         @keyframes floatUp {
             0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 0.85; }
+            10% { opacity: 0.8; }
             90% { opacity: 0.6; }
             100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
+        @keyframes floatAcross {
+            0% { transform: translateX(-10vw) translateY(0); opacity: 0; }
+            10% { opacity: 0.7; }
+            50% { transform: translateX(50vw) translateY(-30px); opacity: 0.9; }
+            90% { opacity: 0.7; }
+            100% { transform: translateX(110vw) translateY(0); opacity: 0; }
+        }
         @keyframes twinkle {
             0%, 100% { opacity: 0.2; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1.1); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes waveMove {
+            0% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(-25%) translateY(-10px); }
+            100% { transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
         .effect-particle {
             position: absolute;
             animation: floatUp linear infinite;
             pointer-events: none;
-            will-change: transform, opacity;
-            text-shadow: 0 0 8px rgba(255,255,255,0.6);
         }
         .effect-star {
             position: absolute;
             animation: twinkle ease-in-out infinite;
             pointer-events: none;
-            will-change: transform, opacity;
         }
         .effect-bubble {
             position: absolute;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.05));
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
             animation: floatUp linear infinite;
             pointer-events: none;
-            box-shadow: inset -3px -3px 6px rgba(255,255,255,0.4), 0 0 10px rgba(255,255,255,0.3);
-            will-change: transform, opacity;
+            box-shadow: inset -3px -3px 6px rgba(255,255,255,0.4), 0 0 8px rgba(255,255,255,0.3);
         }
         .effect-emoji {
             position: absolute;
+            font-size: 20px;
             animation: floatUp linear infinite;
             pointer-events: none;
-            will-change: transform, opacity;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+        }
+        .effect-wave {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 200%; height: 60px;
+            background-repeat: repeat-x;
+            background-size: 50% 100%;
+            animation: waveMove linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
         }
 
         #loading-more { text-align: center; padding: 6px; color: #999; font-size: 12px; display: none; font-family: var(--font-main); }
@@ -202,6 +228,7 @@
         .user-card[data-role="trusted"]::before { background: linear-gradient(180deg, #FF9800, #F57C00); width: 5px; }
         .user-card.invalid-name { border-color: rgba(229,57,53,0.5); background: linear-gradient(135deg, #fff5f5 0%, #fff 100%); }
         .user-card.invalid-name::before { background: linear-gradient(180deg, #ef5350, #b71c1c); width: 5px; }
+
         .user-card .user-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
         .user-card .user-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; cursor: pointer; flex-shrink: 0; transition: transform 0.2s; }
         .user-card .user-avatar:hover { transform: scale(1.05); }
@@ -209,6 +236,7 @@
         .user-card[data-role="manager"] .user-avatar { border-color: #9C27B0; box-shadow: 0 0 8px rgba(156, 39, 176, 0.3); }
         .user-card[data-role="mod"] .user-avatar { border-color: #2196F3; box-shadow: 0 0 8px rgba(33, 150, 243, 0.3); }
         .user-card[data-role="trusted"] .user-avatar { border-color: #FF9800; box-shadow: 0 0 8px rgba(255, 152, 0, 0.3); }
+
         .user-card .user-details { flex: 1; min-width: 0; }
         .user-card .user-details h4 { font-size: 13px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; font-family: var(--font-main); cursor: pointer; font-weight: 700; color: #1a1a1a; margin-bottom: 2px; }
         .user-card .user-status { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
@@ -229,6 +257,7 @@
 
         .date-separator { display: flex; justify-content: center; align-items: center; margin: 10px 0 8px; pointer-events: none; align-self: center; width: 100%; }
         .date-separator span { background: #ffffff; color: #54656f; padding: 5px 14px; border-radius: 8px; font-size: 11.5px; font-weight: 600; box-shadow: 0 1px 2px rgba(11, 20, 26, 0.13); font-family: var(--font-main); letter-spacing: 0.3px; white-space: nowrap; }
+        #dm-chat-messages .date-separator span { background: #ffffff; color: #54656f; }
 
         .ctrl-btn { width: 26px; height: 26px; border-radius: 50%; border: 0; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 12px; transition: transform 0.15s; }
         .ctrl-btn:active { transform: scale(.85); }
@@ -755,6 +784,7 @@
         .btn-warning:active { transform: scale(0.95); }
         .btn-warning-history { width: 100%; padding: 12px; background: linear-gradient(135deg, #607d8b, #455a64); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-warning-history:active { transform: scale(0.95); }
+
         .btn-media-settings { width: 100%; padding: 12px; background: linear-gradient(135deg, #008069, #00a884); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-media-settings:active { transform: scale(0.95); }
         .btn-status-settings { width: 100%; padding: 12px; background: linear-gradient(135deg, #f9a825, #f57c00); color: #fff; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; font-family: var(--font-main); margin-top: 8px; transition: transform .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -771,46 +801,49 @@
         #deletion-overlay h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
         #deletion-overlay p { font-size: 14px; opacity: 0.85; }
 
-        /* ════ إعدادات الخلفية ════ */
+        /* ════════ إعدادات الخلفية ════════ */
         #bg-settings-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f5f5f5; z-index: 500; display: none; flex-direction: column; }
         #bg-settings-modal.active { display: flex; }
         .bg-tabs { display: flex; gap: 0; background: #fff; border-bottom: 1px solid #ddd; flex-shrink: 0; }
         .bg-tab { flex: 1; padding: 12px 8px; border: 0; background: #fff; font-family: var(--font-main); font-size: 13px; font-weight: 700; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: all .2s; }
         .bg-tab.active { color: var(--primary); border-bottom-color: var(--primary); background: #f0f8f5; }
+        .bg-tab:active { background: #e8f5e9; }
         .bg-content { flex: 1; overflow-y: auto; padding: 12px; }
         .bg-section { margin-bottom: 16px; background: #fff; border-radius: 12px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .bg-section h4 { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 8px; font-family: var(--font-main); display: flex; align-items: center; gap: 6px; }
         .bg-preset-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .bg-preset { aspect-ratio: 1; border-radius: 10px; cursor: pointer; border: 3px solid transparent; transition: all .2s; position: relative; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1); min-height: 60px; }
+        .bg-preset { aspect-ratio: 1; border-radius: 10px; cursor: pointer; border: 3px solid transparent; transition: all .2s; position: relative; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
         .bg-preset:active { transform: scale(.95); }
         .bg-preset.selected { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,128,105,0.2), 0 2px 8px rgba(0,0,0,0.15); }
-        .bg-preset.selected::after { content: '✓'; position: absolute; top: 4px; right: 4px; background: var(--primary); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; z-index: 2; }
-        .bg-preset[data-preset="p-1"] { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .bg-preset[data-preset="p-2"] { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .bg-preset[data-preset="p-3"] { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .bg-preset[data-preset="p-4"] { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-        .bg-preset[data-preset="p-5"] { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-        .bg-preset[data-preset="p-6"] { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
-        .bg-preset[data-preset="p-7"] { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
-        .bg-preset[data-preset="p-8"] { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
-        .bg-preset[data-preset="p-9"] { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
-        .bg-preset[data-preset="p-10"] { background: linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%); }
-        .bg-preset[data-preset="p-11"] { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); }
-        .bg-preset[data-preset="p-12"] { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
-        .bg-preset[data-preset="p-13"] { background: linear-gradient(135deg, #008069 0%, #00a884 100%); }
-        .bg-preset[data-preset="p-14"] { background: linear-gradient(135deg, #9c27b0 0%, #4a148c 100%); }
-        .bg-preset[data-preset="p-15"] { background: linear-gradient(135deg, #f9a825 0%, #e65100 100%); }
-        .bg-preset[data-preset="p-16"] { background: #ffffff; }
-        .bg-preset[data-preset="p-17"] { background: #000000; }
-        .bg-preset[data-preset="p-18"] { background: #efe7dd; }
-        .bg-preset[data-preset="p-19"] { background: linear-gradient(45deg, #ffd700 0%, #ff8c00 100%); }
-        .bg-preset[data-preset="p-20"] { background: linear-gradient(135deg, #fa8bff 0%, #2bd2ff 50%, #2bff88 100%); }
+        .bg-preset.selected::after { content: '✓'; position: absolute; top: 4px; right: 4px; background: var(--primary); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+        .bg-preset.p-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .bg-preset.p-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .bg-preset.p-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .bg-preset.p-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .bg-preset.p-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .bg-preset.p-6 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+        .bg-preset.p-7 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .bg-preset.p-8 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        .bg-preset.p-9 { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        .bg-preset.p-10 { background: linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%); }
+        .bg-preset.p-11 { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); }
+        .bg-preset.p-12 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+        .bg-preset.p-13 { background: linear-gradient(135deg, #008069 0%, #00a884 100%); }
+        .bg-preset.p-14 { background: linear-gradient(135deg, #9c27b0 0%, #4a148c 100%); }
+        .bg-preset.p-15 { background: linear-gradient(135deg, #f9a825 0%, #e65100 100%); }
+        .bg-preset.p-16 { background: #ffffff; }
+        .bg-preset.p-17 { background: #000000; }
+        .bg-preset.p-18 { background: #efe7dd; }
+        .bg-preset.p-19 { background: linear-gradient(45deg, #ffd700 0%, #ff8c00 100%); }
+        .bg-preset.p-20 { background: linear-gradient(135deg, #fa8bff 0%, #2bd2ff 50%, #2bff88 100%); }
 
         .bg-upload-row { display: flex; gap: 8px; margin-top: 8px; }
         .bg-upload-btn { flex: 1; padding: 10px; border: 2px dashed #ddd; border-radius: 10px; background: #fafafa; font-family: var(--font-main); font-size: 12px; font-weight: 700; color: #555; cursor: pointer; transition: all .2s; text-align: center; }
         .bg-upload-btn:active { transform: scale(.97); background: #f0f0f0; border-color: var(--primary); color: var(--primary); }
+
         .bg-url-input { width: 100%; padding: 10px 12px; border: 2px solid #eee; border-radius: 10px; font-family: var(--font-main); font-size: 13px; outline: 0; background: #fafafa; }
         .bg-url-input:focus { border-color: var(--primary); background: #fff; }
+
         .bg-effect-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .bg-effect-btn { padding: 12px 6px; border: 2px solid #eee; border-radius: 10px; background: #fff; cursor: pointer; font-family: var(--font-main); font-size: 11px; font-weight: 700; color: #555; transition: all .2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .bg-effect-btn .bg-ef-icon { font-size: 22px; }
@@ -821,7 +854,8 @@
         .bg-actions .bg-apply { background: var(--primary); color: #fff; }
         .bg-actions .bg-reset { background: #f0f0f0; color: #555; }
         .bg-actions .bg-cancel { background: #ef5350; color: #fff; }
-        .bg-preview-mini { height: 70px; border-radius: 10px; margin-bottom: 8px; border: 2px solid #eee; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-family: var(--font-main); text-shadow: 0 1px 3px rgba(0,0,0,0.6); background-color: #efe7dd; }
+        .bg-empty-msg { text-align: center; padding: 20px; color: #999; font-family: var(--font-main); font-size: 12px; }
+        .bg-preview-mini { height: 60px; border-radius: 10px; margin-bottom: 8px; border: 2px solid #eee; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-family: var(--font-main); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
@@ -1002,7 +1036,7 @@
                 <div class="dm-name" id="dm-chat-name">...</div>
                 <div class="dm-role" id="dm-chat-role"></div>
             </div>
-            <button class="dm-clear-btn" onclick="openBgSettings('dm')" title="خلفية الخاص">🎨</button>
+            <button class="dm-clear-btn" onclick="openBgSettings('dm')" title="خلفية الخاص" style="margin-right:0;">🎨</button>
             <button class="dm-clear-btn" onclick="clearCurrentDMChat()" title="مسح المحادثة">🗑️</button>
         </div>
         <div id="dm-reply-bar" class="dm-reply-bar">
@@ -1314,7 +1348,7 @@
     <div class="modal-popup" id="dm-settings-modal">
         <div class="popup-box" style="max-width:420px;">
             <h3 style="font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;">💌 إعدادات الخاص العامة</h3>
-            <p style="font-size:12px;color:#777;margin:8px 0 12px;text-align:right;line-height:1.5;">اختر الحد الأدنى للرتبة المسموح لها باستخدام الخاص.</p>
+            <p style="font-size:12px;color:#777;margin:8px 0 12px;text-align:right;line-height:1.5;">اختر الحد الأدنى للرتبة المسموح لها باستخدام الخاص. يمكنك أيضاً التحكم يدوياً لكل مستخدم من قائمة الأعضاء (الزر يتنقل بين: افتراضي → سماح → حظر).</p>
             <div id="dm-settings-list">
                 <div class="dm-settings-option" data-role="owner" onclick="setDMMinRole('owner')"><span>👑 المالك فقط</span><span class="dso-check">✓</span></div>
                 <div class="dm-settings-option" data-role="manager" onclick="setDMMinRole('manager')"><span>💎 المدير وما فوق</span><span class="dso-check">✓</span></div>
@@ -1330,6 +1364,7 @@
     <div class="modal-popup" id="media-settings-modal">
         <div class="popup-box" style="max-width:420px;">
             <h3 style="font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;">📎 إعدادات الوسائط العامة</h3>
+            <p style="font-size:12px;color:#777;margin:8px 0 12px;text-align:right;line-height:1.5;">اختر الحد الأدنى للرتبة المسموح لها بإرسال صور وفيديوهات في الغرفة والخاص. يمكنك أيضاً التحكم يدوياً لكل مستخدم من قائمة الأعضاء (الزر يتنقل بين: افتراضي → سماح → حظر).</p>
             <div id="media-settings-list">
                 <div class="media-settings-option" data-role="owner" onclick="setMediaMinRole('owner')"><span>👑 المالك فقط</span><span class="dso-check">✓</span></div>
                 <div class="media-settings-option" data-role="manager" onclick="setMediaMinRole('manager')"><span>💎 المدير وما فوق</span><span class="dso-check">✓</span></div>
@@ -1345,6 +1380,7 @@
     <div class="modal-popup" id="status-settings-modal">
         <div class="popup-box" style="max-width:420px;">
             <h3 style="font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;">📸 إعدادات نشر الحالات</h3>
+            <p style="font-size:12px;color:#777;margin:8px 0 12px;text-align:right;line-height:1.5;">اختر الحد الأدنى للرتبة المسموح لها بنشر الحالات. يمكنك أيضاً التحكم يدوياً لكل مستخدم من قائمة الأعضاء (الزر يتنقل بين: افتراضي → سماح → حظر).</p>
             <div id="status-settings-list">
                 <div class="status-settings-option" data-role="owner" onclick="setStatusMinRole('owner')"><span>👑 المالك فقط</span><span class="dso-check">✓</span></div>
                 <div class="status-settings-option" data-role="manager" onclick="setStatusMinRole('manager')"><span>💎 المدير وما فوق</span><span class="dso-check">✓</span></div>
@@ -1364,36 +1400,37 @@
                 <span id="notif-perm-badge" class="notif-status-badge disabled">جاري التحقق...</span>
                 <p id="notif-perm-text" style="font-size:11px;color:#888;margin-top:4px;"></p>
             </div>
-            <button id="enable-notif-btn" onclick="requestNotificationPermission()" class="login-btn" style="background:linear-gradient(135deg,#008069,#00a884);padding:12px;font-size:15px;margin-bottom:12px;">📲 تفعيل الإشعارات</button>
+            <button id="enable-notif-btn" onclick="requestNotificationPermission()" class="login-btn" style="background:linear-gradient(135deg,#008069,#00a884);padding:12px;font-size:15px;margin-bottom:12px;">📲 تفعيل الإشعارات على هذا الجهاز</button>
             <div style="text-align:right;margin-bottom:8px;">
+                <div style="font-size:13px;font-weight:700;color:#555;padding:8px 0 4px;">📩 أنواع الإشعارات:</div>
                 <div class="notif-settings-row">
-                    <div class="notif-label"><span class="notif-icon">💌</span><div><div>الرسائل الخاصة</div></div></div>
+                    <div class="notif-label"><span class="notif-icon">💌</span><div><div>الرسائل الخاصة</div><div class="notif-desc">إشعار عند استقبال رسالة خاصة</div></div></div>
                     <label class="toggle-switch"><input type="checkbox" id="notif-dm-toggle" checked><span class="toggle-slider"></span></label>
                 </div>
                 <div class="notif-settings-row">
-                    <div class="notif-label"><span class="notif-icon">💬</span><div><div>رسائل الدردشة العامة</div></div></div>
+                    <div class="notif-label"><span class="notif-icon">💬</span><div><div>رسائل الدردشة العامة</div><div class="notif-desc">إشعار عند كتابة رسالة في الغرفة</div></div></div>
                     <label class="toggle-switch"><input type="checkbox" id="notif-chat-toggle" checked><span class="toggle-slider"></span></label>
                 </div>
                 <div class="notif-settings-row">
-                    <div class="notif-label"><span class="notif-icon">📸</span><div><div>الحالات الجديدة</div></div></div>
+                    <div class="notif-label"><span class="notif-icon">📸</span><div><div>الحالات الجديدة</div><div class="notif-desc">إشعار عند نشر أحد حالة جديدة</div></div></div>
                     <label class="toggle-switch"><input type="checkbox" id="notif-status-toggle" checked><span class="toggle-slider"></span></label>
                 </div>
                 <div class="notif-settings-row">
-                    <div class="notif-label"><span class="notif-icon">👁️</span><div><div>مشاهدة حالاتي</div></div></div>
+                    <div class="notif-label"><span class="notif-icon">👁️</span><div><div>مشاهدة حالاتي</div><div class="notif-desc">إشعار عند مشاهدة أحد لحالتك</div></div></div>
                     <label class="toggle-switch"><input type="checkbox" id="notif-seen-toggle" checked><span class="toggle-slider"></span></label>
                 </div>
             </div>
             <div style="text-align:right;margin-top:12px;padding-top:12px;border-top:1px solid #eee;">
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
-                    <span style="font-size:13px;font-weight:700;color:#555;">🔊 الأصوات</span>
+                <div style="font-size:13px;font-weight:700;color:#555;padding:8px 0 4px;display:flex;justify-content:space-between;align-items:center;">
+                    <span>🔊 الأصوات</span>
                     <label class="toggle-switch"><input type="checkbox" id="sound-toggle" checked><span class="toggle-slider"></span></label>
                 </div>
                 <div class="notif-settings-row">
-                    <div class="notif-label"><span class="notif-icon">📤</span><div><div>صوت الإرسال</div></div></div>
+                    <div class="notif-label"><span class="notif-icon">📤</span><div><div>صوت الإرسال</div><div class="notif-desc">صوت عند إرسال رسالة</div></div></div>
                     <label class="toggle-switch"><input type="checkbox" id="sound-send-toggle" checked><span class="toggle-slider"></span></label>
                 </div>
                 <div class="notif-settings-row">
-                    <div class="notif-label"><span class="notif-icon">📥</span><div><div>صوت الاستقبال</div></div></div>
+                    <div class="notif-label"><span class="notif-icon">📥</span><div><div>صوت الاستقبال</div><div class="notif-desc">صوت عند استقبال رسالة</div></div></div>
                     <label class="toggle-switch"><input type="checkbox" id="sound-receive-toggle" checked><span class="toggle-slider"></span></label>
                 </div>
             </div>
@@ -1421,6 +1458,7 @@
     <div class="modal-popup" id="warning-composer-modal">
         <div class="popup-box" style="max-width:460px;">
             <h3 style="font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;color:#ff3b30;margin-bottom:4px;">🚨 إرسال تحذير</h3>
+            <p style="font-size:11px;color:#999;margin-bottom:14px;">سيظهر التحذير بشكل ملء الشاشة للمستخدم حتى يضغط "فهمت"</p>
             <div style="margin:12px 0;text-align:right;">
                 <label style="display:block;font-size:13px;font-weight:700;color:#555;margin-bottom:6px;">🎯 الفئة المستهدفة:</label>
                 <div class="warning-target-options">
@@ -1430,6 +1468,7 @@
                     <button type="button" class="warning-target-btn" data-target="new_users" onclick="selectWarningTarget('new_users')"><span class="wt-icon">🆕</span><span>الحسابات الجديدة</span></button>
                 </div>
                 <div id="warning-role-select" style="display:none;margin-top:8px;">
+                    <label style="display:block;font-size:12px;font-weight:700;color:#777;margin-bottom:4px;">اختر الرتبة:</label>
                     <div class="warning-role-chips" id="warning-role-chips">
                         <button type="button" class="warning-role-chip" data-role="user" onclick="selectWarningRole('user')">👤 عادي</button>
                         <button type="button" class="warning-role-chip" data-role="trusted" onclick="selectWarningRole('trusted')">✅ موثوق</button>
@@ -1439,6 +1478,7 @@
                     </div>
                 </div>
                 <div id="warning-user-select" style="display:none;margin-top:8px;">
+                    <label style="display:block;font-size:12px;font-weight:700;color:#777;margin-bottom:4px;">اختر المستخدم:</label>
                     <div class="warning-cleanup-bar" id="warning-cleanup-bar" style="display:none;">
                         <button type="button" class="warning-cleanup-btn" onclick="deleteAllUnknownUsers()">🧹 حذف جميع الحسابات المجهولة</button>
                     </div>
@@ -1446,7 +1486,7 @@
                     <div class="warning-user-chips" id="warning-user-chips"></div>
                 </div>
                 <div id="warning-new-users-info" style="display:none;margin-top:8px;padding:10px 12px;background:#f0f8ff;border:1.5px solid #90caf9;border-radius:10px;font-size:12px;color:#1565c0;text-align:right;line-height:1.6;">
-                    <strong>🆕 حسابات جديدة:</strong> سيظهر التحذير لأي حساب يسجّل بعد إرسال هذا التحذير.
+                    <strong>🆕 حسابات جديدة:</strong> سيظهر التحذير لأي حساب يسجّل بعد إرسال هذا التحذير، حتى يضغط "فهمت". مثالي لتنبيه الأعضاء الجدد عند دخولهم لأول مرة.
                 </div>
             </div>
             <div style="margin:12px 0;text-align:right;">
@@ -1455,7 +1495,7 @@
                 <div style="text-align:left;font-size:10px;color:#999;margin-top:3px;" id="warning-char-counter">0 / 500</div>
             </div>
             <div style="display:flex;gap:6px;">
-                <button onclick="sendWarning()" class="login-btn" style="background:linear-gradient(135deg,#ff3b30,#ff6b35);padding:12px;font-size:15px;font-weight:900;">🚨 إرسال التحذير</button>
+                <button onclick="sendWarning()" class="login-btn" style="background:linear-gradient(135deg,#ff3b30,#ff6b35);padding:12px;font-size:15px;font-weight:900;box-shadow:0 4px 14px rgba(255,59,48,0.4);">🚨 إرسال التحذير</button>
                 <button onclick="closeWarningComposer()" class="login-btn" style="background:#f0f0f0;color:#555;padding:12px;font-size:14px;flex:0 0 90px;">إلغاء</button>
             </div>
         </div>
@@ -1491,10 +1531,10 @@
                 <label>✨ التوهج:</label>
                 <div class="glow-options" id="glow-options">
                     <button class="glow-btn selected" data-glow="none" onclick="selectGlow('none')"><span class="glow-demo">📝</span><span class="glow-label">بدون</span></button>
-                    <button class="glow-btn" data-glow="glow" onclick="selectGlow('glow')"><span class="glow-demo">✨</span><span class="glow-label">توهج</span></button>
-                    <button class="glow-btn" data-glow="glow-fast" onclick="selectGlow('glow-fast')"><span class="glow-demo">⚡</span><span class="glow-label">سريع</span></button>
-                    <button class="glow-btn" data-glow="glow-slow" onclick="selectGlow('glow-slow')"><span class="glow-demo">🌊</span><span class="glow-label">بطيء</span></button>
-                    <button class="glow-btn" data-glow="glow-rainbow" onclick="selectGlow('glow-rainbow')"><span class="glow-demo">🌈</span><span class="glow-label">قوس</span></button>
+                    <button class="glow-btn" data-glow="glow" onclick="selectGlow('glow')"><span class="glow-demo" style="text-shadow:0 0 10px currentColor;">✨</span><span class="glow-label">توهج</span></button>
+                    <button class="glow-btn" data-glow="glow-fast" onclick="selectGlow('glow-fast')"><span class="glow-demo" style="text-shadow:0 0 10px currentColor;">⚡</span><span class="glow-label">سريع</span></button>
+                    <button class="glow-btn" data-glow="glow-slow" onclick="selectGlow('glow-slow')"><span class="glow-demo" style="text-shadow:0 0 10px currentColor;">🌊</span><span class="glow-label">بطيء</span></button>
+                    <button class="glow-btn" data-glow="glow-rainbow" onclick="selectGlow('glow-rainbow')"><span class="glow-demo">🌈</span><span class="glow-label">قوس قزح</span></button>
                     <button class="glow-btn" data-glow="glow-neon" onclick="selectGlow('glow-neon')"><span class="glow-demo">💡</span><span class="glow-label">نيون</span></button>
                     <button class="glow-btn" data-glow="glow-fire" onclick="selectGlow('glow-fire')"><span class="glow-demo">🔥</span><span class="glow-label">نار</span></button>
                     <button class="glow-btn" data-glow="owner-glow" onclick="selectGlow('owner-glow')" style="border-color:#FFD700;"><span class="glow-demo">👑</span><span class="glow-label">ملكي</span></button>
@@ -1508,6 +1548,7 @@
         </div>
     </div>
 
+    <!-- ════════ إعدادات الخلفية ════════ -->
     <div id="bg-settings-modal">
         <div class="modal-header" style="background:linear-gradient(135deg,#008069,#00a884);color:#fff;">
             <h3 style="color:#fff;">🎨 إعدادات الخلفية</h3>
@@ -1530,7 +1571,7 @@
                 <div class="bg-upload-row">
                     <button class="bg-upload-btn" onclick="document.getElementById('bg-file-input').click()">📁 رفع من المعرض</button>
                 </div>
-                <input type="file" id="bg-file-input" accept="image/*" style="display:none" onchange="handleBgFile(this)">
+                <input type="file" id="bg-file-input" accept="image/*,image/gif" style="display:none" onchange="handleBgFile(this)">
                 <div style="margin-top:10px;">
                     <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;">أو ضع رابط صورة/GIF:</label>
                     <input type="text" class="bg-url-input" id="bg-url-input" placeholder="https://example.com/image.gif" oninput="previewBgUrl()">
@@ -1540,31 +1581,49 @@
             <div class="bg-section">
                 <h4>✨ تأثير متحرك</h4>
                 <div class="bg-effect-grid">
-                    <button class="bg-effect-btn selected" data-effect="none" onclick="selectBgEffect('none')"><span class="bg-ef-icon">🚫</span><span>بدون</span></button>
-                    <button class="bg-effect-btn" data-effect="particles" onclick="selectBgEffect('particles')"><span class="bg-ef-icon">✨</span><span>جزيئات</span></button>
-                    <button class="bg-effect-btn" data-effect="bubbles" onclick="selectBgEffect('bubbles')"><span class="bg-ef-icon">🫧</span><span>فقاعات</span></button>
-                    <button class="bg-effect-btn" data-effect="stars" onclick="selectBgEffect('stars')"><span class="bg-ef-icon">⭐</span><span>نجوم</span></button>
-                    <button class="bg-effect-btn" data-effect="hearts" onclick="selectBgEffect('hearts')"><span class="bg-ef-icon">❤️</span><span>قلوب</span></button>
-                    <button class="bg-effect-btn" data-effect="snow" onclick="selectBgEffect('snow')"><span class="bg-ef-icon">❄️</span><span>ثلج</span></button>
-                    <button class="bg-effect-btn" data-effect="leaves" onclick="selectBgEffect('leaves')"><span class="bg-ef-icon">🍃</span><span>أوراق</span></button>
-                    <button class="bg-effect-btn" data-effect="fire" onclick="selectBgEffect('fire')"><span class="bg-ef-icon">🔥</span><span>نار</span></button>
-                    <button class="bg-effect-btn" data-effect="flowers" onclick="selectBgEffect('flowers')"><span class="bg-ef-icon">🌸</span><span>زهور</span></button>
+                    <button class="bg-effect-btn selected" data-effect="none" onclick="selectBgEffect('none')">
+                        <span class="bg-ef-icon">🚫</span><span>بدون</span>
+                    </button>
+                    <button class="bg-effect-btn" data-effect="particles" onclick="selectBgEffect('particles')">
+                        <span class="bg-ef-icon">✨</span><span>جزيئات</span>
+                    </button>
+                    <button class="bg-effect-btn" data-effect="bubbles" onclick="selectBgEffect('bubbles')">
+                        <span class="bg-ef-icon">🫧</span><span>فقاعات</span>
+                    </button>
+                    <button class="bg-effect-btn" data-effect="stars" onclick="selectBgEffect('stars')">
+                        <span class="bg-ef-icon">⭐</span><span>نجوم</span>
+                    </button>
+                    <button class="bg-effect-btn" data-effect="hearts" onclick="selectBgEffect('hearts')">
+                        <span class="bg-ef-icon">❤️</span><span>قلوب</span>
+                    </button>
+                    <button class="bg-effect-btn" data-effect="snow" onclick="selectBgEffect('snow')">
+                        <span class="bg-ef-icon">❄️</span><span>ثلج</span>
+                    </button>
+                    <button class="bg-effect-btn" data-effect="leaves" onclick="selectBgEffect('leaves')">
+                        <span class="bg-ef-icon">🍃</span><span>أوراق</span>
+                    </button>
+                    <button class="bg-effect-btn" data-effect="fire" onclick="selectBgEffect('fire')">
+                        <span class="bg-ef-icon">🔥</span><span>نار</span>
+                    </button>
+                    <button class="bg-effect-btn" data-effect="flowers" onclick="selectBgEffect('flowers')">
+                        <span class="bg-ef-icon">🌸</span><span>زهور</span>
+                    </button>
                 </div>
             </div>
 
             <div class="bg-section">
                 <h4>ℹ️ معلومات</h4>
                 <div style="font-size:12px;color:#666;line-height:1.6;font-family:var(--font-main);">
-                    • اختر خلفية جاهزة أو ارفع صورة من معرضك<br>
-                    • يمكنك وضع رابط GIF للحصول على خلفية متحركة<br>
-                    • اختر تأثيراً متحركاً لإضافة لمسة مميزة<br>
-                    • يتم حفظ اختياراتك تلقائياً على جهازك
+                    • اختر خلفية جاهزة أو ارفع صورة خاصة بك<br>
+                    • يمكنك دعم صور GIF المتحركة عبر الرابط<br>
+                    • أضف تأثيرات متحركة لجعل الدردشة مميزة<br>
+                    • يتم حفظ اختياراتك تلقائياً
                 </div>
             </div>
         </div>
         <div class="bg-actions">
             <button class="bg-reset" onclick="resetBgSettings()">↺ افتراضي</button>
-            <button class="bg-apply" onclick="applyBgSettings()">✅ تطبيق وحفظ</button>
+            <button class="bg-apply" onclick="applyBgSettings()">✅ تطبيق</button>
             <button class="bg-cancel" onclick="closeBgSettings()">✕ إغلاق</button>
         </div>
     </div>
@@ -1579,7 +1638,7 @@
 
     <div id="status-viewer" onclick="closeStatusViewer(event)">
         <button class="viewer-close" onclick="closeStatusViewer(event)">✕</button>
-        <button class="viewer-report" id="status-viewer-report-btn" onclick="event.stopPropagation();reportCurrentStatus()" title="إبلاغ">⚑</button>
+        <button class="viewer-report" id="status-viewer-report-btn" onclick="event.stopPropagation();reportCurrentStatus()" title="إبلاغ عن الحالة">⚑</button>
         <button class="viewer-nav prev" onclick="event.stopPropagation();navigateStatus(-1)">‹</button>
         <button class="viewer-nav next" onclick="event.stopPropagation();navigateStatus(1)">›</button>
         <div class="viewer-content" id="status-viewer-content"></div>
@@ -1750,7 +1809,7 @@
     let userDeletedListener = null;
     let isBeingDeleted = false;
 
-    /* ═══════ نظام الخلفيات - الحالة ═══════ */
+    /* ════════ نظام الخلفيات ════════ */
     let bgSettings = {
         chat: { type: 'default', value: null, effect: 'none' },
         dm: { type: 'default', value: null, effect: 'none' }
@@ -1758,46 +1817,6 @@
     let currentBgEditing = 'chat';
     let bgSettingsListener = null;
     let bgEffectIntervals = { chat: null, dm: null };
-    // متغيرات الملفات المعلقة (URL.createObjectURL approach)
-    let pendingProfileFile = null;
-    let pendingAvatarObjectUrl = null;
-
-    /* ═══════ التدرجات اللونية (JS) - تُطبق inline لتجاوز specificity ═══════ */
-    const BG_GRADIENTS = {
-        'p-1': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'p-2': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        'p-3': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        'p-4': 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-        'p-5': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-        'p-6': 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
-        'p-7': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-        'p-8': 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-        'p-9': 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-        'p-10': 'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)',
-        'p-11': 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
-        'p-12': 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-        'p-13': 'linear-gradient(135deg, #008069 0%, #00a884 100%)',
-        'p-14': 'linear-gradient(135deg, #9c27b0 0%, #4a148c 100%)',
-        'p-15': 'linear-gradient(135deg, #f9a825 0%, #e65100 100%)',
-        'p-16': '#ffffff',
-        'p-17': '#000000',
-        'p-18': '#efe7dd',
-        'p-19': 'linear-gradient(45deg, #ffd700 0%, #ff8c00 100%)',
-        'p-20': 'linear-gradient(135deg, #fa8bff 0%, #2bd2ff 50%, #2bff88 100%)'
-    };
-
-    const BG_EFFECT_EMOJIS = {
-        particles: ['✨', '⭐', '💫', '🌟'],
-        bubbles: null,
-        stars: ['⭐', '🌟', '✨', '💫'],
-        hearts: ['❤️', '💖', '💕', '💗', '💝'],
-        snow: ['❄️', '❅', '❆'],
-        leaves: ['🍃', '🍂', '🌿'],
-        fire: ['🔥', '💥', '✨'],
-        flowers: ['🌸', '🌺', '🌷', '🌹', '💐']
-    };
-
-    const DEFAULT_CHAT_BG = 'url("https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png")';
 
     const COLORS = [
         { bg: 'linear-gradient(135deg,#E3F2FD,#64B5F6)', text: '#0D47A1', name: '#0D47A1' },
@@ -1830,18 +1849,18 @@
     function validateName(rawName) {
         if (!rawName || typeof rawName !== 'string') return { valid: false, reason: 'الرجاء إدخال اسمك', code: 'empty' };
         const cleaned = rawName.replace(INVISIBLE_CHARS_REGEX, '');
-        if (cleaned.length === 0) return { valid: false, reason: 'الاسم فارغ!', code: 'empty_after_clean' };
-        if (cleaned.length < 2) return { valid: false, reason: 'الاسم قصير جداً!', code: 'too_short' };
-        if (cleaned.length > 30) return { valid: false, reason: 'الاسم طويل جداً!', code: 'too_long' };
-        if (!LETTERS_REGEX.test(cleaned)) return { valid: false, reason: 'الاسم يجب أن يحتوي على حروف حقيقية!', code: 'no_letters' };
-        if (/^\d+$/.test(cleaned)) return { valid: false, reason: 'الاسم لا يمكن أن يكون أرقاماً فقط!', code: 'only_numbers' };
-        if (/^[.\-_+*#@!$%^&()[\]{}<>|\\/`~,;:'"?=]+$/.test(cleaned)) return { valid: false, reason: 'الاسم لا يمكن أن يكون رموزاً فقط!', code: 'only_symbols' };
+        if (cleaned.length === 0) return { valid: false, reason: 'الاسم فارغ! لا يمكن ترك الحقل فارغاً أو بمسافات فقط.', code: 'empty_after_clean' };
+        if (cleaned.length < 2) return { valid: false, reason: 'الاسم قصير جداً! يجب أن يكون حرفين على الأقل (حروف حقيقية).', code: 'too_short' };
+        if (cleaned.length > 30) return { valid: false, reason: 'الاسم طويل جداً! الحد الأقصى 30 حرفاً.', code: 'too_long' };
+        if (!LETTERS_REGEX.test(cleaned)) return { valid: false, reason: 'الاسم يجب أن يحتوي على حروف حقيقية! لا يُسمح بالنقاط أو الرموز أو الأرقام فقط.', code: 'no_letters' };
+        if (/^\d+$/.test(cleaned)) return { valid: false, reason: 'الاسم لا يمكن أن يكون أرقاماً فقط! يرجى كتابة اسم حقيقي.', code: 'only_numbers' };
+        if (/^[.\-_+*#@!$%^&()[\]{}<>|\\/`~,;:'"?=]+$/.test(cleaned)) return { valid: false, reason: 'الاسم لا يمكن أن يكون رموزاً فقط! يرجى كتابة اسم حقيقي.', code: 'only_symbols' };
         const blockedNames = ['مجهول', 'مستخدم مجهول', 'مستخدم', 'unknown', 'null', 'undefined', 'nan', 'user', 'admin', 'administrator', 'owner', 'guest', 'زائر', 'ضيف'];
-        if (blockedNames.includes(cleaned.toLowerCase())) return { valid: false, reason: 'هذا الاسم محجوز!', code: 'blocked_name' };
+        if (blockedNames.includes(cleaned.toLowerCase())) return { valid: false, reason: 'هذا الاسم محجوز! يرجى اختيار اسم آخر.', code: 'blocked_name' };
         const letterCount = (cleaned.match(new RegExp(LETTERS_REGEX.source, 'g')) || []).length;
         if (letterCount < 2) return { valid: false, reason: 'الاسم يجب أن يحتوي على حرفين على الأقل!', code: 'few_letters' };
         const uniqueChars = new Set(cleaned.toLowerCase().split(''));
-        if (uniqueChars.size < 2) return { valid: false, reason: 'الاسم غير صالح!', code: 'repeated_chars' };
+        if (uniqueChars.size < 2) return { valid: false, reason: 'الاسم غير صالح! يجب أن يحتوي على حروف متنوعة.', code: 'repeated_chars' };
         return { valid: true, name: rawName.trim(), cleaned: cleaned };
     }
 
@@ -1939,189 +1958,159 @@
     function canUserPostStatus(uid, role) { if (statusDenialsData[uid] === true) return false; if (allStatusUsersData[uid] === true) return true; return roleRank(role || 'user') >= roleRank(statusGlobalSettings.min_role || 'owner'); }
     function getRoleLabel(role) { return { owner: '👑 مالك', manager: '💎 مدير', mod: '🛡️ مشرف', trusted: '✅ موثوق', user: '👤 عادي' }[role] || role; }
 
-    /* ═══════════════════════════════════════════════════════════════
-       نظام الخلفيات - دوال التطبيق والحفظ (الإصلاح الرئيسي)
-       ═══════════════════════════════════════════════════════════════ */
+    /* ════════ نظام خلفيات - الدوال الأساسية ════════ */
+    const BG_PRESETS = [
+        { id: 'p-1', type: 'class', value: 'p-1' },
+        { id: 'p-2', type: 'class', value: 'p-2' },
+        { id: 'p-3', type: 'class', value: 'p-3' },
+        { id: 'p-4', type: 'class', value: 'p-4' },
+        { id: 'p-5', type: 'class', value: 'p-5' },
+        { id: 'p-6', type: 'class', value: 'p-6' },
+        { id: 'p-7', type: 'class', value: 'p-7' },
+        { id: 'p-8', type: 'class', value: 'p-8' },
+        { id: 'p-9', type: 'class', value: 'p-9' },
+        { id: 'p-10', type: 'class', value: 'p-10' },
+        { id: 'p-11', type: 'class', value: 'p-11' },
+        { id: 'p-12', type: 'class', value: 'p-12' },
+        { id: 'p-13', type: 'class', value: 'p-13' },
+        { id: 'p-14', type: 'class', value: 'p-14' },
+        { id: 'p-15', type: 'class', value: 'p-15' },
+        { id: 'p-16', type: 'class', value: 'p-16' },
+        { id: 'p-17', type: 'class', value: 'p-17' },
+        { id: 'p-18', type: 'class', value: 'p-18' },
+        { id: 'p-19', type: 'class', value: 'p-19' },
+        { id: 'p-20', type: 'class', value: 'p-20' }
+    ];
+    const BG_EFFECT_EMOJIS = {
+        particles: ['✨', '⭐', '💫', '🌟'],
+        bubbles: null,
+        stars: ['⭐', '🌟', '✨'],
+        hearts: ['❤️', '💖', '💕', '💗'],
+        snow: ['❄️', '❅', '❆'],
+        leaves: ['🍃', '🍂', '🌿'],
+        fire: ['🔥', '💥'],
+        flowers: ['🌸', '🌺', '🌷', '🌹']
+    };
 
-    function saveBgToLocalStorage() {
-        try {
-            localStorage.setItem('bg_settings_v1', JSON.stringify(bgSettings));
-        } catch (e) { console.warn('saveBgToLocalStorage failed:', e); }
-    }
-
-    function loadBgFromLocalStorage() {
-        try {
-            const raw = localStorage.getItem('bg_settings_v1');
-            if (!raw) return false;
-            const parsed = JSON.parse(raw);
-            if (parsed && typeof parsed === 'object') {
-                if (parsed.chat && parsed.chat.type) bgSettings.chat = { type: parsed.chat.type, value: parsed.chat.value || null, effect: parsed.chat.effect || 'none' };
-                if (parsed.dm && parsed.dm.type) bgSettings.dm = { type: parsed.dm.type, value: parsed.dm.value || null, effect: parsed.dm.effect || 'none' };
-                return true;
-            }
-        } catch (e) { console.warn('loadBgFromLocalStorage failed:', e); }
-        return false;
-    }
-
-    /* التطبيق الفعلي على DOM - يستخدم inline styles لتجاوز CSS specificity */
     function applyBackground(type, target) {
-        try {
-            const el = target === 'chat' ? document.getElementById('chat-messages') : document.getElementById('dm-chat-messages');
-            const effectEl = target === 'chat' ? document.getElementById('chat-bg-effect') : document.getElementById('dm-bg-effect');
-            if (!el) { console.warn('applyBackground: element not found for', target); return; }
-
-            const cfg = bgSettings[target] || { type: 'default', value: null, effect: 'none' };
-
-            // 1) إزالة كل الأنماط السابقة (inline)
-            el.style.background = '';
-            el.style.backgroundColor = '';
-            el.style.backgroundImage = '';
-            el.style.backgroundSize = '';
-            el.style.backgroundPosition = '';
-            el.style.backgroundRepeat = '';
-            el.style.backgroundAttachment = '';
-            el.style.backgroundBlendMode = '';
-
-            // 2) إزالة أي كلاس bg-*
-            try {
-                const toRemove = [];
-                el.classList.forEach(c => { if (c.indexOf('bg-grad-') === 0) toRemove.push(c); });
-                toRemove.forEach(c => el.classList.remove(c));
-            } catch(e) {}
-
-            // 3) تطبيق الخلفية حسب النوع
-            if (cfg.type === 'default' || !cfg.type) {
-                // الخلفية الافتراضية (صورة النمط مع لون)
-                el.style.backgroundColor = '#efe7dd';
-                el.style.backgroundImage = DEFAULT_CHAT_BG;
-                el.style.backgroundSize = 'cover';
-                el.style.backgroundPosition = 'center';
-                el.style.backgroundAttachment = 'local';
+        const el = target === 'chat' ? document.getElementById('chat-messages') : document.getElementById('dm-chat-messages');
+        const effectEl = target === 'chat' ? document.getElementById('chat-bg-effect') : document.getElementById('dm-bg-effect');
+        if (!el) return;
+        const cfg = bgSettings[target];
+        
+        // إزالة كلاسات الخلفيات السابقة
+        el.className = el.className.split(' ').filter(c => !c.startsWith('p-')).join(' ');
+        el.style.backgroundImage = '';
+        el.style.backgroundColor = '';
+        el.style.background = '';
+        el.style.backgroundSize = 'cover';
+        el.style.backgroundPosition = 'center';
+        el.style.backgroundAttachment = 'local';
+        
+        if (cfg.type === 'default' || !cfg.type) {
+            if (target === 'chat') {
+                el.style.background = '#efe7dd';
+                el.style.backgroundImage = 'url("https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png")';
                 el.style.backgroundBlendMode = 'overlay';
-            } else if (cfg.type === 'class' || cfg.type === 'gradient') {
-                // خلفية جاهزة (gradient أو لون ثابت)
-                const grad = BG_GRADIENTS[cfg.value];
-                if (grad) {
-                    if (grad.indexOf('linear-gradient') === 0 || grad.indexOf('radial-gradient') === 0) {
-                        el.style.backgroundImage = grad;
-                    } else {
-                        // لون ثابت
-                        el.style.backgroundColor = grad;
-                    }
-                    el.style.backgroundSize = 'cover';
-                    el.style.backgroundPosition = 'center';
-                } else {
-                    // fallback: استخدم كلاس
-                    el.classList.add('bg-grad-' + cfg.value);
-                }
-            } else if (cfg.type === 'url') {
-                // صورة/GIF من رابط
-                el.style.backgroundColor = '#000';
-                el.style.backgroundImage = 'url("' + cfg.value + '")';
                 el.style.backgroundSize = 'cover';
-                el.style.backgroundPosition = 'center';
-                el.style.backgroundRepeat = 'no-repeat';
-                el.style.backgroundAttachment = 'local';
+            } else {
+                el.style.background = '#efe7dd';
+                el.style.backgroundImage = 'url("https://user-images.githubusercontent.com/15075759/28719147-861b8680-74f4-11e7-861b-861b8680-74f4.png")';
+                el.style.backgroundBlendMode = 'overlay';
+                el.style.backgroundSize = 'cover';
             }
-
-            // 4) تطبيق التأثير المتحرك
-            if (effectEl) {
-                effectEl.innerHTML = '';
-                if (bgEffectIntervals[target]) {
-                    try { clearInterval(bgEffectIntervals[target]); } catch(e) {}
-                    bgEffectIntervals[target] = null;
-                }
-                if (cfg.effect && cfg.effect !== 'none') {
-                    startBgEffect(effectEl, cfg.effect, target);
-                }
+        } else if (cfg.type === 'class') {
+            el.classList.add(cfg.value);
+        } else if (cfg.type === 'url') {
+            el.style.background = '#000';
+            el.style.backgroundImage = 'url("' + cfg.value + '")';
+            el.style.backgroundSize = 'cover';
+            el.style.backgroundPosition = 'center';
+            el.style.backgroundRepeat = 'no-repeat';
+        }
+        
+        // تطبيق التأثير
+        if (effectEl) {
+            effectEl.innerHTML = '';
+            if (bgEffectIntervals[target]) { clearInterval(bgEffectIntervals[target]); bgEffectIntervals[target] = null; }
+            if (cfg.effect && cfg.effect !== 'none') {
+                startBgEffect(effectEl, cfg.effect, target);
             }
-
-            console.log('✅ تم تطبيق الخلفية على', target, ':', cfg.type, cfg.value, 'effect:', cfg.effect);
-        } catch (e) {
-            console.error('applyBackground error:', e);
         }
     }
 
     function startBgEffect(container, effect, target) {
-        try {
-            container.innerHTML = '';
-            const spawnInterval = (effect === 'particles' || effect === 'stars') ? 400 : (effect === 'snow' ? 300 : 600);
-            const maxItems = effect === 'snow' ? 40 : (effect === 'stars' ? 30 : 20);
-
-            function spawn() {
-                try {
-                    if (!container || !container.parentNode) return;
-                    if (container.children.length >= maxItems) {
-                        try { container.removeChild(container.firstChild); } catch(e) {}
-                    }
-                    const item = document.createElement('div');
-                    const size = (effect === 'bubbles') ? (15 + Math.random() * 25) : (12 + Math.random() * 16);
-                    const left = Math.random() * 100;
-                    const duration = 6 + Math.random() * 8;
-                    const delay = Math.random() * 2;
-
-                    if (effect === 'particles' || effect === 'stars') {
-                        item.className = (effect === 'particles') ? 'effect-particle' : 'effect-star';
-                        const emojis = BG_EFFECT_EMOJIS[effect];
-                        if (!emojis || !emojis.length) return;
-                        item.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                        item.style.fontSize = size + 'px';
-                        item.style.left = left + '%';
-                        if (effect === 'particles') {
-                            item.style.bottom = '-30px';
-                            item.style.animationDuration = duration + 's';
-                        } else {
-                            item.style.top = (Math.random() * 100) + '%';
-                            item.style.animationDuration = (2 + Math.random() * 3) + 's';
-                            item.style.animationDelay = delay + 's';
-                        }
-                    } else if (effect === 'bubbles') {
-                        item.className = 'effect-bubble';
-                        item.style.width = size + 'px';
-                        item.style.height = size + 'px';
-                        item.style.left = left + '%';
-                        item.style.bottom = '-50px';
-                        item.style.animationDuration = duration + 's';
-                        item.style.animationDelay = delay + 's';
-                    } else {
-                        item.className = 'effect-emoji';
-                        const emojis = BG_EFFECT_EMOJIS[effect];
-                        if (!emojis || !emojis.length) return;
-                        item.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                        item.style.fontSize = size + 'px';
-                        item.style.left = left + '%';
+        container.innerHTML = '';
+        const spawnInterval = effect === 'particles' || effect === 'stars' ? 400 : effect === 'snow' ? 300 : 600;
+        const maxItems = effect === 'snow' ? 40 : effect === 'stars' ? 30 : 20;
+        
+        function spawn() {
+            try {
+                if (container.children.length >= maxItems) container.removeChild(container.firstChild);
+                const item = document.createElement('div');
+                const size = effect === 'bubbles' ? 15 + Math.random() * 25 : 12 + Math.random() * 16;
+                const left = Math.random() * 100;
+                const duration = 6 + Math.random() * 8;
+                const delay = Math.random() * 2;
+                
+                if (effect === 'particles' || effect === 'stars') {
+                    item.className = 'effect-' + (effect === 'particles' ? 'particle' : 'star');
+                    const emojis = BG_EFFECT_EMOJIS[effect];
+                    item.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    item.style.fontSize = size + 'px';
+                    item.style.left = left + '%';
+                    if (effect === 'particles') {
                         item.style.bottom = '-30px';
                         item.style.animationDuration = duration + 's';
+                    } else {
+                        item.style.top = Math.random() * 100 + '%';
+                        item.style.animationDuration = (2 + Math.random() * 3) + 's';
                         item.style.animationDelay = delay + 's';
                     }
-                    container.appendChild(item);
-                    setTimeout(() => { try { if (item.parentNode) item.parentNode.removeChild(item); } catch(e) {} }, (duration + delay + 1) * 1000);
-                } catch (e) { /* silent */ }
-            }
-
-            for (let i = 0; i < Math.min(Math.floor(maxItems / 2), 8); i++) setTimeout(spawn, i * 150);
-            bgEffectIntervals[target] = setInterval(spawn, spawnInterval);
-        } catch (e) { console.warn('startBgEffect error:', e); }
+                } else if (effect === 'bubbles') {
+                    item.className = 'effect-bubble';
+                    item.style.width = size + 'px';
+                    item.style.height = size + 'px';
+                    item.style.left = left + '%';
+                    item.style.bottom = '-50px';
+                    item.style.animationDuration = duration + 's';
+                    item.style.animationDelay = delay + 's';
+                } else {
+                    item.className = 'effect-emoji';
+                    const emojis = BG_EFFECT_EMOJIS[effect];
+                    if (!emojis) return;
+                    item.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    item.style.fontSize = size + 'px';
+                    item.style.left = left + '%';
+                    item.style.bottom = '-30px';
+                    item.style.animationDuration = duration + 's';
+                    item.style.animationDelay = delay + 's';
+                }
+                container.appendChild(item);
+                // إزالة بعد انتهاء الحركة
+                setTimeout(() => { try { if (item.parentNode) item.parentNode.removeChild(item); } catch(e) {} }, (duration + delay + 1) * 1000);
+            } catch (e) { console.warn('effect spawn error:', e); }
+        }
+        
+        for (let i = 0; i < Math.min(maxItems / 2, 8); i++) setTimeout(spawn, i * 150);
+        bgEffectIntervals[target] = setInterval(spawn, spawnInterval);
     }
-
-    const BG_PRESETS_LIST = ['p-1','p-2','p-3','p-4','p-5','p-6','p-7','p-8','p-9','p-10','p-11','p-12','p-13','p-14','p-15','p-16','p-17','p-18','p-19','p-20'];
 
     function renderBgPresets() {
         const grid = document.getElementById('bg-preset-grid');
         if (!grid) return;
         grid.innerHTML = '';
-        BG_PRESETS_LIST.forEach(p => {
+        BG_PRESETS.forEach(p => {
             const div = document.createElement('div');
-            div.className = 'bg-preset';
-            div.setAttribute('data-preset', p);
+            div.className = 'bg-preset ' + p.value;
             div.onclick = () => {
                 document.querySelectorAll('#bg-preset-grid .bg-preset').forEach(el => el.classList.remove('selected'));
                 div.classList.add('selected');
                 bgSettings[currentBgEditing].type = 'class';
-                bgSettings[currentBgEditing].value = p;
+                bgSettings[currentBgEditing].value = p.value;
                 updateBgPreview();
             };
-            if (bgSettings[currentBgEditing].type === 'class' && bgSettings[currentBgEditing].value === p) div.classList.add('selected');
+            if (bgSettings[currentBgEditing].type === 'class' && bgSettings[currentBgEditing].value === p.value) div.classList.add('selected');
             grid.appendChild(div);
         });
     }
@@ -2132,35 +2121,19 @@
         const cfg = bgSettings[currentBgEditing];
         preview.className = 'bg-preview-mini';
         preview.style.background = '';
-        preview.style.backgroundColor = '';
         preview.style.backgroundImage = '';
         preview.style.backgroundSize = '';
-        preview.style.backgroundPosition = '';
-        preview.style.backgroundRepeat = '';
-        preview.style.backgroundBlendMode = '';
-
         if (cfg.type === 'default' || !cfg.type) {
-            preview.style.backgroundColor = '#efe7dd';
-            preview.style.backgroundImage = DEFAULT_CHAT_BG;
-            preview.style.backgroundSize = 'cover';
-            preview.style.backgroundPosition = 'center';
-            preview.style.backgroundBlendMode = 'overlay';
+            preview.style.background = '#efe7dd';
             preview.textContent = 'الخلفية الافتراضية';
-        } else if (cfg.type === 'class' || cfg.type === 'gradient') {
-            const grad = BG_GRADIENTS[cfg.value];
-            if (grad) {
-                if (grad.indexOf('linear-gradient') === 0) preview.style.backgroundImage = grad;
-                else preview.style.backgroundColor = grad;
-                preview.style.backgroundSize = 'cover';
-                preview.style.backgroundPosition = 'center';
-            }
+        } else if (cfg.type === 'class') {
+            preview.classList.add(cfg.value);
             preview.textContent = '';
         } else if (cfg.type === 'url') {
-            preview.style.backgroundColor = '#000';
+            preview.style.background = '#000';
             preview.style.backgroundImage = 'url("' + cfg.value + '")';
             preview.style.backgroundSize = 'cover';
             preview.style.backgroundPosition = 'center';
-            preview.style.backgroundRepeat = 'no-repeat';
             preview.textContent = '';
         }
     }
@@ -2171,17 +2144,13 @@
     }
 
     function openBgSettings(target) {
-        try {
-            currentBgEditing = target || 'chat';
-            // تحديث الواجهة
-            document.getElementById('bg-tab-chat').classList.toggle('active', currentBgEditing === 'chat');
-            document.getElementById('bg-tab-dm').classList.toggle('active', currentBgEditing === 'dm');
-            renderBgPresets();
-            updateBgPreview();
-            document.querySelectorAll('#bg-settings-modal .bg-effect-btn').forEach(b => b.classList.toggle('selected', b.dataset.effect === bgSettings[currentBgEditing].effect));
-            document.getElementById('bg-url-input').value = (bgSettings[currentBgEditing].type === 'url') ? (bgSettings[currentBgEditing].value || '') : '';
-            document.getElementById('bg-settings-modal').classList.add('active');
-        } catch (e) { console.error('openBgSettings error:', e); }
+        currentBgEditing = target || 'chat';
+        switchBgTab(currentBgEditing);
+        renderBgPresets();
+        updateBgPreview();
+        document.querySelectorAll('#bg-settings-modal .bg-effect-btn').forEach(b => b.classList.toggle('selected', b.dataset.effect === bgSettings[currentBgEditing].effect));
+        document.getElementById('bg-url-input').value = bgSettings[currentBgEditing].type === 'url' ? bgSettings[currentBgEditing].value : '';
+        document.getElementById('bg-settings-modal').classList.add('active');
     }
 
     function closeBgSettings() {
@@ -2195,83 +2164,81 @@
         renderBgPresets();
         updateBgPreview();
         document.querySelectorAll('#bg-settings-modal .bg-effect-btn').forEach(b => b.classList.toggle('selected', b.dataset.effect === bgSettings[currentBgEditing].effect));
-        document.getElementById('bg-url-input').value = (bgSettings[currentBgEditing].type === 'url') ? (bgSettings[currentBgEditing].value || '') : '';
+        document.getElementById('bg-url-input').value = bgSettings[currentBgEditing].type === 'url' ? bgSettings[currentBgEditing].value : '';
     }
 
     function previewBgUrl() {
-        try {
-            const url = document.getElementById('bg-url-input').value.trim();
-            if (url && /^https?:\/\//i.test(url)) {
-                bgSettings[currentBgEditing].type = 'url';
-                bgSettings[currentBgEditing].value = url;
-                updateBgPreview();
-                document.querySelectorAll('#bg-preset-grid .bg-preset').forEach(el => el.classList.remove('selected'));
-            }
-        } catch (e) { console.warn('previewBgUrl error:', e); }
-    }
-
-    /* معالج آمن لرفع صورة الخلفية باستخدام URL.createObjectURL */
-    function handleBgFile(input) {
-        try {
-            const f = (input && input.files && input.files[0]) || null;
-            // مسح الحقل فوراً - يمنع crash WebView
-            try { input.value = ''; } catch(e) {}
-            if (!f) return;
-            if (!f.type || f.type.indexOf('image/') !== 0) { alert('⚠️ يرجى اختيار صورة فقط'); return; }
-            if (f.size > 15 * 1024 * 1024) { alert('⚠️ حجم الصورة كبير (الحد 15 ميجا)'); return; }
-
-            // ✨ استخدام URL.createObjectURL (بديل آمن عن FileReader)
-            const objectUrl = URL.createObjectURL(f);
+        const url = document.getElementById('bg-url-input').value.trim();
+        if (url && /^https?:\/\//i.test(url)) {
             bgSettings[currentBgEditing].type = 'url';
-            bgSettings[currentBgEditing].value = objectUrl;
-            // هذا الـ URL صالح للاستخدام كخلفية فوراً
+            bgSettings[currentBgEditing].value = url;
             updateBgPreview();
             document.querySelectorAll('#bg-preset-grid .bg-preset').forEach(el => el.classList.remove('selected'));
-            console.log('✅ تم تحميل الصورة كخلفية:', objectUrl);
-        } catch (e) {
-            console.warn('handleBgFile error:', e);
-            try { input.value = ''; } catch(e2) {}
-            alert('⚠️ حدث خطأ في معالجة الصورة');
         }
     }
 
-    /* حفظ إعدادات الخلفية - مع تطبيق فوري + حفظ في localStorage + Firebase */
+    /* ════════ HANDLE BG FILE - معالج آمن ════════ */
+    function handleBgFile(input) {
+        try {
+            const f = input && input.files && input.files[0];
+            input.value = ''; // مسح فوراً
+            if (!f) return;
+            if (!f.type.startsWith('image/')) { alert('⚠️ يجب اختيار صورة فقط (PNG/JPG/GIF)'); return; }
+            if (f.size > 15 * 1024 * 1024) { alert('⚠️ حجم الصورة كبير جداً (الحد 15 ميجا)'); return; }
+            // معالجة مؤجلة لتفادي crash WebView
+            setTimeout(() => {
+                try {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        try {
+                            const dataUrl = ev.target.result;
+                            bgSettings[currentBgEditing].type = 'url';
+                            bgSettings[currentBgEditing].value = dataUrl;
+                            updateBgPreview();
+                            document.querySelectorAll('#bg-preset-grid .bg-preset').forEach(el => el.classList.remove('selected'));
+                        } catch (e) { console.warn('bg file read onload error:', e); alert('❌ فشل في معالجة الصورة'); }
+                    };
+                    reader.onerror = function() { alert('❌ فشل في قراءة الملف'); };
+                    reader.onabort = function() { console.warn('bg file read aborted'); };
+                    reader.readAsDataURL(f);
+                } catch (e) { console.warn('bg file reader error:', e); alert('❌ حدث خطأ في رفع الصورة'); }
+            }, 150);
+        } catch (e) { console.warn('handleBgFile outer error:', e); try { input.value = ''; } catch(e2) {} }
+    }
+
+    async function uploadBgToCloudinary(f) {
+        try {
+            const cn = 'nfg03aku', up = 'daufafvn';
+            const url = 'https://api.cloudinary.com/v1_1/' + cn + '/image/upload';
+            const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', up);
+            const r = await fetch(url, { method: 'POST', body: fd });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const d = await r.json();
+            return d.secure_url || null;
+        } catch (e) { console.warn('uploadBg error:', e); return null; }
+    }
+
     async function applyBgSettings() {
         try {
-            // 1) حفظ في localStorage فوراً
-            saveBgToLocalStorage();
-
-            // 2) تطبيق فوري على DOM (مباشرة قبل أي عمليات أخرى)
+            // حفظ في Firebase
+            const updates = {};
+            updates['bg_settings/' + myFP + '/chat'] = bgSettings.chat;
+            updates['bg_settings/' + myFP + '/dm'] = bgSettings.dm;
+            await db.ref().update(updates);
+            // تطبيق فوري
             applyBackground('class', 'chat');
             applyBackground('class', 'dm');
-
-            // 3) مزامنة مع Firebase (اختياري - إذا فشل، الخلفية محفوظة محلياً)
-            try {
-                const updates = {};
-                updates['bg_settings/' + myFP + '/chat'] = bgSettings.chat;
-                updates['bg_settings/' + myFP + '/dm'] = bgSettings.dm;
-                await db.ref().update(updates);
-            } catch (fbErr) {
-                console.warn('فشل الحفظ في Firebase (تم الحفظ محلياً):', fbErr);
-            }
-
-            // 4) إشعار النجاح وإغلاق النافذة
-            alert('✅ تم تطبيق وحفظ الخلفية بنجاح');
+            alert('✅ تم حفظ إعدادات الخلفية بنجاح');
             closeBgSettings();
-        } catch (e) {
-            console.error('applyBgSettings error:', e);
-            alert('❌ فشل الحفظ: ' + e.message);
-        }
+        } catch (e) { alert('❌ فشل الحفظ: ' + e.message); }
     }
 
     async function resetBgSettings() {
         if (!confirm('هل تريد إعادة الخلفية للوضع الافتراضي؟')) return;
         bgSettings[currentBgEditing] = { type: 'default', value: null, effect: 'none' };
-        saveBgToLocalStorage();
-        // إيقاف تأثير الخلفية الحالي
-        const effectTarget = currentBgEditing;
-        if (bgEffectIntervals[effectTarget]) { try { clearInterval(bgEffectIntervals[effectTarget]); } catch(e) {} bgEffectIntervals[effectTarget] = null; }
-        try { await db.ref('bg_settings/' + myFP + '/' + currentBgEditing).remove(); } catch (e) {}
+        try {
+            await db.ref('bg_settings/' + myFP + '/' + currentBgEditing).remove();
+        } catch (e) {}
         renderBgPresets();
         updateBgPreview();
         document.querySelectorAll('#bg-settings-modal .bg-effect-btn').forEach(b => b.classList.toggle('selected', b.dataset.effect === 'none'));
@@ -2284,19 +2251,15 @@
         bgSettingsListener = db.ref('bg_settings/' + myFP).on('value', snap => {
             try {
                 const d = snap.val() || {};
-                let updated = false;
-                if (d.chat && d.chat.type) { bgSettings.chat = { type: d.chat.type, value: d.chat.value || null, effect: d.chat.effect || 'none' }; updated = true; }
-                if (d.dm && d.dm.type) { bgSettings.dm = { type: d.dm.type, value: d.dm.value || null, effect: d.dm.effect || 'none' }; updated = true; }
-                if (updated) {
-                    saveBgToLocalStorage();
-                    applyBackground('class', 'chat');
-                    applyBackground('class', 'dm');
-                }
+                if (d.chat) bgSettings.chat = { type: d.chat.type || 'default', value: d.chat.value || null, effect: d.chat.effect || 'none' };
+                if (d.dm) bgSettings.dm = { type: d.dm.type || 'default', value: d.dm.value || null, effect: d.dm.effect || 'none' };
+                applyBackground('class', 'chat');
+                applyBackground('class', 'dm');
             } catch (e) { console.warn('listenBgSettings error:', e); }
         });
     }
 
-    /* ═══════ دوال الطرد الفوري ═══════ */
+    /* ════════ دوال الطرد الفوري ════════ */
     function forceLogout(reason, isDeleted) {
         if (isBeingDeleted) return;
         isBeingDeleted = true;
@@ -2320,7 +2283,7 @@
         if (userDeletedListener) db.ref('users/' + myFP).off('value', userDeletedListener);
         userDeletedListener = db.ref('users/' + myFP).on('value', snap => {
             if (!isBeingDeleted && myName && !snap.exists()) {
-                console.warn('⚠️ تم حذف حسابي - خروج فوري');
+                console.warn('⚠️ تم حذف حسابي من قاعدة البيانات - خروج فوري');
                 forceLogout('', true);
             }
         });
@@ -2839,8 +2802,6 @@
         document.getElementById('loading-screen').style.display = 'none';
         myFP = await getDeviceFingerprint();
         localStorage.setItem("fp", myFP);
-        // تحميل إعدادات الخلفية من localStorage أولاً (قبل أي شيء)
-        loadBgFromLocalStorage();
         listenFontSettings(); listenBadWords();
         const storedName = localStorage.getItem("name") || "";
         if (storedName) {
@@ -2945,9 +2906,6 @@
         listenDMInbox(); listenNotificationPrefs();
         listenWarnings();
         listenBgSettings();
-        // ✅ تطبيق الخلفيات المحفوظة محلياً فوراً
-        applyBackground('class', 'chat');
-        applyBackground('class', 'dm');
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', (event) => {
                 if (event.data && event.data.type === 'NOTIFICATION_CLICKED') {
@@ -3071,13 +3029,13 @@
         if (myRole !== 'owner') return alert('⛔');
         try {
             if (dmDenialsData[uid] === true) {
-                if (!confirm('إعادة "' + name + '" للوضع الافتراضي؟')) return;
-                await db.ref('dm_denials/' + uid).remove(); await logAdminAction('dm_user_reset', uid, name, {}); alert('♻️ تم الإرجاع');
+                if (!confirm('إعادة "' + name + '" للوضع الافتراضي (يتبع الرتبة)؟')) return;
+                await db.ref('dm_denials/' + uid).remove(); await logAdminAction('dm_user_reset', uid, name, {}); alert('♻️ تم إرجاع "' + name + '" للوضع الافتراضي');
             } else if (allDMUsersData[uid] === true) {
                 if (!confirm('حظر الخاص عن "' + name + '" نهائياً؟')) return;
-                await db.ref('dm_permissions/' + uid).remove(); await db.ref('dm_denials/' + uid).set(true); await logAdminAction('dm_user_deny', uid, name, {}); alert('🚫 تم الحظر');
+                await db.ref('dm_permissions/' + uid).remove(); await db.ref('dm_denials/' + uid).set(true); await logAdminAction('dm_user_deny', uid, name, {}); alert('🚫 تم حظر "' + name + '" من الخاص');
             } else {
-                await db.ref('dm_permissions/' + uid).set(true); await logAdminAction('dm_user_allow', uid, name, {}); alert('✅ تم المنح');
+                await db.ref('dm_permissions/' + uid).set(true); await logAdminAction('dm_user_allow', uid, name, {}); alert('✅ تم منح "' + name + '" صلاحية الخاص');
             }
             if (allUsersData[uid]) updateUserControls(uid, allUsersData[uid]);
             if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
@@ -3088,13 +3046,13 @@
         if (myRole !== 'owner') return alert('⛔');
         try {
             if (mediaDenialsData[uid] === true) {
-                if (!confirm('إعادة "' + name + '" للوضع الافتراضي؟')) return;
-                await db.ref('media_denials/' + uid).remove(); await logAdminAction('media_user_reset', uid, name, {}); alert('♻️ تم الإرجاع');
+                if (!confirm('إعادة "' + name + '" للوضع الافتراضي للوسائط؟')) return;
+                await db.ref('media_denials/' + uid).remove(); await logAdminAction('media_user_reset', uid, name, {}); alert('♻️ تم إرجاع "' + name + '" للوضع الافتراضي');
             } else if (allMediaUsersData[uid] === true) {
                 if (!confirm('حظر الوسائط عن "' + name + '" نهائياً؟')) return;
-                await db.ref('media_permissions/' + uid).remove(); await db.ref('media_denials/' + uid).set(true); await logAdminAction('media_user_deny', uid, name, {}); alert('🚫 تم الحظر');
+                await db.ref('media_permissions/' + uid).remove(); await db.ref('media_denials/' + uid).set(true); await logAdminAction('media_user_deny', uid, name, {}); alert('🚫 تم حظر "' + name + '" من الوسائط');
             } else {
-                await db.ref('media_permissions/' + uid).set(true); await logAdminAction('media_user_allow', uid, name, {}); alert('✅ تم المنح');
+                await db.ref('media_permissions/' + uid).set(true); await logAdminAction('media_user_allow', uid, name, {}); alert('✅ تم منح "' + name + '" صلاحية الوسائط');
             }
             if (allUsersData[uid]) updateUserControls(uid, allUsersData[uid]);
             if (uid === myFP) refreshMyMediaPermission();
@@ -3104,13 +3062,13 @@
         if (myRole !== 'owner') return alert('⛔');
         try {
             if (statusDenialsData[uid] === true) {
-                if (!confirm('إعادة "' + name + '" للوضع الافتراضي؟')) return;
-                await db.ref('status_denials/' + uid).remove(); await logAdminAction('status_user_reset', uid, name, {}); alert('♻️ تم الإرجاع');
+                if (!confirm('إعادة "' + name + '" للوضع الافتراضي للحالات؟')) return;
+                await db.ref('status_denials/' + uid).remove(); await logAdminAction('status_user_reset', uid, name, {}); alert('♻️ تم إرجاع "' + name + '" للوضع الافتراضي');
             } else if (allStatusUsersData[uid] === true) {
                 if (!confirm('حظر الحالات عن "' + name + '" نهائياً؟')) return;
-                await db.ref('status_permissions/' + uid).remove(); await db.ref('status_denials/' + uid).set(true); await logAdminAction('status_user_deny', uid, name, {}); alert('🚫 تم الحظر');
+                await db.ref('status_permissions/' + uid).remove(); await db.ref('status_denials/' + uid).set(true); await logAdminAction('status_user_deny', uid, name, {}); alert('🚫 تم حظر "' + name + '" من الحالات');
             } else {
-                await db.ref('status_permissions/' + uid).set(true); await logAdminAction('status_user_allow', uid, name, {}); alert('✅ تم المنح');
+                await db.ref('status_permissions/' + uid).set(true); await logAdminAction('status_user_allow', uid, name, {}); alert('✅ تم منح "' + name + '" صلاحية الحالات');
             }
             if (allUsersData[uid]) updateUserControls(uid, allUsersData[uid]);
             if (uid === myFP) refreshMyStatusPermission();
@@ -3176,11 +3134,12 @@
             let settingsBtn = ''; if (myRole === 'owner') settingsBtn = `<button class="dm-settings-btn" onclick="event.stopPropagation();cycleUserDMPermission('${u.uid}','${escapeHtml(u.name || '').replace(/'/g, "\\'")}')">⚙️</button>`;
 
             const effectiveStatus = getUserEffectiveStatus(u);
-            let statusLineText = '', statusLineClass = '';
+            let statusLineText = '';
+            let statusLineClass = '';
             if (effectiveStatus === 'online') { statusLineText = '🟢 متصل الآن'; statusLineClass = 'online'; }
             else if (effectiveStatus === 'away') { statusLineText = '🟡 غائب'; statusLineClass = 'away'; }
-            else if (u.lastSeen && Number(u.lastSeen) > 0) { statusLineText = '⚪ ' + formatLastSeen(Number(u.lastSeen)); }
-            else { statusLineText = '⚪ غير متصل'; }
+            else if (u.lastSeen && Number(u.lastSeen) > 0) { statusLineText = '⚪ ' + formatLastSeen(Number(u.lastSeen)); statusLineClass = ''; }
+            else { statusLineText = '⚪ غير متصل'; statusLineClass = ''; }
 
             card.innerHTML = `<img src="${avatar}"><div class="dm-info"><div class="dm-name">${escapeHtml(u.name || 'مجهول')} ${roleBadge}</div><div class="dm-status-line ${statusLineClass}">${statusLineText}</div><div class="dm-last">${isDMOn ? (lastMsg ? '📩 ' + escapeHtml(lastMsg) : '💬 ابدأ محادثة') : '🔒 مغلق'}</div></div>${unread > 0 ? `<div class="dm-unread">${unread > 99 ? '99+' : unread}</div>` : ''}${lockIcon}${settingsBtn}`;
             card.onclick = (e) => { if (e.target.closest('.dm-settings-btn')) return; if (!isDMOn) return alert('🔒'); openDMChat(u.uid); };
@@ -3191,9 +3150,9 @@
     function filterDMUsers() { const t = document.getElementById('dm-search').value.toLowerCase(); document.querySelectorAll('#dm-users-list .dm-user-card').forEach(c => { c.style.display = (c.dataset.name || '').includes(t) ? 'flex' : 'none'; }); }
 
     function openDMChat(uid) {
-        if (!myDMEnabled) return alert('🔒 خاصك مغلق\nلا يمكنك المحادثة مع أي مستخدم');
+        if (!myDMEnabled) return alert('🔒 خاصك مغلق من قبل مالك التطبيق\nلا يمكنك المحادثة مع أي مستخدم');
         const u = allUsersData[uid]; if (!u) return;
-        if (!canUserDM(uid, u.role)) return alert('🔒 لا يمكنك المحادثة\nخاص هذا المستخدم مغلق');
+        if (!canUserDM(uid, u.role)) return alert('🔒 لا يمكنك المحادثة\nخاص هذا المستخدم مغلق من قبل مالك التطبيق');
         closeDMList();
         currentDMChat = { uid, name: u.name || 'مجهول', avatar: u.avatar || DEFAULT_ICON, role: u.role || 'user' };
         document.getElementById('dm-chat-avatar').src = currentDMChat.avatar;
@@ -3210,8 +3169,6 @@
         updateDMMediaBtnVisibility();
         db.ref('dm_inbox/' + myFP + '/' + uid + '/count').set(0);
         loadDMMessages(uid);
-        // ✅ إعادة تطبيق خلفية الخاص عند الفتح
-        setTimeout(() => applyBackground('class', 'dm'), 100);
     }
     function closeDMChat() {
         if (dmChatMessagesListener && currentDMChat) { const chatId = getChatId(myFP, currentDMChat.uid); db.ref('private_chats/' + chatId + '/messages').off('child_added', dmChatMessagesListener); dmChatMessagesListener = null; }
@@ -3325,53 +3282,45 @@
         } catch (e) { alert('❌ ' + e.message); }
     }
 
-    /* ═══ معالج آمن لوسائط الخاص باستخدام URL.createObjectURL pattern ═══ */
+    /* ════════ معالج آمن: handleDMMedia ════════ */
     async function handleDMMedia(input) {
         let file = null;
         try {
-            if (input && input.files && input.files[0]) file = input.files[0];
+            // ⚡ قراءة الملف ومسح الحقل فوراً (أهم خطوة لمنع crash WebView)
+            if (input && input.files && input.files[0]) {
+                file = input.files[0];
+            }
             try { input.value = ''; } catch(e) {}
             
             if (!file) return;
             if (!currentDMChat) { alert('⚠️ الرجاء فتح محادثة أولاً'); return; }
             if (!myMediaEnabled) { alert('⛔ ليس لديك صلاحية إرسال الوسائط'); return; }
             if (isMuted) { alert('🔇 أنت مكتوم'); return; }
-            if (!file.type || (file.type.indexOf('image/') !== 0 && file.type.indexOf('video/') !== 0)) { alert('⚠️ صورة أو فيديو فقط!'); return; }
+            if (!file.type || (!file.type.startsWith('image/') && !file.type.startsWith('video/'))) { alert('⚠️ صورة أو فيديو فقط!'); return; }
             if (file.size > 104857600) { alert('⚠️ حجم كبير جداً!'); return; }
             
-            // ✨ استخدام createObjectURL لإنشاء مرجع خفيف (لا يحمل الملف في الذاكرة مرتين)
-            let previewUrl = null;
-            try { previewUrl = URL.createObjectURL(file); } catch(e) { previewUrl = null; }
-            
-            // 🔥 تأجيل المعالجة لإعطاء WebView فرصة للتعافي من فتح المعرض
-            await new Promise(r => setTimeout(r, 80));
+            // ⚡ معالجة مؤجلة لتفادي crash عند فتح المعرض
+            await new Promise(r => setTimeout(r, 100));
             
             const btn = document.getElementById('dm-media-btn');
             const oldText = btn ? btn.textContent : '';
             if (btn) btn.textContent = '⏳';
             
             try {
-                // ⚡ رفع الملف مباشرة إلى Cloudinary (بدون FileReader)
                 const url = await uploadCloudinary(file);
                 if (url) {
                     const toUid = currentDMChat.uid;
                     const chatId = getChatId(myFP, toUid);
-                    const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, toName: currentDMChat.name, text: '', media: url, type: file.type.indexOf('video') === 0 ? 'video' : 'image', time: firebase.database.ServerValue.TIMESTAMP };
+                    const msgData = { from: myFP, fromName: myName, fromAvatar: myAvatar, to: toUid, toName: currentDMChat.name, text: '', media: url, type: file.type.startsWith('video') ? 'video' : 'image', time: firebase.database.ServerValue.TIMESTAMP };
                     if (dmReplyTo) { msgData.replyTo = { key: dmReplyTo.key, sender: dmReplyTo.sender, text: (dmReplyTo.text || '').substring(0, 100) }; cancelDMReply(); }
                     await db.ref('private_chats/' + chatId + '/messages').push(msgData);
-                    const previewText = file.type.indexOf('video') === 0 ? '🎥 مقطع فيديو' : '🖼️ صورة';
+                    const previewText = file.type.startsWith('video') ? '🎥 مقطع فيديو' : '🖼️ صورة';
                     await db.ref('dm_inbox/' + toUid + '/' + myFP).update({ fromName: myName, fromAvatar: myAvatar, lastMessage: previewText, lastTime: firebase.database.ServerValue.TIMESTAMP, count: firebase.database.ServerValue.increment(1) });
                     await db.ref('dm_inbox/' + myFP + '/' + toUid).update({ fromName: currentDMChat.name, fromAvatar: currentDMChat.avatar, lastMessage: previewText, lastTime: firebase.database.ServerValue.TIMESTAMP, count: 0 });
                     playSendSound();
                 } else alert('❌ فشل الرفع');
-            } catch (e) {
-                console.error('DM media upload error:', e);
-                alert('❌ ' + e.message);
-            } finally {
-                if (btn) btn.textContent = oldText;
-                // ✅ تحرير الذاكرة
-                if (previewUrl) { try { URL.revokeObjectURL(previewUrl); } catch(e) {} }
-            }
+            } catch (e) { console.error('DM media upload error:', e); alert('❌ ' + e.message); }
+            finally { if (btn) btn.textContent = oldText; }
         } catch (outerErr) {
             console.error('handleDMMedia fatal:', outerErr);
             try { input.value = ''; } catch(e) {}
@@ -3383,8 +3332,8 @@
         e.preventDefault();
         if (!currentDMChat) return;
         if (isMuted) return alert('🔇');
-        if (!myDMEnabled) return alert('🔒 خاصك مغلق\nلا يمكنك المحادثة');
-        if (!canUserDM(currentDMChat.uid, currentDMChat.role)) return alert('🔒 لا يمكنك المحادثة');
+        if (!myDMEnabled) return alert('🔒 خاصك مغلق من قبل مالك التطبيق\nلا يمكنك المحادثة مع أي مستخدم');
+        if (!canUserDM(currentDMChat.uid, currentDMChat.role)) return alert('🔒 لا يمكنك المحادثة\nخاص هذا المستخدم مغلق من قبل مالك التطبيق');
         const input = document.getElementById('dm-message-input');
         const text = input.value.trim();
         if (!text) return;
@@ -3475,8 +3424,8 @@
         updates['bg_settings/' + uid] = null;
         if (name && name.trim() && name !== 'مجهول') updates['name_links/' + name.toLowerCase()] = null;
         updates['fp_links/' + uid] = null;
-        try { const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value'); if (msgs.exists()) msgs.forEach(c => { updates['messages/' + c.key] = null; }); } catch(e) {}
-        try { const sts = await db.ref('statuses').orderByChild('uid').equalTo(uid).once('value'); if (sts.exists()) sts.forEach(c => { updates['statuses/' + c.key] = null; }); } catch(e) {}
+        try { const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value'); if (msgs.exists()) msgs.forEach(c => { updates['messages/' + c.key] = null; }); } catch(e) { console.warn('فشل حذف الرسائل:', e); }
+        try { const sts = await db.ref('statuses').orderByChild('uid').equalTo(uid).once('value'); if (sts.exists()) sts.forEach(c => { updates['statuses/' + c.key] = null; }); } catch(e) { console.warn('فشل حذف الحالات:', e); }
         try {
             const privateChatsSnap = await db.ref('private_chats').once('value');
             if (privateChatsSnap.exists()) {
@@ -3489,7 +3438,7 @@
                     if (parts.length >= 2 && parts.includes(uid)) updates['private_chats/' + chatId] = null;
                 });
             }
-        } catch(e) {}
+        } catch(e) { console.warn('فشل حذف المحادثات:', e); }
         try {
             const dmInboxAll = await db.ref('dm_inbox').once('value');
             if (dmInboxAll.exists()) {
@@ -3499,7 +3448,20 @@
                     if (userInbox.hasChild(uid)) updates['dm_inbox/' + otherUid + '/' + uid] = null;
                 });
             }
-        } catch(e) {}
+        } catch(e) { console.warn('فشل تنظيف dm_inbox:', e); }
+        try {
+            const dmClearsAll = await db.ref('dm_clears').once('value');
+            if (dmClearsAll.exists()) {
+                dmClearsAll.forEach(userClears => {
+                    const otherUid = userClears.key;
+                    if (otherUid === uid) return;
+                    userClears.forEach(clearEntry => {
+                        const chatId = clearEntry.key;
+                        if (chatId === uid || chatId.startsWith(uid + '_') || chatId.endsWith('_' + uid) || chatId.split('_').includes(uid)) updates['dm_clears/' + otherUid + '/' + chatId] = null;
+                    });
+                });
+            }
+        } catch(e) { console.warn('فشل تنظيف dm_clears:', e); }
         try {
             const reportsSnap = await db.ref('reports').once('value');
             if (reportsSnap.exists()) {
@@ -3508,7 +3470,27 @@
                     if (r.targetId === uid || r.reporterId === uid || (r.messageSnapshot && r.messageSnapshot.sender_uid === uid)) updates['reports/' + report.key] = null;
                 });
             }
-        } catch(e) {}
+        } catch(e) { console.warn('فشل حذف البلاغات:', e); }
+        try {
+            const notifsAll = await db.ref('notifications').once('value');
+            if (notifsAll.exists()) {
+                notifsAll.forEach(userNotifs => {
+                    const otherUid = userNotifs.key;
+                    userNotifs.forEach(notif => {
+                        const n = notif.val();
+                        if (n.targetId === uid || n.reporterId === uid) updates['notifications/' + otherUid + '/' + notif.key] = null;
+                    });
+                });
+            }
+        } catch(e) { console.warn('فشل تنظيف الإشعارات:', e); }
+        try {
+            const warningsSnap = await db.ref('warnings/history').once('value');
+            if (warningsSnap.exists()) {
+                warningsSnap.forEach(warning => {
+                    if (warning.hasChild('ack/' + uid)) updates['warnings/history/' + warning.key + '/ack/' + uid] = null;
+                });
+            }
+        } catch(e) { console.warn('فشل تنظيف التحذيرات:', e); }
         try {
             const warningsSnap2 = await db.ref('warnings/history').once('value');
             if (warningsSnap2.exists()) {
@@ -3517,27 +3499,42 @@
                     if (w.target && w.target.type === 'user' && w.target.value === uid) updates['warnings/history/' + warning.key] = null;
                 });
             }
-        } catch(e) {}
+            const currentWarningSnap = await db.ref('warnings/current').once('value');
+            if (currentWarningSnap.exists()) {
+                const w = currentWarningSnap.val();
+                if (w.target && w.target.type === 'user' && w.target.value === uid) updates['warnings/current'] = null;
+            }
+        } catch(e) { console.warn('فشل تنظيف تحذيرات المستخدم:', e); }
         try {
-            if (Object.keys(updates).length > 0) { await db.ref().update(updates); }
+            const fpLinksSnap = await db.ref('fp_links/' + uid).once('value');
+            if (fpLinksSnap.exists()) {
+                const fpObj = fpLinksSnap.val();
+                Object.keys(fpObj).forEach(nameKey => { updates['name_links/' + nameKey + '/' + uid] = null; });
+            }
+        } catch(e) { console.warn('فشل تنظيف fp_links:', e); }
+        try {
+            if (Object.keys(updates).length > 0) { await db.ref().update(updates); console.log('✅ تم تنفيذ ' + Object.keys(updates).length + ' عملية حذف'); }
         } catch(e) {
-            for (const key in updates) { try { await db.ref(key).remove(); } catch(err) {} }
+            console.warn('فشل الدفعة الأولى، جاري التنفيذ بشكل فردي...');
+            for (const key in updates) { try { await db.ref(key).remove(); } catch(err) { console.warn('فشل حذف:', key, err); } }
         }
-        console.log('✅ تم الحذف الشامل');
+        console.log('✅ تم الحذف الشامل بنجاح');
     }
 
     async function deleteMyAccount() {
         if (isBeingDeleted) return;
-        if (!confirm('⚠️ هل أنت متأكد من حذف حسابك نهائياً؟')) return;
-        if (!confirm('⚠️ تأكيد أخير!')) return;
-        const myFPcopy = myFP, myNameCopy = myName, myAvatarCopy = myAvatar;
+        if (!confirm('⚠️ هل أنت متأكد من حذف حسابك نهائياً؟\n\n• سيتم حذف جميع رسائلك\n• جميع حالاتك\n• جميع محادثاتك الخاصة\n• كل شيء متعلق بحسابك\n\n⚠️ لا يمكن التراجع!')) return;
+        if (!confirm('⚠️ تأكيد أخير!\n\nهل أنت متأكد 100%؟')) return;
+        const myFPcopy = myFP;
+        const myNameCopy = myName;
+        const myAvatarCopy = myAvatar;
         isBeingDeleted = true;
         document.getElementById('deletion-title').textContent = '🗑️ جاري حذف حسابك';
         document.getElementById('deletion-subtitle').textContent = 'يتم حذف جميع بياناتك من السيرفر...';
         document.getElementById('deletion-overlay').classList.add('active');
         try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch(e) {}
         try { await logAdminAction('self_delete_account', myFPcopy, myNameCopy, {}); } catch(e) {}
-        try { await purgeUserEverywhere(myFPcopy, myNameCopy, myAvatarCopy); } catch(e) {}
+        try { await purgeUserEverywhere(myFPcopy, myNameCopy, myAvatarCopy); } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
         try {
             localStorage.clear();
             sessionStorage.clear();
@@ -3551,17 +3548,17 @@
         if (myRole !== 'owner') return alert('⛔');
         const tr = allUsersData[uid]?.role || 'user';
         if (tr === 'owner') return alert('⛔ لا يمكن حذف مالك آخر');
-        if (!confirm('⚠️ حذف "' + name + '" نهائياً؟')) return;
-        if (!confirm('⚠️ تأكيد أخير!')) return;
+        if (!confirm('⚠️ حذف "' + name + '" نهائياً؟\n\n• سيتم حذف جميع رسائله\n• جميع حالاته\n• جميع محادثاته\n• كل شيء متعلق به\n\n⚠️ سيتم إخراجه فوراً من التطبيق!')) return;
+        if (!confirm('⚠️ تأكيد أخير!\n\nلا يمكن التراجع.')) return;
         const targetAvatar = allUsersData[uid]?.avatar || DEFAULT_ICON;
         try { await logAdminAction('delete_user', uid, name, { target_role: tr }); } catch(e) {}
         const notif = document.createElement('div');
         notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff;padding:16px 24px;border-radius:14px;font-family:var(--font-main);font-weight:700;z-index:9999999;box-shadow:0 10px 40px rgba(0,0,0,0.4);text-align:center;font-size:14px;';
-        notif.innerHTML = '⏳ جاري حذف "' + escapeHtml(name) + '" نهائياً...';
+        notif.innerHTML = '⏳ جاري حذف "' + escapeHtml(name) + '" نهائياً...<br><span style="font-size:11px;opacity:0.8;margin-top:4px;display:block;">يتم حذف كل شيء متعلق بحسابه</span>';
         document.body.appendChild(notif);
-        try { await purgeUserEverywhere(uid, name, targetAvatar); } catch(e) {}
+        try { await purgeUserEverywhere(uid, name, targetAvatar); } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
         setTimeout(() => { if (notif.parentNode) notif.remove(); }, 1500);
-        alert('✅ تم الحذف النهائي');
+        alert('✅ تم حذف "' + name + '" نهائياً مع جميع بياناته من قاعدة البيانات');
     }
 
     async function deleteUnknownUser(uid) {
@@ -3569,12 +3566,12 @@
         const u = allUsersData[uid]; if (!u) return alert('المستخدم غير موجود');
         if (!isUserUnknown(u)) return alert('هذا المستخدم ليس مجهولاً');
         const displayName = u.name || 'بدون اسم';
-        if (!confirm('🗑️ حذف "' + displayName + '" نهائياً؟')) return;
+        if (!confirm('🗑️ حذف هذا الحساب نهائياً؟\n\nالاسم: "' + displayName + '"\n\n• سيتم حذف كل شيء متعلق به من التطبيق.')) return;
         const targetAvatar = u.avatar || DEFAULT_ICON;
         try {
             await logAdminAction('delete_unknown_user', uid, displayName, {});
             await purgeUserEverywhere(uid, u.name, targetAvatar);
-            alert('✅ تم الحذف');
+            alert('✅ تم حذف الحساب نهائياً');
             if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
             updateUnknownUsersBtnVisibility();
         } catch(e) { alert('❌ ' + e.message); }
@@ -3585,28 +3582,31 @@
         const unknowns = [];
         Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (isUserUnknown(u)) unknowns.push({ uid: k, name: u.name || 'بدون اسم', avatar: u.avatar || DEFAULT_ICON }); });
         if (unknowns.length === 0) return alert('✅ لا توجد حسابات بدون اسم');
-        if (!confirm('🗑️ حذف ' + unknowns.length + ' حساب بدون اسم؟')) return;
-        if (!confirm('⚠️ تأكيد أخير!')) return;
+        if (!confirm('🗑️ حذف ' + unknowns.length + ' حساب بدون اسم صالح نهائياً؟')) return;
+        if (!confirm('⚠️ تأكيد أخير!\nلا يمكن التراجع عن هذه العملية.')) return;
         const notif = document.createElement('div');
         notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff;padding:16px 24px;border-radius:14px;font-family:var(--font-main);font-weight:700;z-index:9999999;box-shadow:0 10px 40px rgba(0,0,0,0.4);text-align:center;font-size:14px;';
-        notif.innerHTML = '⏳ جاري الحذف الشامل...<br><span>0 / ' + unknowns.length + '</span>';
+        notif.innerHTML = '⏳ جاري الحذف الشامل...<br><span style="font-size:11px;opacity:0.8;margin-top:4px;display:block;">0 / ' + unknowns.length + '</span>';
         document.body.appendChild(notif);
         const cntEl = notif.querySelector('span');
         let success = 0, failed = 0;
         for (let i = 0; i < unknowns.length; i++) {
-            try { await purgeUserEverywhere(unknowns[i].uid, unknowns[i].name, unknowns[i].avatar); success++; }
-            catch(e) { failed++; }
+            const target = unknowns[i];
+            try { await purgeUserEverywhere(target.uid, target.name, target.avatar); success++; }
+            catch(e) { failed++; console.warn('فشل حذف', target.uid, e); }
             if (cntEl) cntEl.textContent = (i + 1) + ' / ' + unknowns.length;
         }
         try { await logAdminAction('delete_all_unknown_users', null, null, { count: success, failed: failed }); } catch(e) {}
         setTimeout(() => { if (notif.parentNode) notif.remove(); }, 500);
         setTimeout(() => {
             alert('✅ تم حذف ' + success + ' من ' + unknowns.length + (failed > 0 ? '\n❌ فشل: ' + failed : ''));
+            if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
+            updateUnknownUsersBtnVisibility();
         }, 600);
     }
 
     function updateHiddenButton() { const btn = document.getElementById('toggle-hidden-btn'); if (!btn) return; if (isHidden) { btn.textContent = '🙈 أنا مخفي (إظهار)'; btn.style.background = '#4caf50'; } else { btn.textContent = '🙈 إخفاء نفسي'; btn.style.background = '#e91e63'; } }
-    function toggleOwnerHidden() { if (myRole !== 'owner') return alert('⛔'); const n = !isHidden; db.ref('users/' + myFP + '/hidden').set(n).then(() => { isHidden = n; updateHiddenButton(); }); }
+    function toggleOwnerHidden() { if (myRole !== 'owner') return alert('⛔'); const n = !isHidden; db.ref('users/' + myFP + '/hidden').set(n).then(() => { isHidden = n; updateHiddenButton(); alert(n ? '✅' : '✅'); }); }
 
     function startListeners() {
         loadMessages();
@@ -3821,7 +3821,7 @@
         try {
             await db.ref('deleted_messages').push({ original_msg_id: k, original_sender_uid: m.uid, original_sender_name: m.sender || 'مجهول', original_sender_avatar: m.avatar || DEFAULT_ICON, text: m.text || '', media: m.media || null, media_type: m.type || null, sent_time: m.time || Date.now(), deleted_by_uid: myFP, deleted_by_name: myName || 'مجهول', deleted_by_role: myRole || 'user', deleted_by_avatar: myAvatar || DEFAULT_ICON, deleted_time: Date.now() });
             await logAdminAction('delete_message', m.uid, m.sender || 'مجهول', { message_text: (m.text || '').substring(0, 200), has_media: !!m.media, media_type: m.type || null });
-        } catch (e) {}
+        } catch (e) { console.warn('⚠️ فشل الحفظ:', e); }
         db.ref('messages/' + k).remove().then(() => { delete messagesCache[k]; renderMessages(); });
     }
     function scrollToMessage(k) { const e = document.getElementById('msg-' + k); if (e) { e.scrollIntoView({ behavior: 'smooth', block: 'center' }); e.style.background = 'rgba(255,235,59,0.3)'; setTimeout(() => e.style.background = 'transparent', 1000); } }
@@ -3832,7 +3832,7 @@
         if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && myRole !== 'owner') { e.innerHTML = ''; return; }
         db.ref('bans/' + u).once('value', b => {
             const ib = b.exists(); let bt = '';
-            if (isUnknown && myRole === 'owner') bt += '<button class="ctrl-btn delete-unknown" onclick="deleteUnknownUser(\'' + u + '\')" title="حذف">🗑️</button>';
+            if (isUnknown && myRole === 'owner') bt += '<button class="ctrl-btn delete-unknown" onclick="deleteUnknownUser(\'' + u + '\')" title="حذف الحساب نهائياً">🗑️</button>';
             if (canBan(myRole, d.role)) { if (ib) { if (myRole === 'owner') bt += '<button class="ctrl-btn unban" onclick="unbanUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">↺</button>'; } else bt += '<button class="ctrl-btn ban" onclick="banUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🚫</button>'; }
             db.ref('mutes/' + u).once('value', m => {
                 let im = false; if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
@@ -3864,7 +3864,7 @@
                     else if (isStatusAllow) { statusCls = 'status'; statusIcon = '📸'; }
                     else if (isStatusOn) { statusCls = 'status'; statusIcon = '📸'; }
                     bt += '<button class="ctrl-btn ' + statusCls + '" onclick="cycleUserStatusPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الحالات">' + statusIcon + '</button>';
-                    bt += '<button class="ctrl-btn delete-user" onclick="permanentDeleteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="حذف">🗑️</button>';
+                    bt += '<button class="ctrl-btn delete-user" onclick="permanentDeleteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="حذف المستخدم نهائياً">🗑️</button>';
                 }
                 e.innerHTML = bt;
             });
@@ -3932,8 +3932,8 @@
         if (!targetUid) return alert('⚠️ لم يتم تحديد المستخدم');
         const targetRole = allUsersData[targetUid]?.role || 'user';
         const targetCanReceive = canUserDM(targetUid, targetRole);
-        if (!targetCanReceive) { closeProfileActions(); return alert('🔒 لا يمكنك المحادثة مع "' + targetName + '"'); }
-        if (!myDMEnabled) { closeProfileActions(); return alert('🔒 خاصك مغلق'); }
+        if (!targetCanReceive) { closeProfileActions(); return alert('🔒 لا يمكنك المحادثة مع "' + targetName + '"\n\nخاصه مغلق.'); }
+        if (!myDMEnabled) { closeProfileActions(); return alert('🔒 خاصك مغلق من قِبَل مالك التطبيق'); }
         document.getElementById('profile-actions-modal').classList.remove('active');
         document.getElementById('modal-overlay').classList.remove('show');
         paTargetUid = null; paTargetName = null; paTargetAvatar = null;
@@ -3955,7 +3955,6 @@
     }
     function openProfile() {
         document.getElementById('prof-img').src = myAvatar; document.getElementById('prof-name').value = myName;
-        pendingProfileFile = null;
         const hiddenControl = document.getElementById('hidden-owner-control');
         if (myRole === 'owner') { hiddenControl.style.display = 'block'; updateHiddenButton(); updateOwnerDMBtn(); }
         else hiddenControl.style.display = 'none';
@@ -3967,26 +3966,27 @@
     }
     function onAvatarClick() { if (myRole === 'user') return alert("⛔"); document.getElementById('avatar-in').click(); }
 
-    /* ═══ معالج آمن لصورة الملف الشخصي باستخدام URL.createObjectURL ═══ */
+    /* ════════ معالج آمن: previewProf ════════ */
     function previewProf(i) {
         try {
             if (myRole === 'user') { alert("⛔"); i.value = ''; return; }
-            const f = i && i.files && i.files[0];
+            const file = i && i.files && i.files[0];
             i.value = ''; // مسح فوراً
-            if (!f) return;
-            if (!f.type || f.type.indexOf('image/') !== 0) { alert('⚠️ صورة فقط'); return; }
-            if (f.size > 5 * 1024 * 1024) { alert('⚠️ حجم الصورة كبير'); return; }
-            
-            pendingProfileFile = f;
-            
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { alert('⚠️ صورة فقط'); return; }
+            if (file.size > 5 * 1024 * 1024) { alert('⚠️ حجم الصورة كبير'); return; }
+            // تأجيل لتفادي crash
             setTimeout(() => {
                 try {
-                    if (pendingAvatarObjectUrl) { try { URL.revokeObjectURL(pendingAvatarObjectUrl); } catch(e) {} }
-                    pendingAvatarObjectUrl = URL.createObjectURL(f);
-                    const img = document.getElementById('prof-img');
-                    img.src = pendingAvatarObjectUrl;
-                } catch(e) { console.warn('previewProf inner:', e); }
-            }, 100);
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try { document.getElementById('prof-img').src = e.target.result; }
+                        catch(err) { console.warn('preview img onload error:', err); }
+                    };
+                    reader.onerror = function() { alert('❌ فشل في قراءة الصورة'); };
+                    reader.readAsDataURL(file);
+                } catch (e) { console.warn('previewProf inner error:', e); alert('❌ حدث خطأ'); }
+            }, 150);
         } catch (e) { console.warn('previewProf fatal:', e); try { i.value = ''; } catch(e2) {} }
     }
 
@@ -3995,18 +3995,12 @@
         const validation = validateName(rawName);
         if (!validation.valid) return alert('❌ ' + validation.reason);
         const n = validation.name;
+        const src = document.getElementById('prof-img').src;
         let fa = myAvatar;
-        if (pendingProfileFile) {
+        if (src.startsWith('data:image')) {
             if (myRole === 'user') { alert("⛔"); return; }
-            try {
-                const u = await uploadCloudinary(pendingProfileFile);
-                if (u) fa = u;
-                else { alert("فشل رفع الصورة"); return; }
-            } catch (e) { alert("فشل الرفع: " + e.message); return; }
-            finally {
-                if (pendingAvatarObjectUrl) { try { URL.revokeObjectURL(pendingAvatarObjectUrl); } catch(e) {} pendingAvatarObjectUrl = null; }
-                pendingProfileFile = null;
-            }
+            try { const b = await (await fetch(src)).blob(), f = new File([b], "avatar.jpg", { type: "image/jpeg" }), u = await uploadCloudinary(f); if (u) fa = u; }
+            catch (e) { alert("فشل الرفع"); return; }
         }
         myName = n; myAvatar = fa;
         localStorage.setItem("name", myName); localStorage.setItem("avatar", myAvatar);
@@ -4028,8 +4022,6 @@
             document.getElementById('chat-form').style.display = 'flex';
             document.getElementById('add-status-btn').classList.remove('active');
             lastSeenTimestamps.messages = Date.now(); localStorage.setItem('lst_msg', lastSeenTimestamps.messages);
-            // إعادة تطبيق خلفية الدردشة
-            setTimeout(() => applyBackground('class', 'chat'), 50);
         } else {
             document.getElementById('nav-status').classList.add('active');
             document.getElementById('status-screen').classList.add('active');
@@ -4138,16 +4130,16 @@
     function selectStatusType(t) { selectedStatusType = t; document.querySelectorAll('.status-options button').forEach(b => b.classList.remove('active')); if (t === 'text') { document.getElementById('status-type-text').classList.add('active'); document.getElementById('status-text-area').classList.add('active'); document.getElementById('status-media-area').classList.remove('active'); } else { document.getElementById('status-type-media').classList.add('active'); document.getElementById('status-media-area').classList.add('active'); document.getElementById('status-text-area').classList.remove('active'); } }
     document.getElementById('status-text-input')?.addEventListener('input', function() { document.getElementById('text-counter').textContent = this.value.length + ' / 500'; });
 
-    /* ═══ معالج آمن لحالة الوسائط ═══ */
+    /* ════════ معالج آمن: handleStatusFile ════════ */
     function handleStatusFile(i) {
         try {
             const file = i && i.files && i.files[0];
             i.value = ''; // مسح فوراً
             if (!file) return;
-            if (!file.type || (file.type.indexOf('image/') !== 0 && file.type.indexOf('video/') !== 0)) { alert("⚠️ صورة أو فيديو فقط!"); return; }
+            if (!file.type || (!file.type.startsWith('image/') && !file.type.startsWith('video/'))) { alert("⚠️ صورة أو فيديو فقط!"); return; }
             if (file.size > 104857600) { alert("⚠️ حجم كبير!"); return; }
             statusFileData = file;
-            statusFileType = file.type.indexOf('video') === 0 ? 'video' : 'image';
+            statusFileType = file.type.startsWith('video') ? 'video' : 'image';
             document.getElementById('selected-filename').textContent = '📎 ' + file.name;
             document.getElementById('selected-filename').classList.add('active');
             document.getElementById('publish-status-btn').disabled = false;
@@ -4176,7 +4168,7 @@
     }
     function openNotifications() { document.getElementById('notifications-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); renderNotifications(); }
     function closeNotifications() { document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); }
-    function renderNotifications() { if (isBeingDeleted) return; const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div>'; d.appendChild(db2); l.appendChild(d); }); }
+    function renderNotifications() { if (isBeingDeleted) return; const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
     function clearAllNotifications() { if (confirm("مسح الكل؟")) db.ref('notifications/' + myFP).remove(); }
     function updateNotifBadge() { if (isBeingDeleted) return; const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
     function openYouTubeModal() { document.getElementById('youtube-modal').classList.add('active'); document.getElementById('yt-link-input').focus(); }
@@ -4199,17 +4191,11 @@
         input.focus();
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       ✨ معالج آمن بشكل كامل للوسائط (الإصلاح الرئيسي)
-       - URL.createObjectURL بدل FileReader (أداء أفضل بكثير)
-       - مسح input.value فوراً لمنع crash WebView
-       - تأجيل المعالجة بـ setTimeout(0)
-       - try/catch شامل + revokeObjectURL لتحرير الذاكرة
-       ═══════════════════════════════════════════════════════════════ */
+    /* ════════ معالج آمن: handleFile (الرئيسي لمنع crash) ════════ */
     async function handleFile(input) {
         let file = null;
         try {
-            // ⚡ التقاط الملف ثم مسح الحقل فوراً (الخطوة الأهم!)
+            // ⚡ الخطوة الأهم: التقاط الملف ومسح الحقل فوراً لمنع إعادة التشغيل
             if (input && input.files && input.files[0]) {
                 file = input.files[0];
             }
@@ -4218,38 +4204,26 @@
             if (!file) return;
             if (!myMediaEnabled) { alert('⛔ ليس لديك صلاحية إرسال الوسائط'); return; }
             if (isMuted) { alert('🔇 أنت مكتوم'); return; }
-            if (!file.type || (file.type.indexOf('image/') !== 0 && file.type.indexOf('video/') !== 0)) { alert('⚠️ صورة أو فيديو فقط!'); return; }
+            if (!file.type || (!file.type.startsWith('image/') && !file.type.startsWith('video/'))) { alert('⚠️ صورة أو فيديو فقط!'); return; }
             if (file.size > 104857600) { alert('⚠️ حجم كبير جداً! الحد 100 ميجا.'); return; }
             
-            // ✨ إنشاء مرجع خفيف للتحقق فقط (لا يُحمّل الذاكرة)
-            let objUrl = null;
-            try { objUrl = URL.createObjectURL(file); } catch(e) { objUrl = null; }
-            
-            // ⚡ تأجيل المعالجة - يمنح WebView وقتاً للتعافي من فتح المعرض
-            // هذا هو المفتاح لمنع crash
-            await new Promise(resolve => setTimeout(resolve, 50));
+            // ⚡ تأجيل معالجة الملف - يمنع crash WebView
+            await new Promise(r => setTimeout(r, 100));
             
             const sb = document.getElementById('send-btn');
             const oldText = sb ? sb.textContent : '➤';
             if (sb) { sb.textContent = "⏳"; sb.disabled = true; }
             
             try {
-                // ⚡ رفع الملف مباشرة إلى Cloudinary (لا حاجة لـ FileReader)
                 const u = await uploadCloudinary(file);
                 if (u) {
-                    const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: file.type.indexOf('video') === 0 ? 'video' : 'image', avatar: myAvatar };
+                    const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: file.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar };
                     if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); }
                     db.ref('messages').push(d);
                     playSendSound();
                 } else alert("❌ فشل الرفع");
-            } catch (e) {
-                console.error('upload error:', e);
-                alert("❌ خطأ: " + e.message);
-            } finally {
-                if (sb) { sb.textContent = oldText; sb.disabled = false; }
-                // ✅ تحرير الذاكرة فوراً
-                if (objUrl) { try { URL.revokeObjectURL(objUrl); } catch(e) {} }
-            }
+            } catch (e) { console.error('upload error:', e); alert("❌ خطأ: " + e.message); }
+            finally { if (sb) { sb.textContent = oldText; sb.disabled = false; } }
         } catch (outerErr) {
             console.error('handleFile fatal:', outerErr);
             try { input.value = ''; } catch(e) {}
@@ -4259,7 +4233,7 @@
 
     async function uploadCloudinary(f) {
         const cn = 'nfg03aku', up = 'daufafvn';
-        const url = 'https://api.cloudinary.com/v1_1/' + cn + '/' + (f.type.indexOf('video') === 0 ? 'video' : 'image') + '/upload';
+        const url = 'https://api.cloudinary.com/v1_1/' + cn + '/' + (f.type.startsWith('video') ? 'video' : 'image') + '/upload';
         const fd = new FormData();
         fd.append('file', f);
         fd.append('upload_preset', up);
@@ -4282,7 +4256,7 @@
     async function openReportModal(type, targetUid, targetName, messageKey, statusKey, avatarUrl) {
         if (!myName || !myFP) return alert('يرجى تسجيل الدخول أولاً');
         if (targetUid === myFP) return alert('لا يمكنك الإبلاغ عن نفسك');
-        if (type !== 'message' && type !== 'status') return alert('⛔');
+        if (type !== 'message' && type !== 'status') return alert('⛔ هذا النوع من البلاغات تم إزالته');
         if (!targetUid || targetUid === 'undefined' || targetUid === 'null') {
             if (targetName) {
                 let found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').trim().toLowerCase() === (targetName || '').trim().toLowerCase());
@@ -4488,7 +4462,7 @@
         const list = document.getElementById('dm-monitor-list');
         list.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">⏳ جاري التحميل...</div>';
         let usersData = {};
-        try { const usersSnap = await db.ref('users').once('value'); usersData = usersSnap.val() || {}; } catch (e) {}
+        try { const usersSnap = await db.ref('users').once('value'); usersData = usersSnap.val() || {}; } catch (e) { console.warn(e); }
         if (dmMonitorListener) db.ref('private_chats').off('value', dmMonitorListener);
         dmMonitorListener = db.ref('private_chats').on('value', snap => {
             if (isBeingDeleted) return;
@@ -4541,7 +4515,7 @@
                 div.onclick = () => viewMonitoredChat(c.chatId, c.u1Name, c.u2Name);
                 list.appendChild(div);
             });
-        }, error => { list.innerHTML = '<div style="text-align:center;padding:20px;color:#d32f2f;">⚠️ خطأ: ' + error.message + '</div>'; });
+        }, error => { list.innerHTML = '<div style="text-align:center;padding:20px;color:#d32f2f;font-size:14px;">⚠️ خطأ: ' + error.message + '</div>'; });
     }
     function filterDMMonitor() { const q = document.getElementById('dm-monitor-search').value.toLowerCase(); document.querySelectorAll('#dm-monitor-list .dm-monitor-card').forEach(c => { c.style.display = (c.dataset.search || '').includes(q) ? 'flex' : 'none'; }); }
     async function viewMonitoredChat(chatId, name1, name2) {
@@ -4550,7 +4524,7 @@
         body.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">⏳ جاري التحميل...</div>';
         document.getElementById('dm-monitor-view-modal').classList.add('active');
         let usersData = {};
-        try { const usersSnap = await db.ref('users').once('value'); usersData = usersSnap.val() || {}; } catch (e) {}
+        try { const usersSnap = await db.ref('users').once('value'); usersData = usersSnap.val() || {}; } catch (e) { console.warn(e); }
         db.ref('private_chats/' + chatId + '/messages').orderByChild('time').limitToLast(200).once('value', snap => {
             body.innerHTML = '';
             if (!snap.exists()) { body.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">لا توجد رسائل</div>'; return; }
@@ -4647,7 +4621,7 @@
             document.getElementById('warning-acknowledged-info').classList.add('show');
             playTone(1046, 0.15, 'sine', 0, 0.3);
             setTimeout(() => hideWarningOverlay(), 1500);
-        } catch(e) {}
+        } catch(e) { console.warn('فشل تأكيد التحذير:', e); }
     }
     function openWarningComposer() {
         if (myRole !== 'owner') return alert('⛔ فقط المالك');
@@ -4930,8 +4904,9 @@
         document.getElementById('wdb-info-card').innerHTML = `
             <div class="wdb-info-row"><span class="wdb-label">📊 العدد:</span><span class="wdb-value">${count} تحذير</span></div>
             <div class="wdb-info-row"><span class="wdb-label">👁️ إجمالي القراء:</span><span class="wdb-value">${totalAcks} عملية قراءة</span></div>
+            <div class="wdb-info-row"><span class="wdb-label">⚠️ التحذير النشط:</span><span class="wdb-value">سيُحذف فوراً من شاشات المستخدمين</span></div>
         `;
-        document.getElementById('wdb-message-preview').textContent = '⚠️ سيتم حذف جميع التحذيرات نهائياً.';
+        document.getElementById('wdb-message-preview').textContent = '⚠️ سيتم حذف جميع التحذيرات من السجل والتطبيق نهائياً.';
         const btn = document.getElementById('wdb-confirm-btn');
         btn.disabled = false; btn.innerHTML = '🧹 حذف الكل نهائياً';
         document.getElementById('warning-delete-modal').classList.add('active');
@@ -5075,7 +5050,7 @@
         if (e.target === this) closeWarningDeleteModal();
     });
 
-    /* ⭐ مؤقت آمن فقط لتحديث نصوص فواصل التاريخ كل دقيقة ⭐ */
+    /* ⭐ مؤقت آمن فقط لتحديث نصوص فواصل التاريخ كل دقيقة - لا يلمس الرسائل أو الملفات ⭐ */
     setInterval(function() {
         try {
             if (isBeingDeleted) return;
