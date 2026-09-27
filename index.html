@@ -752,7 +752,7 @@
         .warning-empty-readers{text-align:center;padding:30px 20px;color:#999;font-size:14px;font-family:var(--font-main);background:#fff;border-radius:12px}
         .warning-empty-readers .we-icon{font-size:48px;display:block;margin-bottom:8px;opacity:.6}
 
-        /* ===== تحديث مراقبة الخاص - تنسيق الصور ===== */
+        /* ===== مراقبة الخاص ===== */
         .dm-monitor-card{padding:12px 15px;background:#fff;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .2s;gap:8px;}
         .dm-monitor-card:hover{background:#f9f9f9}
         .dm-monitor-card:active{background:#f0f0f0}
@@ -763,9 +763,130 @@
         .dm-monitor-card .dm-users .dm-names span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .dm-monitor-card .dm-users .dm-last-msg{font-size:11px;color:#888;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         #dm-monitor-list img{max-width:44px !important;max-height:44px !important;}
-        /* شريط التبويبات في مراقبة الخاص */
-        .dm-mon-tabs{display:flex;gap:0;background:#f5f5f5;padding:0;border-bottom:1px solid #ddd;flex-shrink:0;}
-        .dm-mon-tab{flex:1;padding:12px 8px;border:0;font-family:var(--font-main);font-weight:700;font-size:12px;cursor:pointer;transition:all .2s;border-radius:0;}
+
+        /* ===== مراقبة الخاص - تنسيق محسّن للمحادثة ===== */
+        #dm-monitor-view-body {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 10px;
+            background: #efe7dd;
+            overflow-y: auto;
+            flex: 1;
+        }
+        #dm-monitor-view-body .monitor-msg-row {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+            margin-bottom: 6px;
+            animation: fadeSlideIn .3s ease;
+        }
+        #dm-monitor-view-body .monitor-msg-row.mine { align-self: flex-end; }
+        #dm-monitor-view-body .monitor-msg-row.others { align-self: flex-start; }
+        #dm-monitor-view-body .monitor-bubble {
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,.06);
+            font-family: var(--font-main);
+            max-width: 100%;
+            overflow: hidden;
+        }
+        #dm-monitor-view-body .monitor-bubble.mine {
+            background: #d9fdd3;
+            color: #111;
+            border-bottom-left-radius: 3px;
+        }
+        #dm-monitor-view-body .monitor-bubble.others {
+            background: #fff;
+            color: #111;
+            border-bottom-right-radius: 3px;
+        }
+        #dm-monitor-view-body .monitor-bubble .msg-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        #dm-monitor-view-body .monitor-bubble .msg-header img {
+            width: 20px !important;
+            height: 20px !important;
+            max-width: 20px !important;
+            max-height: 20px !important;
+            min-width: 20px !important;
+            min-height: 20px !important;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            display: block;
+        }
+        #dm-monitor-view-body .monitor-bubble .msg-header strong {
+            font-size: 11px;
+            color: #555;
+            font-weight: 700;
+        }
+        #dm-monitor-view-body .monitor-bubble img.media-img {
+            max-width: 100% !important;
+            max-height: 200px !important;
+            width: auto !important;
+            height: auto !important;
+            border-radius: 8px;
+            margin-top: 4px;
+            display: block;
+            object-fit: cover;
+        }
+        #dm-monitor-view-body .monitor-bubble video {
+            max-width: 100% !important;
+            max-height: 200px !important;
+            border-radius: 8px;
+            margin-top: 4px;
+            display: block;
+            background: #000;
+        }
+        #dm-monitor-view-body .monitor-time {
+            font-size: 10px;
+            opacity: .55;
+            text-align: left;
+            margin-top: 3px;
+            color: #666;
+        }
+        #dm-monitor-view-body .monitor-date-sep {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0 6px;
+            align-self: center;
+        }
+        #dm-monitor-view-body .monitor-date-sep span {
+            background: rgba(255,255,255,.92);
+            color: #54656f;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12);
+            font-family: var(--font-main);
+        }
+        #dm-monitor-view-body .monitor-reply-info {
+            background: rgba(156,39,176,.08);
+            border-right: 3px solid #9c27b0;
+            padding: 4px 8px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        #dm-monitor-view-body .monitor-reply-info .mr-sender {
+            font-weight: 700;
+            color: #9c27b0;
+        }
+        #dm-monitor-view-body .monitor-reply-info .mr-text {
+            color: #555;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 <body>
@@ -1735,9 +1856,6 @@
     let animSettingsListener = null;
     let tempAnimSettings = {};
 
-    /* ============================================================
-       🎨 إعدادات ألوان الواجهة
-       ============================================================ */
     let themeSettings = {
         headerBg: '#008069',
         headerText: '#ffffff',
@@ -1978,7 +2096,6 @@
     let currentReportType = 'message';
     let currentReportStatusKey = null;
 
-    /* ===== متغيرات مراقبة الخاص ===== */
     let currentDMMonitorTab = 'chats';
     let dmMonitorDataCache = { chats: [], allUsers: [] };
 
@@ -3267,11 +3384,23 @@
     }
     async function toggleOwnerSelfDM() {
         if (myRole !== 'owner') return alert('⛔');
-        const snap = await db.ref('dm_permissions/' + myFP).once('value');
-        const isEnabled = snap.val() === true;
-        if (isEnabled) { if (!confirm('إغلاق خاصك؟')) return; await db.ref('dm_permissions/' + myFP).remove(); }
-        else { await db.ref('dm_permissions/' + myFP).set(true); }
-        updateOwnerDMBtn(); refreshMyDMPermission();
+        const denialSnap = await db.ref('dm_denials/' + myFP).once('value');
+        const isDenied = denialSnap.val() === true;
+
+        if (isDenied) {
+            await db.ref('dm_denials/' + myFP).remove();
+            await db.ref('dm_permissions/' + myFP).set(true);
+            await logAdminAction('owner_dm_open', myFP, myName, {});
+            alert('✅ تم فتح خاصك، يمكن للمستخدمين مراسلتك الآن');
+        } else {
+            if (!confirm('🔒 إغلاق خاصك؟\n\nلن يستطيع أحد إرسال رسائل خاصة لك.')) return;
+            await db.ref('dm_permissions/' + myFP).remove();
+            await db.ref('dm_denials/' + myFP).set(true);
+            await logAdminAction('owner_dm_close', myFP, myName, {});
+            alert('✅ تم إغلاق خاصك');
+        }
+        updateOwnerDMBtn();
+        refreshMyDMPermission();
     }
     function listenDMInbox() {
         if (dmInboxListener) db.ref('dm_inbox/' + myFP).off('value', dmInboxListener);
@@ -3514,8 +3643,12 @@
             if (m && m.read && m.from === myFP) {
                 const el = document.getElementById('dm-msg-' + snap.key);
                 if (el) {
-                    const tick = el.querySelector('.tick-double');
-                    if (tick) { tick.classList.add('read'); tick.textContent = '✓✓'; }
+                    let tick = el.querySelector('.tick-single');
+                    if (!tick) tick = el.querySelector('.tick-double');
+                    if (tick) {
+                        tick.className = 'tick-double read';
+                        tick.textContent = '✓✓';
+                    }
                 }
             }
         });
@@ -4757,7 +4890,7 @@
     }
 
     /* ============================================================
-       🕵️ مراقبة الخاص - دوال محدّثة
+       🕵️ مراقبة الخاص - النسخة الكاملة المحدّثة
        ============================================================ */
     function openDMMonitor() {
         if (myRole !== 'owner') return alert('⛔');
@@ -4879,7 +5012,6 @@
             const chats = [];
             const allUsers = [];
 
-            // جمع كل المستخدمين
             Object.keys(usersData).forEach(uid => {
                 const u = usersData[uid];
                 if (!u) return;
@@ -4895,7 +5027,6 @@
                 });
             });
 
-            // جمع المحادثات
             if (snap.exists()) {
                 snap.forEach(child => {
                     const chatId = child.key;
@@ -4945,7 +5076,6 @@
             chats.sort((a, b) => b.lastTime - a.lastTime);
             dmMonitorDataCache = { chats: chats, allUsers: allUsers };
 
-            // بناء الواجهة مع التبويبات
             list.innerHTML = `
                 <div style="display:flex;gap:0;background:#f5f5f5;padding:0;border-bottom:1px solid #ddd;flex-shrink:0;">
                     <button id="dm-mon-tab-chats" onclick="switchDMMonitorTab('chats')"
@@ -4960,7 +5090,6 @@
                 <div id="dm-mon-content" style="flex:1;overflow-y:auto;"></div>
             `;
 
-            // استعادة التبويب الحالي
             if (currentDMMonitorTab === 'users') {
                 switchDMMonitorTab('users');
             } else {
@@ -4981,36 +5110,93 @@
     async function viewMonitoredChat(chatId, name1, name2) {
         document.getElementById('dm-monitor-view-title').textContent = '💬 ' + name1 + ' ↔ ' + name2;
         const body = document.getElementById('dm-monitor-view-body');
-        body.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">⏳ جاري التحميل...</div>';
+        body.innerHTML = '<div style="text-align:center;padding:20px;color:#999;font-family:var(--font-main);">⏳ جاري التحميل...</div>';
         document.getElementById('dm-monitor-view-modal').classList.add('active');
+
         let usersData = {};
-        try { const usersSnap = await db.ref('users').once('value'); usersData = usersSnap.val() || {}; } catch (e) { console.warn(e); }
+        try {
+            const usersSnap = await db.ref('users').once('value');
+            usersData = usersSnap.val() || {};
+        } catch (e) { console.warn('فشل تحميل بيانات المستخدمين:', e); }
+
         db.ref('private_chats/' + chatId + '/messages').orderByChild('time').limitToLast(200).once('value', snap => {
             body.innerHTML = '';
-            if (!snap.exists()) { body.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">لا توجد رسائل</div>'; return; }
+            if (!snap.exists()) {
+                body.innerHTML = '<div style="text-align:center;padding:30px;color:#999;font-family:var(--font-main);font-size:14px;">📭 لا توجد رسائل</div>';
+                return;
+            }
+
             const msgs = [];
-            snap.forEach(c => { const v = c.val(); v._key = c.key; msgs.push(v); });
+            snap.forEach(c => {
+                const v = c.val();
+                v._key = c.key;
+                msgs.push(v);
+            });
             msgs.sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
+
+            const getSenderInfo = (msg) => {
+                if (!msg.from) return { name: 'مستخدم محذوف', avatar: DEFAULT_ICON };
+                if (usersData[msg.from] && usersData[msg.from].name) {
+                    return { name: usersData[msg.from].name, avatar: usersData[msg.from].avatar || DEFAULT_ICON };
+                }
+                if (allUsersData[msg.from] && allUsersData[msg.from].name) {
+                    return { name: allUsersData[msg.from].name, avatar: allUsersData[msg.from].avatar || DEFAULT_ICON };
+                }
+                return { name: msg.fromName || 'مجهول', avatar: msg.fromAvatar || DEFAULT_ICON };
+            };
+
+            let lastDayKey = null;
+
             msgs.forEach(m => {
+                const t = Number(m.time) || Date.now();
+                const msgDate = new Date(t);
+                const dayKey = msgDate.getFullYear() + '-' + msgDate.getMonth() + '-' + msgDate.getDate();
+
+                if (dayKey !== lastDayKey) {
+                    const sep = document.createElement('div');
+                    sep.className = 'monitor-date-sep';
+                    sep.innerHTML = '<span>' + getDateLabel(t) + '</span>';
+                    body.appendChild(sep);
+                    lastDayKey = dayKey;
+                }
+
                 const isMine = m.from === myFP;
-                const getSenderInfo = (msg) => {
-                    if (usersData[msg.from]) return { name: usersData[msg.from].name || 'مجهول', avatar: usersData[msg.from].avatar || DEFAULT_ICON };
-                    if (allUsersData[msg.from]) return { name: allUsersData[msg.from].name || 'مجهول', avatar: allUsersData[msg.from].avatar || DEFAULT_ICON };
-                    return { name: msg.fromName || 'مجهول', avatar: msg.fromAvatar || DEFAULT_ICON };
-                };
                 const senderInfo = getSenderInfo(m);
+
                 let mediaHtml = '';
                 if (m.media) {
-                    if (m.type === 'video') mediaHtml = '<div style="margin-top:6px;border-radius:8px;overflow:hidden;background:#000;"><video src="' + m.media + '" controls style="width:100%;max-height:200px;display:block;"></video></div>';
-                    else if (m.type === 'image') mediaHtml = '<div style="margin-top:6px;border-radius:8px;overflow:hidden;"><img src="' + m.media + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>';
+                    if (m.type === 'video') {
+                        mediaHtml = '<video src="' + escapeHtml(m.media) + '" controls style="max-width:100% !important;max-height:200px !important;border-radius:8px;margin-top:4px;display:block;background:#000;"></video>';
+                    } else if (m.type === 'image') {
+                        mediaHtml = '<img class="media-img" src="' + escapeHtml(m.media) + '" style="max-width:100% !important;max-height:200px !important;border-radius:8px;margin-top:4px;display:block;object-fit:cover;" onerror="this.style.display=\'none\'">';
+                    }
                 }
+
+                let replyHtml = '';
+                if (m.replyTo && m.replyTo.sender) {
+                    replyHtml = '<div class="monitor-reply-info"><div class="mr-sender">↩ ' + escapeHtml(m.replyTo.sender) + '</div><div class="mr-text">' + escapeHtml(m.replyTo.text || '📎 وسائط') + '</div></div>';
+                }
+
                 const div = document.createElement('div');
                 div.className = 'monitor-msg-row ' + (isMine ? 'mine' : 'others');
-                div.innerHTML = `<div class="monitor-bubble ${isMine ? 'mine' : 'others'}"><div class="msg-header"><img src="${senderInfo.avatar}"><strong>${escapeHtml(senderInfo.name)}</strong></div><div>${escapeHtml(m.text || '')}</div>${mediaHtml}<div class="monitor-time">${formatTime(m.time)}</div></div>`;
+                div.innerHTML =
+                    '<div class="monitor-bubble ' + (isMine ? 'mine' : 'others') + '">' +
+                        '<div class="msg-header">' +
+                            '<img src="' + escapeHtml(senderInfo.avatar) + '" onerror="this.src=\'' + DEFAULT_ICON + '\'">' +
+                            '<strong>' + escapeHtml(senderInfo.name) + '</strong>' +
+                        '</div>' +
+                        replyHtml +
+                        (m.text ? '<div>' + escapeHtml(m.text) + '</div>' : '') +
+                        mediaHtml +
+                        '<div class="monitor-time">' + formatTime(t) + '</div>' +
+                    '</div>';
                 body.appendChild(div);
             });
+
             body.scrollTop = body.scrollHeight;
-        }, error => { body.innerHTML = '<div style="text-align:center;padding:20px;color:#d32f2f;">⚠️ خطأ: ' + error.message + '</div>'; });
+        }, error => {
+            body.innerHTML = '<div style="text-align:center;padding:20px;color:#d32f2f;font-family:var(--font-main);">⚠️ خطأ: ' + error.message + '</div>';
+        });
     }
     function closeDMMonitorView() { document.getElementById('dm-monitor-view-modal').classList.remove('active'); }
 
