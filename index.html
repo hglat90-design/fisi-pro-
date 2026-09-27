@@ -87,7 +87,7 @@
         .bubble-user{border-bottom-left-radius:3px}
         .sender-info{display:flex;align-items:center;gap:4px;margin-bottom:2px}
         .sender-avatar{width:22px;height:22px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(0,0,0,.06);cursor:pointer;flex-shrink:0}
-        .sender-name{font-size:12px;font-weight:700;color:#555;display:flex;align-items:center;gap:3px;flex-wrap:wrap;font-family:var(--font-main);cursor:pointer;transition:transform .2s}
+        .sender-name{font-size:12px;font-weight:700;color:#555;display:flex;align-items:center;gap:3px;flex-wrap:wrap;font-family:var(--font-main);cursor:pointer}
         .msg-time{font-size:9px;text-align:left;opacity:.5;margin-top:2px;font-family:var(--font-main);font-weight:300}
         .media-container{margin-top:3px;border-radius:6px;overflow:hidden;cursor:pointer;position:relative;background:#000}
         .media-container img,.media-container video{width:100%;display:block;max-height:200px;object-fit:cover}
@@ -202,7 +202,7 @@
         .search-box:focus{border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(0,128,105,.1)}
         #color-control-modal{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:400;display:none;justify-content:center;align-items:center;padding:16px}
         #color-control-modal.active{display:flex;animation:fadeIn .3s}
-        .color-control-box{background:#fff;width:100%;max-width:480px;border-radius:16px;padding:18px;max-height:92vh;overflow-y:auto;animation:slideUp .3s;box-shadow:0 8px 30px rgba(0,0,0,.3);font-family:var(--font-main);font-size:14px}
+        .color-control-box{background:#fff;width:100%;max-width:420px;border-radius:16px;padding:18px;max-height:90vh;overflow-y:auto;animation:slideUp .3s;box-shadow:0 8px 30px rgba(0,0,0,.3);font-family:var(--font-main);font-size:14px}
         .color-control-box h3{text-align:center;font-size:18px;margin-bottom:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
         .color-control-box .target-user{background:#f5f5f5;padding:10px 14px;border-radius:8px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
         .color-control-box .target-user img{width:38px;height:38px;border-radius:50%;object-fit:cover}
@@ -212,7 +212,7 @@
         .color-preview .preview-label{font-size:12px;color:#999;font-weight:600}
         .color-preview .preview-bubble{padding:6px 14px;border-radius:10px;font-size:13px;font-weight:600;flex:1;text-align:center;min-width:70px}
         .color-preview .preview-name-wrapper{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:70px}
-        .color-preview .preview-name{font-size:14px;font-weight:700;display:inline-block}
+        .color-preview .preview-name{font-size:14px;font-weight:700}
         .color-preview .preview-glow-label{font-size:9px;color:#999;font-weight:600}
         .color-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px;max-height:180px;overflow-y:auto;padding:4px}
         .color-grid .color-option{aspect-ratio:1;border-radius:8px;cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative;display:flex;align-items:center;justify-content:center;min-height:44px}
@@ -221,171 +221,20 @@
         .color-grid .color-option .check{display:none;color:#fff;font-size:18px;text-shadow:0 1px 4px rgba(0,0,0,.5)}
         .color-grid .color-option.selected .check{display:block}
         .color-grid .color-option .color-label{font-size:7px;color:rgba(0,0,0,.3);position:absolute;bottom:2px;right:4px}
-        .color-control-box .form-group{margin-bottom:12px}
-        .color-control-box .form-group label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:#444;padding:4px 0;}
-        .color-control-box .form-group input[type="color"]{width:100%;height:42px;border:2px solid #eee;border-radius:8px;padding:2px;cursor:pointer}
+        .color-control-box .form-group{margin-bottom:10px}
+        .color-control-box .form-group label{display:block;font-size:12px;font-weight:600;margin-bottom:4px;color:#555}
+        .color-control-box .form-group input[type="color"]{width:100%;height:40px;border:2px solid #eee;border-radius:8px;padding:2px;cursor:pointer}
         .glow-options{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
-        .glow-options .glow-btn{padding:6px 3px;border:2px solid #eee;border-radius:8px;background:#fff;cursor:pointer;font-size:9px;font-weight:600;transition:all .2s;font-family:var(--font-main);text-align:center}
+        .glow-options .glow-btn{padding:5px 3px;border:2px solid #eee;border-radius:8px;background:#fff;cursor:pointer;font-size:9px;font-weight:600;transition:all .2s;font-family:var(--font-main);text-align:center}
         .glow-options .glow-btn:active{transform:scale(.95)}
         .glow-options .glow-btn.selected{border-color:var(--primary);background:#e8f5e9;color:var(--primary)}
         .glow-options .glow-btn .glow-demo{display:block;font-size:14px;margin-bottom:2px}
         .glow-options .glow-btn .glow-label{font-size:8px;color:#666}
-        .name-anim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;max-height:220px;overflow-y:auto;padding:4px;background:#fafafa;border-radius:8px}
-        .name-anim-btn{padding:8px 4px;border:2px solid #eee;border-radius:8px;background:#fff;cursor:pointer;font-family:var(--font-main);text-align:center;transition:all .2s;min-height:60px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px}
-        .name-anim-btn:active{transform:scale(.95)}
-        .name-anim-btn.selected{border-color:#6a1b9a;background:#f3e5f5;box-shadow:0 0 0 3px rgba(106,27,154,.15)}
-        .name-anim-btn .anim-demo-text{font-size:13px;font-weight:800;color:#1a1a1a;display:inline-block}
-        .name-anim-btn .anim-name-label{font-size:9px;color:#666;font-weight:600}
-        .color-control-box .actions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
-        .color-control-box .actions button{flex:1;padding:10px;border:0;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-main);min-width:60px}
+        .color-control-box .actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+        .color-control-box .actions button{flex:1;padding:8px;border:0;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-main);min-width:55px}
         .color-control-box .actions .btn-apply{background:var(--primary);color:#fff}
         .color-control-box .actions .btn-reset{background:#f0f0f0;color:#555}
         .color-control-box .actions .btn-cancel{background:#ef5350;color:#fff}
-        .section-divider{border:0;height:1px;background:linear-gradient(90deg,transparent,#ddd,transparent);margin:14px 0}
-
-        /* =========================================================
-           حركات الأسماء الاحترافية
-           ========================================================= */
-        @keyframes nameShine {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-        @keyframes nameRainbow {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
-        }
-        @keyframes nameNeonPulse {
-            0%, 100% { text-shadow: 0 0 4px currentColor, 0 0 10px currentColor, 0 0 20px currentColor; }
-            50% { text-shadow: 0 0 8px currentColor, 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor; }
-        }
-        @keyframes nameFire {
-            0%, 100% { text-shadow: 0 0 5px #ff4500, 0 0 10px #ff6600, 0 0 20px #ff8c00, 0 0 30px #ffd700; }
-            50% { text-shadow: 0 0 8px #ff4500, 0 0 15px #ff6600, 0 0 25px #ff8c00, 0 0 40px #ffd700, 0 0 50px #ff4500; }
-        }
-        @keyframes nameIce {
-            0%, 100% { text-shadow: 0 0 5px #00d4ff, 0 0 10px #00b8e6, 0 0 15px #87ceeb; }
-            50% { text-shadow: 0 0 10px #00d4ff, 0 0 20px #00b8e6, 0 0 30px #87ceeb, 0 0 40px #ffffff; }
-        }
-        @keyframes nameGold {
-            0%, 100% { color: #FFD700; text-shadow: 0 0 5px #FFD700, 0 0 10px #B8860B, 0 0 15px #FFD700; }
-            50% { color: #FFF8DC; text-shadow: 0 0 10px #FFD700, 0 0 20px #FFA500, 0 0 30px #FFD700, 0 0 40px #FF8C00; }
-        }
-        @keyframes namePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.12); }
-        }
-        @keyframes nameFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-4px); }
-        }
-        @keyframes nameWave {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-4deg); }
-            75% { transform: rotate(4deg); }
-        }
-        @keyframes nameGlitch {
-            0%, 100% { transform: translate(0); }
-            20% { transform: translate(-2px, 1px); }
-            40% { transform: translate(-2px, -1px); }
-            60% { transform: translate(2px, 1px); }
-            80% { transform: translate(2px, -1px); }
-        }
-        @keyframes name3D {
-            0%, 100% { text-shadow: 1px 1px 0 #333, 2px 2px 0 #333, 3px 3px 0 #333; }
-            50% { text-shadow: 3px 3px 0 #333, 6px 6px 0 #333, 9px 9px 0 #333; }
-        }
-        @keyframes nameSparkle {
-            0%, 100% { filter: brightness(1) drop-shadow(0 0 3px currentColor); }
-            50% { filter: brightness(1.8) drop-shadow(0 0 12px currentColor) drop-shadow(0 0 20px currentColor); }
-        }
-        @keyframes nameBounce {
-            0%, 100% { transform: translateY(0); }
-            25% { transform: translateY(-5px); }
-            50% { transform: translateY(0); }
-            75% { transform: translateY(-2px); }
-        }
-        @keyframes nameSwing {
-            0%, 100% { transform: rotate(0deg); transform-origin: center; }
-            25% { transform: rotate(8deg); }
-            75% { transform: rotate(-8deg); }
-        }
-        @keyframes nameHeartbeat {
-            0%, 100% { transform: scale(1); }
-            10% { transform: scale(1.15); }
-            20% { transform: scale(1); }
-            30% { transform: scale(1.12); }
-            40% { transform: scale(1); }
-        }
-        @keyframes nameZoom {
-            0%, 100% { transform: scale(1); letter-spacing: 0; }
-            50% { transform: scale(1.08); letter-spacing: 1px; }
-        }
-
-        .name-anim-shine {
-            background: linear-gradient(90deg, #fff 0%, #fff 40%, #FFD700 50%, #fff 60%, #fff 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: nameShine 3s linear infinite;
-        }
-        .name-anim-rainbow {
-            background: linear-gradient(90deg, #ff0000, #ff7700, #ffdd00, #00ff00, #00ddff, #0066ff, #cc00ff, #ff0000);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: nameShine 3s linear infinite, nameRainbow 4s linear infinite;
-        }
-        .name-anim-neon { animation: nameNeonPulse 1.5s ease-in-out infinite; }
-        .name-anim-fire { animation: nameFire 1.2s ease-in-out infinite; color: #ff6600 !important; }
-        .name-anim-ice { animation: nameIce 1.8s ease-in-out infinite; color: #00d4ff !important; }
-        .name-anim-gold { animation: nameGold 2s ease-in-out infinite; font-weight: 900; }
-        .name-anim-pulse { animation: namePulse 1.5s ease-in-out infinite; display: inline-block; }
-        .name-anim-float { animation: nameFloat 2s ease-in-out infinite; display: inline-block; }
-        .name-anim-wave { animation: nameWave 1.5s ease-in-out infinite; display: inline-block; }
-        .name-anim-glitch { animation: nameGlitch 0.6s linear infinite; display: inline-block; }
-        .name-anim-3d { animation: name3D 1.5s ease-in-out infinite; }
-        .name-anim-sparkle { animation: nameSparkle 1.2s ease-in-out infinite; }
-        .name-anim-bounce { animation: nameBounce 1.2s ease-in-out infinite; display: inline-block; }
-        .name-anim-swing { animation: nameSwing 1.5s ease-in-out infinite; display: inline-block; }
-        .name-anim-heartbeat { animation: nameHeartbeat 1.5s ease-in-out infinite; display: inline-block; }
-        .name-anim-zoom { animation: nameZoom 1.5s ease-in-out infinite; display: inline-block; }
-
-        /* ألوان الأسماء المخصصة */
-        .name-color-custom { font-weight: 900; }
-
-        /* تمييز خاص للمالك */
-        .owner-name-special {
-            background: linear-gradient(90deg, #FFD700 0%, #FFF8DC 25%, #FFA500 50%, #FFD700 75%, #B8860B 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: nameShine 3s linear infinite;
-            font-weight: 900;
-            filter: drop-shadow(0 0 6px rgba(255,215,0,.8));
-        }
-        .owner-avatar-special {
-            border: 2.5px solid #FFD700 !important;
-            box-shadow: 0 0 12px rgba(255,215,0,.9), 0 0 20px rgba(255,215,0,.5) !important;
-            animation: ownerAvatarPulse 2s ease-in-out infinite !important;
-        }
-        @keyframes ownerAvatarPulse {
-            0%, 100% { box-shadow: 0 0 12px rgba(255,215,0,.9), 0 0 20px rgba(255,215,0,.5); }
-            50% { box-shadow: 0 0 18px rgba(255,215,0,1), 0 0 35px rgba(255,215,0,.7), 0 0 50px rgba(255,215,0,.4); }
-        }
-        .owner-crown-badge {
-            display: inline-block;
-            animation: crownFloat 2s ease-in-out infinite;
-            font-size: 12px;
-            margin-right: 2px;
-        }
-        @keyframes crownFloat {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-2px) scale(1.15); }
-        }
-
         #media-viewer{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:3000;display:none;flex-direction:column}
         #media-viewer.active{display:flex;animation:fadeIn .2s}
         .viewer-header{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;color:#fff;background:rgba(0,0,0,.3);position:absolute;top:0;width:100%;z-index:10;font-family:var(--font-main);font-size:14px}
@@ -660,7 +509,6 @@
             .role-badge{font-size:8px;padding:2px 6px}
             .user-card{padding:8px 10px}
             .effect-preview-grid{grid-template-columns:repeat(3,1fr)}
-            .name-anim-grid{grid-template-columns:repeat(2,1fr)}
         }
         @supports(height:100dvh){.app-container{height:100dvh;max-height:100dvh}}
         #chat-messages::-webkit-scrollbar,#dm-chat-messages::-webkit-scrollbar{width:3px}
@@ -718,9 +566,6 @@
         .btn-effects-settings:active{transform:scale(.95)}
         .btn-theme-settings{width:100%;padding:10px;background:linear-gradient(135deg,#00897B,#00695C);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
         .btn-theme-settings:active{transform:scale(.95)}
-        /* زر جديد: ألوان وحركات الأسماء */
-        .btn-name-settings{width:100%;padding:10px;background:linear-gradient(135deg,#e91e63,#ad1457);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-        .btn-name-settings:active{transform:scale(.95)}
         .theme-section{background:#f9f9f9;border-radius:12px;padding:14px;margin-bottom:12px;text-align:right;border:1px solid #eee}
         .theme-section h4{font-size:14px;font-weight:800;margin-bottom:10px;color:#333;display:flex;align-items:center;gap:6px;justify-content:flex-start}
         .theme-section label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:6px;margin-top:10px}
@@ -919,6 +764,7 @@
         .dm-monitor-card .dm-users .dm-last-msg{font-size:11px;color:#888;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         #dm-monitor-list img{max-width:44px !important;max-height:44px !important;}
 
+        /* ===== مراقبة الخاص - تنسيق محسّن للمحادثة ===== */
         #dm-monitor-view-body {
             display: flex;
             flex-direction: column;
@@ -1647,8 +1493,6 @@
                 <button id="open-anim-settings-btn" class="btn-anim-settings" onclick="openAnimSettings()">✨ حركات الرسائل</button>
                 <button id="open-effects-settings-btn" class="btn-effects-settings" onclick="openEffectsSettings()">🎆 التأثيرات المتحركة (نجوم، قلوب، ورد...)</button>
                 <button id="open-theme-settings-btn" class="btn-theme-settings" onclick="openThemeSettings()">🎨 ألوان الواجهة (العلوي/السفلي)</button>
-                <!-- 🆕 زر جديد: ألوان وحركات الأسماء -->
-                <button id="open-name-settings-btn" class="btn-name-settings" onclick="openNameSettingsPanel()">💎 ألوان وحركات الأسماء (شامل)</button>
                 <button id="open-maintenance-btn" class="btn-maintenance" onclick="openMaintenanceSettings()">🔧 إعدادات الصيانة</button>
                 <button id="open-advanced-btn" class="btn-advanced" onclick="openAdvancedSettings()">⚙️ إعدادات متقدمة (الخط)</button>
                 <button class="btn-warning" onclick="openWarningComposer()">🚨 إرسال تحذير</button>
@@ -1824,7 +1668,7 @@
 
     <div id="color-control-modal" onclick="if(event.target===this) closeColorControl()">
         <div class="color-control-box">
-            <h3>💎 تخصيص الاسم والفقاعة</h3>
+            <h3>🎨 الألوان</h3>
             <div class="target-user" id="color-target-user">
                 <img id="color-target-avatar" src="">
                 <div>
@@ -1840,25 +1684,16 @@
                     <span class="preview-glow-label" id="preview-glow-label">✨ بدون</span>
                 </div>
             </div>
-
-            <hr class="section-divider">
-
             <div class="form-group">
-                <label>🎨 لون الفقاعة (خلفية الرسالة):</label>
+                <label>🎨 لون الفقاعة:</label>
                 <div class="color-grid" id="color-grid"></div>
             </div>
-
-            <hr class="section-divider">
-
             <div class="form-group">
-                <label>✏️ لون الاسم (اللون الأساسي):</label>
+                <label>✏️ لون الاسم:</label>
                 <input type="color" id="color-name-picker" value="#333333">
             </div>
-
-            <hr class="section-divider">
-
             <div class="form-group">
-                <label>✨ التوهج (Glow):</label>
+                <label>✨ التوهج:</label>
                 <div class="glow-options" id="glow-options">
                     <button class="glow-btn selected" data-glow="none" onclick="selectGlow('none')"><span class="glow-demo">📝</span><span class="glow-label">بدون</span></button>
                     <button class="glow-btn" data-glow="glow" onclick="selectGlow('glow')"><span class="glow-demo" style="text-shadow:0 0 10px currentColor;">✨</span><span class="glow-label">توهج</span></button>
@@ -1870,14 +1705,6 @@
                     <button class="glow-btn" data-glow="owner-glow" onclick="selectGlow('owner-glow')" style="border-color:#FFD700;"><span class="glow-demo">👑</span><span class="glow-label">ملكي</span></button>
                 </div>
             </div>
-
-            <hr class="section-divider">
-
-            <div class="form-group">
-                <label>🎬 حركة الاسم الاحترافية:</label>
-                <div class="name-anim-grid" id="name-anim-grid"></div>
-            </div>
-
             <div class="actions">
                 <button class="btn-reset" onclick="resetUserColorHandler()">↺ إعادة</button>
                 <button class="btn-apply" onclick="applyUserColor()">✅ تطبيق</button>
@@ -2074,28 +1901,6 @@
         { name: 'تدرج داكن', value: 'linear-gradient(135deg, #1a1a2e, #0f0f1e)' }
     ];
 
-    /* قائمة حركات الأسماء الاحترافية */
-    const NAME_ANIMATIONS = [
-        { id: 'none', name: 'بدون', className: '', demoStyle: '' },
-        { id: 'shine', name: 'لمعان', className: 'name-anim-shine', demoStyle: 'background:linear-gradient(90deg,#fff,#FFD700,#fff);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;' },
-        { id: 'rainbow', name: 'قوس قزح', className: 'name-anim-rainbow', demoStyle: 'background:linear-gradient(90deg,#f00,#f70,#fd0,#0f0,#0df,#06f,#c0f,#f00);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;' },
-        { id: 'neon', name: 'نيون', className: 'name-anim-neon', demoStyle: 'color:#00d4ff;' },
-        { id: 'fire', name: 'نار', className: 'name-anim-fire', demoStyle: 'color:#ff6600;' },
-        { id: 'ice', name: 'ثلج', className: 'name-anim-ice', demoStyle: 'color:#00d4ff;' },
-        { id: 'gold', name: 'ذهبي', className: 'name-anim-gold', demoStyle: 'color:#FFD700;' },
-        { id: 'pulse', name: 'نبض', className: 'name-anim-pulse', demoStyle: '' },
-        { id: 'float', name: 'طفو', className: 'name-anim-float', demoStyle: '' },
-        { id: 'wave', name: 'تمايل', className: 'name-anim-wave', demoStyle: '' },
-        { id: 'glitch', name: 'اهتزاز', className: 'name-anim-glitch', demoStyle: '' },
-        { id: '3d', name: 'ثلاثي الأبعاد', className: 'name-anim-3d', demoStyle: '' },
-        { id: 'sparkle', name: 'بريق', className: 'name-anim-sparkle', demoStyle: '' },
-        { id: 'bounce', name: 'ارتداد', className: 'name-anim-bounce', demoStyle: '' },
-        { id: 'swing', name: 'تأرجح', className: 'name-anim-swing', demoStyle: '' },
-        { id: 'heartbeat', name: 'نبض قلب', className: 'name-anim-heartbeat', demoStyle: '' },
-        { id: 'zoom', name: 'تكبير', className: 'name-anim-zoom', demoStyle: '' },
-        { id: 'owner-special', name: 'ملكي 👑', className: 'owner-name-special', demoStyle: 'font-weight:900;' }
-    ];
-
     function listenThemeSettings() {
         if (themeSettingsListener) db.ref('app_settings/theme').off('value', themeSettingsListener);
         themeSettingsListener = db.ref('app_settings/theme').on('value', snap => {
@@ -2249,14 +2054,6 @@
 
     function closeThemeSettings() {
         document.getElementById('theme-settings-modal').classList.remove('active');
-    }
-
-    function openNameSettingsPanel() {
-        if (myRole !== 'owner') return alert('⛔ فقط المالك');
-        // فتح قائمة الأعضاء لتختار من تريد تخصيص اسمه
-        document.getElementById('profile-modal').classList.remove('active');
-        alert('💎 اختر المستخدم من قائمة الأعضاء ثم اضغط زر 🎨 بجانب اسمه لتخصيص الألوان والحركات.\n\nملاحظة: يمكنك الآن تخصيص كل المستخدمين بما فيهم المدير والمشرف والموثوق ونفسك!');
-        toggleUsers();
     }
 
     const animatedMsgIds = new Set();
@@ -2428,29 +2225,13 @@
         { bg: 'linear-gradient(135deg,#E8EAF6,#9FA8DA)', text: '#1A237E', name: '#1A237E' },
         { bg: 'linear-gradient(135deg,#FBE9E7,#FF8A65)', text: '#BF360C', name: '#BF360C' }
     ];
-    let userColors = {}, colorIndex = 0, userGlow = {}, userNameAnim = {};
-    const colorSettingsRef = db.ref('color_settings'), glowSettingsRef = db.ref('glow_settings'), nameAnimRef = db.ref('name_anim_settings');
+    let userColors = {}, colorIndex = 0, userGlow = {};
+    const colorSettingsRef = db.ref('color_settings'), glowSettingsRef = db.ref('glow_settings');
 
     function getColor(uid) { if (!userColors[uid]) { userColors[uid] = COLORS[colorIndex % COLORS.length]; colorIndex++; } return userColors[uid]; }
     function getGlow(uid) { return userGlow[uid] || (uid === myFP && myRole === 'owner' ? 'owner-glow' : 'none'); }
-    function getNameAnim(uid) {
-        // المالك له حركة خاصة افتراضية
-        if (uid === myFP && myRole === 'owner' && !userNameAnim[uid]) return 'owner-special';
-        return userNameAnim[uid] || 'none';
-    }
     function saveUserColor(uid, c, g) { userColors[uid] = c; colorSettingsRef.child(uid).set(c); if (g) { userGlow[uid] = g; glowSettingsRef.child(uid).set(g) } renderMessages(); }
-    function saveUserNameAnim(uid, animId) {
-        userNameAnim[uid] = animId;
-        if (animId === 'none') nameAnimRef.child(uid).remove();
-        else nameAnimRef.child(uid).set(animId);
-        renderMessages();
-    }
-    function resetUserColor(uid) {
-        if (userColors[uid]) { delete userColors[uid]; colorSettingsRef.child(uid).remove() }
-        if (userGlow[uid]) { delete userGlow[uid]; glowSettingsRef.child(uid).remove() }
-        if (userNameAnim[uid]) { delete userNameAnim[uid]; nameAnimRef.child(uid).remove() }
-        renderMessages();
-    }
+    function resetUserColor(uid) { if (userColors[uid]) { delete userColors[uid]; colorSettingsRef.child(uid).remove() } if (userGlow[uid]) { delete userGlow[uid]; glowSettingsRef.child(uid).remove() } renderMessages(); }
 
     function canBan(a, b) { if (a === 'owner') return b !== 'owner'; if (a === 'manager') return ['user', 'trusted', 'mod'].includes(b); return false; }
     function canMute(a, b) { if (a === 'owner') return b !== 'owner'; if (a === 'manager') return ['user', 'trusted', 'mod'].includes(b); if (a === 'mod') return ['user', 'trusted'].includes(b); return false; }
@@ -4122,7 +3903,6 @@
         updates['notification_prefs/' + uid] = null;
         updates['color_settings/' + uid] = null;
         updates['glow_settings/' + uid] = null;
-        updates['name_anim_settings/' + uid] = null;
         updates['notifications/' + uid] = null;
         updates['warnings/current/ack/' + uid] = null;
         if (name && name.trim() && name !== 'مجهول') { updates['name_links/' + name.toLowerCase()] = null; }
@@ -4433,7 +4213,7 @@
                 if (p) th = '<div style="word-break:break-word;">' + p + '</div>';
             }
             let acts = '';
-            const cd = isMine || canDeleteMessage(myRole, dr), cb = canBan(myRole, dr) && !isMine, cm = canMute(myRole, dr) && !isMine, cp = canAssignRole(myRole, dr) && !isMine, cc = isOwner();
+            const cd = isMine || canDeleteMessage(myRole, dr), cb = canBan(myRole, dr) && !isMine, cm = canMute(myRole, dr) && !isMine, cp = canAssignRole(myRole, dr) && !isMine, cc = isOwner() && !isMine;
             const iCanDM = (myDMEnabled === true);
             const targetCanDM = canUserDM(m.uid, dr);
             const canDM = !isMine && iCanDM && targetCanDM;
@@ -4448,16 +4228,8 @@
             if (cc) acts += '<button class="action-sm" style="background:#e91e63;font-size:9px;padding:2px 6px;" onclick="openColorControl(\'' + m.uid + '\')">🎨</button>';
             acts += '</div>';
             const sns = snc ? 'color:' + snc + ';' : '', gc2 = gc && gc !== 'none' ? 'glow ' + gc : '';
-            // 🎬 تطبيق حركة الاسم
-            const animId = getNameAnim(m.uid);
-            const animObj = NAME_ANIMATIONS.find(a => a.id === animId);
-            const animClass = animObj && animObj.className ? animObj.className : '';
             const safeName = dn.replace(/'/g, "\\'");
-            // 👑 تمييز خاص للمالك: تاج + صورة بإطار ذهبي متوهج
-            const isOwnerMsg = dr === 'owner';
-            const ownerAvatarClass = isOwnerMsg ? 'owner-avatar-special' : '';
-            const ownerCrown = isOwnerMsg ? '<span class="owner-crown-badge">👑</span>' : '';
-            div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar ' + ownerAvatarClass + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + ' ' + animClass + '" style="' + sns + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')">' + ownerCrown + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '<span class="tick-single">✓</span>' : '') + '</div></div>' + acts;
+            div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')">' + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '<span class="tick-single">✓</span>' : '') + '</div></div>' + acts;
             if (animSettings.glowEffect) div.classList.add('effect-glow-pulse');
             if (animSettings.heartEffect) div.classList.add('effect-heartbeat');
             box.appendChild(div);
@@ -4564,7 +4336,7 @@
     function scrollToMessage(k) { const e = document.getElementById('msg-' + k); if (e) { e.scrollIntoView({ behavior: 'smooth', block: 'center' }); e.style.background = 'rgba(255,235,59,0.3)'; setTimeout(() => e.style.background = 'transparent', 1000); } }
     function playYouTube(v, c) { c.innerHTML = '<iframe src="https://www.youtube.com/embed/' + v + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
     function updateUserControls(u, d) {
-        const e = document.getElementById('uact-' + u); if (!e) return;
+        const e = document.getElementById('uact-' + u); if (!e || u === myFP) return;
         const isUnknown = isUserUnknown(d);
         if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && myRole !== 'owner') { e.innerHTML = ''; return; }
         db.ref('bans/' + u).once('value', b => {
@@ -4575,36 +4347,33 @@
                 let im = false; if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
                 if (canMute(myRole, d.role)) { if (im) bt += '<button class="ctrl-btn unmute" onclick="unmuteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🔊</button>'; else bt += '<button class="ctrl-btn mute" onclick="openMuteMenu(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🔇</button>'; }
                 if (canAssignRole(myRole, d.role)) bt += '<button class="ctrl-btn role" onclick="openRoleMenu(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">⚙️</button>';
-                // المالك يمكنه تخصيص ألوان وحركات أي شخص بما فيهم نفسه
-                if (myRole === 'owner') {
-                    bt += '<button class="ctrl-btn color" onclick="openColorControl(\'' + u + '\')" title="تخصيص الألوان والحركات">🎨</button>';
-                    if (d.role !== 'owner') {
-                        const isDMOn = canUserDM(u, d.role);
-                        const isExplicitDeny = dmDenialsData[u] === true;
-                        const isExplicitAllow = allDMUsersData[u] === true;
-                        let dmCls = 'dm-off', dmIcon = '🔒';
-                        if (isExplicitDeny) { dmCls = 'dm-deny'; dmIcon = '🚫'; }
-                        else if (isExplicitAllow) { dmCls = 'dm'; dmIcon = '💌'; }
-                        else if (isDMOn) { dmCls = 'dm'; dmIcon = '💌'; }
-                        bt += '<button class="ctrl-btn ' + dmCls + '" onclick="cycleUserDMPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الخاص">' + dmIcon + '</button>';
-                        const isMediaOn = canUserSendMedia(u, d.role);
-                        const isMediaDeny = mediaDenialsData[u] === true;
-                        const isMediaAllow = allMediaUsersData[u] === true;
-                        let mediaCls = 'media-off', mediaIcon = '📎';
-                        if (isMediaDeny) { mediaCls = 'media-deny'; mediaIcon = '🚫'; }
-                        else if (isMediaAllow) { mediaCls = 'media'; mediaIcon = '📎'; }
-                        else if (isMediaOn) { mediaCls = 'media'; mediaIcon = '📎'; }
-                        bt += '<button class="ctrl-btn ' + mediaCls + '" onclick="cycleUserMediaPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الوسائط">' + mediaIcon + '</button>';
-                        const isStatusOn = canUserPostStatus(u, d.role);
-                        const isStatusDeny = statusDenialsData[u] === true;
-                        const isStatusAllow = allStatusUsersData[u] === true;
-                        let statusCls = 'status-off', statusIcon = '📸';
-                        if (isStatusDeny) { statusCls = 'status-deny'; statusIcon = '🚫'; }
-                        else if (isStatusAllow) { statusCls = 'status'; statusIcon = '📸'; }
-                        else if (isStatusOn) { statusCls = 'status'; statusIcon = '📸'; }
-                        bt += '<button class="ctrl-btn ' + statusCls + '" onclick="cycleUserStatusPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الحالات">' + statusIcon + '</button>';
-                        bt += '<button class="ctrl-btn delete-user" onclick="permanentDeleteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="حذف المستخدم نهائياً">🗑️</button>';
-                    }
+                if (myRole === 'owner' && d.role !== 'owner') {
+                    bt += '<button class="ctrl-btn color" onclick="openColorControl(\'' + u + '\')">🎨</button>';
+                    const isDMOn = canUserDM(u, d.role);
+                    const isExplicitDeny = dmDenialsData[u] === true;
+                    const isExplicitAllow = allDMUsersData[u] === true;
+                    let dmCls = 'dm-off', dmIcon = '🔒';
+                    if (isExplicitDeny) { dmCls = 'dm-deny'; dmIcon = '🚫'; }
+                    else if (isExplicitAllow) { dmCls = 'dm'; dmIcon = '💌'; }
+                    else if (isDMOn) { dmCls = 'dm'; dmIcon = '💌'; }
+                    bt += '<button class="ctrl-btn ' + dmCls + '" onclick="cycleUserDMPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الخاص">' + dmIcon + '</button>';
+                    const isMediaOn = canUserSendMedia(u, d.role);
+                    const isMediaDeny = mediaDenialsData[u] === true;
+                    const isMediaAllow = allMediaUsersData[u] === true;
+                    let mediaCls = 'media-off', mediaIcon = '📎';
+                    if (isMediaDeny) { mediaCls = 'media-deny'; mediaIcon = '🚫'; }
+                    else if (isMediaAllow) { mediaCls = 'media'; mediaIcon = '📎'; }
+                    else if (isMediaOn) { mediaCls = 'media'; mediaIcon = '📎'; }
+                    bt += '<button class="ctrl-btn ' + mediaCls + '" onclick="cycleUserMediaPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الوسائط">' + mediaIcon + '</button>';
+                    const isStatusOn = canUserPostStatus(u, d.role);
+                    const isStatusDeny = statusDenialsData[u] === true;
+                    const isStatusAllow = allStatusUsersData[u] === true;
+                    let statusCls = 'status-off', statusIcon = '📸';
+                    if (isStatusDeny) { statusCls = 'status-deny'; statusIcon = '🚫'; }
+                    else if (isStatusAllow) { statusCls = 'status'; statusIcon = '📸'; }
+                    else if (isStatusOn) { statusCls = 'status'; statusIcon = '📸'; }
+                    bt += '<button class="ctrl-btn ' + statusCls + '" onclick="cycleUserStatusPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الحالات">' + statusIcon + '</button>';
+                    bt += '<button class="ctrl-btn delete-user" onclick="permanentDeleteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="حذف المستخدم نهائياً">🗑️</button>';
                 }
                 e.innerHTML = bt;
             });
@@ -5121,7 +4890,7 @@
     }
 
     /* ============================================================
-       🕵️ مراقبة الخاص
+       🕵️ مراقبة الخاص - النسخة الكاملة المحدّثة
        ============================================================ */
     function openDMMonitor() {
         if (myRole !== 'owner') return alert('⛔');
@@ -5431,173 +5200,14 @@
     }
     function closeDMMonitorView() { document.getElementById('dm-monitor-view-modal').classList.remove('active'); }
 
-    /* ============================================================
-       🎨 تخصيص الألوان والحركات للأسماء (شامل للجميع)
-       ============================================================ */
-    let colorTargetUid = null, selectedGlow = 'none', selectedNameAnim = 'none';
-
-    function openColorControl(uid) {
-        if (myRole !== 'owner') return alert('⛔ فقط المالك');
-
-        colorTargetUid = uid;
-        const u = allUsersData[uid] || {};
-        const n = u.name || 'مجهول';
-        const av = u.avatar || DEFAULT_ICON;
-        const r = u.role || 'user';
-
-        document.getElementById('color-target-avatar').src = av;
-        document.getElementById('color-target-name').textContent = n;
-        document.getElementById('color-target-role').textContent = 'رتبة: ' + getRoleLabel(r);
-
-        const cc = getColor(uid);
-        const cg = getGlow(uid);
-        const ca = getNameAnim(uid);
-
-        selectedGlow = cg;
-        selectedNameAnim = ca;
-
-        document.getElementById('color-name-picker').value = cc.name || '#333333';
-
-        // بناء شبكة الألوان
-        const g = document.getElementById('color-grid');
-        g.innerHTML = '';
-        COLORS.forEach((c, i) => {
-            const d = document.createElement('div');
-            d.className = 'color-option';
-            d.style.background = c.bg;
-            if (cc && cc.bg === c.bg) d.classList.add('selected');
-            d.innerHTML = '<span class="check">✓</span><span class="color-label">' + (i + 1) + '</span>';
-            d.onclick = () => {
-                document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
-                d.classList.add('selected');
-                updatePreview();
-            };
-            g.appendChild(d);
-        });
-
-        // بناء أزرار التوهج
-        document.querySelectorAll('.glow-btn').forEach(b => {
-            b.classList.toggle('selected', b.dataset.glow === cg);
-        });
-
-        // بناء شبكة حركات الاسم
-        renderNameAnimGrid(ca);
-
-        document.getElementById('color-name-picker').oninput = updatePreview;
-        updatePreview();
-        document.getElementById('color-control-modal').classList.add('active');
-        document.getElementById('modal-overlay').classList.add('show');
-    }
-
-    function renderNameAnimGrid(currentAnim) {
-        const grid = document.getElementById('name-anim-grid');
-        if (!grid) return;
-        grid.innerHTML = '';
-        NAME_ANIMATIONS.forEach(anim => {
-            const btn = document.createElement('div');
-            btn.className = 'name-anim-btn' + (anim.id === currentAnim ? ' selected' : '');
-            btn.dataset.anim = anim.id;
-            // المعاينة
-            const demo = document.createElement('span');
-            demo.className = 'anim-demo-text ' + (anim.className || '');
-            demo.textContent = 'اسم';
-            demo.style.cssText = anim.demoStyle || '';
-            btn.appendChild(demo);
-            const label = document.createElement('span');
-            label.className = 'anim-name-label';
-            label.textContent = anim.name;
-            btn.appendChild(label);
-            btn.onclick = () => {
-                selectedNameAnim = anim.id;
-                document.querySelectorAll('.name-anim-btn').forEach(b => b.classList.toggle('selected', b.dataset.anim === anim.id));
-                updatePreview();
-            };
-            grid.appendChild(btn);
-        });
-    }
-
-    function selectGlow(g) {
-        selectedGlow = g;
-        document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === g); });
-        updatePreview();
-    }
-
-    function updatePreview() {
-        const s = document.querySelector('.color-option.selected');
-        const nc = document.getElementById('color-name-picker').value;
-        let bg = 'linear-gradient(135deg, #e0e0e0, #bdbdbd)', tc = '#333';
-        if (s) {
-            const idx = parseInt(s.querySelector('.color-label').textContent) - 1;
-            if (idx >= 0 && idx < COLORS.length) { const c = COLORS[idx]; bg = c.bg; tc = c.text; }
-        }
-        const pb = document.getElementById('preview-bubble');
-        const pn = document.getElementById('preview-name');
-        const pg = document.getElementById('preview-glow-label');
-        pb.style.background = bg;
-        pb.style.color = tc;
-        pb.textContent = '📝 نص';
-        pn.style.color = nc;
-        pn.textContent = document.getElementById('color-target-name').textContent;
-        pn.className = 'preview-name';
-        // التوهج
-        if (selectedGlow !== 'none') pn.classList.add('glow', selectedGlow);
-        // حركة الاسم
-        const animObj = NAME_ANIMATIONS.find(a => a.id === selectedNameAnim);
-        if (animObj && animObj.className) pn.classList.add(animObj.className);
-        const gn = { none: '✨ بدون', glow: '✨ توهج', 'glow-fast': '⚡ سريع', 'glow-slow': '🌊 بطيء', 'glow-rainbow': '🌈', 'glow-neon': '💡 نيون', 'glow-fire': '🔥 نار', 'owner-glow': '👑 ملكي' };
-        const animLabel = animObj ? animObj.name : '';
-        pg.textContent = (gn[selectedGlow] || '✨ بدون') + ' · ' + animLabel;
-    }
-
-    function applyUserColor() {
-        if (!colorTargetUid) return;
-        const s = document.querySelector('.color-option.selected');
-        const nc = document.getElementById('color-name-picker').value;
-        if (!s) return alert("اختر لون!");
-        const idx = parseInt(s.querySelector('.color-label').textContent) - 1;
-        if (idx < 0 || idx >= COLORS.length) return;
-        const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc };
-        saveUserColor(colorTargetUid, cd, selectedGlow);
-        saveUserNameAnim(colorTargetUid, selectedNameAnim);
-        closeColorControl();
-        alert("✅ تم التطبيق بنجاح!");
-    }
-
-    function resetUserColorHandler() {
-        if (!colorTargetUid) return;
-        if (confirm("إعادة تعيين كل شيء لهذا المستخدم؟")) {
-            resetUserColor(colorTargetUid);
-            closeColorControl();
-            alert("✅ تم الإرجاع");
-        }
-    }
-
-    function closeColorControl() {
-        document.getElementById('color-control-modal').classList.remove('active');
-        document.getElementById('modal-overlay').classList.remove('show');
-        colorTargetUid = null;
-        selectedNameAnim = 'none';
-    }
-
-    async function loadColorSettings() {
-        const s = await colorSettingsRef.once('value');
-        if (s.exists()) {
-            const d = s.val();
-            Object.keys(d).forEach(k => { if (d[k]) userColors[k] = d[k]; });
-        }
-        const g = await glowSettingsRef.once('value');
-        if (g.exists()) {
-            const d = g.val();
-            Object.keys(d).forEach(k => { if (d[k]) userGlow[k] = d[k]; });
-        }
-        const a = await nameAnimRef.once('value');
-        if (a.exists()) {
-            const d = a.val();
-            Object.keys(d).forEach(k => { if (d[k]) userNameAnim[k] = d[k]; });
-        }
-        renderMessages();
-    }
-
+    let colorTargetUid = null, selectedGlow = 'none';
+    function openColorControl(uid) { if (!isOwner()) return alert("⛔"); colorTargetUid = uid; const u = allUsersData[uid] || {}, n = u.name || 'مجهول', av = u.avatar || DEFAULT_ICON, r = u.role || 'user'; document.getElementById('color-target-avatar').src = av; document.getElementById('color-target-name').textContent = n; document.getElementById('color-target-role').textContent = 'رتبة: ' + r; const cc = getColor(uid), cg = getGlow(uid); selectedGlow = cg; document.getElementById('color-name-picker').value = cc.name || '#333333'; const g = document.getElementById('color-grid'); g.innerHTML = ''; COLORS.forEach((c, i) => { const d = document.createElement('div'); d.className = 'color-option'; d.style.background = c.bg; if (cc && cc.bg === c.bg) d.classList.add('selected'); d.innerHTML = '<span class="check">✓</span><span class="color-label">' + (i + 1) + '</span>'; d.onclick = () => { document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected')); d.classList.add('selected'); updatePreview(); }; g.appendChild(d); }); document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === cg); }); document.getElementById('color-name-picker').oninput = updatePreview; updatePreview(); document.getElementById('color-control-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); }
+    function selectGlow(g) { selectedGlow = g; document.querySelectorAll('.glow-btn').forEach(b => { b.classList.toggle('selected', b.dataset.glow === g); }); updatePreview(); }
+    function updatePreview() { const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; let bg = 'linear-gradient(135deg, #e0e0e0, #bdbdbd)', tc = '#333'; if (s) { const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx >= 0 && idx < COLORS.length) { const c = COLORS[idx]; bg = c.bg; tc = c.text; } } const pb = document.getElementById('preview-bubble'), pn = document.getElementById('preview-name'), pg = document.getElementById('preview-glow-label'); pb.style.background = bg; pb.style.color = tc; pb.textContent = '📝 نص'; pn.style.color = nc; pn.textContent = document.getElementById('color-target-name').textContent; pn.className = 'preview-name'; if (selectedGlow !== 'none') pn.classList.add('glow', selectedGlow); const gn = { none: '✨ بدون', glow: '✨ توهج', 'glow-fast': '⚡ سريع', 'glow-slow': '🌊 بطيء', 'glow-rainbow': '🌈', 'glow-neon': '💡 نيون', 'glow-fire': '🔥 نار', 'owner-glow': '👑 ملكي' }; pg.textContent = gn[selectedGlow] || '✨ بدون'; }
+    function applyUserColor() { if (!colorTargetUid) return; const s = document.querySelector('.color-option.selected'), nc = document.getElementById('color-name-picker').value; if (!s) return alert("اختر لون!"); const idx = parseInt(s.querySelector('.color-label').textContent) - 1; if (idx < 0 || idx >= COLORS.length) return; const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc }; saveUserColor(colorTargetUid, cd, selectedGlow); closeColorControl(); alert("✅"); }
+    function resetUserColorHandler() { if (!colorTargetUid) return; if (confirm("إعادة تعيين؟")) { resetUserColor(colorTargetUid); closeColorControl(); alert("✅"); } }
+    function closeColorControl() { document.getElementById('color-control-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); colorTargetUid = null; }
+    async function loadColorSettings() { const s = await colorSettingsRef.once('value'); if (s.exists()) { const d = s.val(); Object.keys(d).forEach(k => { if (d[k]) userColors[k] = d[k]; }); } const g = await glowSettingsRef.once('value'); if (g.exists()) { const d = g.val(); Object.keys(d).forEach(k => { if (d[k]) userGlow[k] = d[k]; }); } renderMessages(); }
     function handleKeyboard() { const cm = document.getElementById('chat-messages'); if (window.ResizeObserver) { const ro = new ResizeObserver(() => { const hh = document.querySelector('header')?.offsetHeight || 0, fh = document.getElementById('chat-form')?.offsetHeight || 0, nh = document.querySelector('.bottom-nav')?.offsetHeight || 0, bh = document.getElementById('mute-banner')?.offsetHeight || 0, mb = document.getElementById('maintenance-badge')?.offsetHeight || 0, ah = window.innerHeight - hh - fh - nh - bh - mb; if (cm) cm.style.minHeight = Math.max(ah, 80) + 'px'; }); ro.observe(document.body); } window.addEventListener('resize', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 80); }); document.getElementById('message-input')?.addEventListener('focus', () => { setTimeout(() => { cm.scrollTop = cm.scrollHeight; }, 200); }); }
 
     document.getElementById('dm-message-input')?.addEventListener('input', onDMInputTyping);
