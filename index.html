@@ -87,7 +87,7 @@
         .bubble-user{border-bottom-left-radius:3px}
         .sender-info{display:flex;align-items:center;gap:4px;margin-bottom:2px}
         .sender-avatar{width:22px;height:22px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(0,0,0,.06);cursor:pointer;flex-shrink:0}
-        .sender-name{font-size:12px;font-weight:700;color:#555;display:inline-flex;align-items:center;gap:3px;flex-wrap:nowrap;font-family:var(--font-main);cursor:pointer;transition:transform .2s;max-width:100%;overflow:hidden}
+        .sender-name{font-size:12px;font-weight:700;color:#555;display:flex;align-items:center;gap:3px;flex-wrap:wrap;font-family:var(--font-main);cursor:pointer;transition:transform .2s}
         .msg-time{font-size:9px;text-align:left;opacity:.5;margin-top:2px;font-family:var(--font-main);font-weight:300}
         .media-container{margin-top:3px;border-radius:6px;overflow:hidden;cursor:pointer;position:relative;background:#000}
         .media-container img,.media-container video{width:100%;display:block;max-height:200px;object-fit:cover}
@@ -170,7 +170,7 @@
         .user-card .user-status.away{background:#ff9800;box-shadow:0 0 8px rgba(255,152,0,.6)}
         .user-card .user-details .last-seen{font-size:10px;color:#888;font-family:var(--font-main);font-weight:500}
         .user-card .user-actions{display:flex;gap:3px;flex-wrap:wrap}
-        .role-badge{font-size:9px;padding:3px 8px;border-radius:10px;color:#fff;font-weight:700;font-family:var(--font-main);display:inline-flex;align-items:center;gap:3px;letter-spacing:.2px;box-shadow:0 2px 6px rgba(0,0,0,.15);position:relative;overflow:hidden;line-height:1;white-space:nowrap;flex-shrink:0}
+        .role-badge{font-size:9px;padding:3px 8px;border-radius:10px;color:#fff;font-weight:700;font-family:var(--font-main);display:inline-flex;align-items:center;gap:3px;letter-spacing:.2px;box-shadow:0 2px 6px rgba(0,0,0,.15);position:relative;overflow:hidden;line-height:1;white-space:nowrap}
         .role-badge::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:left .5s}
         .role-badge:hover::before{left:100%}
         .role-badge.owner{background:linear-gradient(135deg,#FFD700 0%,#F9A825 50%,#E65100 100%);color:#3E2723;border:1px solid rgba(255,255,255,.4);box-shadow:0 2px 8px rgba(255,215,0,.5),inset 0 1px 0 rgba(255,255,255,.3);text-shadow:0 1px 0 rgba(255,255,255,.3)}
@@ -230,11 +230,11 @@
         .glow-options .glow-btn.selected{border-color:var(--primary);background:#e8f5e9;color:var(--primary)}
         .glow-options .glow-btn .glow-demo{display:block;font-size:14px;margin-bottom:2px}
         .glow-options .glow-btn .glow-label{font-size:8px;color:#666}
-        .name-anim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;max-height:280px;overflow-y:auto;padding:4px;background:#fafafa;border-radius:8px}
-        .name-anim-btn{padding:8px 4px;border:2px solid #eee;border-radius:8px;background:#fff;cursor:pointer;font-family:var(--font-main);text-align:center;transition:all .2s;min-height:64px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;overflow:hidden}
+        .name-anim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;max-height:220px;overflow-y:auto;padding:4px;background:#fafafa;border-radius:8px}
+        .name-anim-btn{padding:8px 4px;border:2px solid #eee;border-radius:8px;background:#fff;cursor:pointer;font-family:var(--font-main);text-align:center;transition:all .2s;min-height:60px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px}
         .name-anim-btn:active{transform:scale(.95)}
         .name-anim-btn.selected{border-color:#6a1b9a;background:#f3e5f5;box-shadow:0 0 0 3px rgba(106,27,154,.15)}
-        .name-anim-btn .anim-demo-text{font-size:12px;font-weight:800;color:#1a1a1a;display:inline-block;white-space:nowrap;max-width:100%;overflow:hidden}
+        .name-anim-btn .anim-demo-text{font-size:13px;font-weight:800;color:#1a1a1a;display:inline-block}
         .name-anim-btn .anim-name-label{font-size:9px;color:#666;font-weight:600}
         .color-control-box .actions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
         .color-control-box .actions button{flex:1;padding:10px;border:0;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-main);min-width:60px}
@@ -243,6 +243,9 @@
         .color-control-box .actions .btn-cancel{background:#ef5350;color:#fff}
         .section-divider{border:0;height:1px;background:linear-gradient(90deg,transparent,#ddd,transparent);margin:14px 0}
 
+        /* =========================================================
+           حركات الأسماء الاحترافية
+           ========================================================= */
         @keyframes nameShine {
             0% { background-position: -200% center; }
             100% { background-position: 200% center; }
@@ -269,27 +272,27 @@
         }
         @keyframes namePulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.06); }
+            50% { transform: scale(1.12); }
         }
         @keyframes nameFloat {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-3px); }
+            50% { transform: translateY(-4px); }
         }
         @keyframes nameWave {
             0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-3deg); }
-            75% { transform: rotate(3deg); }
+            25% { transform: rotate(-4deg); }
+            75% { transform: rotate(4deg); }
         }
         @keyframes nameGlitch {
             0%, 100% { transform: translate(0); }
-            20% { transform: translate(-1.5px, 1px); }
-            40% { transform: translate(-1.5px, -1px); }
-            60% { transform: translate(1.5px, 1px); }
-            80% { transform: translate(1.5px, -1px); }
+            20% { transform: translate(-2px, 1px); }
+            40% { transform: translate(-2px, -1px); }
+            60% { transform: translate(2px, 1px); }
+            80% { transform: translate(2px, -1px); }
         }
         @keyframes name3D {
-            0%, 100% { text-shadow: 1px 1px 0 #333, 2px 2px 0 #333; }
-            50% { text-shadow: 2px 2px 0 #333, 4px 4px 0 #333, 6px 6px 0 #333; }
+            0%, 100% { text-shadow: 1px 1px 0 #333, 2px 2px 0 #333, 3px 3px 0 #333; }
+            50% { text-shadow: 3px 3px 0 #333, 6px 6px 0 #333, 9px 9px 0 #333; }
         }
         @keyframes nameSparkle {
             0%, 100% { filter: brightness(1) drop-shadow(0 0 3px currentColor); }
@@ -297,25 +300,25 @@
         }
         @keyframes nameBounce {
             0%, 100% { transform: translateY(0); }
-            25% { transform: translateY(-3px); }
+            25% { transform: translateY(-5px); }
             50% { transform: translateY(0); }
-            75% { transform: translateY(-1.5px); }
+            75% { transform: translateY(-2px); }
         }
         @keyframes nameSwing {
             0%, 100% { transform: rotate(0deg); transform-origin: center; }
-            25% { transform: rotate(6deg); }
-            75% { transform: rotate(-6deg); }
+            25% { transform: rotate(8deg); }
+            75% { transform: rotate(-8deg); }
         }
         @keyframes nameHeartbeat {
             0%, 100% { transform: scale(1); }
-            10% { transform: scale(1.08); }
+            10% { transform: scale(1.15); }
             20% { transform: scale(1); }
-            30% { transform: scale(1.06); }
+            30% { transform: scale(1.12); }
             40% { transform: scale(1); }
         }
         @keyframes nameZoom {
             0%, 100% { transform: scale(1); letter-spacing: 0; }
-            50% { transform: scale(1.04); letter-spacing: 0.5px; }
+            50% { transform: scale(1.08); letter-spacing: 1px; }
         }
 
         .name-anim-shine {
@@ -349,8 +352,10 @@
         .name-anim-heartbeat { animation: nameHeartbeat 1.5s ease-in-out infinite; display: inline-block; }
         .name-anim-zoom { animation: nameZoom 1.5s ease-in-out infinite; display: inline-block; }
 
+        /* ألوان الأسماء المخصصة */
         .name-color-custom { font-weight: 900; }
 
+        /* تمييز خاص للمالك */
         .owner-name-special {
             background: linear-gradient(90deg, #FFD700 0%, #FFF8DC 25%, #FFA500 50%, #FFD700 75%, #B8860B 100%);
             background-size: 200% auto;
@@ -374,142 +379,12 @@
             display: inline-block;
             animation: crownFloat 2s ease-in-out infinite;
             font-size: 12px;
-            margin-left: 2px;
-            flex-shrink: 0;
+            margin-right: 2px;
         }
         @keyframes crownFloat {
             0%, 100% { transform: translateY(0) scale(1); }
             50% { transform: translateY(-2px) scale(1.15); }
         }
-
-        /* ===== إصلاح الحركات المتدرجة (اللمعان + الملكي + قوس قزح) ===== */
-        .sender-name .name-text {
-            display: inline-block;
-            max-width: 100%;
-            white-space: nowrap;
-            vertical-align: middle;
-            line-height: 1.3;
-            position: relative;
-            padding: 1px 2px;
-        }
-        .sender-name .name-text.owner-name-special,
-        .sender-name .name-text.name-anim-shine,
-        .sender-name .name-text.name-anim-rainbow,
-        .sender-name .name-text.name-anim-aurora,
-        .sender-name .name-text.name-anim-cyberpunk,
-        .sender-name .name-text.name-anim-gradient {
-            background-clip: text !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-        }
-        .sender-name .role-badge,
-        .sender-name .owner-crown-badge {
-            position: relative;
-            z-index: 2;
-            flex-shrink: 0;
-        }
-
-        /* ===== حركات جديدة احترافية ===== */
-        @keyframes nameAurora {
-            0%, 100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
-            50% { background-position: 100% 50%; filter: hue-rotate(60deg); }
-        }
-        .name-anim-aurora {
-            background: linear-gradient(90deg, #00ff87, #60efff, #ff00ff, #00ff87);
-            background-size: 300% auto;
-            animation: nameAurora 4s ease-in-out infinite;
-            font-weight: 900;
-        }
-
-        @keyframes nameCyberpunk {
-            0%, 100% { text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff, 0 0 5px currentColor; }
-            50% { text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff, 0 0 15px currentColor; }
-        }
-        .name-anim-cyberpunk {
-            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00);
-            background-size: 200% auto;
-            animation: nameShine 2s linear infinite, nameCyberpunk 1.5s ease-in-out infinite;
-            font-weight: 900;
-        }
-
-        @keyframes nameBlur {
-            0%, 100% { filter: blur(0px); }
-            50% { filter: blur(1.5px); }
-        }
-        .name-anim-blur { animation: nameBlur 2s ease-in-out infinite; display: inline-block; }
-
-        @keyframes nameMirror {
-            0%, 100% { transform: scaleX(1); }
-            50% { transform: scaleX(-1); }
-        }
-        .name-anim-mirror { animation: nameMirror 2s ease-in-out infinite; display: inline-block; }
-
-        @keyframes nameRotate {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-3deg); }
-            75% { transform: rotate(3deg); }
-        }
-        .name-anim-rotate { animation: nameRotate 1.8s ease-in-out infinite; display: inline-block; }
-
-        @keyframes nameSlide {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(5px); }
-        }
-        .name-anim-slide { animation: nameSlide 1.6s ease-in-out infinite; display: inline-block; }
-
-        @keyframes nameShatter {
-            0%, 100% { text-shadow: 1px 1px 2px rgba(255,0,0,.5), -1px -1px 2px rgba(0,255,0,.5), 2px -2px 2px rgba(0,0,255,.5); }
-            50% { text-shadow: -2px 2px 3px rgba(255,0,0,.7), 2px -2px 3px rgba(0,255,0,.7), -2px 2px 3px rgba(0,0,255,.7); }
-        }
-        .name-anim-shatter { animation: nameShatter 1.5s ease-in-out infinite; font-weight: 800; }
-
-        @keyframes nameWave2 {
-            0% { transform: translateY(0) scale(1); }
-            25% { transform: translateY(-2px) scale(1.02); }
-            50% { transform: translateY(0) scale(1); }
-            75% { transform: translateY(2px) scale(0.98); }
-            100% { transform: translateY(0) scale(1); }
-        }
-        .name-anim-wave2 { animation: nameWave2 2s ease-in-out infinite; display: inline-block; }
-
-        @keyframes nameFlash {
-            0%, 100% { opacity: 1; filter: brightness(1); }
-            50% { opacity: 0.7; filter: brightness(1.8); }
-        }
-        .name-anim-flash { animation: nameFlash 0.8s ease-in-out infinite; display: inline-block; }
-
-        @keyframes nameSpin {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(360deg) scale(1.05); }
-        }
-        .name-anim-spin { animation: nameSpin 2.5s ease-in-out infinite; display: inline-block; }
-
-        @keyframes nameOutline {
-            0%, 100% { -webkit-text-stroke: 0.5px currentColor; color: transparent; }
-            50% { -webkit-text-stroke: 1.5px currentColor; color: transparent; }
-        }
-        .name-anim-outline { animation: nameOutline 1.5s ease-in-out infinite; font-weight: 900; display: inline-block; -webkit-text-fill-color: transparent; }
-
-        @keyframes nameGradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        .name-anim-gradient {
-            background: linear-gradient(90deg, #ff0080, #7928ca, #00d4ff, #ff0080);
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: nameGradientShift 3s ease-in-out infinite;
-            font-weight: 900;
-        }
-
-        @keyframes nameRipple {
-            0%, 100% { text-shadow: 0 0 0 currentColor; }
-            25% { text-shadow: 1px 0 0 currentColor, 2px 0 0 rgba(255,255,255,.4), 3px 0 0 rgba(255,255,255,.2); }
-            75% { text-shadow: -1px 0 0 currentColor, -2px 0 0 rgba(255,255,255,.4), -3px 0 0 rgba(255,255,255,.2); }
-        }
-        .name-anim-ripple { animation: nameRipple 1.8s ease-in-out infinite; display: inline-block; }
 
         #media-viewer{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:3000;display:none;flex-direction:column}
         #media-viewer.active{display:flex;animation:fadeIn .2s}
@@ -843,6 +718,7 @@
         .btn-effects-settings:active{transform:scale(.95)}
         .btn-theme-settings{width:100%;padding:10px;background:linear-gradient(135deg,#00897B,#00695C);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
         .btn-theme-settings:active{transform:scale(.95)}
+        /* زر جديد: ألوان وحركات الأسماء */
         .btn-name-settings{width:100%;padding:10px;background:linear-gradient(135deg,#e91e63,#ad1457);color:#fff;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px;font-family:var(--font-main);margin-top:8px;transition:transform .2s;display:flex;align-items:center;justify-content:center;gap:8px}
         .btn-name-settings:active{transform:scale(.95)}
         .theme-section{background:#f9f9f9;border-radius:12px;padding:14px;margin-bottom:12px;text-align:right;border:1px solid #eee}
@@ -1771,6 +1647,7 @@
                 <button id="open-anim-settings-btn" class="btn-anim-settings" onclick="openAnimSettings()">✨ حركات الرسائل</button>
                 <button id="open-effects-settings-btn" class="btn-effects-settings" onclick="openEffectsSettings()">🎆 التأثيرات المتحركة (نجوم، قلوب، ورد...)</button>
                 <button id="open-theme-settings-btn" class="btn-theme-settings" onclick="openThemeSettings()">🎨 ألوان الواجهة (العلوي/السفلي)</button>
+                <!-- 🆕 زر جديد: ألوان وحركات الأسماء -->
                 <button id="open-name-settings-btn" class="btn-name-settings" onclick="openNameSettingsPanel()">💎 ألوان وحركات الأسماء (شامل)</button>
                 <button id="open-maintenance-btn" class="btn-maintenance" onclick="openMaintenanceSettings()">🔧 إعدادات الصيانة</button>
                 <button id="open-advanced-btn" class="btn-advanced" onclick="openAdvancedSettings()">⚙️ إعدادات متقدمة (الخط)</button>
@@ -2197,7 +2074,7 @@
         { name: 'تدرج داكن', value: 'linear-gradient(135deg, #1a1a2e, #0f0f1e)' }
     ];
 
-    /* ===== قائمة حركات الأسماء الاحترافية (28 حركة) ===== */
+    /* قائمة حركات الأسماء الاحترافية */
     const NAME_ANIMATIONS = [
         { id: 'none', name: 'بدون', className: '', demoStyle: '' },
         { id: 'shine', name: 'لمعان', className: 'name-anim-shine', demoStyle: 'background:linear-gradient(90deg,#fff,#FFD700,#fff);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;' },
@@ -2216,20 +2093,7 @@
         { id: 'swing', name: 'تأرجح', className: 'name-anim-swing', demoStyle: '' },
         { id: 'heartbeat', name: 'نبض قلب', className: 'name-anim-heartbeat', demoStyle: '' },
         { id: 'zoom', name: 'تكبير', className: 'name-anim-zoom', demoStyle: '' },
-        { id: 'owner-special', name: 'ملكي 👑', className: 'owner-name-special', demoStyle: 'font-weight:900;' },
-        { id: 'aurora', name: 'الشفق 🌀', className: 'name-anim-aurora', demoStyle: 'font-weight:900;' },
-        { id: 'cyberpunk', name: 'سايبربانك 🌃', className: 'name-anim-cyberpunk', demoStyle: 'font-weight:900;' },
-        { id: 'gradient', name: 'تدرج متحرك 🎨', className: 'name-anim-gradient', demoStyle: 'font-weight:900;' },
-        { id: 'blur', name: 'ضبابي 💨', className: 'name-anim-blur', demoStyle: '' },
-        { id: 'mirror', name: 'مرآة 🪞', className: 'name-anim-mirror', demoStyle: '' },
-        { id: 'rotate', name: 'دوران 🔄', className: 'name-anim-rotate', demoStyle: '' },
-        { id: 'slide', name: 'انزلاق ➡️', className: 'name-anim-slide', demoStyle: '' },
-        { id: 'shatter', name: 'تشظي 💥', className: 'name-anim-shatter', demoStyle: 'font-weight:800;' },
-        { id: 'wave2', name: 'موجي 🌊', className: 'name-anim-wave2', demoStyle: '' },
-        { id: 'flash', name: 'وميض ⚡', className: 'name-anim-flash', demoStyle: '' },
-        { id: 'spin', name: 'لف 🎡', className: 'name-anim-spin', demoStyle: '' },
-        { id: 'outline', name: 'محدد ✏️', className: 'name-anim-outline', demoStyle: 'font-weight:900;' },
-        { id: 'ripple', name: 'تأثير موجي 〰️', className: 'name-anim-ripple', demoStyle: '' }
+        { id: 'owner-special', name: 'ملكي 👑', className: 'owner-name-special', demoStyle: 'font-weight:900;' }
     ];
 
     function listenThemeSettings() {
@@ -2389,6 +2253,7 @@
 
     function openNameSettingsPanel() {
         if (myRole !== 'owner') return alert('⛔ فقط المالك');
+        // فتح قائمة الأعضاء لتختار من تريد تخصيص اسمه
         document.getElementById('profile-modal').classList.remove('active');
         alert('💎 اختر المستخدم من قائمة الأعضاء ثم اضغط زر 🎨 بجانب اسمه لتخصيص الألوان والحركات.\n\nملاحظة: يمكنك الآن تخصيص كل المستخدمين بما فيهم المدير والمشرف والموثوق ونفسك!');
         toggleUsers();
@@ -2569,6 +2434,7 @@
     function getColor(uid) { if (!userColors[uid]) { userColors[uid] = COLORS[colorIndex % COLORS.length]; colorIndex++; } return userColors[uid]; }
     function getGlow(uid) { return userGlow[uid] || (uid === myFP && myRole === 'owner' ? 'owner-glow' : 'none'); }
     function getNameAnim(uid) {
+        // المالك له حركة خاصة افتراضية
         if (uid === myFP && myRole === 'owner' && !userNameAnim[uid]) return 'owner-special';
         return userNameAnim[uid] || 'none';
     }
@@ -4471,14 +4337,9 @@
         db.ref('messages').limitToLast(1).on('child_added', s => {
             if (isBeingDeleted) return;
             const k = s.key, v = s.val();
-            if (!messagesCache[k]) {
-                messagesCache[k] = v;
-                const ks = Object.keys(messagesCache);
-                if (ks.length > 300) { const o = ks.sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0))[0]; delete messagesCache[o]; }
-                appendNewMessage(k, v);
-            }
+            if (!messagesCache[k]) { messagesCache[k] = v; const ks = Object.keys(messagesCache); if (ks.length > 300) { const o = ks.sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0))[0]; delete messagesCache[o]; } renderMessages(); }
         });
-        db.ref('messages').on('child_removed', s => { if (isBeingDeleted) return; const k = s.key; if (messagesCache[k]) { delete messagesCache[k]; animatedMsgIds.delete(k); const el = document.getElementById('msg-' + k); if (el) el.remove(); else renderMessages(); } });
+        db.ref('messages').on('child_removed', s => { if (isBeingDeleted) return; const k = s.key; if (messagesCache[k]) { delete messagesCache[k]; animatedMsgIds.delete(k); renderMessages(); } });
         db.ref('users').on('value', s => {
             if (isBeingDeleted) return;
             const d = {}; s.forEach(c => { d[c.key] = c.val() });
@@ -4521,79 +4382,6 @@
         c.addEventListener('scroll', function() { if (this.scrollTop < 30 && hasMore && !loadingMore) { const oh = this.scrollHeight; loadMore(); setTimeout(() => { this.scrollTop = this.scrollHeight - oh + 5; }, 50); } });
     }
 
-    /* ============================================================
-       🚀 رسائل الأداء العالي (إرسال/استقبال فوري)
-       ============================================================ */
-
-    /* بناء عنصر رسالة واحدة */
-    function buildMessageElement(k, m, isInitial) {
-        if (!m) return null;
-        const t = Number(m.time) || Date.now();
-        const isMine = m.uid === myFP;
-        const ud = allUsersData[m.uid] || {};
-        const da = ud.avatar || m.avatar || DEFAULT_ICON;
-        const dn = getDisplayName({ name: ud.name || m.sender }).text;
-        const dr = ud.role || m.role || 'user';
-        const div = document.createElement('div');
-        const isRecent = (Date.now() - t) < 8000;
-        const shouldAnimate = isRecent && !animatedMsgIds.has(k);
-        if (shouldAnimate) animatedMsgIds.add(k);
-        div.className = 'msg-row ' + (isMine ? 'mine' : 'others') + (shouldAnimate ? '' : ' no-anim');
-        div.id = 'msg-' + k;
-        let bc = '', bs = '', snc = '', gc = '';
-        if (dr === 'owner') { bc = 'bubble-owner'; snc = '#5d4a00'; gc = 'owner-glow'; }
-        else if (dr === 'manager') { bc = 'bubble-manager'; snc = '#E1BEE7'; gc = getGlow(m.uid); }
-        else if (dr === 'mod') { bc = 'bubble-mod'; snc = '#BBDEFB'; gc = getGlow(m.uid); }
-        else { const uc = getColor(m.uid); bc = 'bubble-user'; bs = 'background:' + uc.bg + ';color:' + uc.text + ';'; snc = uc.name || '#333'; gc = getGlow(m.uid); }
-        let badge = '';
-        if (dr === 'owner') badge = '<span class="role-badge owner">👑 مالك</span>';
-        else if (dr === 'manager') badge = '<span class="role-badge manager">💎 مدير</span>';
-        else if (dr === 'mod') badge = '<span class="role-badge mod">🛡️ مشرف</span>';
-        else if (dr === 'trusted') badge = '<span class="role-badge trusted">✅ موثوق</span>';
-        let qh = '';
-        if (m.replyTo && m.replyTo.sender) { const qt = m.replyTo.text || 'وسائط'; qh = '<div class="quoted-msg" onclick="scrollToMessage(\'' + m.replyTo.key + '\')" style="background:rgba(0,0,0,0.04);border-right:2.5px solid var(--primary);padding:2px 5px;margin-bottom:3px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--font-main);"><div style="font-weight:700;color:var(--primary);font-size:9px;">↩ ' + escapeHtml(m.replyTo.sender) + '</div><div style="color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(qt) + '</div></div>'; }
-        let mh = '';
-        if (m.media) {
-            if (m.type === 'video') mh = '<div class="media-container" onclick="openViewer(\'' + m.media + '\',\'video\',\'' + dn + '\')"><video src="' + m.media + '" class="msg-img"></video><div class="play-icon">▶</div></div>';
-            else if (m.type === 'image') mh = '<div class="media-container" onclick="openViewer(\'' + m.media + '\',\'image\',\'' + dn + '\')"><img src="' + m.media + '" class="msg-img"></div>';
-            else if (m.type === 'youtube') { const y = m.youtubeId || extractYouTubeId(m.media); if (y) mh = '<div class="youtube-container" onclick="playYouTube(\'' + y + '\', this)"><img src="' + getYouTubeThumbnail(y) + '" class="youtube-thumbnail"><div class="youtube-label">▶ YouTube</div><div class="youtube-play-overlay"></div></div>'; }
-        }
-        let th = '';
-        if (m.text) {
-            let p = escapeHtml(m.text);
-            if (!m.media && isYouTubeUrl(m.text)) { const y = extractYouTubeId(m.text); if (y) { mh = '<div class="youtube-container" onclick="playYouTube(\'' + y + '\', this)"><img src="' + getYouTubeThumbnail(y) + '" class="youtube-thumbnail"><div class="youtube-label">▶ YouTube</div><div class="youtube-play-overlay"></div></div>'; p = p.replace(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}(?:[^\s]*)?/g, ''); p = p.trim(); } }
-            p = p.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#0066cc;text-decoration:underline;">$1</a>');
-            if (p) th = '<div style="word-break:break-word;">' + p + '</div>';
-        }
-        let acts = '';
-        const cd = isMine || canDeleteMessage(myRole, dr), cb = canBan(myRole, dr) && !isMine, cm = canMute(myRole, dr) && !isMine, cp = canAssignRole(myRole, dr) && !isMine, cc = isOwner();
-        const iCanDM = (myDMEnabled === true);
-        const targetCanDM = canUserDM(m.uid, dr);
-        const canDM = !isMine && iCanDM && targetCanDM;
-        acts += '<div class="msg-actions">';
-        if (!isMine && myRole !== 'owner') acts += '<button class="action-sm report" onclick="openReportModal(\'message\',\'' + (m.uid || '') + '\',\'' + dn.replace(/'/g, "\\'") + '\',\'' + k + '\')"> إبلاغ</button>';
-        if (canDM) acts += '<button class="action-sm dm" onclick="openDMChat(\'' + m.uid + '\')">💌 خاص</button>';
-        if (!isMine) acts += '<button class="action-sm reply" onclick="startReply(\'' + k + '\')">رد ↩</button>';
-        if (cd) acts += '<button class="action-sm del" onclick="deleteMessage(\'' + k + '\')">🗑️</button>';
-        if (cb) acts += '<button class="action-sm ban" onclick="banUser(\'' + m.uid + '\',\'' + dn + '\')">حظر</button>';
-        if (cm) acts += '<button class="action-sm mute" onclick="openMuteMenu(\'' + m.uid + '\',\'' + dn + '\')">كتم</button>';
-        if (cp) acts += '<button class="action-sm promote" onclick="openRoleMenu(\'' + m.uid + '\',\'' + dn + '\')">رتبة</button>';
-        if (cc) acts += '<button class="action-sm" style="background:#e91e63;font-size:9px;padding:2px 6px;" onclick="openColorControl(\'' + m.uid + '\')">🎨</button>';
-        acts += '</div>';
-        const sns = snc ? 'color:' + snc + ';' : '', gc2 = gc && gc !== 'none' ? 'glow ' + gc : '';
-        const animId = getNameAnim(m.uid);
-        const animObj = NAME_ANIMATIONS.find(a => a.id === animId);
-        const animClass = animObj && animObj.className ? animObj.className : '';
-        const safeName = dn.replace(/'/g, "\\'");
-        const isOwnerMsg = dr === 'owner';
-        const ownerAvatarClass = isOwnerMsg ? 'owner-avatar-special' : '';
-        const ownerCrown = isOwnerMsg ? '<span class="owner-crown-badge">👑</span>' : '';
-        div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar ' + ownerAvatarClass + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')">' + ownerCrown + '<span class="name-text ' + animClass + '">' + escapeHtml(dn) + '</span>' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '<span class="tick-single">✓</span>' : '') + '</div></div>' + acts;
-        if (animSettings.glowEffect) div.classList.add('effect-glow-pulse');
-        if (animSettings.heartEffect) div.classList.add('effect-heartbeat');
-        return div;
-    }
-
     function renderMessages() {
         if (isBeingDeleted) return;
         const box = document.getElementById('chat-messages');
@@ -4603,62 +4391,78 @@
         const ks = Object.keys(messagesCache).sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0));
         if (ks.length === 0) { box.innerHTML += '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">✨ لا توجد رسائل</div>'; return; }
         const dk = ks.slice(-300);
-        const frag = document.createDocumentFragment();
         let lastDayKey = null;
         dk.forEach(k => {
             const m = messagesCache[k]; if (!m) return;
             const t = Number(m.time) || Date.now();
             const msgDate = new Date(t);
             const dayKey = msgDate.getFullYear() + '-' + msgDate.getMonth() + '-' + msgDate.getDate();
-            if (dayKey !== lastDayKey) {
-                const sep = document.createElement('div');
-                sep.className = 'date-separator';
-                sep.dataset.time = t;
-                sep.dataset.dayKey = dayKey;
-                sep.innerHTML = '<span>' + getDateLabel(t) + '</span>';
-                frag.appendChild(sep);
-                lastDayKey = dayKey;
+            if (dayKey !== lastDayKey) { addDateSeparator(box, t); lastDayKey = dayKey; }
+            const isMine = m.uid === myFP, ud = allUsersData[m.uid] || {}, da = ud.avatar || m.avatar || DEFAULT_ICON;
+            const dn = getDisplayName({ name: ud.name || m.sender }).text;
+            const dr = ud.role || m.role || 'user';
+            const div = document.createElement('div');
+            const isRecent = (Date.now() - t) < RECENT_MSG_WINDOW;
+            const shouldAnimate = isRecent && !animatedMsgIds.has(k);
+            if (shouldAnimate) animatedMsgIds.add(k);
+            div.className = 'msg-row ' + (isMine ? 'mine' : 'others') + (shouldAnimate ? '' : ' no-anim');
+            div.id = 'msg-' + k;
+            let bc = '', bs = '', snc = '', gc = '';
+            if (dr === 'owner') { bc = 'bubble-owner'; snc = '#5d4a00'; gc = 'owner-glow'; }
+            else if (dr === 'manager') { bc = 'bubble-manager'; snc = '#E1BEE7'; gc = getGlow(m.uid); }
+            else if (dr === 'mod') { bc = 'bubble-mod'; snc = '#BBDEFB'; gc = getGlow(m.uid); }
+            else { const uc = getColor(m.uid); bc = 'bubble-user'; bs = 'background:' + uc.bg + ';color:' + uc.text + ';'; snc = uc.name || '#333'; gc = getGlow(m.uid); }
+            let badge = '';
+            if (dr === 'owner') badge = '<span class="role-badge owner">👑 مالك</span>';
+            else if (dr === 'manager') badge = '<span class="role-badge manager">💎 مدير</span>';
+            else if (dr === 'mod') badge = '<span class="role-badge mod">🛡️ مشرف</span>';
+            else if (dr === 'trusted') badge = '<span class="role-badge trusted">✅ موثوق</span>';
+            let qh = '';
+            if (m.replyTo && m.replyTo.sender) { const qt = m.replyTo.text || 'وسائط'; qh = '<div class="quoted-msg" onclick="scrollToMessage(\'' + m.replyTo.key + '\')" style="background:rgba(0,0,0,0.04);border-right:2.5px solid var(--primary);padding:2px 5px;margin-bottom:3px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--font-main);"><div style="font-weight:700;color:var(--primary);font-size:9px;">↩ ' + escapeHtml(m.replyTo.sender) + '</div><div style="color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(qt) + '</div></div>'; }
+            let mh = '';
+            if (m.media) {
+                if (m.type === 'video') mh = '<div class="media-container" onclick="openViewer(\'' + m.media + '\',\'video\',\'' + dn + '\')"><video src="' + m.media + '" class="msg-img"></video><div class="play-icon">▶</div></div>';
+                else if (m.type === 'image') mh = '<div class="media-container" onclick="openViewer(\'' + m.media + '\',\'image\',\'' + dn + '\')"><img src="' + m.media + '" class="msg-img"></div>';
+                else if (m.type === 'youtube') { const y = m.youtubeId || extractYouTubeId(m.media); if (y) mh = '<div class="youtube-container" onclick="playYouTube(\'' + y + '\', this)"><img src="' + getYouTubeThumbnail(y) + '" class="youtube-thumbnail"><div class="youtube-label">▶ YouTube</div><div class="youtube-play-overlay"></div></div>'; }
             }
-            const msgEl = buildMessageElement(k, m, true);
-            if (msgEl) frag.appendChild(msgEl);
+            let th = '';
+            if (m.text) {
+                let p = escapeHtml(m.text);
+                if (!m.media && isYouTubeUrl(m.text)) { const y = extractYouTubeId(m.text); if (y) { mh = '<div class="youtube-container" onclick="playYouTube(\'' + y + '\', this)"><img src="' + getYouTubeThumbnail(y) + '" class="youtube-thumbnail"><div class="youtube-label">▶ YouTube</div><div class="youtube-play-overlay"></div></div>'; p = p.replace(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}(?:[^\s]*)?/g, ''); p = p.trim(); } }
+                p = p.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#0066cc;text-decoration:underline;">$1</a>');
+                if (p) th = '<div style="word-break:break-word;">' + p + '</div>';
+            }
+            let acts = '';
+            const cd = isMine || canDeleteMessage(myRole, dr), cb = canBan(myRole, dr) && !isMine, cm = canMute(myRole, dr) && !isMine, cp = canAssignRole(myRole, dr) && !isMine, cc = isOwner();
+            const iCanDM = (myDMEnabled === true);
+            const targetCanDM = canUserDM(m.uid, dr);
+            const canDM = !isMine && iCanDM && targetCanDM;
+            acts += '<div class="msg-actions">';
+            if (!isMine && myRole !== 'owner') acts += '<button class="action-sm report" onclick="openReportModal(\'message\',\'' + (m.uid || '') + '\',\'' + dn.replace(/'/g, "\\'") + '\',\'' + k + '\')"> إبلاغ</button>';
+            if (canDM) acts += '<button class="action-sm dm" onclick="openDMChat(\'' + m.uid + '\')">💌 خاص</button>';
+            if (!isMine) acts += '<button class="action-sm reply" onclick="startReply(\'' + k + '\')">رد ↩</button>';
+            if (cd) acts += '<button class="action-sm del" onclick="deleteMessage(\'' + k + '\')">🗑️</button>';
+            if (cb) acts += '<button class="action-sm ban" onclick="banUser(\'' + m.uid + '\',\'' + dn + '\')">حظر</button>';
+            if (cm) acts += '<button class="action-sm mute" onclick="openMuteMenu(\'' + m.uid + '\',\'' + dn + '\')">كتم</button>';
+            if (cp) acts += '<button class="action-sm promote" onclick="openRoleMenu(\'' + m.uid + '\',\'' + dn + '\')">رتبة</button>';
+            if (cc) acts += '<button class="action-sm" style="background:#e91e63;font-size:9px;padding:2px 6px;" onclick="openColorControl(\'' + m.uid + '\')">🎨</button>';
+            acts += '</div>';
+            const sns = snc ? 'color:' + snc + ';' : '', gc2 = gc && gc !== 'none' ? 'glow ' + gc : '';
+            // 🎬 تطبيق حركة الاسم
+            const animId = getNameAnim(m.uid);
+            const animObj = NAME_ANIMATIONS.find(a => a.id === animId);
+            const animClass = animObj && animObj.className ? animObj.className : '';
+            const safeName = dn.replace(/'/g, "\\'");
+            // 👑 تمييز خاص للمالك: تاج + صورة بإطار ذهبي متوهج
+            const isOwnerMsg = dr === 'owner';
+            const ownerAvatarClass = isOwnerMsg ? 'owner-avatar-special' : '';
+            const ownerCrown = isOwnerMsg ? '<span class="owner-crown-badge">👑</span>' : '';
+            div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar ' + ownerAvatarClass + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + ' ' + animClass + '" style="' + sns + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')">' + ownerCrown + escapeHtml(dn) + ' ' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '<span class="tick-single">✓</span>' : '') + '</div></div>' + acts;
+            if (animSettings.glowEffect) div.classList.add('effect-glow-pulse');
+            if (animSettings.heartEffect) div.classList.add('effect-heartbeat');
+            box.appendChild(div);
         });
-        box.appendChild(frag);
         if (isBottom) box.scrollTop = box.scrollHeight; else box.scrollTop = sp;
-    }
-
-    /* 🚀 إضافة رسالة جديدة فورياً بدون إعادة رسم */
-    function appendNewMessage(k, m) {
-        if (isBeingDeleted) return;
-        const box = document.getElementById('chat-messages');
-        if (!box) return;
-        const emptyMsg = box.querySelector('div[style*="لا توجد رسائل"]');
-        if (emptyMsg) emptyMsg.remove();
-
-        const t = Number(m.time) || Date.now();
-        const msgDate = new Date(t);
-        const dayKey = msgDate.getFullYear() + '-' + msgDate.getMonth() + '-' + msgDate.getDate();
-
-        let lastDayKey = null;
-        for (let i = box.children.length - 1; i >= 0; i--) {
-            const el = box.children[i];
-            if (el.classList.contains('date-separator')) {
-                lastDayKey = el.dataset.dayKey || null;
-                break;
-            }
-        }
-        if (lastDayKey !== dayKey) {
-            const sep = document.createElement('div');
-            sep.className = 'date-separator';
-            sep.dataset.time = t;
-            sep.dataset.dayKey = dayKey;
-            sep.innerHTML = '<span>' + getDateLabel(t) + '</span>';
-            box.appendChild(sep);
-        }
-        const msgEl = buildMessageElement(k, m, false);
-        if (msgEl) box.appendChild(msgEl);
-
-        const isNearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 200;
-        if (isNearBottom) box.scrollTop = box.scrollHeight;
     }
 
     function updateUsersList() {
@@ -4771,6 +4575,7 @@
                 let im = false; if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
                 if (canMute(myRole, d.role)) { if (im) bt += '<button class="ctrl-btn unmute" onclick="unmuteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🔊</button>'; else bt += '<button class="ctrl-btn mute" onclick="openMuteMenu(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🔇</button>'; }
                 if (canAssignRole(myRole, d.role)) bt += '<button class="ctrl-btn role" onclick="openRoleMenu(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">⚙️</button>';
+                // المالك يمكنه تخصيص ألوان وحركات أي شخص بما فيهم نفسه
                 if (myRole === 'owner') {
                     bt += '<button class="ctrl-btn color" onclick="openColorControl(\'' + u + '\')" title="تخصيص الألوان والحركات">🎨</button>';
                     if (d.role !== 'owner') {
@@ -5069,19 +4874,8 @@
     function updateNotifBadge() { if (isBeingDeleted) return; const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
     function openYouTubeModal() { document.getElementById('youtube-modal').classList.add('active'); document.getElementById('yt-link-input').focus(); }
     function previewYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), p = document.getElementById('yt-preview'), img = document.getElementById('yt-preview-img'), t = document.getElementById('yt-preview-title'), sb = document.getElementById('yt-send-btn'), wb = document.getElementById('yt-watch-btn'), vid = extractYouTubeId(l); if (vid) { img.src = getYouTubeThumbnail(vid); t.textContent = 'https://youtu.be/' + vid; p.style.display = 'block'; sb.disabled = false; wb.disabled = false; } else { p.style.display = 'none'; sb.disabled = true; wb.disabled = true; } }
-    function sendYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return alert("رابط غير صحيح!"); const d = { sender: myName, uid: myFP, role: myRole, time: Date.now(), media: l, type: 'youtube', youtubeId: vid, avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); }
-        const tempKey = 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-        d._temp = true; messagesCache[tempKey] = d; appendNewMessage(tempKey, d);
-        playSendSound();
-        document.getElementById('yt-link-input').value = ''; document.getElementById('yt-preview').style.display = 'none'; document.getElementById('yt-send-btn').disabled = true; document.getElementById('yt-watch-btn').disabled = true; document.getElementById('youtube-modal').classList.remove('active');
-        const firebaseData = { ...d }; delete firebaseData._temp; firebaseData.time = firebase.database.ServerValue.TIMESTAMP;
-        db.ref('messages').push(firebaseData).then(() => { delete messagesCache[tempKey]; const el = document.getElementById('msg-' + tempKey); if (el) el.remove(); }).catch(() => { delete messagesCache[tempKey]; const el = document.getElementById('msg-' + tempKey); if (el) el.remove(); });
-    }
+    function sendYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return alert("رابط غير صحيح!"); const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: l, type: 'youtube', youtubeId: vid, avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); document.getElementById('yt-link-input').value = ''; document.getElementById('yt-preview').style.display = 'none'; document.getElementById('yt-send-btn').disabled = true; document.getElementById('yt-watch-btn').disabled = true; document.getElementById('youtube-modal').classList.remove('active'); }
     function watchYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), vid = extractYouTubeId(l); if (!vid) return; openViewer('https://www.youtube.com/embed/' + vid + '?autoplay=1', 'youtube', myName); }
-
-    /* ============================================================
-       🚀 إرسال فوري (Optimistic UI)
-       ============================================================ */
     function sendMessage(e) {
         e.preventDefault();
         if (isMuted) return alert("🔇");
@@ -5089,33 +4883,13 @@
         const t = input.value.trim();
         if (!t) return;
         if (blockIfBadWord(t)) return;
-        const d = { sender: myName, text: t, uid: myFP, role: myRole, time: Date.now(), avatar: myAvatar };
+        const d = { sender: myName, text: t, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, avatar: myAvatar };
         if (isYouTubeUrl(t)) { const y = extractYouTubeId(t); if (y) { d.media = t; d.type = 'youtube'; d.youtubeId = y; if (t === t.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}(?:[^\s]*)?/)?.[0]) d.text = ''; } }
         if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 100), role: replyTo.role }; cancelReply(); }
-
-        const tempKey = 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-        d._temp = true;
-        messagesCache[tempKey] = d;
-        appendNewMessage(tempKey, d);
-
+        db.ref('messages').push(d);
+        playSendSound();
         input.value = '';
         input.focus();
-        playSendSound();
-
-        const firebaseData = { ...d };
-        delete firebaseData._temp;
-        firebaseData.time = firebase.database.ServerValue.TIMESTAMP;
-
-        db.ref('messages').push(firebaseData).then(() => {
-            delete messagesCache[tempKey];
-            const tempEl = document.getElementById('msg-' + tempKey);
-            if (tempEl) tempEl.remove();
-        }).catch(err => {
-            console.error('فشل الإرسال:', err);
-            delete messagesCache[tempKey];
-            const tempEl = document.getElementById('msg-' + tempKey);
-            if (tempEl) tempEl.remove();
-        });
     }
     async function handleFile(i) {
         if (!myMediaEnabled) { alert('⛔ ليس لديك صلاحية إرسال الوسائط'); i.value = ''; return; }
@@ -5126,12 +4900,7 @@
         const sb = document.getElementById('send-btn'); sb.textContent = "⏳"; sb.disabled = true;
         try {
             const u = await uploadCloudinary(f);
-            if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: Date.now(), media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); }
-                const tempKey = 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-                d._temp = true; messagesCache[tempKey] = d; appendNewMessage(tempKey, d); playSendSound();
-                const firebaseData = { ...d }; delete firebaseData._temp; firebaseData.time = firebase.database.ServerValue.TIMESTAMP;
-                db.ref('messages').push(firebaseData).then(() => { delete messagesCache[tempKey]; const el = document.getElementById('msg-' + tempKey); if (el) el.remove(); }).catch(() => { delete messagesCache[tempKey]; const el = document.getElementById('msg-' + tempKey); if (el) el.remove(); });
-            } else alert("فشل الرفع");
+            if (u) { const d = { sender: myName, uid: myFP, role: myRole, time: firebase.database.ServerValue.TIMESTAMP, media: u, type: f.type.startsWith('video') ? 'video' : 'image', avatar: myAvatar }; if (replyTo) { d.replyTo = { key: replyTo.key, sender: replyTo.sender, text: (replyTo.text || '').substring(0, 50), role: replyTo.role }; cancelReply(); } db.ref('messages').push(d); playSendSound(); } else alert("فشل الرفع");
         } catch (e) { alert("خطأ: " + e.message); }
         sb.textContent = "➤"; sb.disabled = false; i.value = '';
     }
@@ -5663,7 +5432,7 @@
     function closeDMMonitorView() { document.getElementById('dm-monitor-view-modal').classList.remove('active'); }
 
     /* ============================================================
-       🎨 تخصيص الألوان والحركات (شامل)
+       🎨 تخصيص الألوان والحركات للأسماء (شامل للجميع)
        ============================================================ */
     let colorTargetUid = null, selectedGlow = 'none', selectedNameAnim = 'none';
 
@@ -5689,6 +5458,7 @@
 
         document.getElementById('color-name-picker').value = cc.name || '#333333';
 
+        // بناء شبكة الألوان
         const g = document.getElementById('color-grid');
         g.innerHTML = '';
         COLORS.forEach((c, i) => {
@@ -5705,10 +5475,12 @@
             g.appendChild(d);
         });
 
+        // بناء أزرار التوهج
         document.querySelectorAll('.glow-btn').forEach(b => {
             b.classList.toggle('selected', b.dataset.glow === cg);
         });
 
+        // بناء شبكة حركات الاسم
         renderNameAnimGrid(ca);
 
         document.getElementById('color-name-picker').oninput = updatePreview;
@@ -5725,6 +5497,7 @@
             const btn = document.createElement('div');
             btn.className = 'name-anim-btn' + (anim.id === currentAnim ? ' selected' : '');
             btn.dataset.anim = anim.id;
+            // المعاينة
             const demo = document.createElement('span');
             demo.className = 'anim-demo-text ' + (anim.className || '');
             demo.textContent = 'اسم';
@@ -5766,7 +5539,9 @@
         pn.style.color = nc;
         pn.textContent = document.getElementById('color-target-name').textContent;
         pn.className = 'preview-name';
+        // التوهج
         if (selectedGlow !== 'none') pn.classList.add('glow', selectedGlow);
+        // حركة الاسم
         const animObj = NAME_ANIMATIONS.find(a => a.id === selectedNameAnim);
         if (animObj && animObj.className) pn.classList.add(animObj.className);
         const gn = { none: '✨ بدون', glow: '✨ توهج', 'glow-fast': '⚡ سريع', 'glow-slow': '🌊 بطيء', 'glow-rainbow': '🌈', 'glow-neon': '💡 نيون', 'glow-fire': '🔥 نار', 'owner-glow': '👑 ملكي' };
