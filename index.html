@@ -1901,6 +1901,11 @@ let tempOwnerPremium = {};
 let alertTarget = 'all';
 let selectedAlertUser = null;
 
+// ⭐ متغيرات المزامنة الحية للألوان والحركات والتوهجات
+let colorSettingsListener = null;
+let glowSettingsListener = null;
+let nameAnimSettingsListener = null;
+
 const HEADER_COLOR_PRESETS = [
     { name: 'واتساب', value: '#008069' },
     { name: 'أخضر داكن', value: '#1B5E20' },
@@ -2145,12 +2150,13 @@ function getNameAnim(uid) {
     if (uid === myFP && myRole === 'owner' && !userNameAnim[uid]) return 'owner-special';
     return userNameAnim[uid] || 'none';
 }
-function saveUserColor(uid, c, g) { userColors[uid] = c; colorSettingsRef.child(uid).set(c); if (g) { userGlow[uid] = g; glowSettingsRef.child(uid).set(g) } renderMessages(); }
+function saveUserColor(uid, c, g) { userColors[uid] = c; colorSettingsRef.child(uid).set(c); if (g) { userGlow[uid] = g; glowSettingsRef.child(uid).set(g) } renderMessages(); if (currentDMChat) renderDMMessagesList(); }
 function saveUserNameAnim(uid, animId) {
     userNameAnim[uid] = animId;
     if (animId === 'none') nameAnimRef.child(uid).remove();
     else nameAnimRef.child(uid).set(animId);
     renderMessages();
+    if (currentDMChat) renderDMMessagesList();
 }
 function resetUserColor(uid) {
     if (userColors[uid]) { delete userColors[uid]; colorSettingsRef.child(uid).remove() }
@@ -2335,7 +2341,7 @@ async function saveOwnerPremiumSettings() {
         ownerPremiumSettings = { ...tempOwnerPremium };
         if (myRole === 'owner') renderMessages();
         await logAdminAction('owner_premium_change', myFP, myName, tempOwnerPremium);
-        alert('✅ تم حفظ إعدادات المالك بنجاح');
+        alert('✅ تم حفظ إعدادات المالك بنجاح — ستظهر لجميع المستخدمين فوراً');
         closeOwnerPremiumModal();
     } catch (e) { alert('❌ ' + e.message); }
 }
@@ -3580,6 +3586,65 @@ function listenCapabilityOverrides() {
     });
 }
 
+// ⭐⭐⭐ المزامنة الحية للألوان والتوهجات وحركات الأسماء ⭐⭐⭐
+// هذه الدوال تجعل أي تغيير يقوم به المالك (أو أي مستخدم لنفسه) يظهر فوراً لجميع المستخدمين
+function listenColorSettingsLive() {
+    if (colorSettingsListener) colorSettingsRef.off('value', colorSettingsListener);
+    colorSettingsListener = colorSettingsRef.on('value', snap => {
+        if (isBeingDeleted) return;
+        const d = snap.val() || {};
+        // إعادة بناء كائن الألوان بالكامل من السيرفر
+        userColors = {};
+        Object.keys(d).forEach(k => { if (d[k]) userColors[k] = d[k]; });
+        // إعادة رسم الرسائل الحالية لتحديث الألوان فوراً
+        renderMessages();
+        if (currentDMChat) renderDMMessagesList();
+    });
+}
+
+function listenGlowSettingsLive() {
+    if (glowSettingsListener) glowSettingsRef.off('value', glowSettingsListener);
+    glowSettingsListener = glowSettingsRef.on('value', snap => {
+        if (isBeingDeleted) return;
+        const d = snap.val() || {};
+        userGlow = {};
+        Object.keys(d).forEach(k => { if (d[k]) userGlow[k] = d[k]; });
+        renderMessages();
+        if (currentDMChat) renderDMMessagesList();
+    });
+}
+
+function listenNameAnimSettingsLive() {
+    if (nameAnimSettingsListener) nameAnimRef.off('value', nameAnimSettingsListener);
+    nameAnimSettingsListener = nameAnimRef.on('value', snap => {
+        if (isBeingDeleted) return;
+        const d = snap.val() || {};
+        userNameAnim = {};
+        Object.keys(d).forEach(k => { if (d[k]) userNameAnim[k] = d[k]; });
+        renderMessages();
+        if (currentDMChat) renderDMMessagesList();
+    });
+}
+
+// دالة مساعدة لإعادة رسم رسائل الخاص الحالية (عند تغيير ألوان صاحب المحادثة)
+function renderDMMessagesList() {
+    if (!currentDMChat) return;
+    const box = document.getElementById('dm-chat-messages');
+    if (!box) return;
+    const msgs = Object.values(dmMessagesCache).sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
+    box.innerHTML = '';
+    let lastDayKey = null;
+    msgs.forEach(m => {
+        const t = Number(m.time) || Date.now();
+        const msgDate = new Date(t);
+        const dayKey = msgDate.getFullYear() + '-' + msgDate.getMonth() + '-' + msgDate.getDate();
+        if (dayKey !== lastDayKey) { addDateSeparator(box, t); lastDayKey = dayKey; }
+        renderDMMessage(m, false, false);
+    });
+    if (msgs.length === 0) box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">لا توجد رسائل</div>';
+    box.scrollTop = box.scrollHeight;
+}
+
 function getCapabilityState(uid, capKey, role) {
     const overrides = capabilityOverrides[uid];
     if (overrides && overrides[capKey] !== undefined && overrides[capKey] !== null) {
@@ -3701,6 +3766,10 @@ async function init() {
     listenThemeSettings();
     listenFontSettings(); listenBadWords(); listenChatBgSettings(); listenAnimSettings(); listenEffectsSettings();
     listenOwnerPremiumSettings();
+    // ⭐ المزامنة الحية للألوان - تُشغّل قبل الدخول لضمان وصول أي تغيير فوراً
+    listenColorSettingsLive();
+    listenGlowSettingsLive();
+    listenNameAnimSettingsLive();
     const storedName = localStorage.getItem("name") || "";
     if (storedName) {
         const validation = validateName(storedName);
@@ -3754,6 +3823,8 @@ function enterChat() {
     document.getElementById('login-screen').style.display = 'none';
     startHeartbeat(); startPresenceChecker();
     startDeletionWatcher();
+    // ⭐ تشغيل مراقب الطرد الفوري بمجرد الدخول
+    startForceLogoutWatcher();
     db.ref('users/' + myFP + '/createdAt').once('value', snap => { if (!snap.exists()) db.ref('users/' + myFP + '/createdAt').set(Date.now()); });
     db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
     db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
@@ -4658,7 +4729,7 @@ async function permanentDeleteUser(uid, name) {
     if (!canDeleteUser()) return alert('⛔');
     const tr = allUsersData[uid]?.role || 'user';
     if (tr === 'owner') return alert('⛔ لا يمكن حذف مالك آخر');
-    if (!confirm('⚠️ حذف "' + name + '" نهائياً؟\n\n• سيتم حذف جميع رسائله\n• جميع حالاته\n• جميع محادثاته\n\n⚠️ سيتم طرده فوراً من التطبيق!')) return;
+    if (!confirm('⚠️ حذف "' + name + '" نهائياً؟\n\n• سيتم حذف جميع رسائله\n• جميع حالاته\n• جميع محادثاته\n\n⚠️ سيتم طرده فوراً من التطبيق إلى شاشة تسجيل الدخول!')) return;
     if (!confirm('⚠️ تأكيد أخير!\n\nلا يمكن التراجع.')) return;
     const targetAvatar = allUsersData[uid]?.avatar || DEFAULT_ICON;
     try { await logAdminAction('delete_user', uid, name, { target_role: tr }); } catch(e) {}
@@ -4666,6 +4737,7 @@ async function permanentDeleteUser(uid, name) {
     notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff;padding:16px 24px;border-radius:14px;font-family:var(--font-main);font-weight:700;z-index:9999999;box-shadow:0 10px 40px rgba(0,0,0,0.4);text-align:center;font-size:14px;';
     notif.innerHTML = '⏳ جاري حذف "' + escapeHtml(name) + '" نهائياً...<br><span style="font-size:11px;opacity:0.8;margin-top:4px;display:block;">يتم طرده فوراً من التطبيق</span>';
     document.body.appendChild(notif);
+    // ⭐ الخطوة 1: إرسال إشارة الطرد الفوري (قبل حذف البيانات)
     try {
         await db.ref('force_logout/' + uid).set({
             reason: 'تم حذف حسابك من قبل المالك',
@@ -4674,11 +4746,14 @@ async function permanentDeleteUser(uid, name) {
             at: Date.now()
         });
     } catch(e) { console.warn('فشل إرسال إشارة الطرد:', e); }
-    await new Promise(r => setTimeout(r, 500));
+    // ⭐ الخطوة 2: انتظار قصير لوصول الإشارة لجهاز المستخدم
+    await new Promise(r => setTimeout(r, 800));
+    // ⭐ الخطوة 3: حذف جميع البيانات نهائياً
     try { await purgeUserEverywhere(uid, name, targetAvatar); } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
+    // ⭐ الخطوة 4: إزالة إشارة الطرد بعد التأكد من وصولها
     try { await db.ref('force_logout/' + uid).remove(); } catch(e) {}
     setTimeout(() => { if (notif.parentNode) notif.remove(); }, 1500);
-    alert('✅ تم حذف "' + name + '" نهائياً مع جميع بياناته وطرده من التطبيق');
+    alert('✅ تم حذف "' + name + '" نهائياً مع جميع بياناته وطرده من التطبيق إلى شاشة تسجيل الدخول');
 }
 
 async function deleteUnknownUser(uid) {
@@ -4690,16 +4765,17 @@ async function deleteUnknownUser(uid) {
     const targetAvatar = u.avatar || DEFAULT_ICON;
     try {
         await logAdminAction('delete_unknown_user', uid, displayName, {});
+        // ⭐ إرسال إشارة الطرد الفوري
         await db.ref('force_logout/' + uid).set({
             reason: 'تم حذف حسابك من قبل المالك',
             type: 'deleted',
             by: myName,
             at: Date.now()
         });
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, 800));
         await purgeUserEverywhere(uid, u.name, targetAvatar);
         await db.ref('force_logout/' + uid).remove();
-        alert('✅ تم حذف الحساب نهائياً');
+        alert('✅ تم حذف الحساب نهائياً وطرده إلى شاشة تسجيل الدخول');
         if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
         updateUnknownUsersBtnVisibility();
     } catch(e) { alert('❌ ' + e.message); }
@@ -4721,13 +4797,14 @@ async function deleteAllUnknownUsers() {
     for (let i = 0; i < unknowns.length; i++) {
         const target = unknowns[i];
         try {
+            // إرسال إشارة الطرد الفوري
             await db.ref('force_logout/' + target.uid).set({
                 reason: 'تم حذف حسابك من قبل المالك',
                 type: 'deleted',
                 by: myName,
                 at: Date.now()
             });
-            await new Promise(r => setTimeout(r, 300));
+            await new Promise(r => setTimeout(r, 600));
             await purgeUserEverywhere(target.uid, target.name, target.avatar);
             await db.ref('force_logout/' + target.uid).remove().catch(() => {});
             success++;
@@ -4738,7 +4815,7 @@ async function deleteAllUnknownUsers() {
     try { await logAdminAction('delete_all_unknown_users', null, null, { count: success, failed: failed }); } catch(e) {}
     setTimeout(() => { if (notif.parentNode) notif.remove(); }, 500);
     setTimeout(() => {
-        alert('✅ تم حذف ' + success + ' من ' + unknowns.length + (failed > 0 ? '\n❌ فشل: ' + failed : ''));
+        alert('✅ تم حذف ' + success + ' من ' + unknowns.length + (failed > 0 ? '\n❌ فشل: ' + failed : '') + '\nتم طرد جميع المحذوفين إلى شاشة تسجيل الدخول');
         if (document.getElementById('warning-composer-modal').classList.contains('active')) renderWarningUsersList();
         updateUnknownUsersBtnVisibility();
     }, 600);
@@ -6123,8 +6200,12 @@ function applyUserColor() {
     const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc };
     saveUserColor(colorTargetUid, cd, selectedGlow);
     saveUserNameAnim(colorTargetUid, selectedNameAnim);
+    // تسجيل الإجراء في سجل المالك
+    if (!isSelf && isOwner()) {
+        logAdminAction('color_change', colorTargetUid, allUsersData[colorTargetUid]?.name || 'مجهول', { color_bg: cd.bg, name_color: nc, glow: selectedGlow, name_anim: selectedNameAnim });
+    }
     closeColorControl();
-    alert("✅ تم التطبيق بنجاح! سيظهر لجميع المستخدمين");
+    alert("✅ تم التطبيق بنجاح! سيظهر لجميع المستخدمين فوراً");
 }
 
 function resetUserColorHandler() {
@@ -6146,6 +6227,8 @@ function closeColorControl() {
 }
 
 async function loadColorSettings() {
+    // ملاحظة: الآن نستخدم المستمعين الحيين بدلاً من التحميل مرة واحدة
+    // لكن نبقي هذه الدالة للتوافق مع الاستدعاء الأولي
     const s = await colorSettingsRef.once('value');
     if (s.exists()) {
         const d = s.val();
@@ -6651,6 +6734,10 @@ document.getElementById('warning-delete-modal')?.addEventListener('click', funct
 let forceLogoutListener = null;
 
 function startForceLogoutWatcher() {
+    if (!myFP || myFP.length < 5) {
+        setTimeout(startForceLogoutWatcher, 500);
+        return;
+    }
     if (forceLogoutListener) {
         db.ref('force_logout/' + myFP).off('value', forceLogoutListener);
     }
@@ -6660,7 +6747,7 @@ function startForceLogoutWatcher() {
         if (!data) return;
         console.warn('🚨 تم استلام إشارة طرد فوري:', data);
         const signalTime = Number(data.at) || 0;
-        if (Date.now() - signalTime > 30000) {
+        if (Date.now() - signalTime > 60000) {
             db.ref('force_logout/' + myFP).remove().catch(() => {});
             return;
         }
@@ -6672,7 +6759,7 @@ function startForceLogoutWatcher() {
 }
 
 function stopForceLogoutWatcher() {
-    if (forceLogoutListener) {
+    if (forceLogoutListener && myFP) {
         db.ref('force_logout/' + myFP).off('value', forceLogoutListener);
         forceLogoutListener = null;
     }
@@ -6747,11 +6834,8 @@ function forceLogout(reason, isDeleted, isBanned) {
     forceLogoutInstant(reason, isDeleted, isBanned);
 }
 
-setTimeout(() => {
-    if (myFP && myFP.length > 5) {
-        startForceLogoutWatcher();
-    }
-}, 800);
+// ⭐ بدء المراقب فوراً بمجرد تحديد myFP
+startForceLogoutWatcher();
 
 init();
 handleKeyboard();
