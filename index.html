@@ -14,10 +14,9 @@
         html,body{height:100%;overflow:hidden;touch-action:manipulation}
         body{background:#d1d7db;display:flex;justify-content:center;height:100vh;overflow:hidden;position:fixed;width:100%;top:0;left:0;font-family:var(--font-main)}
         .app-container{width:100%;max-width:600px;height:100%;max-height:100vh;background:#f0f2f5;display:flex;flex-direction:column;position:relative;box-shadow:0 0 30px rgba(0,0,0,.3);overflow:hidden;height:100dvh}
-        #login-screen,#ban-screen,#loading-screen,#maintenance-screen,#deleted-screen,#fingerprint-block-screen{position:absolute;top:0;left:0;width:100%;height:100%;z-index:200;display:none;flex-direction:column;justify-content:center;align-items:center;padding:20px;background:#fff}
+        #login-screen,#ban-screen,#loading-screen,#maintenance-screen,#deleted-screen{position:absolute;top:0;left:0;width:100%;height:100%;z-index:200;display:none;flex-direction:column;justify-content:center;align-items:center;padding:20px;background:#fff}
         #loading-screen{display:flex}
-        #ban-screen{background:linear-gradient(135deg,#1a1a1a,#4a0000);color:#fff;z-index:99999;display:none;text-align:center}
-        #fingerprint-block-screen{background:linear-gradient(135deg,#1a1a1a,#4a0000);color:#fff;z-index:999999;display:none;text-align:center}
+        #ban-screen{background:linear-gradient(135deg,#1a1a1a,#4a0000);color:#fff;z-index:999;display:none;text-align:center}
         #maintenance-screen{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;z-index:999;text-align:center}
         #maintenance-screen h1{font-size:28px;margin:16px 0 8px;font-weight:900;color:#f9a825}
         #maintenance-screen p{font-size:15px;color:#ddd;max-width:300px;line-height:1.6}
@@ -794,25 +793,17 @@
         #chat-messages::-webkit-scrollbar,#dm-chat-messages::-webkit-scrollbar{width:3px}
         #chat-messages::-webkit-scrollbar-thumb,#dm-chat-messages::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:3px}
         .hidden-owner-badge{background:#e91e63;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-right:6px;font-weight:700;display:inline-block}
-        .fingerprint-info-box{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:2px solid #2196f3;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-family:var(--font-main);font-size:12px;color:#1565c0;text-align:right;line-height:1.6}
-        .fingerprint-info-box strong{color:#0d47a1}
-        .fp-code{background:#fff;padding:4px 8px;border-radius:6px;font-family:monospace;font-size:11px;color:#333;word-break:break-all;display:inline-block;margin-top:4px;border:1px solid #90caf9}
     </style>
-</head>
-<body>
+</head><body>
 
 <div class="app-container" id="app">
     <div id="loading-screen">
         <div class="spinner"></div>
-        <p style="margin-top:12px;color:#666;font-size:14px;font-family:var(--font-main);">جاري التحقق من البصمة...</p>
+        <p style="margin-top:12px;color:#666;font-size:14px;font-family:var(--font-main);">جاري التحقق...</p>
     </div>
 
     <div id="login-screen">
         <h2 style="color:var(--primary);margin-bottom:16px;font-weight:900;font-family:var(--font-main);font-size:22px;">💬 فيسي برو</h2>
-        <div class="fingerprint-info-box" id="fingerprint-info-box">
-            <strong>🔐 بصمة جهازك:</strong>
-            <div class="fp-code" id="fp-display">جاري التحميل...</div>
-        </div>
         <div class="login-hint">
             <strong>⚠️ ملاحظة هامة:</strong><br>
             يجب إدخال <strong>اسم حقيقي وصحيح</strong> للدخول. لا يُسمح بالأسماء الفارغة أو التي تحتوي فقط على مسافات أو رموز أو نقاط أو الأسماء المحجوزة مثل "مجهول".
@@ -823,27 +814,13 @@
         </div>
         <input type="text" id="username-input" class="login-input" placeholder="اكتب اسمك الحقيقي هنا..." autocomplete="off" maxlength="30">
         <button id="login-btn" class="login-btn">🚀 دخول</button>
-        <p style="margin-top:8px;font-size:11px;color:#999;font-family:var(--font-main);">سيتم حفظ جلستك في هذا الجهاز مع بصمة فريدة</p>
+        <p style="margin-top:8px;font-size:11px;color:#999;font-family:var(--font-main);">سيتم حفظ جلستك في هذا الجهاز</p>
     </div>
 
     <div id="ban-screen">
         <div style="font-size:60px;">⛔</div>
         <h1 style="font-size:22px;font-family:var(--font-main);font-weight:900;">تم حظرك</h1>
-        <p style="font-size:14px;font-family:var(--font-main);">جهازك محظور ولا يمكنه الدخول بأي طريقة</p>
-        <div style="margin-top:20px;font-size:11px;opacity:0.7;font-family:var(--font-main);">🔒 البصمة: <span id="ban-fp-display" style="font-family:monospace;">-</span></div>
-    </div>
-
-    <div id="fingerprint-block-screen">
-        <div style="font-size:80px;">🔒</div>
-        <h1 style="font-size:22px;font-weight:900;color:#ff3b30;">هذا الجهاز محظور نهائياً</h1>
-        <p style="font-size:14px;color:#aaa;max-width:300px;line-height:1.7;margin-top:10px;">
-            لقد تم حظر بصمة هذا الجهاز بشكل دائم.<br>
-            لا يمكنك الدخول حتى لو عملت 100 نسخة من التطبيق.<br>
-            <strong style="color:#ff9800;">تواصل مع المالك لفك الحظر.</strong>
-        </p>
-        <div style="margin-top:20px;background:rgba(255,255,255,0.1);padding:12px 16px;border-radius:12px;font-size:12px;font-family:monospace;color:#ff9800;">
-            🔐 بصمة الجهاز: <span id="block-fp-display">-</span>
-        </div>
+        <p style="font-size:14px;font-family:var(--font-main);">جهازك محظور</p>
     </div>
 
     <div id="maintenance-screen">
@@ -1816,10 +1793,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════
-// ⭐⭐⭐ نظام البصمة الفريدة والحظر الصارم ⭐⭐⭐
-// ═══════════════════════════════════════════════════════════════════
-
 const firebaseConfig = {
     apiKey: "AIzaSyB5qXJOOIMs3rWwxRjDai2enpCC4UUfyR4",
     authDomain: "kiot-1ea8c.firebaseapp.com",
@@ -1835,372 +1808,6 @@ const db = firebase.database();
 
 const VAPID_KEY = 'BDfPDyXH10O6avY5v2zHHmcEswMuxyOPWvBz048dp78RmeQM4Mit_TEE2cdxoAuKrujLT_3Ft_upy1K93zXT3kQ';
 const DEFAULT_ICON = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
-
-// ═══════════════════════════════════════════════════════════════════
-// ⭐ متغيرات نظام البصمة والحظر الصارم
-// ═══════════════════════════════════════════════════════════════════
-
-let myFP = '';
-let myHardwareFP = ''; // بصمة العتاد الثابتة (لا تتغير أبداً)
-let myDeviceSignature = ''; // بصمة مركبة إضافية
-let deviceBanListener = null;
-let deviceCheckInterval = null;
-let isDeviceBanned = false;
-let deviceFingerprintData = null;
-let fingerprintAttempts = 0;
-const MAX_FP_ATTEMPTS = 3;
-
-// دالة توليد بصمة العتاد الثابتة
-function generateHardwareFingerprint() {
-    const components = [
-        navigator.userAgent || '',
-        navigator.language || '',
-        navigator.languages ? navigator.languages.join(',') : '',
-        navigator.platform || '',
-        navigator.hardwareConcurrency || '',
-        navigator.deviceMemory || '',
-        navigator.maxTouchPoints || '',
-        screen.width || '',
-        screen.height || '',
-        screen.colorDepth || '',
-        screen.pixelDepth || '',
-        window.devicePixelRatio || '',
-        new Date().getTimezoneOffset() || '',
-        Intl.DateTimeFormat().resolvedOptions().timeZone || '',
-        navigator.vendor || '',
-        navigator.product || '',
-        navigator.productSub || '',
-        navigator.appVersion || '',
-        navigator.appName || '',
-        navigator.appCodeName || '',
-        'canvas_' + (function() {
-            try {
-                const c = document.createElement('canvas');
-                const ctx = c.getContext('2d');
-                ctx.textBaseline = 'top';
-                ctx.font = '14px Arial';
-                ctx.fillStyle = '#f60';
-                ctx.fillRect(125, 1, 62, 20);
-                ctx.fillStyle = '#069';
-                ctx.fillText('Fingerprint,Pro!', 2, 15);
-                return c.toDataURL().substring(0, 50);
-            } catch(e) { return 'canvas_fail'; }
-        })()
-    ].join('|||');
-    
-    // تجزئة بسيطة
-    let hash = 0;
-    for (let i = 0; i < components.length; i++) {
-        const char = components.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-    }
-    const hashStr = Math.abs(hash).toString(36).padStart(12, '0');
-    const timeStr = String(components.length).padStart(6, '0');
-    return 'HW_' + hashStr + '_' + timeStr;
-}
-
-// دالة الحصول على بصمة الجهاز الفريدة (FingerprintJS + Hardware)
-async function getDeviceFingerprint() {
-    fingerprintAttempts++;
-    
-    // 1. بصمة العتاد الثابتة (تعمل دائماً حتى لو فشل FingerprintJS)
-    if (!myHardwareFP) {
-        myHardwareFP = generateHardwareFingerprint();
-        console.log('🔧 بصمة العتاد:', myHardwareFP);
-    }
-    
-    // 2. محاولة الحصول على بصمة FingerprintJS
-    try {
-        if (typeof FingerprintJS !== 'undefined') {
-            const fp = await FingerprintJS.load();
-            const result = await fp.get();
-            deviceFingerprintData = result;
-            myDeviceSignature = result.visitorId;
-            myFP = 'FP_' + result.visitorId;
-            console.log('🔐 بصمة FingerprintJS:', myDeviceSignature);
-            console.log('✅ بصمة الجهاز الكاملة:', myFP);
-            return myFP;
-        }
-    } catch (e) {
-        console.warn('⚠️ فشل FingerprintJS (محاولة ' + fingerprintAttempts + '):', e.message);
-    }
-    
-    // 3. إذا فشل FingerprintJS، استخدم بصمة العتاد
-    if (fingerprintAttempts <= MAX_FP_ATTEMPTS) {
-        console.warn('🔄 إعادة المحاولة...');
-        await new Promise(r => setTimeout(r, 500));
-        return getDeviceFingerprint();
-    }
-    
-    // 4. Fallback نهائي
-    myFP = myHardwareFP;
-    console.log('🔧 استخدام بصمة العتاد فقط:', myFP);
-    return myFP;
-}
-
-// ⭐ دالة حفظ البصمة في قاعدة البيانات
-async function saveDeviceFingerprint(fp, hardwareFP, name) {
-    try {
-        const fpData = {
-            fp: fp,
-            hardware_fp: hardwareFP,
-            name: name || '',
-            userAgent: navigator.userAgent.substring(0, 200),
-            platform: navigator.platform || '',
-            language: navigator.language || '',
-            screen: (screen.width || 0) + 'x' + (screen.height || 0),
-            firstSeen: firebase.database.ServerValue.TIMESTAMP,
-            lastSeen: firebase.database.ServerValue.TIMESTAMP,
-            visitCount: firebase.database.ServerValue.increment(1)
-        };
-        
-        // التحقق إذا كانت البصمة مسجلة مسبقاً
-        const existing = await db.ref('device_fingerprints/' + fp).once('value');
-        if (existing.exists()) {
-            // تحديث آخر ظهور
-            await db.ref('device_fingerprints/' + fp).update({
-                lastSeen: firebase.database.ServerValue.TIMESTAMP,
-                visitCount: firebase.database.ServerValue.increment(1),
-                name: name || existing.val().name || ''
-            });
-            console.log('✅ تم تحديث بصمة الجهاز');
-        } else {
-            // تسجيل بصمة جديدة
-            await db.ref('device_fingerprints/' + fp).set(fpData);
-            console.log('✅ تم تسجيل بصمة جهاز جديدة');
-        }
-        
-        // ربط بصمة العتاد بالبصمة الكاملة
-        if (hardwareFP && hardwareFP !== fp) {
-            await db.ref('hardware_to_fp/' + hardwareFP).set(fp);
-        }
-        
-        // ربط البصمة بالاسم
-        if (name) {
-            await db.ref('fp_name_links/' + fp + '/' + name.toLowerCase().replace(/\s+/g, '_')).set(Date.now());
-        }
-        
-        return true;
-    } catch (e) {
-        console.error('❌ فشل حفظ البصمة:', e);
-        return false;
-    }
-}
-
-// ⭐ دالة التحقق الصارم من الحظر
-async function checkDeviceBan(fp, hardwareFP) {
-    try {
-        // 1. التحقق المباشر من البصمة
-        const banSnap = await db.ref('device_bans/' + fp).once('value');
-        if (banSnap.exists()) {
-            const banData = banSnap.val();
-            console.log('🚫 بصمة الجهاز محظورة:', banData);
-            return { banned: true, reason: banData.reason || 'تم حظر جهازك', data: banData };
-        }
-        
-        // 2. التحقق من بصمة العتاد
-        if (hardwareFP) {
-            const hwBanSnap = await db.ref('hardware_bans/' + hardwareFP).once('value');
-            if (hwBanSnap.exists()) {
-                console.log('🚫 بصمة العتاد محظورة');
-                return { banned: true, reason: 'تم حظر جهازك نهائياً', data: hwBanSnap.val() };
-            }
-            
-            // 3. التحقق من الربط (إذا كانت البصمة الكاملة مرتبطة بمحظور)
-            const linkedFpSnap = await db.ref('hardware_to_fp/' + hardwareFP).once('value');
-            if (linkedFpSnap.exists()) {
-                const linkedFP = linkedFpSnap.val();
-                const linkedBanSnap = await db.ref('device_bans/' + linkedFP).once('value');
-                if (linkedBanSnap.exists()) {
-                    console.log('🚫 البصمة المرتبطة محظورة');
-                    return { banned: true, reason: 'تم حظر جهازك نهائياً', data: linkedBanSnap.val() };
-                }
-            }
-        }
-        
-        // 4. التحقق من قائمة البصمات المحظورة القديمة (bans)
-        const oldBanSnap = await db.ref('bans/' + fp).once('value');
-        if (oldBanSnap.exists()) {
-            console.log('🚫 بصمة قديمة محظورة');
-            return { banned: true, reason: 'تم حظرك', data: { legacy: true } };
-        }
-        
-        // 5. التحقق من بصمة العتاد في قائمة bans القديمة
-        if (hardwareFP) {
-            const oldHwBanSnap = await db.ref('bans/' + hardwareFP).once('value');
-            if (oldHwBanSnap.exists()) {
-                console.log('🚫 بصمة عتاد قديمة محظورة');
-                return { banned: true, reason: 'تم حظرك', data: { legacy: true } };
-            }
-        }
-        
-        console.log('✅ الجهاز غير محظور');
-        return { banned: false };
-        
-    } catch (e) {
-        console.error('❌ خطأ في التحقق من الحظر:', e);
-        // في حالة الخطأ، نسمح بالدخول (لتجنب حظر الجميع بسبب مشكلة تقنية)
-        return { banned: false, error: e.message };
-    }
-}
-
-// ⭐ عرض شاشة الحظر
-function showDeviceBanScreen(fp, reason) {
-    isDeviceBanned = true;
-    
-    // إخفاء جميع الشاشات
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('maintenance-screen').style.display = 'none';
-    document.getElementById('deleted-screen').style.display = 'none';
-    document.getElementById('ban-screen').style.display = 'none';
-    
-    // عرض شاشة الحظر
-    document.getElementById('fingerprint-block-screen').style.display = 'flex';
-    document.getElementById('block-fp-display').textContent = fp;
-    
-    console.log('🚫🚫🚫 تم عرض شاشة الحظر - البصمة:', fp);
-}
-
-// ⭐ مراقب الحظر الفوري (Live Ban Watcher)
-function startDeviceBanWatcher(fp, hardwareFP) {
-    if (deviceBanListener) {
-        db.ref('device_bans/' + fp).off('value', deviceBanListener);
-    }
-    
-    deviceBanListener = db.ref('device_bans/' + fp).on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
-        if (snap.exists()) {
-            const banData = snap.val();
-            console.log('🚨 تم اكتشاف حظر مباشر للبصمة:', banData);
-            showDeviceBanScreen(fp, banData.reason || 'تم حظر جهازك');
-        }
-    });
-    
-    // أيضاً مراقبة بصمة العتاد
-    if (hardwareFP && hardwareFP !== fp) {
-        db.ref('hardware_bans/' + hardwareFP).on('value', snap => {
-            if (isBeingDeleted || isDeviceBanned) return;
-            if (snap.exists()) {
-                console.log('🚨 تم اكتشاف حظر مباشر لبصمة العتاد');
-                showDeviceBanScreen(fp, 'تم حظر جهازك نهائياً');
-            }
-        });
-    }
-    
-    // فحص دوري (كل 30 ثانية) للتأكد
-    if (deviceCheckInterval) clearInterval(deviceCheckInterval);
-    deviceCheckInterval = setInterval(async () => {
-        if (isBeingDeleted || isDeviceBanned) return;
-        const result = await checkDeviceBan(fp, hardwareFP);
-        if (result.banned) {
-            showDeviceBanScreen(fp, result.reason);
-        }
-    }, 30000);
-}
-
-// ⭐ دالة حظر جهاز نهائياً (للمالك)
-async function banDevicePermanent(targetUid, targetName) {
-    if (!isOwner()) return alert('⛔ فقط المالك');
-    
-    const user = allUsersData[targetUid];
-    if (!user) return alert('المستخدم غير موجود');
-    
-    const targetFP = user.fp || targetUid;
-    const targetHWFp = user.hardware_fp || '';
-    
-    if (!confirm('🚫 حظر جهاز "' + targetName + '" نهائياً؟\n\nالبصمة: ' + targetFP + '\n\n⚠️ لن يستطيع الدخول أبداً حتى لو عمل 100 نسخة!')) return;
-    if (!confirm('⚠️ تأكيد نهائي!\n\nهذا الحظر دائم ولا يمكن التراجع عنه إلا من السيرفر مباشرة.')) return;
-    
-    try {
-        const banData = {
-            fp: targetFP,
-            name: targetName,
-            reason: 'تم حظر جهازك من قبل المالك',
-            by: myName,
-            byUid: myFP,
-            at: Date.now(),
-            permanent: true
-        };
-        
-        // حفظ في device_bans (النظام الجديد)
-        await db.ref('device_bans/' + targetFP).set(banData);
-        
-        // حفظ في hardware_bans إذا توفرت بصمة العتاد
-        if (targetHWFp) {
-            await db.ref('hardware_bans/' + targetHWFp).set(banData);
-        }
-        
-        // حفظ في bans (للتوافق مع النظام القديم)
-        await db.ref('bans/' + targetFP).set(true);
-        if (targetHWFp) {
-            await db.ref('bans/' + targetHWFp).set(true);
-        }
-        
-        // إرسال إشارة طرد فوري للجهاز
-        await db.ref('force_device_ban/' + targetFP).set({
-            reason: 'تم حظر جهازك نهائياً',
-            at: Date.now()
-        });
-        
-        await logAdminAction('ban_device_permanent', targetFP, targetName, { hardware_fp: targetHWFp });
-        
-        alert('✅ تم حظر جهاز "' + targetName + '" نهائياً\n\n🔒 البصمة: ' + targetFP + '\n\nلن يستطيع الدخول أبداً!');
-        
-    } catch (e) {
-        alert('❌ فشل الحظر: ' + e.message);
-    }
-}
-
-// ⭐ دالة فك حظر الجهاز (للمالك فقط)
-async function unbanDevicePermanent(targetUid, targetName) {
-    if (!isOwner()) return alert('⛔ فقط المالك');
-    
-    const user = allUsersData[targetUid] || {};
-    const targetFP = user.fp || targetUid;
-    const targetHWFp = user.hardware_fp || '';
-    
-    if (!confirm('🔓 فك حظر جهاز "' + targetName + '"؟\n\nالبصمة: ' + targetFP)) return;
-    
-    try {
-        // حذف من جميع قوائم الحظر
-        await db.ref('device_bans/' + targetFP).remove();
-        await db.ref('bans/' + targetFP).remove();
-        await db.ref('force_device_ban/' + targetFP).remove();
-        
-        if (targetHWFp) {
-            await db.ref('hardware_bans/' + targetHWFp).remove();
-            await db.ref('bans/' + targetHWFp).remove();
-        }
-        
-        await logAdminAction('unban_device', targetFP, targetName, {});
-        
-        alert('✅ تم فك حظر جهاز "' + targetName + '"');
-        
-    } catch (e) {
-        alert('❌ ' + e.message);
-    }
-}
-
-// ⭐ مراقب إشارة الحظر الفوري
-function startForceBanWatcher(fp) {
-    db.ref('force_device_ban/' + fp).on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
-        if (snap.exists()) {
-            const data = snap.val();
-            const signalTime = Number(data.at) || 0;
-            if (Date.now() - signalTime < 60000) {
-                console.log('🚨 إشارة حظر فوري!');
-                showDeviceBanScreen(fp, data.reason || 'تم حظر جهازك');
-            }
-        }
-    });
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// ⭐ كود التطبيق الأصلي (محدث للتعامل مع البصمة الجديدة)
-// ═══════════════════════════════════════════════════════════════════
 
 function detectEnvironment() {
     const ua = (navigator.userAgent || '').toLowerCase();
@@ -2219,6 +1826,8 @@ function detectEnvironment() {
 const ENV = detectEnvironment();
 console.log('🌍 بيئة التشغيل:', ENV);
 
+let myFP = localStorage.getItem("fp") || 'fp_' + Math.random().toString(36).substr(2, 9);
+localStorage.setItem("fp", myFP);
 let myName = localStorage.getItem("name") || "";
 let myAvatar = localStorage.getItem("avatar") || DEFAULT_ICON;
 let myRole = "user";
@@ -2292,6 +1901,7 @@ let tempOwnerPremium = {};
 let alertTarget = 'all';
 let selectedAlertUser = null;
 
+// ⭐ متغيرات المزامنة الحية للألوان والحركات والتوهجات
 let colorSettingsListener = null;
 let glowSettingsListener = null;
 let nameAnimSettingsListener = null;
@@ -2441,8 +2051,7 @@ const CAPABILITY_DEFS = [
     { key: 'use_warnings', name: 'إرسال التحذيرات', icon: '🚨', desc: 'إرسال تحذيرات ملء الشاشة' },
     { key: 'monitor_dm', name: 'مراقبة الخاص', icon: '🕵️', desc: 'الاطلاع على المحادثات الخاصة' },
     { key: 'manage_reports', name: 'إدارة البلاغات', icon: '📋', desc: 'مراجعة وحل البلاغات' },
-    { key: 'manage_settings', name: 'الإعدادات العامة', icon: '⚙️', desc: 'خلفيات، تأثيرات، ألوان، خط، صيانة' },
-    { key: 'ban_device', name: 'حظر الأجهزة نهائياً', icon: '🔒', desc: 'حظر بصمة الجهاز بشكل دائم' }
+    { key: 'manage_settings', name: 'الإعدادات العامة', icon: '⚙️', desc: 'خلفيات، تأثيرات، ألوان، خط، صيانة' }
 ];
 
 const DEFAULT_CAPABILITIES = {
@@ -2612,7 +2221,6 @@ function canManageReports() { return hasCapability(myFP, 'manage_reports', myRol
 function canManageSettings() { return hasCapability(myFP, 'manage_settings', myRole); }
 function canControlColors() { return hasCapability(myFP, 'control_colors', myRole); }
 function canSendAlerts() { return isOwner(); }
-function canBanDevice() { return isOwner() || hasCapability(myFP, 'ban_device', myRole); }
 
 function listenOwnerPremiumSettings() {
     if (ownerPremiumListener) db.ref('owner_premium').off('value', ownerPremiumListener);
@@ -3281,7 +2889,7 @@ function getUserEffectiveStatus(user) {
 function isUserOnline(user) { const st = getUserEffectiveStatus(user); return st === 'online' || st === 'away'; }
 
 function startHeartbeat() {
-    const sendHeartbeat = () => { if (!myFP || document.hidden || isBeingDeleted || isDeviceBanned) return; db.ref('users/' + myFP).update({ status: 'online', lastSeen: Date.now() }).catch(() => {}); };
+    const sendHeartbeat = () => { if (!myFP || document.hidden || isBeingDeleted) return; db.ref('users/' + myFP).update({ status: 'online', lastSeen: Date.now() }).catch(() => {}); };
     const goOffline = () => { if (!myFP) return; db.ref('users/' + myFP).update({ status: 'offline', lastSeen: Date.now() }).catch(() => {}); };
     const startInterval = () => { if (heartbeatInterval) clearInterval(heartbeatInterval); sendHeartbeat(); heartbeatInterval = setInterval(sendHeartbeat, HEARTBEAT_INTERVAL); };
     const stopInterval = () => { if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; } };
@@ -3296,7 +2904,7 @@ function startHeartbeat() {
 function startPresenceChecker() {
     if (presenceCheckInterval) clearInterval(presenceCheckInterval);
     presenceCheckInterval = setInterval(() => {
-        if (isBeingDeleted || isDeviceBanned || document.hidden) return;
+        if (isBeingDeleted || document.hidden) return;
         updateOnlineBadge();
         if (currentDMChat) updateDMChatHeaderStatus();
         if (document.getElementById('users-modal').classList.contains('active')) updateUsersList();
@@ -3950,6 +3558,7 @@ function openNameSettingsPanel() {
     toggleUsers();
 }
 
+async function getDeviceFingerprint() { try { const f = await FingerprintJS.load(), r = await f.get(); return 'fp_' + r.visitorId } catch (e) { return 'fp_fallback_' + Math.random().toString(36).substr(2, 9) } }
 async function checkSecurity(fp, name) {
     const c = { banned: false, muted: false };
     const b = await db.ref('bans/' + fp).once('value'); if (b.exists()) { c.banned = true; return c }
@@ -3977,13 +3586,17 @@ function listenCapabilityOverrides() {
     });
 }
 
+// ⭐⭐⭐ المزامنة الحية للألوان والتوهجات وحركات الأسماء ⭐⭐⭐
+// هذه الدوال تجعل أي تغيير يقوم به المالك (أو أي مستخدم لنفسه) يظهر فوراً لجميع المستخدمين
 function listenColorSettingsLive() {
     if (colorSettingsListener) colorSettingsRef.off('value', colorSettingsListener);
     colorSettingsListener = colorSettingsRef.on('value', snap => {
         if (isBeingDeleted) return;
         const d = snap.val() || {};
+        // إعادة بناء كائن الألوان بالكامل من السيرفر
         userColors = {};
         Object.keys(d).forEach(k => { if (d[k]) userColors[k] = d[k]; });
+        // إعادة رسم الرسائل الحالية لتحديث الألوان فوراً
         renderMessages();
         if (currentDMChat) renderDMMessagesList();
     });
@@ -4013,6 +3626,7 @@ function listenNameAnimSettingsLive() {
     });
 }
 
+// دالة مساعدة لإعادة رسم رسائل الخاص الحالية (عند تغيير ألوان صاحب المحادثة)
 function renderDMMessagesList() {
     if (!currentDMChat) return;
     const box = document.getElementById('dm-chat-messages');
@@ -4146,82 +3760,34 @@ async function denyAllCapabilities(uid) {
 }
 
 async function init() {
-    document.getElementById('loading-screen').style.display = 'flex';
-    
-    try {
-        // ⭐ الخطوة 1: الحصول على بصمة الجهاز
-        console.log('🔐 جاري الحصول على بصمة الجهاز...');
-        await getDeviceFingerprint();
-        
-        // عرض البصمة في شاشة الدخول
-        const fpDisplay = document.getElementById('fp-display');
-        if (fpDisplay) {
-            fpDisplay.textContent = myFP.substring(0, 25) + '...';
-            fpDisplay.title = myFP;
-        }
-        const banFpDisplay = document.getElementById('ban-fp-display');
-        if (banFpDisplay) banFpDisplay.textContent = myFP.substring(0, 20) + '...';
-        
-        console.log('✅ البصمة جاهزة:', myFP);
-        
-        // ⭐ الخطوة 2: التحقق الصارم من الحظر
-        console.log('🔍 جاري التحقق من حالة الحظر...');
-        const banCheck = await checkDeviceBan(myFP, myHardwareFP);
-        
-        if (banCheck.banned) {
-            console.log('🚫 الجهاز محظور! عرض شاشة الحظر');
-            document.getElementById('loading-screen').style.display = 'none';
-            showDeviceBanScreen(myFP, banCheck.reason);
-            // بدء مراقبة الحظر حتى بعد عرض الشاشة
-            startDeviceBanWatcher(myFP, myHardwareFP);
-            startForceBanWatcher(myFP);
-            return;
-        }
-        
-        console.log('✅ الجهاز غير محظور - المتابعة');
-        
-        // ⭐ الخطوة 3: بدء مراقبة الحظر الفوري
-        startDeviceBanWatcher(myFP, myHardwareFP);
-        startForceBanWatcher(myFP);
-        
-        // ⭐ الخطوة 4: حفظ البصمة في قاعدة البيانات
-        const storedName = localStorage.getItem("name") || "";
-        await saveDeviceFingerprint(myFP, myHardwareFP, storedName);
-        
-        // ⭐ الخطوة 5: متابعة التطبيق الطبيعي
-        listenThemeSettings();
-        listenFontSettings(); listenBadWords(); listenChatBgSettings(); listenAnimSettings(); listenEffectsSettings();
-        listenOwnerPremiumSettings();
-        listenColorSettingsLive();
-        listenGlowSettingsLive();
-        listenNameAnimSettingsLive();
-        
-        if (storedName) {
-            const validation = validateName(storedName);
-            if (validation.valid) {
-                myName = validation.name;
-                const s = await checkSecurity(myFP, myName);
-                if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
-                if (s.muted) isMuted = true;
-                await linkFingerprint(myFP, myName);
-                await saveDeviceFingerprint(myFP, myHardwareFP, myName);
-                enterChat();
-            } else {
-                console.warn('⚠️ الاسم المحفوظ غير صالح:', validation.reason);
-                localStorage.removeItem("name");
-                myName = '';
-                document.getElementById('loading-screen').style.display = 'none';
-                document.getElementById('login-screen').style.display = 'flex';
-                setTimeout(() => { showLoginError('الاسم المحفوظ غير صالح. ' + validation.reason); }, 200);
-            }
+    document.getElementById('loading-screen').style.display = 'none';
+    myFP = await getDeviceFingerprint();
+    localStorage.setItem("fp", myFP);
+    listenThemeSettings();
+    listenFontSettings(); listenBadWords(); listenChatBgSettings(); listenAnimSettings(); listenEffectsSettings();
+    listenOwnerPremiumSettings();
+    // ⭐ المزامنة الحية للألوان - تُشغّل قبل الدخول لضمان وصول أي تغيير فوراً
+    listenColorSettingsLive();
+    listenGlowSettingsLive();
+    listenNameAnimSettingsLive();
+    const storedName = localStorage.getItem("name") || "";
+    if (storedName) {
+        const validation = validateName(storedName);
+        if (validation.valid) {
+            myName = validation.name;
+            const s = await checkSecurity(myFP, myName);
+            if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
+            if (s.muted) isMuted = true;
+            await linkFingerprint(myFP, myName);
+            enterChat();
         } else {
-            document.getElementById('loading-screen').style.display = 'none';
+            console.warn('⚠️ الاسم المحفوظ غير صالح:', validation.reason);
+            localStorage.removeItem("name");
+            myName = '';
             document.getElementById('login-screen').style.display = 'flex';
+            setTimeout(() => { showLoginError('الاسم المحفوظ غير صالح. ' + validation.reason); }, 200);
         }
-        
-    } catch (e) {
-        console.error('❌ خطأ في التهيئة:', e);
-        document.getElementById('loading-screen').style.display = 'none';
+    } else {
         document.getElementById('login-screen').style.display = 'flex';
     }
 }
@@ -4233,23 +3799,11 @@ document.getElementById('login-btn').onclick = async () => {
     hideLoginError();
     unlockAudio();
     const n = validation.name;
-    
-    // ⭐ التحقق مرة أخرى من الحظر قبل الدخول
-    const banCheck = await checkDeviceBan(myFP, myHardwareFP);
-    if (banCheck.banned) {
-        showDeviceBanScreen(myFP, banCheck.reason);
-        return;
-    }
-    
     const s = await checkSecurity(myFP, n);
     if (s.banned) { isBanned = true; document.getElementById('login-screen').style.display = 'none'; document.getElementById('ban-screen').style.display = 'flex'; return; }
     myName = n; localStorage.setItem("name", myName);
     if (s.muted) isMuted = true;
     await linkFingerprint(myFP, myName);
-    
-    // ⭐ حفظ البصمة مع الاسم
-    await saveDeviceFingerprint(myFP, myHardwareFP, myName);
-    
     enterChat();
 };
 
@@ -4266,29 +3820,17 @@ document.getElementById('alert-text-input')?.addEventListener('input', function(
 });
 
 function enterChat() {
-    if (isDeviceBanned) return;
-    
     document.getElementById('login-screen').style.display = 'none';
     startHeartbeat(); startPresenceChecker();
     startDeletionWatcher();
+    // ⭐ تشغيل مراقب الطرد الفوري بمجرد الدخول
     startForceLogoutWatcher();
-    
-    // ⭐ حفظ بصمة الجهاز عند الدخول
-    db.ref('users/' + myFP).update({
-        name: myName,
-        avatar: myAvatar,
-        status: 'online',
-        lastSeen: Date.now(),
-        fp: myFP,
-        hardware_fp: myHardwareFP,
-        device_signature: myDeviceSignature
-    });
-    
     db.ref('users/' + myFP + '/createdAt').once('value', snap => { if (!snap.exists()) db.ref('users/' + myFP + '/createdAt').set(Date.now()); });
     db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
+    db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
 
     db.ref('users/' + myFP + '/name').on('value', s => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         const newName = s.val();
         if (newName && newName !== myName) {
             const v = validateName(newName);
@@ -4304,7 +3846,7 @@ function enterChat() {
     });
 
     db.ref('users/' + myFP + '/avatar').on('value', s => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         const newAvatar = s.val();
         if (newAvatar && newAvatar !== myAvatar) {
             myAvatar = newAvatar;
@@ -4315,7 +3857,7 @@ function enterChat() {
     });
 
     db.ref('users/' + myFP + '/role').on('value', s => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         myRole = s.val() || "user";
         updateUI(); refreshMyDMPermission(); refreshMyMediaPermission(); refreshMyStatusPermission();
         renderMessages();
@@ -4338,10 +3880,8 @@ function enterChat() {
         }
         saveFCMToken();
     });
-    
-    db.ref('users/' + myFP + '/hidden').on('value', snap => { if (isBeingDeleted || isDeviceBanned) return; isHidden = snap.val() || false; updateHiddenButton(); updateUsersList(); updateOnlineBadge(); });
-    db.ref('mutes/' + myFP).on('value', s => { if (isBeingDeleted || isDeviceBanned) return; if (s.exists()) { const d = s.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { isMuted = true; muteEndTime = d.endTime; } else { isMuted = false; muteEndTime = 0; } } else { isMuted = false; muteEndTime = 0; } updateMuteUI(); });
-    
+    db.ref('users/' + myFP + '/hidden').on('value', snap => { if (isBeingDeleted) return; isHidden = snap.val() || false; updateHiddenButton(); updateUsersList(); updateOnlineBadge(); });
+    db.ref('mutes/' + myFP).on('value', s => { if (isBeingDeleted) return; if (s.exists()) { const d = s.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { isMuted = true; muteEndTime = d.endTime; } else { isMuted = false; muteEndTime = 0; } } else { isMuted = false; muteEndTime = 0; } updateMuteUI(); });
     startListeners(); loadColorSettings(); listenMaintenance(); listenMyDMPermission();
     listenDMSettings(); listenDMDenials();
     listenMediaSettings(); listenMediaDenials();
@@ -4351,7 +3891,6 @@ function enterChat() {
     listenWarnings();
     listenCapabilityOverrides();
     listenChatAlerts();
-    
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('message', (event) => {
             if (event.data && event.data.type === 'NOTIFICATION_CLICKED') {
@@ -4363,7 +3902,6 @@ function enterChat() {
             }
         });
     }
-    
     setTimeout(() => {
         startInAppNotificationListeners();
         if (ENV.hasServiceWorker && ENV.hasNotification && !ENV.isWebView) initFCM().then(() => autoRequestNotificationPermission());
@@ -4375,7 +3913,7 @@ function enterChat() {
 function listenMaintenance() {
     if (maintenanceListener) db.ref('maintenance').off('value', maintenanceListener);
     maintenanceListener = db.ref('maintenance').on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         const d = snap.val() || {};
         maintenanceData.status = d.status === true;
         maintenanceData.message = d.message || 'التطبيق تحت الصيانة المؤقتة.';
@@ -4442,15 +3980,15 @@ async function saveMaintenanceSettings() {
 }
 function listenMyDMPermission() {
     if (myDMPermissionListener) db.ref('dm_permissions/' + myFP).off('value', myDMPermissionListener);
-    myDMPermissionListener = db.ref('dm_permissions/' + myFP).on('value', snap => { if (isBeingDeleted || isDeviceBanned) return; refreshMyDMPermission(); });
+    myDMPermissionListener = db.ref('dm_permissions/' + myFP).on('value', snap => { if (isBeingDeleted) return; refreshMyDMPermission(); });
 }
 function listenMyMediaPermission() {
     if (myMediaPermissionListener) db.ref('media_permissions/' + myFP).off('value', myMediaPermissionListener);
-    myMediaPermissionListener = db.ref('media_permissions/' + myFP).on('value', snap => { if (isBeingDeleted || isDeviceBanned) return; refreshMyMediaPermission(); });
+    myMediaPermissionListener = db.ref('media_permissions/' + myFP).on('value', snap => { if (isBeingDeleted) return; refreshMyMediaPermission(); });
 }
 function listenMyStatusPermission() {
     if (myStatusPermissionListener) db.ref('status_permissions/' + myFP).off('value', myStatusPermissionListener);
-    myStatusPermissionListener = db.ref('status_permissions/' + myFP).on('value', snap => { if (isBeingDeleted || isDeviceBanned) return; refreshMyStatusPermission(); });
+    myStatusPermissionListener = db.ref('status_permissions/' + myFP).on('value', snap => { if (isBeingDeleted) return; refreshMyStatusPermission(); });
 }
 function updateOwnerDMBtn() {
     const btn = document.getElementById('owner-dm-toggle-btn'); if (!btn) return;
@@ -4545,7 +4083,7 @@ async function toggleOwnerSelfDM() {
 function listenDMInbox() {
     if (dmInboxListener) db.ref('dm_inbox/' + myFP).off('value', dmInboxListener);
     dmInboxListener = db.ref('dm_inbox/' + myFP).on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         dmUnreadCounts = snap.val() || {};
         updateDMBadge(); updateProfileDMBadge();
         if (document.getElementById('dm-list-modal').classList.contains('active')) renderDMList();
@@ -4827,7 +4365,7 @@ function loadDMMessages(uid) {
             if (allMsgs.length === 0) box.innerHTML = '<div style="text-align:center;color:#999;padding:20px;font-size:12px;">لا توجد رسائل</div>';
             box.scrollTop = box.scrollHeight;
             dmChatMessagesListener = db.ref('private_chats/' + chatId + '/messages').on('child_added', snap => {
-                if (isBeingDeleted || isDeviceBanned) return;
+                if (isBeingDeleted) return;
                 if (renderedKeys.has(snap.key)) return;
                 const m = snap.val(); const t = Number(m.time) || 0;
                 if (t <= currentDMClearedAt) { renderedKeys.add(snap.key); return; }
@@ -4991,7 +4529,7 @@ async function clearAllDMs() {
 }
 function loadDMUsersList() {
     db.ref('dm_permissions').on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         allDMUsersData = {};
         if (snap.exists()) snap.forEach(c => { allDMUsersData[c.key] = c.val() === true; });
         refreshMyDMPermission();
@@ -5001,7 +4539,7 @@ function loadDMUsersList() {
 }
 function loadMediaUsersList() {
     db.ref('media_permissions').on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         allMediaUsersData = {};
         if (snap.exists()) snap.forEach(c => { allMediaUsersData[c.key] = c.val() === true; });
         refreshMyMediaPermission();
@@ -5011,7 +4549,7 @@ function loadMediaUsersList() {
 }
 function loadStatusUsersList() {
     db.ref('status_permissions').on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         allStatusUsersData = {};
         if (snap.exists()) snap.forEach(c => { allStatusUsersData[c.key] = c.val() === true; });
         refreshMyStatusPermission();
@@ -5044,8 +4582,6 @@ async function purgeUserEverywhere(uid, name, avatar) {
     updates['notifications/' + uid] = null;
     updates['warnings/current/ack/' + uid] = null;
     updates['user_capabilities/' + uid] = null;
-    updates['device_fingerprints/' + uid] = null;
-    updates['fp_name_links/' + uid] = null;
     if (name && name.trim() && name !== 'مجهول') { updates['name_links/' + name.toLowerCase()] = null; }
     updates['fp_links/' + uid] = null;
     try {
@@ -5201,6 +4737,7 @@ async function permanentDeleteUser(uid, name) {
     notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff;padding:16px 24px;border-radius:14px;font-family:var(--font-main);font-weight:700;z-index:9999999;box-shadow:0 10px 40px rgba(0,0,0,0.4);text-align:center;font-size:14px;';
     notif.innerHTML = '⏳ جاري حذف "' + escapeHtml(name) + '" نهائياً...<br><span style="font-size:11px;opacity:0.8;margin-top:4px;display:block;">يتم طرده فوراً من التطبيق</span>';
     document.body.appendChild(notif);
+    // ⭐ الخطوة 1: إرسال إشارة الطرد الفوري (قبل حذف البيانات)
     try {
         await db.ref('force_logout/' + uid).set({
             reason: 'تم حذف حسابك من قبل المالك',
@@ -5209,8 +4746,11 @@ async function permanentDeleteUser(uid, name) {
             at: Date.now()
         });
     } catch(e) { console.warn('فشل إرسال إشارة الطرد:', e); }
+    // ⭐ الخطوة 2: انتظار قصير لوصول الإشارة لجهاز المستخدم
     await new Promise(r => setTimeout(r, 800));
+    // ⭐ الخطوة 3: حذف جميع البيانات نهائياً
     try { await purgeUserEverywhere(uid, name, targetAvatar); } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
+    // ⭐ الخطوة 4: إزالة إشارة الطرد بعد التأكد من وصولها
     try { await db.ref('force_logout/' + uid).remove(); } catch(e) {}
     setTimeout(() => { if (notif.parentNode) notif.remove(); }, 1500);
     alert('✅ تم حذف "' + name + '" نهائياً مع جميع بياناته وطرده من التطبيق إلى شاشة تسجيل الدخول');
@@ -5225,6 +4765,7 @@ async function deleteUnknownUser(uid) {
     const targetAvatar = u.avatar || DEFAULT_ICON;
     try {
         await logAdminAction('delete_unknown_user', uid, displayName, {});
+        // ⭐ إرسال إشارة الطرد الفوري
         await db.ref('force_logout/' + uid).set({
             reason: 'تم حذف حسابك من قبل المالك',
             type: 'deleted',
@@ -5256,6 +4797,7 @@ async function deleteAllUnknownUsers() {
     for (let i = 0; i < unknowns.length; i++) {
         const target = unknowns[i];
         try {
+            // إرسال إشارة الطرد الفوري
             await db.ref('force_logout/' + target.uid).set({
                 reason: 'تم حذف حسابك من قبل المالك',
                 type: 'deleted',
@@ -5285,7 +4827,7 @@ function toggleOwnerHidden() { if (myRole !== 'owner') return alert('⛔'); cons
 function startListeners() {
     loadMessages();
     db.ref('messages').limitToLast(1).on('child_added', s => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         const k = s.key, v = s.val();
         if (!messagesCache[k]) {
             messagesCache[k] = v;
@@ -5294,17 +4836,17 @@ function startListeners() {
             renderMessages();
         }
     });
-    db.ref('messages').on('child_removed', s => { if (isBeingDeleted || isDeviceBanned) return; const k = s.key; if (messagesCache[k]) { delete messagesCache[k]; animatedMsgIds.delete(k); const el = document.getElementById('msg-' + k); if (el) el.remove(); else renderMessages(); } });
+    db.ref('messages').on('child_removed', s => { if (isBeingDeleted) return; const k = s.key; if (messagesCache[k]) { delete messagesCache[k]; animatedMsgIds.delete(k); const el = document.getElementById('msg-' + k); if (el) el.remove(); else renderMessages(); } });
     db.ref('users').on('value', s => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         const d = {}; s.forEach(c => { d[c.key] = c.val() });
         allUsersData = d;
         updateOnlineBadge();
         if (currentDMChat) updateDMChatHeaderStatus();
         scheduleUsersRender();
     });
-    db.ref('statuses').on('value', s => { if (isBeingDeleted || isDeviceBanned) return; statusesCache = {}; s.forEach(c => { statusesCache[c.key] = c.val() }); scheduleStatusesRender(); });
-    db.ref('notifications/' + myFP).on('value', s => { if (isBeingDeleted || isDeviceBanned) return; myNotifications = {}; if (s.exists()) s.forEach(c => { myNotifications[c.key] = c.val() }); scheduleNotificationsRender(); });
+    db.ref('statuses').on('value', s => { if (isBeingDeleted) return; statusesCache = {}; s.forEach(c => { statusesCache[c.key] = c.val() }); scheduleStatusesRender(); });
+    db.ref('notifications/' + myFP).on('value', s => { if (isBeingDeleted) return; myNotifications = {}; if (s.exists()) s.forEach(c => { myNotifications[c.key] = c.val() }); scheduleNotificationsRender(); });
     loadDMUsersList();
     loadMediaUsersList();
     loadStatusUsersList();
@@ -5319,7 +4861,6 @@ function scheduleUsersRender() {
     _usersRenderScheduled = true;
     requestAnimationFrame(() => {
         _usersRenderScheduled = false;
-        if (isDeviceBanned) return;
         if (document.getElementById('users-modal').classList.contains('active')) updateUsersList();
         updateUnknownUsersBtnVisibility();
         updateStatusBadge();
@@ -5330,7 +4871,6 @@ function scheduleStatusesRender() {
     _statusesRenderScheduled = true;
     requestAnimationFrame(() => {
         _statusesRenderScheduled = false;
-        if (isDeviceBanned) return;
         if (document.getElementById('status-screen').classList.contains('active')) renderStatuses();
         updateStatusBadge();
     });
@@ -5340,7 +4880,6 @@ function scheduleNotificationsRender() {
     _notificationsRenderScheduled = true;
     requestAnimationFrame(() => {
         _notificationsRenderScheduled = false;
-        if (isDeviceBanned) return;
         if (document.getElementById('notifications-modal').classList.contains('active')) renderNotifications();
         updateNotifBadge();
     });
@@ -5474,7 +5013,7 @@ function quickAlertUser(uid, name) {
 }
 
 function renderMessages() {
-    if (isBeingDeleted || isDeviceBanned) return;
+    if (isBeingDeleted) return;
     const box = document.getElementById('chat-messages');
     const sp = box.scrollTop, isBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 50;
     box.innerHTML = '';
@@ -5507,7 +5046,7 @@ function renderMessages() {
 
 let _usersListScheduled = false;
 function updateUsersList() {
-    if (isBeingDeleted || isDeviceBanned) return;
+    if (isBeingDeleted) return;
     if (_usersListScheduled) return;
     _usersListScheduled = true;
     requestAnimationFrame(() => {
@@ -5516,7 +5055,7 @@ function updateUsersList() {
     });
 }
 function _updateUsersListReal() {
-    if (isBeingDeleted || isDeviceBanned) return;
+    if (isBeingDeleted) return;
     const l = document.getElementById('users-list'); if (!l) return;
     const users = [];
     Object.keys(allUsersData).forEach(k => {
@@ -5654,11 +5193,6 @@ function updateUserControls(u, d) {
                     else if (isStatusAllow) { statusCls = 'status'; statusIcon = '📸'; }
                     else if (isStatusOn) { statusCls = 'status'; statusIcon = '📸'; }
                     bt += '<button class="ctrl-btn ' + statusCls + '" onclick="cycleUserStatusPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الحالات">' + statusIcon + '</button>';
-                    // ⭐ زر حظر الجهاز (للمالك فقط)
-                    if (canBanDevice()) {
-                        if (ib) bt += '<button class="ctrl-btn" style="background:#b71c1c;font-size:10px;" onclick="unbanDevicePermanent(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="فك حظر الجهاز">🔓</button>';
-                        else bt += '<button class="ctrl-btn" style="background:#7f0000;font-size:10px;" onclick="banDevicePermanent(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="حظر الجهاز نهائياً">🔒</button>';
-                    }
                     bt += '<button class="ctrl-btn delete-user" onclick="permanentDeleteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="حذف المستخدم نهائياً">🗑️</button>';
                 }
             }
@@ -5668,16 +5202,16 @@ function updateUserControls(u, d) {
 }
 
 function filterUsers() { const t = document.getElementById('user-search').value.toLowerCase(); document.querySelectorAll('.user-card').forEach(c => { const n = c.querySelector('.user-details h4')?.innerText?.toLowerCase() || ''; c.style.display = n.includes(t) ? 'flex' : 'none'; }); }
-function updateStatusBadge() { if (isBeingDeleted || isDeviceBanned) return; const now = Date.now(), exp = 864e5; let unseen = 0; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (now - s.time > exp) { db.ref('statuses/' + k).remove(); return; } if (s.uid !== myFP) { const sb = s.seenBy || {}; if (!sb[myFP]) unseen++; } }); const b = document.getElementById('status-unseen-count'); if (unseen > 0) { b.textContent = unseen; b.classList.add('active'); } else b.classList.remove('active'); }
+function updateStatusBadge() { if (isBeingDeleted) return; const now = Date.now(), exp = 864e5; let unseen = 0; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (now - s.time > exp) { db.ref('statuses/' + k).remove(); return; } if (s.uid !== myFP) { const sb = s.seenBy || {}; if (!sb[myFP]) unseen++; } }); const b = document.getElementById('status-unseen-count'); if (unseen > 0) { b.textContent = unseen; b.classList.add('active'); } else b.classList.remove('active'); }
 function updateOnlineBadge() {
-    if (isBeingDeleted || isDeviceBanned) return;
+    if (isBeingDeleted) return;
     let on = 0;
     Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (u.hidden === true && k !== myFP) return; if (isUserOnline(u)) on++; });
     const b = document.getElementById('online-badge'); if (!b) return;
     b.textContent = on; b.style.display = on > 0 ? 'block' : 'none';
 }
 function updateUI() {
-    if (isBeingDeleted || isDeviceBanned) return;
+    if (isBeingDeleted) return;
     document.getElementById('clear-chat-btn').style.display = canClearChat() ? 'inline-block' : 'none';
     document.getElementById('btn-users').style.display = ['trusted', 'mod', 'manager', 'owner'].includes(myRole) ? 'block' : 'none';
     document.getElementById('add-status-btn').style.display = myStatusEnabled ? 'flex' : 'none';
@@ -5811,7 +5345,7 @@ async function saveProfile() {
     myName = n; myAvatar = fa;
     localStorage.setItem("name", myName); localStorage.setItem("avatar", myAvatar);
     await linkFingerprint(myFP, myName);
-    db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, fp: myFP, hardware_fp: myHardwareFP });
+    db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar });
     saveFCMToken();
     document.getElementById('profile-modal').classList.remove('active'); alert("✅");
 }
@@ -5840,7 +5374,7 @@ function switchTab(t) {
 function closeStatusScreen() { switchTab('chat'); }
 
 function renderStatuses() {
-    if (isBeingDeleted || isDeviceBanned) return;
+    if (isBeingDeleted) return;
     const l = document.getElementById('status-list');
     l.innerHTML = '';
     const n = Date.now(), exp = 864e5;
@@ -5872,7 +5406,7 @@ function renderStatuses() {
 }
 function viewUserStatuses(uid, statuses) { if (!statuses || statuses.length === 0) return; statuses.sort((a, b) => a.time - b.time); viewerStatuses = statuses; viewerCurrentIndex = 0; viewerCurrentUid = uid; showStatusAtIndex(0); }
 function showStatusAtIndex(i) {
-    if (isBeingDeleted || isDeviceBanned) return;
+    if (isBeingDeleted) return;
     if (i >= viewerStatuses.length || i < 0) { closeStatusViewer(null); return; }
     const s = viewerStatuses[i], ud = allUsersData[viewerCurrentUid] || {}, dn = getDisplayName({ name: ud.name || s.sender }).text;
     if (s.uid !== myFP) {
@@ -5954,9 +5488,9 @@ async function publishStatus() {
 }
 function openNotifications() { document.getElementById('notifications-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); renderNotifications(); }
 function closeNotifications() { document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); }
-function renderNotifications() { if (isBeingDeleted || isDeviceBanned) return; const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
+function renderNotifications() { if (isBeingDeleted) return; const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;font-family:var(--font-main);'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
 function clearAllNotifications() { if (confirm("مسح الكل؟")) db.ref('notifications/' + myFP).remove(); }
-function updateNotifBadge() { if (isBeingDeleted || isDeviceBanned) return; const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
+function updateNotifBadge() { if (isBeingDeleted) return; const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
 function openYouTubeModal() { document.getElementById('youtube-modal').classList.add('active'); document.getElementById('yt-link-input').focus(); }
 function previewYouTubeLink() { const l = document.getElementById('yt-link-input').value.trim(), p = document.getElementById('yt-preview'), img = document.getElementById('yt-preview-img'), t = document.getElementById('yt-preview-title'), sb = document.getElementById('yt-send-btn'), wb = document.getElementById('yt-watch-btn'), vid = extractYouTubeId(l); if (vid) { img.src = getYouTubeThumbnail(vid); t.textContent = 'https://youtu.be/' + vid; p.style.display = 'block'; sb.disabled = false; wb.disabled = false; } else { p.style.display = 'none'; sb.disabled = true; wb.disabled = true; } }
 function sendYouTubeLink() {
@@ -6122,10 +5656,10 @@ async function submitReport() {
         closeReportModal(); alert('✅ تم إرسال البلاغ');
     } catch (e) { alert('❌ ' + e.message); }
 }
-function listenReports() { if (!canManageReports()) return; db.ref('reports').on('value', snap => { if (isBeingDeleted || isDeviceBanned) return; reportsCache = {}; if (snap.exists()) { snap.forEach(child => { const val = child.val(); val.key = child.key; reportsCache[child.key] = val; }); } renderReports(); updateReportsBadge(); }); }
+function listenReports() { if (!canManageReports()) return; db.ref('reports').on('value', snap => { if (isBeingDeleted) return; reportsCache = {}; if (snap.exists()) { snap.forEach(child => { const val = child.val(); val.key = child.key; reportsCache[child.key] = val; }); } renderReports(); updateReportsBadge(); }); }
 function toggleReportsModal() { if (!canManageReports()) return alert('⛔'); const modal = document.getElementById('reports-modal'); modal.classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); if (modal.classList.contains('active')) renderReports(); }
 function renderReports() {
-    if (isBeingDeleted || isDeviceBanned) return;
+    if (isBeingDeleted) return;
     const list = document.getElementById('reports-list');
     const filter = currentReportFilter;
     let filtered = Object.values(reportsCache);
@@ -6194,7 +5728,7 @@ async function deleteReportedContent(reportId, type, targetId) {
 }
 function deleteReport(reportId) { if (!canManageReports()) return alert('⛔'); if (!confirm('حذف البلاغ نهائياً؟')) return; db.ref('reports/' + reportId).remove().then(() => alert('✅')).catch(err => alert('❌ ' + err.message)); }
 function filterReports(filter, btn) { currentReportFilter = filter; document.querySelectorAll('.filter-tabs button').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderReports(); }
-function updateReportsBadge() { if (isBeingDeleted || isDeviceBanned) return; const pending = Object.values(reportsCache).filter(r => r.status === 'pending' && (r.reportType === 'message' || r.reportType === 'status')).length; const badge = document.getElementById('reports-badge'); if (pending > 0) { badge.textContent = pending; badge.classList.add('active'); } else badge.classList.remove('active'); }
+function updateReportsBadge() { if (isBeingDeleted) return; const pending = Object.values(reportsCache).filter(r => r.status === 'pending' && (r.reportType === 'message' || r.reportType === 'status')).length; const badge = document.getElementById('reports-badge'); if (pending > 0) { badge.textContent = pending; badge.classList.add('active'); } else badge.classList.remove('active'); }
 function openResolveModal(reportId, action) { if (!canManageReports()) return alert('⛔'); const report = reportsCache[reportId]; if (!report) return alert('غير موجود'); if (report.status !== 'pending') return alert('تم الحل'); resolveTargetReportId = reportId; document.getElementById('resolve-target-name').textContent = report.targetName || 'مستخدم محذوف'; document.getElementById('resolve-comment-input').value = ''; document.getElementById('resolve-modal').dataset.action = action; document.getElementById('resolve-modal').classList.add('active'); }
 async function resolveReport(action) {
     const reportId = resolveTargetReportId; if (!reportId) return;
@@ -6334,7 +5868,7 @@ async function renderDMMonitor() {
     if (dmMonitorListener) db.ref('private_chats').off('value', dmMonitorListener);
 
     dmMonitorListener = db.ref('private_chats').on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
 
         const chats = [];
         const allUsers = [];
@@ -6583,6 +6117,7 @@ function openColorControl(uid) {
 
     renderNameAnimGrid(ca);
 
+    // إذا كان المستخدم عادياً (ليس مالكاً) ولا يعدل نفسه، عطّل شبكة الحركات
     const isSelfOnly = (uid === myFP) && !canControlColors();
     const animGrid = document.getElementById('name-anim-grid');
     if (animGrid) animGrid.style.opacity = isSelfOnly ? '0.5' : '1';
@@ -6665,6 +6200,7 @@ function applyUserColor() {
     const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc };
     saveUserColor(colorTargetUid, cd, selectedGlow);
     saveUserNameAnim(colorTargetUid, selectedNameAnim);
+    // تسجيل الإجراء في سجل المالك
     if (!isSelf && isOwner()) {
         logAdminAction('color_change', colorTargetUid, allUsersData[colorTargetUid]?.name || 'مجهول', { color_bg: cd.bg, name_color: nc, glow: selectedGlow, name_anim: selectedNameAnim });
     }
@@ -6691,6 +6227,8 @@ function closeColorControl() {
 }
 
 async function loadColorSettings() {
+    // ملاحظة: الآن نستخدم المستمعين الحيين بدلاً من التحميل مرة واحدة
+    // لكن نبقي هذه الدالة للتوافق مع الاستدعاء الأولي
     const s = await colorSettingsRef.once('value');
     if (s.exists()) {
         const d = s.val();
@@ -6717,7 +6255,7 @@ document.getElementById('dm-message-input')?.addEventListener('blur', clearMyTyp
 function listenWarnings() {
     if (warningListener) db.ref('warnings/current').off('value', warningListener);
     warningListener = db.ref('warnings/current').on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         const w = snap.val();
         if (!w || !w.id) { currentWarning = null; hideWarningOverlay(); return; }
         currentWarning = w;
@@ -6891,7 +6429,7 @@ function closeWarningHistory() {
 function listenWarningHistory() {
     if (warningHistoryListener) db.ref('warnings/history').off('value', warningHistoryListener);
     warningHistoryListener = db.ref('warnings/history').on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         warningHistoryCache = snap.val() || {};
         renderWarningHistory();
         updateHistoryDeleteAllBtn();
@@ -6939,7 +6477,7 @@ function updateHistoryDeleteAllBtn() {
     btn.disabled = count === 0;
 }
 function renderWarningHistory() {
-    if (isBeingDeleted || isDeviceBanned) return;
+    if (isBeingDeleted) return;
     const list = document.getElementById('warning-history-list'); if (!list) return;
     list.innerHTML = '';
     const arr = Object.values(warningHistoryCache);
@@ -7204,7 +6742,7 @@ function startForceLogoutWatcher() {
         db.ref('force_logout/' + myFP).off('value', forceLogoutListener);
     }
     forceLogoutListener = db.ref('force_logout/' + myFP).on('value', snap => {
-        if (isBeingDeleted || isDeviceBanned) return;
+        if (isBeingDeleted) return;
         const data = snap.val();
         if (!data) return;
         console.warn('🚨 تم استلام إشارة طرد فوري:', data);
@@ -7236,7 +6774,6 @@ function forceLogoutInstant(reason, isDeleted, isBanned) {
         if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
         if (presenceCheckInterval) { clearInterval(presenceCheckInterval); presenceCheckInterval = null; }
         if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
-        if (deviceCheckInterval) { clearInterval(deviceCheckInterval); deviceCheckInterval = null; }
     } catch(e) {}
 
     const title = isDeleted ? '🗑️ تم حذف حسابك' : (isBanned ? '⛔ تم حظرك' : '🚫 تم طردك');
@@ -7296,6 +6833,9 @@ function forceLogoutInstant(reason, isDeleted, isBanned) {
 function forceLogout(reason, isDeleted, isBanned) {
     forceLogoutInstant(reason, isDeleted, isBanned);
 }
+
+// ⭐ بدء المراقب فوراً بمجرد تحديد myFP
+startForceLogoutWatcher();
 
 init();
 handleKeyboard();
