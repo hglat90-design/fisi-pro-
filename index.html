@@ -3759,6 +3759,9 @@ async function denyAllCapabilities(uid) {
     } catch(e) { alert('❌ ' + e.message); }
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// ⭐⭐⭐ دالة init() الجديدة — دخول تلقائي من حساب تطبيق الواجهة ⭐⭐⭐
+// ═══════════════════════════════════════════════════════════════════
 async function init() {
     document.getElementById('loading-screen').style.display = 'none';
     myFP = await getDeviceFingerprint();
@@ -3766,31 +3769,93 @@ async function init() {
     listenThemeSettings();
     listenFontSettings(); listenBadWords(); listenChatBgSettings(); listenAnimSettings(); listenEffectsSettings();
     listenOwnerPremiumSettings();
-    // ⭐ المزامنة الحية للألوان - تُشغّل قبل الدخول لضمان وصول أي تغيير فوراً
     listenColorSettingsLive();
     listenGlowSettingsLive();
     listenNameAnimSettingsLive();
-    const storedName = localStorage.getItem("name") || "";
-    if (storedName) {
-        const validation = validateName(storedName);
-        if (validation.valid) {
-            myName = validation.name;
-            const s = await checkSecurity(myFP, myName);
-            if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
-            if (s.muted) isMuted = true;
-            await linkFingerprint(myFP, myName);
-            enterChat();
-        } else {
-            console.warn('⚠️ الاسم المحفوظ غير صالح:', validation.reason);
-            localStorage.removeItem("name");
-            myName = '';
-            document.getElementById('login-screen').style.display = 'flex';
-            setTimeout(() => { showLoginError('الاسم المحفوظ غير صالح. ' + validation.reason); }, 200);
+    
+    try {
+        // 1. فحص الحظر أولاً
+        const banCheck = await db.ref('bans/' + myFP).once('value');
+        if (banCheck.exists()) {
+            isBanned = true;
+            document.getElementById('ban-screen').style.display = 'flex';
+            return;
         }
-    } else {
-        document.getElementById('login-screen').style.display = 'flex';
+        
+        // 2. قراءة بيانات المستخدم من Firebase (من تطبيق الواجهة)
+        const userSnap = await db.ref('users/' + myFP).once('value');
+        
+        if (!userSnap.exists()) {
+            // لا يوجد حساب → افتح التطبيق أولاً
+            showLoginRequiredScreen();
+            return;
+        }
+        
+        const userData = userSnap.val();
+        const storedName = userData.name || '';
+        
+        // 3. التحقق من صحة الاسم
+        const validation = validateName(storedName);
+        if (!validation.valid) {
+            showLoginRequiredScreen('اسم حسابك غير صالح. يرجى فتح التطبيق لتحديثه.');
+            return;
+        }
+        
+        // 4. كل شيء سليم → دخول تلقائي
+        myName = validation.name;
+        myAvatar = userData.avatar || DEFAULT_ICON;
+        localStorage.setItem('name', myName);
+        localStorage.setItem('avatar', myAvatar);
+        
+        // 5. فحص الكتم
+        const muteSnap = await db.ref('mutes/' + myFP).once('value');
+        if (muteSnap.exists()) {
+            const muteData = muteSnap.val();
+            if (muteData.endTime > Date.now() || muteData.endTime === 9999999999999) {
+                isMuted = true;
+                muteEndTime = muteData.endTime;
+            }
+        }
+        
+        await linkFingerprint(myFP, myName);
+        enterChat();
+        
+    } catch (e) {
+        console.error('❌ خطأ في الدخول التلقائي:', e);
+        showLoginRequiredScreen('حدث خطأ في الاتصال. حاول مرة أخرى.');
     }
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// ⭐⭐⭐ دالة مساعدة: عرض رسالة "افتح التطبيق أولاً" ⭐⭐⭐
+// ═══════════════════════════════════════════════════════════════════
+function showLoginRequiredScreen(customMessage) {
+    const loginScreen = document.getElementById('login-screen');
+    loginScreen.innerHTML = `
+        <div style="text-align:center;padding:20px;max-width:400px;">
+            <div style="font-size:80px;margin-bottom:16px;animation:warningPulse 2s infinite;">📱</div>
+            <h2 style="color:#008069;font-size:24px;font-weight:900;font-family:var(--font-main);margin-bottom:12px;">
+                يرجى فتح التطبيق أولاً
+            </h2>
+            <div style="background:linear-gradient(135deg,#f0f8ff,#e3f2fd);border:2px solid #90caf9;border-radius:14px;padding:16px;margin-bottom:20px;font-family:var(--font-main);font-size:14px;line-height:1.7;color:#1565c0;">
+                <strong>⚠️ ملاحظة مهمة:</strong><br>
+                ${customMessage || 'لا يمكنك استخدام الدردشة مباشرة.<br>يجب أن تسجّل دخولك من <strong>تطبيق العراق الحرة</strong> أولاً.'}
+            </div>
+            <button onclick="location.reload()" style="width:100%;padding:15px;background:linear-gradient(135deg,#008069,#00a884);color:#fff;border:0;border-radius:14px;font-family:var(--font-main);font-weight:700;font-size:16px;cursor:pointer;margin-bottom:10px;">
+                🔄 تحديث الصفحة
+            </button>
+            <p style="font-size:12px;color:#999;font-family:var(--font-main);margin-top:10px;line-height:1.6;">
+                بعد فتح التطبيق وتسجيل الدخول،<br>
+                ارجع لهذه الصفحة وحدّثها.
+            </p>
+        </div>
+    `;
+    loginScreen.style.display = 'flex';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ⭐ باقي الكود الأصلي — بدون أي تعديل
+// ═══════════════════════════════════════════════════════════════════
 
 document.getElementById('login-btn').onclick = async () => {
     const rawName = document.getElementById('username-input').value;
@@ -3823,7 +3888,6 @@ function enterChat() {
     document.getElementById('login-screen').style.display = 'none';
     startHeartbeat(); startPresenceChecker();
     startDeletionWatcher();
-    // ⭐ تشغيل مراقب الطرد الفوري بمجرد الدخول
     startForceLogoutWatcher();
     db.ref('users/' + myFP + '/createdAt').once('value', snap => { if (!snap.exists()) db.ref('users/' + myFP + '/createdAt').set(Date.now()); });
     db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
@@ -4737,7 +4801,6 @@ async function permanentDeleteUser(uid, name) {
     notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#e53935,#b71c1c);color:#fff;padding:16px 24px;border-radius:14px;font-family:var(--font-main);font-weight:700;z-index:9999999;box-shadow:0 10px 40px rgba(0,0,0,0.4);text-align:center;font-size:14px;';
     notif.innerHTML = '⏳ جاري حذف "' + escapeHtml(name) + '" نهائياً...<br><span style="font-size:11px;opacity:0.8;margin-top:4px;display:block;">يتم طرده فوراً من التطبيق</span>';
     document.body.appendChild(notif);
-    // ⭐ الخطوة 1: إرسال إشارة الطرد الفوري (قبل حذف البيانات)
     try {
         await db.ref('force_logout/' + uid).set({
             reason: 'تم حذف حسابك من قبل المالك',
@@ -4746,11 +4809,8 @@ async function permanentDeleteUser(uid, name) {
             at: Date.now()
         });
     } catch(e) { console.warn('فشل إرسال إشارة الطرد:', e); }
-    // ⭐ الخطوة 2: انتظار قصير لوصول الإشارة لجهاز المستخدم
     await new Promise(r => setTimeout(r, 800));
-    // ⭐ الخطوة 3: حذف جميع البيانات نهائياً
     try { await purgeUserEverywhere(uid, name, targetAvatar); } catch(e) { console.warn('خطأ أثناء الحذف:', e); }
-    // ⭐ الخطوة 4: إزالة إشارة الطرد بعد التأكد من وصولها
     try { await db.ref('force_logout/' + uid).remove(); } catch(e) {}
     setTimeout(() => { if (notif.parentNode) notif.remove(); }, 1500);
     alert('✅ تم حذف "' + name + '" نهائياً مع جميع بياناته وطرده من التطبيق إلى شاشة تسجيل الدخول');
@@ -4765,7 +4825,6 @@ async function deleteUnknownUser(uid) {
     const targetAvatar = u.avatar || DEFAULT_ICON;
     try {
         await logAdminAction('delete_unknown_user', uid, displayName, {});
-        // ⭐ إرسال إشارة الطرد الفوري
         await db.ref('force_logout/' + uid).set({
             reason: 'تم حذف حسابك من قبل المالك',
             type: 'deleted',
@@ -4797,7 +4856,6 @@ async function deleteAllUnknownUsers() {
     for (let i = 0; i < unknowns.length; i++) {
         const target = unknowns[i];
         try {
-            // إرسال إشارة الطرد الفوري
             await db.ref('force_logout/' + target.uid).set({
                 reason: 'تم حذف حسابك من قبل المالك',
                 type: 'deleted',
