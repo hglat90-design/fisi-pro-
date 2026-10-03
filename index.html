@@ -1901,6 +1901,7 @@ let tempOwnerPremium = {};
 let alertTarget = 'all';
 let selectedAlertUser = null;
 
+// ⭐ متغيرات المزامنة الحية للألوان والحركات والتوهجات
 let colorSettingsListener = null;
 let glowSettingsListener = null;
 let nameAnimSettingsListener = null;
@@ -2163,313 +2164,6 @@ function resetUserColor(uid) {
     if (userNameAnim[uid]) { delete userNameAnim[uid]; nameAnimRef.child(uid).remove() }
     renderMessages();
 }
-
-// ═══════════════════════════════════════════════════════════════════
-// 🔐🔐🔐 نظام البصمات المتعددة الطبقات (Multi-Layer Fingerprint) 🔐🔐🔐
-// ═══════════════════════════════════════════════════════════════════
-// هذا النظام يجعل تجاوز الحظر شبه مستحيل لأنه يفحص عدة بصمات:
-// 1. FingerprintJS (بصمة المتصفح)
-// 2. Canvas Fingerprint (بصمة الرسم)
-// 3. WebGL Fingerprint (بصمة كرت الشاشة)
-// 4. Hardware Fingerprint (بصمة العتاد)
-// 5. Fonts Fingerprint (بصمة الخطوط)
-// 6. Master Fingerprint = دمج الكل مع hash
-// ═══════════════════════════════════════════════════════════════════
-
-async function getDeviceFingerprint() {
-    // 1️⃣ بصمة FingerprintJS (الأساسية)
-    let fpJsId = 'fpjs_unknown';
-    try {
-        const fp = await FingerprintJS.load();
-        const r = await fp.get();
-        fpJsId = 'fpjs_' + r.visitorId;
-    } catch (e) { console.warn('FingerprintJS فشل:', e); }
-
-    // 2️⃣ بصمة Canvas (فريدة لكل جهاز تقريباً)
-    const canvasId = getCanvasFingerprint();
-
-    // 3️⃣ بصمة WebGL (كرت الشاشة + التعريفات)
-    const webglId = getWebGLFingerprint();
-
-    // 4️⃣ بصمة عتاد الجهاز (لا تتغير أبداً)
-    const hardwareId = getHardwareFingerprint();
-
-    // 5️⃣ بصمة الخطوط المتوفرة (تختلف حسب نظام التشغيل)
-    const fontsId = getFontsFingerprint();
-
-    // 🔑 البصمة الرئيسية = دمج كل البصمات مع hash
-    const masterFp = 'fp_' + await hashString([fpJsId, canvasId, webglId, hardwareId].join('::'));
-
-    // 📦 نحفظ كل البصمات لاستخدامها في الفحص الجماعي
-    const allFingerprints = {
-        master: masterFp,
-        fpjs: fpJsId,
-        canvas: canvasId,
-        webgl: webglId,
-        hardware: hardwareId,
-        fonts: fontsId
-    };
-
-    // نحفظ البصمة الرئيسية في localStorage للاستخدام لاحقاً
-    try {
-        localStorage.setItem('myMasterFp', masterFp);
-        localStorage.setItem('allMyFps', JSON.stringify(allFingerprints));
-        // نحفظ أيضاً في sessionStorage كنسخة احتياطية
-        sessionStorage.setItem('myMasterFp', masterFp);
-    } catch (e) {}
-
-    console.log('🔐 البصمات المُنشأة:', allFingerprints);
-    return masterFp;
-}
-
-// 🎨 بصمة Canvas
-function getCanvasFingerprint() {
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 200; canvas.height = 60;
-        const ctx = canvas.getContext('2d');
-        ctx.textBaseline = 'top';
-        ctx.font = '14px Arial';
-        ctx.fillStyle = '#f60';
-        ctx.fillRect(100, 1, 62, 20);
-        ctx.fillStyle = '#069';
-        ctx.fillText('VissyPro🔒', 2, 15);
-        ctx.fillStyle = 'rgba(102,204,0,0.7)';
-        ctx.fillText('VissyPro🔒', 4, 17);
-        // إضافة منحنيات لتمييز أدق
-        ctx.beginPath();
-        ctx.arc(50, 50, 20, 0, Math.PI * 2);
-        ctx.stroke();
-        // إضافة تدرج لوني
-        const grad = ctx.createLinearGradient(0, 0, 200, 60);
-        grad.addColorStop(0, '#FF0000');
-        grad.addColorStop(1, '#0000FF');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 30, 200, 10);
-        return 'c_' + canvas.toDataURL().slice(-80);
-    } catch (e) { return 'canvas_error'; }
-}
-
-// 🌐 بصمة WebGL
-function getWebGLFingerprint() {
-    try {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        if (!gl) return 'no_webgl';
-        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-        const vendor = debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : 'unknown';
-        const renderer = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'unknown';
-        const maxTexture = gl.getParameter(gl.MAX_TEXTURE_SIZE);
-        const maxViewport = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
-        const maxVarying = gl.getParameter(gl.MAX_VARYING_VECTORS);
-        const maxVertex = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
-        return 'w_' + [vendor, renderer, maxTexture, maxViewport[0], maxViewport[1], maxVarying, maxVertex].join('|').slice(0, 120);
-    } catch (e) { return 'webgl_error'; }
-}
-
-// 💻 بصمة العتاد
-function getHardwareFingerprint() {
-    try {
-        return 'h_' + [
-            screen.width, screen.height, screen.colorDepth, screen.pixelDepth,
-            window.devicePixelRatio || 1,
-            navigator.hardwareConcurrency || 0,
-            navigator.deviceMemory || 0,
-            navigator.platform || '',
-            navigator.maxTouchPoints || 0,
-            Intl.DateTimeFormat().resolvedOptions().timeZone || '',
-            navigator.language || '',
-            navigator.languages ? navigator.languages.join(',') : ''
-        ].join('|').slice(0, 120);
-    } catch (e) { return 'hw_error'; }
-}
-
-// 🔤 بصمة الخطوط
-function getFontsFingerprint() {
-    try {
-        const testFonts = ['Arial', 'Times New Roman', 'Courier New', 'Georgia', 'Verdana', 'Tahoma', 'Comic Sans MS', 'Impact', 'Arial Black', 'Lucida Console'];
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const baseFont = 'monospace';
-        const testStr = 'mmmmmmmmmmlli';
-        ctx.font = '72px ' + baseFont;
-        const baseWidth = ctx.measureText(testStr).width;
-        const detected = [];
-        testFonts.forEach(font => {
-            ctx.font = '72px ' + font + ', ' + baseFont;
-            if (ctx.measureText(testStr).width !== baseWidth) detected.push(font);
-        });
-        return 'f_' + detected.join(',').slice(0, 80);
-    } catch (e) { return 'fonts_error'; }
-}
-
-// 🔒 دالة hash بسيطة (SHA-256 أو fallback)
-async function hashString(str) {
-    try {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(str);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
-    } catch (e) {
-        // fallback بسيط
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = ((hash << 5) - hash) + str.charCodeAt(i);
-            hash |= 0;
-        }
-        return Math.abs(hash).toString(16);
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// 🚫 فحص الحظر الشامل (يتحقق من جميع البصمات)
-// ═══════════════════════════════════════════════════════════════════
-async function checkIfBanned() {
-    try {
-        const allFps = JSON.parse(localStorage.getItem('allMyFps') || '{}');
-        const fpsToCheck = [
-            allFps.master, allFps.fpjs, allFps.canvas,
-            allFps.webgl, allFps.hardware, allFps.fonts,
-            myFP // البصمة الحالية
-        ].filter(Boolean);
-
-        // إزالة التكرار
-        const uniqueFps = [...new Set(fpsToCheck)];
-
-        console.log('🔍 فحص الحظر لـ', uniqueFps.length, 'بصمة');
-
-        // فحص جميع البصمات بالتوازي
-        const checks = uniqueFps.map(fp => db.ref('bans/' + fp).once('value').then(s => ({ fp, exists: s.exists() })));
-        const results = await Promise.all(checks);
-
-        for (const r of results) {
-            if (r.exists) {
-                console.warn('⛔ تم اكتشاف حظر على البصمة:', r.fp);
-                return true;
-            }
-        }
-        return false;
-    } catch (e) {
-        console.error('فشل فحص الحظر:', e);
-        return false;
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// 🚫 فحص حظر الاسم (لمنع تسجيل دخول نفس الاسم من جهاز آخر)
-// ═══════════════════════════════════════════════════════════════════
-async function checkIfNameBanned(name) {
-    if (!name || !name.trim()) return false;
-    try {
-        const snap = await db.ref('banned_names/' + name.toLowerCase().trim()).once('value');
-        return snap.exists();
-    } catch (e) { return false; }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// 🔨 الحظر الشامل (يحظر جميع البصمات + الاسم)
-// ═══════════════════════════════════════════════════════════════════
-async function banUserEverywhere(targetUid, targetName) {
-    try {
-        const updates = {};
-
-        // 1. جمع كل البصمات المحتملة للهدف
-        const fpsToBan = new Set([targetUid]);
-
-        // من بيانات المستخدم (البصمات البديلة المخزنة)
-        try {
-            const userSnap = await db.ref('users/' + targetUid).once('value');
-            if (userSnap.exists()) {
-                const userData = userSnap.val();
-                if (userData.altFingerprints) {
-                    Object.keys(userData.altFingerprints).forEach(fp => fpsToBan.add(fp));
-                }
-                if (userData.masterFp) fpsToBan.add(userData.masterFp);
-            }
-        } catch(e) { console.warn('فشل جمع البصمات:', e); }
-
-        // من fp_links (البصمات المرتبطة)
-        try {
-            const fpLinksSnap = await db.ref('fp_links/' + targetUid).once('value');
-            if (fpLinksSnap.exists()) {
-                // البصمة الرئيسية نفسها
-                fpsToBan.add(targetUid);
-            }
-        } catch(e) {}
-
-        // 2. حفظ الحظر على كل بصمة
-        fpsToBan.forEach(fp => {
-            updates['bans/' + fp] = {
-                banned: true,
-                by: myName || 'المالك',
-                at: Date.now(),
-                targetName: targetName,
-                targetUid: targetUid
-            };
-        });
-
-        // 3. حظر الاسم نفسه (لمنع إعادة التسجيل بنفس الاسم)
-        if (targetName && targetName.trim()) {
-            updates['banned_names/' + targetName.toLowerCase().trim()] = {
-                banned: true,
-                originalUid: targetUid,
-                by: myName,
-                at: Date.now()
-            };
-        }
-
-        // 4. تنفيذ كل التحديثات دفعة واحدة
-        await db.ref().update(updates);
-
-        // 5. إرسال إشارة الطرد الفوري
-        try {
-            await db.ref('force_logout/' + targetUid).set({
-                reason: 'تم حظرك من التطبيق نهائياً',
-                type: 'banned',
-                by: myName,
-                at: Date.now()
-            });
-        } catch(e) {}
-
-        // 6. تسجيل الإجراء
-        try {
-            await logAdminAction('ban_everywhere', targetUid, targetName, { fingerprints_count: fpsToBan.size });
-        } catch(e) {}
-
-        console.log('✅ تم الحظر الشامل:', { uid: targetUid, name: targetName, fps: fpsToBan.size });
-        return true;
-    } catch (e) {
-        console.error('❌ فشل الحظر الشامل:', e);
-        return false;
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// 🔗 ربط البصمات البديلة بالمستخدم (يُستدعى عند الدخول)
-// ═══════════════════════════════════════════════════════════════════
-async function linkAllFingerprintsToUser() {
-    try {
-        const allFps = JSON.parse(localStorage.getItem('allMyFps') || '{}');
-        const updates = {};
-        Object.keys(allFps).forEach(key => {
-            const val = allFps[key];
-            if (val && val !== myFP) {
-                // حفظ البصمة البديلة في حساب المستخدم
-                updates['users/' + myFP + '/altFingerprints/' + val.replace(/[.#$/\[\]]/g, '_')] = true;
-                // ربط البصمة البديلة بالاسم في fp_links
-                if (myName) {
-                    updates['fp_links/' + val.replace(/[.#$/\[\]]/g, '_') + '/' + myName.toLowerCase()] = Date.now();
-                }
-            }
-        });
-        if (Object.keys(updates).length > 0) {
-            await db.ref().update(updates);
-            console.log('🔗 تم ربط', Object.keys(updates).length, 'بصمة بديلة بالمستخدم');
-        }
-    } catch (e) { console.warn('فشل ربط البصمات:', e); }
-}
-// ═══════════════════════════════════════════════════════════════════
 
 function hasCapability(uid, capability, role) {
     if (!uid) return false;
@@ -3864,6 +3558,7 @@ function openNameSettingsPanel() {
     toggleUsers();
 }
 
+async function getDeviceFingerprint() { try { const f = await FingerprintJS.load(), r = await f.get(); return 'fp_' + r.visitorId } catch (e) { return 'fp_fallback_' + Math.random().toString(36).substr(2, 9) } }
 async function checkSecurity(fp, name) {
     const c = { banned: false, muted: false };
     const b = await db.ref('bans/' + fp).once('value'); if (b.exists()) { c.banned = true; return c }
@@ -3891,13 +3586,17 @@ function listenCapabilityOverrides() {
     });
 }
 
+// ⭐⭐⭐ المزامنة الحية للألوان والتوهجات وحركات الأسماء ⭐⭐⭐
+// هذه الدوال تجعل أي تغيير يقوم به المالك (أو أي مستخدم لنفسه) يظهر فوراً لجميع المستخدمين
 function listenColorSettingsLive() {
     if (colorSettingsListener) colorSettingsRef.off('value', colorSettingsListener);
     colorSettingsListener = colorSettingsRef.on('value', snap => {
         if (isBeingDeleted) return;
         const d = snap.val() || {};
+        // إعادة بناء كائن الألوان بالكامل من السيرفر
         userColors = {};
         Object.keys(d).forEach(k => { if (d[k]) userColors[k] = d[k]; });
+        // إعادة رسم الرسائل الحالية لتحديث الألوان فوراً
         renderMessages();
         if (currentDMChat) renderDMMessagesList();
     });
@@ -3927,6 +3626,7 @@ function listenNameAnimSettingsLive() {
     });
 }
 
+// دالة مساعدة لإعادة رسم رسائل الخاص الحالية (عند تغيير ألوان صاحب المحادثة)
 function renderDMMessagesList() {
     if (!currentDMChat) return;
     const box = document.getElementById('dm-chat-messages');
@@ -4060,65 +3760,54 @@ async function denyAllCapabilities(uid) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// ⭐⭐⭐ دالة init() الجديدة — مع فحص الحظر الشامل ⭐⭐⭐
+// ⭐⭐⭐ دالة init() الجديدة — دخول تلقائي من حساب تطبيق الواجهة ⭐⭐⭐
 // ═══════════════════════════════════════════════════════════════════
 async function init() {
     document.getElementById('loading-screen').style.display = 'none';
-
-    // إنشاء البصمة المتعددة
     myFP = await getDeviceFingerprint();
     localStorage.setItem("fp", myFP);
-
     listenThemeSettings();
     listenFontSettings(); listenBadWords(); listenChatBgSettings(); listenAnimSettings(); listenEffectsSettings();
     listenOwnerPremiumSettings();
     listenColorSettingsLive();
     listenGlowSettingsLive();
     listenNameAnimSettingsLive();
-
+    
     try {
-        // 1. فحص الحظر الشامل (يجرب كل البصمات)
-        const isBannedNow = await checkIfBanned();
-        if (isBannedNow) {
+        // 1. فحص الحظر أولاً
+        const banCheck = await db.ref('bans/' + myFP).once('value');
+        if (banCheck.exists()) {
             isBanned = true;
             document.getElementById('ban-screen').style.display = 'flex';
             return;
         }
-
-        // 2. قراءة بيانات المستخدم من Firebase
+        
+        // 2. قراءة بيانات المستخدم من Firebase (من تطبيق الواجهة)
         const userSnap = await db.ref('users/' + myFP).once('value');
-
+        
         if (!userSnap.exists()) {
             // لا يوجد حساب → افتح التطبيق أولاً
             showLoginRequiredScreen();
             return;
         }
-
+        
         const userData = userSnap.val();
         const storedName = userData.name || '';
-
+        
         // 3. التحقق من صحة الاسم
         const validation = validateName(storedName);
         if (!validation.valid) {
             showLoginRequiredScreen('اسم حسابك غير صالح. يرجى فتح التطبيق لتحديثه.');
             return;
         }
-
-        // 4. التحقق من حظر الاسم
-        const nameBanned = await checkIfNameBanned(storedName);
-        if (nameBanned) {
-            isBanned = true;
-            document.getElementById('ban-screen').style.display = 'flex';
-            return;
-        }
-
-        // 5. كل شيء سليم → دخول تلقائي
+        
+        // 4. كل شيء سليم → دخول تلقائي
         myName = validation.name;
         myAvatar = userData.avatar || DEFAULT_ICON;
         localStorage.setItem('name', myName);
         localStorage.setItem('avatar', myAvatar);
-
-        // 6. فحص الكتم
+        
+        // 5. فحص الكتم
         const muteSnap = await db.ref('mutes/' + myFP).once('value');
         if (muteSnap.exists()) {
             const muteData = muteSnap.val();
@@ -4127,17 +3816,19 @@ async function init() {
                 muteEndTime = muteData.endTime;
             }
         }
-
+        
         await linkFingerprint(myFP, myName);
-        await linkAllFingerprintsToUser(); // 🔗 ربط البصمات البديلة
         enterChat();
-
+        
     } catch (e) {
         console.error('❌ خطأ في الدخول التلقائي:', e);
         showLoginRequiredScreen('حدث خطأ في الاتصال. حاول مرة أخرى.');
     }
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// ⭐⭐⭐ دالة مساعدة: عرض رسالة "افتح التطبيق أولاً" ⭐⭐⭐
+// ═══════════════════════════════════════════════════════════════════
 function showLoginRequiredScreen(customMessage) {
     const loginScreen = document.getElementById('login-screen');
     loginScreen.innerHTML = `
@@ -4162,7 +3853,10 @@ function showLoginRequiredScreen(customMessage) {
     loginScreen.style.display = 'flex';
 }
 
-// ⭐ دخول يدوي (بعد فحص الحظر الشامل)
+// ═══════════════════════════════════════════════════════════════════
+// ⭐ باقي الكود الأصلي — بدون أي تعديل
+// ═══════════════════════════════════════════════════════════════════
+
 document.getElementById('login-btn').onclick = async () => {
     const rawName = document.getElementById('username-input').value;
     const validation = validateName(rawName);
@@ -4170,29 +3864,11 @@ document.getElementById('login-btn').onclick = async () => {
     hideLoginError();
     unlockAudio();
     const n = validation.name;
-
-    // 🆕 فحص الحظر الشامل (كل البصمات)
-    const bannedNow = await checkIfBanned();
-    if (bannedNow) {
-        isBanned = true;
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('ban-screen').style.display = 'flex';
-        return;
-    }
-
-    // 🆕 فحص حظر الاسم
-    const nameBanned = await checkIfNameBanned(n);
-    if (nameBanned) {
-        showLoginError('⛔ هذا الاسم محظور نهائياً من التطبيق. اختر اسماً آخر.');
-        return;
-    }
-
     const s = await checkSecurity(myFP, n);
     if (s.banned) { isBanned = true; document.getElementById('login-screen').style.display = 'none'; document.getElementById('ban-screen').style.display = 'flex'; return; }
     myName = n; localStorage.setItem("name", myName);
     if (s.muted) isMuted = true;
     await linkFingerprint(myFP, myName);
-    await linkAllFingerprintsToUser(); // 🔗 ربط البصمات البديلة
     enterChat();
 };
 
@@ -4216,9 +3892,6 @@ function enterChat() {
     db.ref('users/' + myFP + '/createdAt').once('value', snap => { if (!snap.exists()) db.ref('users/' + myFP + '/createdAt').set(Date.now()); });
     db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
     db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
-
-    // 🔗 ربط البصمات البديلة عند الدخول
-    linkAllFingerprintsToUser();
 
     db.ref('users/' + myFP + '/name').on('value', s => {
         if (isBeingDeleted) return;
@@ -5687,20 +5360,7 @@ function paDM() {
     paTargetUid = null; paTargetName = null; paTargetAvatar = null;
     setTimeout(() => { openDMChat(targetUid); }, 250);
 }
-
-// ⭐ banUser الجديد - يستخدم الحظر الشامل
-async function banUser(u, n) {
-    const tr = allUsersData[u]?.role || 'user';
-    if (!canBan(myRole, tr)) return alert('⛔');
-    if (!confirm('⚠️ حظر "' + n + '"؟\n\n✅ سيتم حظر جميع بصمات جهازه\n✅ سيتم حظر اسمه من التسجيل\n✅ سيتم طرده فوراً من التطبيق')) return;
-    const success = await banUserEverywhere(u, n);
-    if (success) {
-        alert("✅ تم الحظر الشامل بنجاح\n• جميع بصمات الجهاز محظورة\n• الاسم محظور من التسجيل");
-    } else {
-        alert("❌ فشل الحظر، حاول مرة أخرى");
-    }
-}
-
+async function banUser(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canBan(myRole, tr)) return alert('⛔'); if (!confirm('⚠️ حظر "' + n + '"؟')) return; await db.ref('bans/' + u).set(true); await logAdminAction('ban', u, n, { target_role: tr }); alert("✅"); }
 async function unbanUser(u, n) { if (!isOwner()) return alert('⛔'); if (!confirm('فك الحظر عن "' + n + '"؟')) return; await db.ref('bans/' + u).remove(); await logAdminAction('unban', u, n, {}); alert("✅"); }
 function openMuteMenu(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canMute(myRole, tr)) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('mute-target-name').textContent = n; document.getElementById('mute-modal').classList.add('active'); }
 async function applyMute(m) { const et = m === 999999 ? 9999999999999 : Date.now() + m * 6e4; const data = { endTime: et, by: myName, at: Date.now() }; const { uid, name } = targetUserForAction; await db.ref('mutes/' + uid).set(data); await logAdminAction('mute', uid, name, { duration_minutes: m === 999999 ? 'forever' : m, end_time: et }); document.getElementById('mute-modal').classList.remove('active'); alert("✅"); }
@@ -5733,11 +5393,6 @@ async function saveProfile() {
     const validation = validateName(rawName);
     if (!validation.valid) return alert('❌ ' + validation.reason);
     const n = validation.name;
-    // 🆕 فحص حظر الاسم الجديد
-    const nameBanned = await checkIfNameBanned(n);
-    if (nameBanned && n.toLowerCase() !== myName.toLowerCase()) {
-        return alert('⛔ هذا الاسم محظور نهائياً. اختر اسماً آخر.');
-    }
     const src = document.getElementById('prof-img').src;
     let fa = myAvatar;
     if (src.startsWith('data:image')) {
@@ -5748,7 +5403,6 @@ async function saveProfile() {
     myName = n; myAvatar = fa;
     localStorage.setItem("name", myName); localStorage.setItem("avatar", myAvatar);
     await linkFingerprint(myFP, myName);
-    await linkAllFingerprintsToUser(); // 🔗 ربط البصمات البديلة
     db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar });
     saveFCMToken();
     document.getElementById('profile-modal').classList.remove('active'); alert("✅");
@@ -6145,7 +5799,7 @@ async function resolveReport(action) {
             let targetUid = report.targetId;
             if (targetUid.startsWith('legacy_')) { alert('⚠️ تم حل البلاغ.'); }
             else {
-                if (action === 'ban') { await banUserEverywhere(targetUid, report.targetName); }
+                if (action === 'ban') { await db.ref('bans/' + targetUid).set(true); await logAdminAction('report_ban', targetUid, report.targetName, { report_id: reportId }); }
                 else if (action === 'mute') { const et = Date.now() + 3600000; const data = { endTime: et, by: myName, at: Date.now() }; await db.ref('mutes/' + targetUid).set(data); await logAdminAction('report_mute', targetUid, report.targetName, { report_id: reportId, duration: 60 }); }
             }
         } else {
@@ -6521,6 +6175,7 @@ function openColorControl(uid) {
 
     renderNameAnimGrid(ca);
 
+    // إذا كان المستخدم عادياً (ليس مالكاً) ولا يعدل نفسه، عطّل شبكة الحركات
     const isSelfOnly = (uid === myFP) && !canControlColors();
     const animGrid = document.getElementById('name-anim-grid');
     if (animGrid) animGrid.style.opacity = isSelfOnly ? '0.5' : '1';
@@ -6603,6 +6258,7 @@ function applyUserColor() {
     const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc };
     saveUserColor(colorTargetUid, cd, selectedGlow);
     saveUserNameAnim(colorTargetUid, selectedNameAnim);
+    // تسجيل الإجراء في سجل المالك
     if (!isSelf && isOwner()) {
         logAdminAction('color_change', colorTargetUid, allUsersData[colorTargetUid]?.name || 'مجهول', { color_bg: cd.bg, name_color: nc, glow: selectedGlow, name_anim: selectedNameAnim });
     }
@@ -6629,6 +6285,8 @@ function closeColorControl() {
 }
 
 async function loadColorSettings() {
+    // ملاحظة: الآن نستخدم المستمعين الحيين بدلاً من التحميل مرة واحدة
+    // لكن نبقي هذه الدالة للتوافق مع الاستدعاء الأولي
     const s = await colorSettingsRef.once('value');
     if (s.exists()) {
         const d = s.val();
@@ -7234,6 +6892,7 @@ function forceLogout(reason, isDeleted, isBanned) {
     forceLogoutInstant(reason, isDeleted, isBanned);
 }
 
+// ⭐ بدء المراقب فوراً بمجرد تحديد myFP
 startForceLogoutWatcher();
 
 init();
