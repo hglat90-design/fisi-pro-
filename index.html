@@ -31,6 +31,54 @@
         .login-hint strong{color:#0d47a1}
         .login-btn{width:100%;padding:15px;background:var(--primary);color:#fff;border:0;border-radius:15px;font-weight:700;cursor:pointer;font-size:18px;font-family:var(--font-main);transition:transform .2s}
         .login-btn:active{transform:scale(.97)}
+
+        /* ===== Verification Screen (بوابة التوثيق) ===== */
+        #verify-screen{position:absolute;top:0;left:0;width:100%;height:100%;z-index:9999;display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px 18px;background:linear-gradient(160deg,#0d1f1c 0%,#0a2e26 50%,#071915 100%);color:#fff;overflow-y:auto;text-align:center}
+        #verify-screen.active{display:flex;animation:verifyFadeIn .4s ease}
+        @keyframes verifyFadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+        .verify-logo{font-size:60px;margin-bottom:6px;filter:drop-shadow(0 4px 20px rgba(0,200,160,.5));animation:verifyLogoPulse 2.5s ease-in-out infinite}
+        @keyframes verifyLogoPulse{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.08) rotate(-3deg)}}
+        .verify-title{font-size:30px;font-weight:900;color:#00d4a8;margin-bottom:4px;letter-spacing:1px;text-shadow:0 0 30px rgba(0,212,168,.6)}
+        .verify-subtitle{font-size:13px;color:#7fdcc6;margin-bottom:24px;font-weight:600;letter-spacing:.5px}
+        .verify-card{width:100%;max-width:420px;background:rgba(255,255,255,.04);border:1.5px solid rgba(0,212,168,.25);border-radius:22px;padding:22px 20px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:right;margin-bottom:12px}
+        .verify-steps-indicator{display:flex;justify-content:center;gap:12px;margin-bottom:22px}
+        .verify-step-dot{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-weight:800;color:#6b8f83;font-size:14px;border:2px solid rgba(255,255,255,.08);transition:all .3s}
+        .verify-step-dot.active{background:linear-gradient(135deg,#00d4a8,#00a884);color:#fff;border-color:transparent;transform:scale(1.12);box-shadow:0 0 20px rgba(0,212,168,.6)}
+        .verify-step-dot.done{background:linear-gradient(135deg,#4caf50,#2e7d32);color:#fff;border-color:transparent}
+        .verify-step-dot.done::before{content:'✓';font-weight:900}
+        .verify-step-dot.done span{display:none}
+        .verify-hint{background:rgba(0,212,168,.08);border:1.5px solid rgba(0,212,168,.25);border-radius:14px;padding:14px 16px;margin-bottom:16px;font-size:12.5px;color:#b8f0e4;line-height:1.8;text-align:right;font-weight:500}
+        .verify-hint strong{color:#00d4a8;display:block;margin-bottom:6px;font-size:13.5px}
+        .verify-btn{width:100%;padding:15px;background:linear-gradient(135deg,#00d4a8,#00a884);color:#fff;border:0;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;font-family:var(--font-main);transition:all .2s;margin-top:10px;letter-spacing:.3px;box-shadow:0 8px 24px rgba(0,212,168,.35);position:relative;overflow:hidden}
+        .verify-btn:active{transform:scale(.97);box-shadow:0 4px 14px rgba(0,212,168,.4)}
+        .verify-btn:disabled{background:#3a4a45;color:#7a8b85;cursor:not-allowed;box-shadow:none;transform:none}
+        .verify-btn-tg{background:linear-gradient(135deg,#0088cc,#006699);box-shadow:0 8px 24px rgba(0,136,204,.35)}
+        .verify-btn-secondary{background:rgba(255,255,255,.06);color:#b8f0e4;border:1.5px solid rgba(255,255,255,.12);box-shadow:none;margin-top:8px;font-size:14px;padding:12px}
+        .verify-btn-secondary:hover{background:rgba(255,255,255,.1)}
+        .verify-msg{padding:12px 14px;border-radius:12px;margin-bottom:14px;font-size:12.5px;font-weight:700;font-family:var(--font-main);display:none;text-align:right;line-height:1.6}
+        .verify-msg.error{background:rgba(244,67,54,.12);color:#ff8a80;border:1.5px solid rgba(244,67,54,.35);display:block;animation:verifyMsgPop .3s}
+        .verify-msg.success{background:rgba(76,175,80,.12);color:#a5d6a7;border:1.5px solid rgba(76,175,80,.35);display:block;animation:verifyMsgPop .3s}
+        .verify-msg.info{background:rgba(33,150,243,.12);color:#90caf9;border:1.5px solid rgba(33,150,243,.35);display:block;animation:verifyMsgPop .3s}
+        @keyframes verifyMsgPop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+        .verify-spinner{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:verifySpin .8s linear infinite;vertical-align:middle;margin-left:6px}
+        @keyframes verifySpin{to{transform:rotate(360deg)}}
+        .verify-telegram-box{background:linear-gradient(135deg,rgba(0,136,204,.15),rgba(0,102,153,.08));border:2px dashed rgba(0,136,204,.5);border-radius:16px;padding:18px 16px;margin:14px 0;text-align:center}
+        .verify-telegram-box h3{color:#4fc3f7;font-size:16px;margin-bottom:10px;font-weight:800}
+        .verify-telegram-box p{color:#b8f0e4;font-size:12.5px;line-height:1.7;margin-bottom:12px}
+        .verify-telegram-box .verify-btn-tg{margin-top:0}
+        .verify-user-info{background:rgba(76,175,80,.1);border:1.5px solid rgba(76,175,80,.3);border-radius:12px;padding:12px 14px;margin-top:14px;font-size:13px;color:#c8f5c8;text-align:center;line-height:1.8}
+        .verify-user-info strong{color:#fff}
+        .verify-user-info .phone{color:#00d4a8;font-weight:800;direction:ltr;display:inline-block;letter-spacing:.5px}
+        .verify-footer{font-size:10.5px;color:#6b8f83;margin-top:18px;text-align:center;line-height:1.7}
+        .verify-footer .lock{color:#00d4a8;font-size:12px}
+        .device-block-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a0000,#3a0000);z-index:99999999;display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px;color:#fff;text-align:center}
+        .device-block-overlay.active{display:flex;animation:verifyFadeIn .4s}
+        .device-block-overlay .dbi{font-size:80px;margin-bottom:20px;animation:warningPulse 1.8s infinite}
+        .device-block-overlay h1{font-size:24px;font-weight:900;color:#ff5252;margin-bottom:12px;text-shadow:0 0 30px rgba(255,82,82,.7)}
+        .device-block-overlay p{font-size:14px;color:#ffcdd2;max-width:340px;line-height:1.8;margin-bottom:10px}
+        .device-block-overlay .db-badge{background:rgba(255,82,82,.15);border:1.5px solid rgba(255,82,82,.4);padding:8px 16px;border-radius:12px;font-size:11px;color:#ff8a80;font-weight:700;margin-top:12px}
+        @keyframes warningPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
         header{background:var(--header-bg);color:var(--header-text);padding:4px 10px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.15);min-height:38px;flex-shrink:0;position:relative;transition:background .3s ease,color .3s ease}
         .header-title{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px}
         .header-title button{background:rgba(255,255,255,.15);border:0;color:var(--header-text);padding:2px 8px;border-radius:8px;font-size:10px;cursor:pointer;display:none;font-family:var(--font-main)}
@@ -797,6 +845,77 @@
 </head><body>
 
 <div class="app-container" id="app">
+
+    <!-- ================= شاشة التوثيق عبر البوت (بوابة إجبارية) ================= -->
+    <div id="verify-screen" class="active">
+        <div class="verify-logo">💬</div>
+        <div class="verify-title">فيسي برو</div>
+        <div class="verify-subtitle">🔐 دخول حصري بتوثيق عبر كود البوت</div>
+
+        <div class="verify-card">
+            <div class="verify-steps-indicator">
+                <div class="verify-step-dot active" id="vstep1"><span>1</span></div>
+                <div class="verify-step-dot" id="vstep2"><span>2</span></div>
+            </div>
+
+            <div id="verify-msg" class="verify-msg"></div>
+
+            <!-- الشاشة 1: بدء التواصل مع البوت -->
+            <div id="verify-step-start">
+                <div class="verify-hint">
+                    <strong>⚠️ تحذير أمني:</strong>
+                    الدخول إلى الغرفة يتم <b>حصرياً</b> عبر توثيق رقم الهاتف من بوت تليجرام الرسمي. أي محاولة لتخطي هذه البوابة سيتم رفضها تلقائياً. هذا الإجراء لحمايتك من التطبيقات المنسوخة والتلاعب.
+                </div>
+                <button class="verify-btn verify-btn-tg" id="verify-start-btn" onclick="initTelegramVerification(event)">
+                    🚀 بدء التوثيق عبر بوت تليجرام
+                </button>
+            </div>
+
+            <!-- الشاشة 2: مشاركة الرقم من البوت -->
+            <div id="verify-step-link" style="display:none;">
+                <div class="verify-telegram-box">
+                    <h3>🤖 الخطوة الأخيرة</h3>
+                    <p>اضغط على الزر أدناه لفتح بوت تليجرام الرسمي، ثم اضغط داخل البوت على زر <b>"مشاركة رقم الهاتف الموثق"</b>.</p>
+                    <a href="https://t.me/veysi_otp_bot" target="_blank" rel="noopener noreferrer" class="verify-btn verify-btn-tg" style="text-decoration:none;display:block;">
+                        💬 فتح البوت الآن
+                    </a>
+                    <p style="margin-top:12px;">بعد مشاركة الرقم، ارجع هنا واضغط زر التحقق.</p>
+                </div>
+                <button class="verify-btn" id="verify-check-btn" onclick="checkTelegramContactAndLogin(event)">
+                    ✅ تم مشاركة الرقم، دخول تلقائي 🚀
+                </button>
+                <button class="verify-btn verify-btn-secondary" onclick="goToVerifyStep1()">
+                    ⬅️ رجوع
+                </button>
+            </div>
+
+            <!-- شاشة نجاح التوثيق المؤقتة -->
+            <div id="verify-step-success" style="display:none;">
+                <div class="verify-user-info">
+                    <div style="font-size:52px;margin-bottom:10px;">🎉</div>
+                    <div style="font-size:18px;font-weight:900;margin-bottom:8px;color:#fff;">تم التوثيق بنجاح!</div>
+                    <div>📱 رقمك الموثق:</div>
+                    <div class="phone" id="verified-phone-display">-</div>
+                    <div style="margin-top:10px;font-size:11px;color:#a5d6a7;">✓ جاري تسجيل الدخول...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="verify-footer">
+            <div class="lock">🔒 اتصال آمن ومشفر 100%</div>
+            <div>الدخول محمي ببصمة الجهاز + توثيق رقم الهاتف</div>
+        </div>
+    </div>
+
+    <!-- شاشة حظر الجهاز (عند اكتشاف نسخ/تلاعب) -->
+    <div class="device-block-overlay" id="device-block-overlay">
+        <div class="dbi">🚫</div>
+        <h1>جهاز غير مصرح به</h1>
+        <p id="device-block-reason">تم اكتشاف محاولة نسخ أو تلاعب بالبيانات. هذا الرقم مربوط بجهاز آخر ولا يمكن استخدامه هنا.</p>
+        <p style="font-size:12px;opacity:.8;">للاستفسار، تواصل مع مالك التطبيق.</p>
+        <div class="db-badge">🔒 حماية تلقائية ضد النسخ</div>
+    </div>
+
     <div id="loading-screen">
         <div class="spinner"></div>
         <p style="margin-top:12px;color:#666;font-size:14px;font-family:var(--font-main);">جاري التحقق...</p>
@@ -805,8 +924,8 @@
     <div id="login-screen">
         <h2 style="color:var(--primary);margin-bottom:16px;font-weight:900;font-family:var(--font-main);font-size:22px;">💬 فيسي برو</h2>
         <div class="login-hint">
-            <strong>⚠️ ملاحظة هامة:</strong><br>
-            يجب إدخال <strong>اسم حقيقي وصحيح</strong> للدخول. لا يُسمح بالأسماء الفارغة أو التي تحتوي فقط على مسافات أو رموز أو نقاط أو الأسماء المحجوزة مثل "مجهول".
+            <strong>✅ رقم موثق:</strong> <span id="login-phone-badge" style="direction:ltr;display:inline-block;color:#0d47a1;font-weight:900;">-</span><br>
+            يجب إدخال <strong>اسم حقيقي وصحيح</strong> للدخول.
         </div>
         <div class="login-error-box" id="login-error-box">
             <strong>❌ خطأ في الاسم:</strong>
@@ -1793,19 +1912,36 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 
 <script>
+/* ==========================================================================
+   قاعدة البيانات الجديدة (Firebase Config)
+   ========================================================================== */
 const firebaseConfig = {
-    apiKey: "AIzaSyB5qXJOOIMs3rWwxRjDai2enpCC4UUfyR4",
-    authDomain: "kiot-1ea8c.firebaseapp.com",
-    databaseURL: "https://kiot-1ea8c-default-rtdb.firebaseio.com",
-    projectId: "kiot-1ea8c",
-    storageBucket: "kiot-1ea8c.firebasestorage.app",
-    messagingSenderId: "986566989634",
-    appId: "1:986566989634:web:4717e394006ba957da5adb",
-    measurementId: "G-JG8KVD2F86"
+    apiKey: "AIzaSyD9qPQHL_BBAeJ-fXtgoRr5rXPMetvN3W8",
+    authDomain: "sory-1ab08.firebaseapp.com",
+    databaseURL: "https://sory-1ab08-default-rtdb.firebaseio.com",
+    projectId: "sory-1ab08",
+    storageBucket: "sory-1ab08.firebasestorage.app",
+    messagingSenderId: "870807919125",
+    appId: "1:870807919125:web:4426d8b27054e7f3428c1c",
+    measurementId: "G-4R6KCCMBQN"
 };
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+/* ==========================================================================
+   إعدادات بوت تليجرام (التوثيق الإجباري)
+   ========================================================================== */
+const BOT_TOKEN = '8733167556:AAH5RPKI8Gdr7L_TWldEHp91Kz6NESamrUM';
+const TELEGRAM_API = 'https://api.telegram.org/bot' + BOT_TOKEN;
+const BOT_USERNAME = 'veysi_otp_bot';
+
+let tgUserChatId = '';
+let tgVerifiedPhone = '';
+let tgVerifiedAt = 0;
+
+/* ==========================================================================
+   المتغيرات العامة
+   ========================================================================== */
 const VAPID_KEY = 'BDfPDyXH10O6avY5v2zHHmcEswMuxyOPWvBz048dp78RmeQM4Mit_TEE2cdxoAuKrujLT_3Ft_upy1K93zXT3kQ';
 const DEFAULT_ICON = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
 
@@ -1901,7 +2037,6 @@ let tempOwnerPremium = {};
 let alertTarget = 'all';
 let selectedAlertUser = null;
 
-// ⭐ متغيرات المزامنة الحية للألوان والحركات والتوهجات
 let colorSettingsListener = null;
 let glowSettingsListener = null;
 let nameAnimSettingsListener = null;
@@ -2118,6 +2253,299 @@ function hideLoginError() {
     if (box) box.classList.remove('show');
     if (input) input.classList.remove('error');
 }
+
+/* ==========================================================================
+   ⭐ دوال بوابة التوثيق عبر بوت تليجرام + الحماية ضد النسخ
+   ========================================================================== */
+
+// عرض رسالة في بوابة التوثيق
+function showVerifyMsg(message, type) {
+    const box = document.getElementById('verify-msg');
+    if (!box) return;
+    box.className = 'verify-msg ' + (type || 'info');
+    box.textContent = message;
+}
+
+function hideVerifyMsg() {
+    const box = document.getElementById('verify-msg');
+    if (box) box.className = 'verify-msg';
+}
+
+// الانتقال لخطوة 1 (بدء التواصل)
+function goToVerifyStep1() {
+    document.getElementById('verify-step-start').style.display = 'block';
+    document.getElementById('verify-step-link').style.display = 'none';
+    document.getElementById('verify-step-success').style.display = 'none';
+    document.getElementById('vstep1').className = 'verify-step-dot active';
+    document.getElementById('vstep2').className = 'verify-step-dot';
+    hideVerifyMsg();
+}
+
+// عرض شاشة توثيق الرقم
+function showVerifyScreen() {
+    document.getElementById('verify-screen').classList.add('active');
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'none';
+    goToVerifyStep1();
+}
+
+// إخفاء شاشة التوثيق
+function hideVerifyScreen() {
+    document.getElementById('verify-screen').classList.remove('active');
+}
+
+// إرسال رسالة عادية في تليجرام
+async function sendTelegramMessage(chatId, text) {
+    try {
+        const response = await fetch(TELEGRAM_API + '/sendMessage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
+        });
+        return await response.json();
+    } catch (e) { console.warn('فشل إرسال رسالة تليجرام:', e); return null; }
+}
+
+// إرسال رسالة مع زر مشاركة جهة الاتصال
+async function sendTelegramMessageWithButton(chatId, text) {
+    try {
+        const response = await fetch(TELEGRAM_API + '/sendMessage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: text,
+                parse_mode: 'HTML',
+                reply_markup: {
+                    keyboard: [
+                        [{ text: "📱 مشاركة رقم الهاتف الموثق", request_contact: true }]
+                    ],
+                    resize_keyboard: true,
+                    one_time_keyboard: true
+                }
+            })
+        });
+        return await response.json();
+    } catch (e) { console.warn('فشل إرسال الرسالة مع الزر:', e); return null; }
+}
+
+// بدء عملية التوثيق عبر البوت
+async function initTelegramVerification(evt) {
+    const btn = evt ? evt.target : document.getElementById('verify-start-btn');
+    if (!btn) return;
+    btn.disabled = true;
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '<span class="verify-spinner"></span> جاري الاتصال بالبوت...';
+    hideVerifyMsg();
+
+    try {
+        const response = await fetch(TELEGRAM_API + '/getUpdates?allowed_updates=["message"]');
+        const data = await response.json();
+
+        if (!data.ok || !data.result || data.result.length === 0) {
+            throw new Error('يرجى فتح البوت (@' + BOT_USERNAME + ') في تليجرام وإرسال /start أولاً ثم حاول مرة أخرى.');
+        }
+
+        const lastUpdate = data.result[data.result.length - 1];
+        const lastMsg = lastUpdate && lastUpdate.message;
+        if (!lastMsg || !lastMsg.chat) {
+            throw new Error('لم يتم العثور على محادثة نشطة. أرسل /start للبوت أولاً.');
+        }
+
+        tgUserChatId = String(lastMsg.chat.id);
+
+        // إرسال طلب مشاركة الرقم
+        await sendTelegramMessageWithButton(
+            tgUserChatId,
+            "مرحباً بك في <b>فيسي برو</b> 💬\n\nاضغط على الزر أدناه <b>(مشاركة رقم الهاتف الموثق)</b> لتسجيل الدخول تلقائياً:"
+        );
+
+        document.getElementById('verify-step-start').style.display = 'none';
+        document.getElementById('verify-step-link').style.display = 'block';
+        document.getElementById('vstep1').className = 'verify-step-dot done';
+        document.getElementById('vstep2').className = 'verify-step-dot active';
+        hideVerifyMsg();
+    } catch (error) {
+        showVerifyMsg(error.message || 'حدث خطأ. تأكد من إرسال /start للبوت.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = oldHtml;
+    }
+}
+
+// التحقق من جهة الاتصال + الدخول التلقائي
+async function checkTelegramContactAndLogin(evt) {
+    const btn = evt ? evt.target : document.getElementById('verify-check-btn');
+    if (!btn) return;
+    btn.disabled = true;
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '<span class="verify-spinner"></span> جاري التحقق والدخول التلقائي...';
+    hideVerifyMsg();
+
+    try {
+        const response = await fetch(TELEGRAM_API + '/getUpdates?allowed_updates=["message"]');
+        const data = await response.json();
+
+        if (!data.ok) throw new Error('فشل الاتصال بتليجرام');
+
+        let foundContact = null;
+        for (const update of data.result) {
+            const msg = update.message;
+            if (msg && msg.chat && String(msg.chat.id) === String(tgUserChatId)) {
+                if (msg.contact && msg.contact.phone_number) {
+                    foundContact = '+' + msg.contact.phone_number.replace(/^\+/, '');
+                    break;
+                }
+            }
+        }
+
+        if (!foundContact) {
+            throw new Error('لم تقم بمشاركة الرقم عبر الزر بعد! اضغط على زر "مشاركة رقم الهاتف الموثق" داخل تليجرام أولاً.');
+        }
+
+        // ⭐ فحص الحماية: هل هذا الرقم مربوط بجهاز آخر؟
+        const blockCheck = await checkPhoneBindingAndAntiClone(foundContact);
+        if (!blockCheck.ok) {
+            // إظهار شاشة حظر الجهاز
+            showDeviceBlock(blockCheck.reason || 'هذا الرقم مرتبط بجهاز آخر');
+            // إرسال رسالة للبوت بالرفض
+            await sendTelegramMessage(tgUserChatId, '🚫 تم رفض الدخول: هذا الرقم موثق على جهاز آخر ولا يمكن استخدامه هنا.');
+            return;
+        }
+
+        tgVerifiedPhone = foundContact;
+        tgVerifiedAt = Date.now();
+
+        // حفظ الجلسة في الجهاز
+        localStorage.setItem('vpro_phone', tgVerifiedPhone);
+        localStorage.setItem('vpro_verified_at', tgVerifiedAt);
+        localStorage.setItem('vpro_chat_id', tgUserChatId);
+        localStorage.setItem('vpro_bound_fp', myFP);
+
+        // عرض شاشة النجاح
+        document.getElementById('verify-step-start').style.display = 'none';
+        document.getElementById('verify-step-link').style.display = 'none';
+        document.getElementById('verify-step-success').style.display = 'block';
+        document.getElementById('verified-phone-display').textContent = tgVerifiedPhone;
+        document.getElementById('vstep1').className = 'verify-step-dot done';
+        document.getElementById('vstep2').className = 'verify-step-done verify-step-dot done';
+
+        // إرسال رسالة ترحيبية
+        await sendTelegramMessage(tgUserChatId, '🎉 تم تسجيل دخولك بنجاح تلقائياً إلى فيسي برو!\n📱 الرقم الموثق: ' + tgVerifiedPhone);
+
+        // المتابعة لشاشة الاسم/الدردشة
+        setTimeout(() => {
+            hideVerifyScreen();
+            proceedAfterVerification();
+        }, 1500);
+    } catch (error) {
+        showVerifyMsg(error.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = oldHtml;
+    }
+}
+
+// ⭐ فحص ربط الرقم بالجهاز + الحماية ضد النسخ
+async function checkPhoneBindingAndAntiClone(phone) {
+    try {
+        const cleanPhone = phone.replace(/[^0-9+]/g, '');
+        if (!cleanPhone || cleanPhone.length < 8) {
+            return { ok: false, reason: 'رقم الهاتف غير صالح' };
+        }
+
+        const snap = await db.ref('phone_bindings/' + cleanPhone).once('value');
+        const data = snap.val();
+
+        if (!data) {
+            // أول مرة: ربط الرقم بالجهاز الحالي
+            await db.ref('phone_bindings/' + cleanPhone).set({
+                fp: myFP,
+                phone: cleanPhone,
+                name: myName || '',
+                createdAt: Date.now(),
+                lastUsedAt: Date.now(),
+                userAgent: (navigator.userAgent || '').substring(0, 200),
+                platform: ENV.isWebView ? 'webview' : 'web'
+            });
+            return { ok: true, isNew: true };
+        }
+
+        // الرقم موجود مسبقاً: هل نفس البصمة؟
+        if (data.fp && data.fp !== myFP) {
+            // ⚠️ محاولة نسخ/تلاعب
+            await db.ref('security_logs/phone_mismatch').push({
+                phone: cleanPhone,
+                originalFp: data.fp,
+                attemptedFp: myFP,
+                attemptedAt: Date.now(),
+                userAgent: (navigator.userAgent || '').substring(0, 200)
+            }).catch(() => {});
+            return { ok: false, reason: 'هذا الرقم موثق على جهاز آخر ولا يمكن استخدامه هنا. هذا التطبيق محمي ضد النسخ.' };
+        }
+
+        // نفس البصمة: تحديث آخر استخدام
+        await db.ref('phone_bindings/' + cleanPhone).update({
+            lastUsedAt: Date.now(),
+            name: myName || data.name || ''
+        });
+        return { ok: true };
+    } catch (e) {
+        console.warn('فشل فحص الربط:', e);
+        return { ok: false, reason: 'حدث خطأ في التحقق الأمني. حاول مرة أخرى.' };
+    }
+}
+
+// عرض شاشة حظر الجهاز
+function showDeviceBlock(reason) {
+    const overlay = document.getElementById('device-block-overlay');
+    if (!overlay) return;
+    document.getElementById('device-block-reason').textContent = reason || 'تم اكتشاف محاولة نسخ أو تلاعب بالبيانات.';
+    overlay.classList.add('active');
+    try { if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]); } catch(e) {}
+}
+
+// التحقق من جلسة التوثيق المحفوظة عند فتح التطبيق
+async function checkVerifiedSession() {
+    const savedPhone = localStorage.getItem('vpro_phone');
+    const savedFp = localStorage.getItem('vpro_bound_fp');
+    const savedAt = Number(localStorage.getItem('vpro_verified_at') || 0);
+
+    if (!savedPhone || savedAt === 0) return false;
+
+    // ⭐ فحص إضافي: هل الجهاز الحالي هو نفس الجهاز الموثق؟
+    if (savedFp && savedFp !== myFP) {
+        showDeviceBlock('تم اكتشاف استخدام الجلسة على جهاز آخر. يرجى التوثيق من جديد.');
+        return false;
+    }
+
+    try {
+        // فحص في قاعدة البيانات أيضاً
+        const cleanPhone = savedPhone.replace(/[^0-9+]/g, '');
+        const snap = await db.ref('phone_bindings/' + cleanPhone).once('value');
+        const data = snap.val();
+        if (!data || !data.fp || data.fp !== myFP) {
+            // محاولة نسخ
+            localStorage.removeItem('vpro_phone');
+            localStorage.removeItem('vpro_verified_at');
+            localStorage.removeItem('vpro_chat_id');
+            localStorage.removeItem('vpro_bound_fp');
+            return false;
+        }
+        tgVerifiedPhone = savedPhone;
+        tgVerifiedAt = savedAt;
+        return true;
+    } catch (e) {
+        console.warn('فشل فحص الجلسة:', e);
+        return false;
+    }
+}
+
+// ============ نهاية بوابة التوثيق ============
+
+/* ==========================================================================
+   باقي الكود من التطبيق الأصلي (كما هو دون تغيير)
+   ========================================================================== */
 
 const COLORS = [
     { bg: 'linear-gradient(135deg,#E3F2FD,#64B5F6)', text: '#0D47A1', name: '#0D47A1' },
@@ -3586,17 +4014,13 @@ function listenCapabilityOverrides() {
     });
 }
 
-// ⭐⭐⭐ المزامنة الحية للألوان والتوهجات وحركات الأسماء ⭐⭐⭐
-// هذه الدوال تجعل أي تغيير يقوم به المالك (أو أي مستخدم لنفسه) يظهر فوراً لجميع المستخدمين
 function listenColorSettingsLive() {
     if (colorSettingsListener) colorSettingsRef.off('value', colorSettingsListener);
     colorSettingsListener = colorSettingsRef.on('value', snap => {
         if (isBeingDeleted) return;
         const d = snap.val() || {};
-        // إعادة بناء كائن الألوان بالكامل من السيرفر
         userColors = {};
         Object.keys(d).forEach(k => { if (d[k]) userColors[k] = d[k]; });
-        // إعادة رسم الرسائل الحالية لتحديث الألوان فوراً
         renderMessages();
         if (currentDMChat) renderDMMessagesList();
     });
@@ -3626,7 +4050,6 @@ function listenNameAnimSettingsLive() {
     });
 }
 
-// دالة مساعدة لإعادة رسم رسائل الخاص الحالية (عند تغيير ألوان صاحب المحادثة)
 function renderDMMessagesList() {
     if (!currentDMChat) return;
     const box = document.getElementById('dm-chat-messages');
@@ -3759,9 +4182,9 @@ async function denyAllCapabilities(uid) {
     } catch(e) { alert('❌ ' + e.message); }
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// ⭐⭐⭐ دالة init() الجديدة — دخول تلقائي من حساب تطبيق الواجهة ⭐⭐⭐
-// ═══════════════════════════════════════════════════════════════════
+/* ==========================================================================
+   init + التحقق من الجلسة
+   ========================================================================== */
 async function init() {
     document.getElementById('loading-screen').style.display = 'none';
     myFP = await getDeviceFingerprint();
@@ -3772,92 +4195,72 @@ async function init() {
     listenColorSettingsLive();
     listenGlowSettingsLive();
     listenNameAnimSettingsLive();
-    
-    try {
-        // 1. فحص الحظر أولاً
-        const banCheck = await db.ref('bans/' + myFP).once('value');
-        if (banCheck.exists()) {
-            isBanned = true;
-            document.getElementById('ban-screen').style.display = 'flex';
-            return;
-        }
-        
-        // 2. قراءة بيانات المستخدم من Firebase (من تطبيق الواجهة)
-        const userSnap = await db.ref('users/' + myFP).once('value');
-        
-        if (!userSnap.exists()) {
-            // لا يوجد حساب → افتح التطبيق أولاً
-            showLoginRequiredScreen();
-            return;
-        }
-        
-        const userData = userSnap.val();
-        const storedName = userData.name || '';
-        
-        // 3. التحقق من صحة الاسم
+
+    // ⭐⭐ الخطوة الحاسمة: التحقق من جلسة التوثيق أولاً
+    const isVerified = await checkVerifiedSession();
+    if (!isVerified) {
+        // لا يوجد توثيق: عرض شاشة التوثيق
+        showVerifyScreen();
+        return;
+    }
+
+    // التوثيق موجود: نكمل للاسم / الدردشة
+    document.getElementById('login-phone-badge').textContent = tgVerifiedPhone || '-';
+
+    const storedName = localStorage.getItem("name") || "";
+    if (storedName) {
         const validation = validateName(storedName);
-        if (!validation.valid) {
-            showLoginRequiredScreen('اسم حسابك غير صالح. يرجى فتح التطبيق لتحديثه.');
-            return;
+        if (validation.valid) {
+            myName = validation.name;
+            const s = await checkSecurity(myFP, myName);
+            if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
+            if (s.muted) isMuted = true;
+            await linkFingerprint(myFP, myName);
+            enterChat();
+        } else {
+            console.warn('⚠️ الاسم المحفوظ غير صالح:', validation.reason);
+            localStorage.removeItem("name");
+            myName = '';
+            document.getElementById('login-screen').style.display = 'flex';
+            setTimeout(() => { showLoginError('الاسم المحفوظ غير صالح. ' + validation.reason); }, 200);
         }
-        
-        // 4. كل شيء سليم → دخول تلقائي
-        myName = validation.name;
-        myAvatar = userData.avatar || DEFAULT_ICON;
-        localStorage.setItem('name', myName);
-        localStorage.setItem('avatar', myAvatar);
-        
-        // 5. فحص الكتم
-        const muteSnap = await db.ref('mutes/' + myFP).once('value');
-        if (muteSnap.exists()) {
-            const muteData = muteSnap.val();
-            if (muteData.endTime > Date.now() || muteData.endTime === 9999999999999) {
-                isMuted = true;
-                muteEndTime = muteData.endTime;
-            }
-        }
-        
-        await linkFingerprint(myFP, myName);
-        enterChat();
-        
-    } catch (e) {
-        console.error('❌ خطأ في الدخول التلقائي:', e);
-        showLoginRequiredScreen('حدث خطأ في الاتصال. حاول مرة أخرى.');
+    } else {
+        document.getElementById('login-screen').style.display = 'flex';
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// ⭐⭐⭐ دالة مساعدة: عرض رسالة "افتح التطبيق أولاً" ⭐⭐⭐
-// ═══════════════════════════════════════════════════════════════════
-function showLoginRequiredScreen(customMessage) {
-    const loginScreen = document.getElementById('login-screen');
-    loginScreen.innerHTML = `
-        <div style="text-align:center;padding:20px;max-width:400px;">
-            <div style="font-size:80px;margin-bottom:16px;animation:warningPulse 2s infinite;">📱</div>
-            <h2 style="color:#008069;font-size:24px;font-weight:900;font-family:var(--font-main);margin-bottom:12px;">
-                يرجى فتح التطبيق أولاً
-            </h2>
-            <div style="background:linear-gradient(135deg,#f0f8ff,#e3f2fd);border:2px solid #90caf9;border-radius:14px;padding:16px;margin-bottom:20px;font-family:var(--font-main);font-size:14px;line-height:1.7;color:#1565c0;">
-                <strong>⚠️ ملاحظة مهمة:</strong><br>
-                ${customMessage || 'لا يمكنك استخدام الدردشة مباشرة.<br>يجب أن تسجّل دخولك من <strong>تطبيق العراق الحرة</strong> أولاً.'}
-            </div>
-            <button onclick="location.reload()" style="width:100%;padding:15px;background:linear-gradient(135deg,#008069,#00a884);color:#fff;border:0;border-radius:14px;font-family:var(--font-main);font-weight:700;font-size:16px;cursor:pointer;margin-bottom:10px;">
-                🔄 تحديث الصفحة
-            </button>
-            <p style="font-size:12px;color:#999;font-family:var(--font-main);margin-top:10px;line-height:1.6;">
-                بعد فتح التطبيق وتسجيل الدخول،<br>
-                ارجع لهذه الصفحة وحدّثها.
-            </p>
-        </div>
-    `;
-    loginScreen.style.display = 'flex';
+// الدالة التي تُستدعى بعد نجاح التوثيق
+function proceedAfterVerification() {
+    const storedName = localStorage.getItem("name") || "";
+    if (storedName) {
+        const v = validateName(storedName);
+        if (v.valid) {
+            myName = v.name;
+            (async () => {
+                const s = await checkSecurity(myFP, myName);
+                if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
+                if (s.muted) isMuted = true;
+                await linkFingerprint(myFP, myName);
+                enterChat();
+            })();
+            return;
+        } else {
+            localStorage.removeItem("name");
+            myName = '';
+        }
+    }
+    document.getElementById('login-phone-badge').textContent = tgVerifiedPhone || '-';
+    document.getElementById('login-screen').style.display = 'flex';
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// ⭐ باقي الكود الأصلي — بدون أي تعديل
-// ═══════════════════════════════════════════════════════════════════
-
 document.getElementById('login-btn').onclick = async () => {
+    // ⭐ تأكيد إضافي: هل الجهاز موثق؟
+    const isVerified = await checkVerifiedSession();
+    if (!isVerified) {
+        document.getElementById('login-screen').style.display = 'none';
+        showVerifyScreen();
+        return;
+    }
     const rawName = document.getElementById('username-input').value;
     const validation = validateName(rawName);
     if (!validation.valid) { showLoginError(validation.reason); return; }
@@ -3886,12 +4289,21 @@ document.getElementById('alert-text-input')?.addEventListener('input', function(
 
 function enterChat() {
     document.getElementById('login-screen').style.display = 'none';
+    hideVerifyScreen();
     startHeartbeat(); startPresenceChecker();
     startDeletionWatcher();
     startForceLogoutWatcher();
     db.ref('users/' + myFP + '/createdAt').once('value', snap => { if (!snap.exists()) db.ref('users/' + myFP + '/createdAt').set(Date.now()); });
     db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
-    db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now() });
+    db.ref('users/' + myFP).update({
+        name: myName,
+        avatar: myAvatar,
+        status: 'online',
+        lastSeen: Date.now(),
+        verifiedPhone: tgVerifiedPhone || null,
+        verifiedAt: tgVerifiedAt || null,
+        fp: myFP
+    });
 
     db.ref('users/' + myFP + '/name').on('value', s => {
         if (isBeingDeleted) return;
@@ -4646,6 +5058,7 @@ async function purgeUserEverywhere(uid, name, avatar) {
     updates['notifications/' + uid] = null;
     updates['warnings/current/ack/' + uid] = null;
     updates['user_capabilities/' + uid] = null;
+    updates['phone_bindings_by_fp/' + uid] = null;
     if (name && name.trim() && name !== 'مجهول') { updates['name_links/' + name.toLowerCase()] = null; }
     updates['fp_links/' + uid] = null;
     try {
@@ -6175,7 +6588,6 @@ function openColorControl(uid) {
 
     renderNameAnimGrid(ca);
 
-    // إذا كان المستخدم عادياً (ليس مالكاً) ولا يعدل نفسه، عطّل شبكة الحركات
     const isSelfOnly = (uid === myFP) && !canControlColors();
     const animGrid = document.getElementById('name-anim-grid');
     if (animGrid) animGrid.style.opacity = isSelfOnly ? '0.5' : '1';
@@ -6258,7 +6670,6 @@ function applyUserColor() {
     const cd = { bg: COLORS[idx].bg, text: COLORS[idx].text, name: nc };
     saveUserColor(colorTargetUid, cd, selectedGlow);
     saveUserNameAnim(colorTargetUid, selectedNameAnim);
-    // تسجيل الإجراء في سجل المالك
     if (!isSelf && isOwner()) {
         logAdminAction('color_change', colorTargetUid, allUsersData[colorTargetUid]?.name || 'مجهول', { color_bg: cd.bg, name_color: nc, glow: selectedGlow, name_anim: selectedNameAnim });
     }
@@ -6285,8 +6696,6 @@ function closeColorControl() {
 }
 
 async function loadColorSettings() {
-    // ملاحظة: الآن نستخدم المستمعين الحيين بدلاً من التحميل مرة واحدة
-    // لكن نبقي هذه الدالة للتوافق مع الاستدعاء الأولي
     const s = await colorSettingsRef.once('value');
     if (s.exists()) {
         const d = s.val();
@@ -6891,6 +7300,29 @@ function forceLogoutInstant(reason, isDeleted, isBanned) {
 function forceLogout(reason, isDeleted, isBanned) {
     forceLogoutInstant(reason, isDeleted, isBanned);
 }
+
+// ⭐ حماية إضافية ضد DevTools/النسخ
+(function antiTamperBoot() {
+    // منع النقر بزر الفأرة الأيمن (اختياري - يمكن تعطيله لو أزعج)
+    // document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // كشف DevTools الفتح (تحذير فقط بدون إغلاق)
+    let devtoolsWarned = false;
+    setInterval(() => {
+        const threshold = 160;
+        const widthDiff = window.outerWidth - window.innerWidth;
+        const heightDiff = window.outerHeight - window.innerHeight;
+        if ((widthDiff > threshold || heightDiff > threshold) && !devtoolsWarned) {
+            devtoolsWarned = true;
+            console.warn('⚠️ تم اكتشاف أدوات المطور - الدخول محمي بالتوثيق');
+        }
+    }, 3000);
+
+    // كشف الأتمتة/النسخ
+    if (navigator.webdriver === true) {
+        console.warn('⚠️ تم اكتشاف أتمتة');
+    }
+})();
 
 // ⭐ بدء المراقب فوراً بمجرد تحديد myFP
 startForceLogoutWatcher();
