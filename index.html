@@ -32,7 +32,6 @@
         .login-btn{width:100%;padding:15px;background:var(--primary);color:#fff;border:0;border-radius:15px;font-weight:700;cursor:pointer;font-size:18px;font-family:var(--font-main);transition:transform .2s}
         .login-btn:active{transform:scale(.97)}
 
-        /* ===== Verification Screen ===== */
         #verify-screen{position:absolute;top:0;left:0;width:100%;height:100%;z-index:9999;display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px 18px;background:linear-gradient(160deg,#0d1f1c 0%,#0a2e26 50%,#071915 100%);color:#fff;overflow-y:auto;text-align:center}
         #verify-screen.active{display:flex;animation:verifyFadeIn .4s ease}
         @keyframes verifyFadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
@@ -78,18 +77,29 @@
         .device-block-overlay .db-badge{background:rgba(255,82,82,.15);border:1.5px solid rgba(255,82,82,.4);padding:8px 16px;border-radius:12px;font-size:11px;color:#ff8a80;font-weight:700;margin-top:12px}
         @keyframes warningPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 
-        header{background:var(--header-bg);color:var(--header-text);padding:4px 10px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.15);min-height:38px;flex-shrink:0;position:relative;transition:background .3s ease,color .3s ease}
-        .header-title{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px}
+        #pending-approval-screen{position:absolute;top:0;left:0;width:100%;height:100%;z-index:9999;display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px;background:linear-gradient(160deg,#1a1206,#2e1e08,#1a1206);color:#fff;text-align:center;overflow-y:auto}
+        #pending-approval-screen.active{display:flex;animation:verifyFadeIn .4s}
+        #pending-approval-screen .pa-icon{font-size:80px;margin-bottom:16px;animation:warningPulse 2s infinite}
+        #pending-approval-screen h1{font-size:24px;font-weight:900;color:#f9a825;margin-bottom:12px;text-shadow:0 0 30px rgba(249,168,37,.5)}
+        #pending-approval-screen p{font-size:14px;color:#ffe0b2;max-width:340px;line-height:1.8;margin-bottom:16px}
+        #pending-approval-screen .pa-info{background:rgba(249,168,37,.1);border:1.5px solid rgba(249,168,37,.3);border-radius:14px;padding:14px 18px;font-size:13px;line-height:1.8;color:#ffe0b2;margin-bottom:16px;max-width:380px;width:100%}
+        #pending-approval-screen .pa-info strong{color:#f9a825;display:block;margin-bottom:4px}
+
+        /* ⭐ HEADER — نسخة محسّنة تعرض كل الأيقونات على جميع الشاشات */
+        header{background:var(--header-bg);color:var(--header-text);padding:4px 8px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.15);min-height:40px;flex-shrink:0;position:relative;transition:background .3s ease,color .3s ease;gap:6px}
+        .header-title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap}
         .header-title button{background:rgba(255,255,255,.15);border:0;color:var(--header-text);padding:2px 8px;border-radius:8px;font-size:10px;cursor:pointer;display:none;font-family:var(--font-main)}
-        .header-actions{display:flex;gap:4px;align-items:center}
-        .icon-btn{background:0;border:0;color:var(--header-text);font-size:17px;cursor:pointer;padding:3px 6px;border-radius:5px;transition:background .2s;position:relative}
+        .header-actions{display:flex;gap:1px;align-items:center;flex-wrap:nowrap;flex-shrink:1;min-width:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding:1px 0}
+        .header-actions::-webkit-scrollbar{display:none;width:0;height:0}
+        .icon-btn{background:0;border:0;color:var(--header-text);font-size:15px;cursor:pointer;padding:4px 4px;border-radius:6px;transition:background .2s;position:relative;flex-shrink:0;min-width:26px;height:28px;display:flex;justify-content:center;align-items:center;line-height:1}
         .icon-btn:active{background:rgba(255,255,255,.15)}
         #reports-btn .notif-badge,#dm-btn .notif-badge{background:#ff3b30}
         #dm-btn{display:none}
         #fcm-btn{display:none}
-        #sound-btn{display:inline-block}
+        #sound-btn{display:inline-flex}
         #maintenance-badge{display:none;background:linear-gradient(135deg,#f9a825,#f57c00);color:#fff;padding:5px 10px;text-align:center;font-size:11px;font-weight:700;flex-shrink:0;font-family:var(--font-main)}
         #maintenance-badge.tester{background:linear-gradient(135deg,#9c27b0,#6a1b9a)}
+
         #chat-messages{flex:1;overflow-y:auto;padding:6px 8px;display:flex;flex-direction:column;gap:3px;background-color:#efe7dd;background-image:var(--chat-bg-image);background-size:cover;background-position:center center;background-repeat:no-repeat;background-attachment:fixed;position:relative;min-height:0;height:100%;-webkit-overflow-scrolling:touch}
         #chat-messages.bg-overlay::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.35);pointer-events:none;z-index:0}
         #chat-messages > * { position: relative; z-index: 2; }
@@ -434,7 +444,7 @@
         #status-viewer .viewer-info{color:#fff;text-align:center;margin-top:10px;font-size:13px;max-width:90%;font-family:var(--font-main)}
         #status-viewer .viewer-info .seen-by{font-size:11px;color:#aaa;margin-top:4px}
         #status-viewer .viewer-info .seen-by .seen-user{color:#fff;cursor:pointer;display:inline-block;margin:0 2px;padding:2px 5px;border-radius:3px;background:rgba(255,255,255,.06);font-weight:600}
-        .notif-badge{position:absolute;top:-1px;right:-1px;background:#ff3b30;color:#fff;font-size:8px;padding:0 5px;border-radius:8px;min-width:16px;text-align:center;font-weight:700;display:none;line-height:16px;font-family:var(--font-main)}
+        .notif-badge{position:absolute;top:0;right:0;background:#ff3b30;color:#fff;font-size:8px;padding:0 4px;border-radius:8px;min-width:14px;text-align:center;font-weight:700;display:none;line-height:14px;font-family:var(--font-main)}
         .notif-badge.active{display:block}
         .bottom-nav{display:flex;justify-content:space-around;align-items:center;background:var(--bottom-nav-bg);padding:4px 0;border-top:1px solid #e0e0e0;flex-shrink:0;position:relative;z-index:10}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:3px 12px;border-radius:6px;position:relative;background:0;border:0;font-family:var(--font-main)}
@@ -840,11 +850,12 @@
         #dm-monitor-view-body .monitor-reply-info .mr-sender{font-weight:700;color:#9c27b0}
         #dm-monitor-view-body .monitor-reply-info .mr-text{color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         @media(max-width:480px){.bubble{font-size:13px;padding:5px 8px}.sender-name{font-size:11px}.sender-avatar{width:18px;height:18px}.op-grid{grid-template-columns:repeat(2,1fr)}.name-anim-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:380px){.icon-btn{font-size:14px;padding:3px 3px;min-width:24px;height:26px}.header-title{font-size:12px}}
         @supports(height:100dvh){.app-container{height:100dvh;max-height:100dvh}}
         #chat-messages::-webkit-scrollbar,#dm-chat-messages::-webkit-scrollbar{width:3px}
         #chat-messages::-webkit-scrollbar-thumb,#dm-chat-messages::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:3px}
         .hidden-owner-badge{background:#e91e63;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-right:6px;font-weight:700;display:inline-block}
-        /* ⭐ status cards for security modal */
+
         .verify-status-card{background:linear-gradient(135deg,#fff,#f0faf7);border:2px solid var(--primary);border-radius:16px;padding:16px;margin-bottom:14px;text-align:right;font-family:var(--font-main)}
         .verify-status-card.enabled{border-color:#4caf50;background:linear-gradient(135deg,#f1f8f1,#e8f5e9)}
         .verify-status-card.disabled{border-color:#ff9800;background:linear-gradient(135deg,#fff8e1,#fff3e0)}
@@ -860,12 +871,62 @@
         .verify-status-card .vsc-big-toggle:active{transform:scale(.97)}
         .verify-status-card.enabled .vsc-big-toggle{background:linear-gradient(135deg,#d32f2f,#b71c1c);box-shadow:0 6px 20px rgba(211,47,47,.4)}
         .verify-status-card.disabled .vsc-big-toggle{background:linear-gradient(135deg,#4caf50,#2e7d32);box-shadow:0 6px 20px rgba(76,175,80,.4)}
+
+        .auto-reg-card{background:linear-gradient(135deg,#fff,#f3e5f5);border:2px solid #9c27b0;border-radius:16px;padding:16px;margin-bottom:14px;text-align:right;font-family:var(--font-main)}
+        .auto-reg-card.auto-on{border-color:#4caf50;background:linear-gradient(135deg,#f1f8f1,#e8f5e9)}
+        .auto-reg-card.auto-off{border-color:#f9a825;background:linear-gradient(135deg,#fff8e1,#fff3e0)}
+        .auto-reg-card .arc-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(0,0,0,.08)}
+        .auto-reg-card .arc-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;transition:all .3s}
+        .auto-reg-card.auto-on .arc-icon{background:linear-gradient(135deg,#4caf50,#2e7d32);box-shadow:0 0 20px rgba(76,175,80,.4)}
+        .auto-reg-card.auto-off .arc-icon{background:linear-gradient(135deg,#f9a825,#f57c00);box-shadow:0 0 20px rgba(249,168,37,.4)}
+        .auto-reg-card .arc-info{flex:1;min-width:0}
+        .auto-reg-card .arc-title{font-weight:900;font-size:15px;color:#2e7d32;margin-bottom:4px}
+        .auto-reg-card.auto-off .arc-title{color:#e65100}
+        .auto-reg-card .arc-desc{font-size:11.5px;color:#555;line-height:1.6}
+        .auto-reg-card .arc-big-toggle{width:100%;padding:14px;border:0;border-radius:12px;font-family:var(--font-main);font-size:14px;font-weight:900;cursor:pointer;color:#fff;margin-top:6px;transition:all .2s}
+        .auto-reg-card .arc-big-toggle:active{transform:scale(.97)}
+        .auto-reg-card.auto-on .arc-big-toggle{background:linear-gradient(135deg,#f9a825,#f57c00);box-shadow:0 6px 20px rgba(249,168,37,.4)}
+        .auto-reg-card.auto-off .arc-big-toggle{background:linear-gradient(135deg,#4caf50,#2e7d32);box-shadow:0 6px 20px rgba(76,175,80,.4)}
+
+        .perm-section{background:linear-gradient(135deg,#fff,#f0f8ff);border:2px solid #1976d2;border-radius:16px;padding:16px;margin-bottom:14px;text-align:right;font-family:var(--font-main)}
+        .perm-section h4{font-size:15px;font-weight:900;color:#0d47a1;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+        .perm-section .ps-desc{font-size:11px;color:#555;line-height:1.6;margin-bottom:10px}
+        .perm-role-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:rgba(255,255,255,.7);border:1.5px solid #e3f2fd;border-radius:10px;margin-bottom:6px;cursor:pointer;font-size:13px;font-weight:700;color:#333;transition:all .2s}
+        .perm-role-row:hover{background:#e3f2fd}
+        .perm-role-row.selected{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#1976d2;color:#0d47a1}
+        .perm-role-row .prr-check{font-size:16px;opacity:0;color:#1976d2}
+        .perm-role-row.selected .prr-check{opacity:1}
+        .perm-user-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:rgba(255,255,255,.7);border:1.5px solid #e3f2fd;border-radius:10px;margin-bottom:6px;cursor:pointer;font-size:13px;font-weight:700;color:#333;gap:8px;transition:all .2s}
+        .perm-user-row:hover{background:#e3f2fd}
+        .perm-user-row.selected{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#1976d2;color:#0d47a1}
+        .perm-user-row img{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0}
+        .perm-user-row .pur-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .perm-user-row .pur-check{font-size:16px;opacity:0;color:#1976d2;flex-shrink:0}
+        .perm-user-row.selected .pur-check{opacity:1}
+        .perm-users-list{max-height:220px;overflow-y:auto;padding:2px;margin-top:6px}
+
+        .pending-reg-list{max-height:300px;overflow-y:auto;padding:2px}
+        .pending-reg-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1.5px solid #ffe082;border-radius:12px;margin-bottom:6px;font-family:var(--font-main)}
+        .pending-reg-card img{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0}
+        .pending-reg-card .prc-info{flex:1;min-width:0;text-align:right}
+        .pending-reg-card .prc-name{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:2px;word-break:break-word}
+        .pending-reg-card .prc-time{font-size:10px;color:#999}
+        .pending-reg-card .prc-phone{font-size:11px;color:#0d47a1;direction:ltr;display:inline-block;font-weight:700}
+        .pending-reg-card .prc-actions{display:flex;gap:6px;flex-shrink:0}
+        .pending-reg-card .prc-btn{padding:7px 12px;border:0;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font-main);color:#fff}
+        .pending-reg-card .prc-btn.approve{background:linear-gradient(135deg,#4caf50,#2e7d32);box-shadow:0 2px 8px rgba(76,175,80,.4)}
+        .pending-reg-card .prc-btn.reject{background:linear-gradient(135deg,#ef5350,#c62828);box-shadow:0 2px 8px rgba(239,83,80,.4)}
+        .pending-reg-card.status-rejected{background:#fff5f5;border-color:#ffcdd2;opacity:.7}
+        .pending-reg-card.status-approved{background:#f1f8f1;border-color:#c8e6c9;opacity:.7}
+        .pending-reg-empty{text-align:center;padding:20px;color:#999;font-size:13px;font-family:var(--font-main)}
+
+        #pending-badge{position:absolute;top:0;right:0;background:#ff3b30;color:#fff;font-size:8px;padding:0 4px;border-radius:8px;min-width:14px;text-align:center;font-weight:700;display:none;line-height:14px;font-family:var(--font-main)}
+        #pending-badge.active{display:block}
     </style>
 </head><body>
 
 <div class="app-container" id="app">
 
-    <!-- شاشة التوثيق -->
     <div id="verify-screen">
         <div class="verify-logo">💬</div>
         <div class="verify-title">فيسي برو</div>
@@ -930,6 +991,18 @@
         </button>
     </div>
 
+    <div id="pending-approval-screen">
+        <div class="pa-icon">⏳</div>
+        <h1>في انتظار موافقة الإدارة</h1>
+        <p>طلب تسجيلك قيد المراجعة من قِبل الإدارة. سيتم إعلامك عند الموافقة على انضمامك.</p>
+        <div class="pa-info" id="pending-info-box">
+            <strong>📋 تفاصيل طلبك:</strong>
+            <div id="pending-details-content">جاري التحميل...</div>
+        </div>
+        <button onclick="checkPendingApprovalStatus()" class="verify-btn" style="max-width:300px;background:linear-gradient(135deg,#f9a825,#f57c00);box-shadow:0 8px 24px rgba(249,168,37,.35)">🔄 التحقق من الحالة</button>
+        <button onclick="cancelPendingRequest()" class="verify-btn verify-btn-secondary" style="max-width:300px;margin-top:8px">✖️ إلغاء الطلب</button>
+    </div>
+
     <div id="loading-screen">
         <div class="spinner"></div>
         <p style="margin-top:12px;color:#666;font-size:14px;font-family:var(--font-main);">جاري التحقق...</p>
@@ -983,11 +1056,14 @@
             <button id="clear-chat-btn" onclick="clearAllChat()">🗑️</button>
         </div>
         <div class="header-actions">
+            <button class="icon-btn" id="pending-reg-btn" onclick="openPendingRegistrations()" style="display:none;position:relative;" title="طلبات التسجيل">
+                📥<span id="pending-badge" class="notif-badge">0</span>
+            </button>
             <button class="icon-btn" id="reports-btn" onclick="toggleReportsModal()" style="display:none;" title="لوحة البلاغات">
-                📋 <span class="notif-badge" id="reports-badge">0</span>
+                📋<span class="notif-badge" id="reports-badge">0</span>
             </button>
             <button class="icon-btn" id="dm-btn" onclick="openDMList()" title="الرسائل الخاصة" style="display:none;">
-                💌 <span class="notif-badge" id="dm-badge">0</span>
+                💌<span class="notif-badge" id="dm-badge">0</span>
             </button>
             <button class="icon-btn" id="dm-monitor-btn" onclick="openDMMonitor()" title="مراقبة الخاص" style="display:none;">🕵️</button>
             <button class="icon-btn" id="sound-btn" onclick="toggleSoundQuick()" title="الأصوات">🔊</button>
@@ -1271,13 +1347,14 @@
     </div>
 
     <div class="modal-popup" id="profile-actions-modal">
-        <div class="popup-box" style="max-width: 300px;">
+        <div class="popup-box" style="max-width: 320px;">
             <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">👤 خيارات الحساب</h3>
             <img id="pa-avatar" src="" style="width:70px;height:70px;border-radius:50%;object-fit:cover;margin:0 auto 10px;display:block;border:2px solid var(--primary);">
             <div id="pa-name" style="font-weight:700;font-size:15px;margin-bottom:12px;text-align:center;"></div>
             <div style="display:flex;flex-direction:column;gap:6px;">
                 <button onclick="paViewImage()" class="login-btn" style="background:#2196f3;padding:8px;font-size:13px;">👁️ عرض الصورة</button>
                 <button onclick="paDM()" id="pa-dm-btn" class="login-btn" style="background:#9c27b0;padding:8px;font-size:13px;">💌 رسالة خاصة</button>
+                <button onclick="paChangeName()" id="pa-change-name-btn" class="login-btn" style="background:linear-gradient(135deg,#e91e63,#ad1457);padding:8px;font-size:13px;display:none;">✏️ تغيير الاسم</button>
             </div>
             <button onclick="closeProfileActions()" class="login-btn" style="background:#f0f0f0;color:#555;padding:8px;font-size:13px;margin-top:8px;">إلغاء</button>
         </div>
@@ -1360,12 +1437,13 @@
         </div>
     </div>
 
-    <!-- ⭐ مودال الإعدادات الأمنية (بوابة التوثيق) -->
+    <!-- ⭐ مودال الإعدادات الأمنية الموسّع -->
     <div class="modal-popup" id="security-settings-modal">
-        <div class="popup-box" style="max-width:460px;">
+        <div class="popup-box" style="max-width:600px;max-height:92vh;">
             <h3 style="font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;color:#2e7d32;margin-bottom:4px;">🛡️ الإعدادات الأمنية</h3>
-            <p style="font-size:11px;color:#999;margin:6px 0 14px;line-height:1.6;">تحكم في بوابة التوثيق الإجبارية عند تسجيل المستخدمين الجدد</p>
+            <p style="font-size:11px;color:#999;margin:6px 0 14px;line-height:1.6;">بوابة التوثيق + التسجيل التلقائي + منح صلاحيات الموافقة وتغيير الأسماء</p>
 
+            <!-- 1) بوابة التوثيق -->
             <div class="verify-status-card" id="verify-status-card">
                 <div class="vsc-header">
                     <div class="vsc-icon" id="vsc-icon">🟢</div>
@@ -1379,18 +1457,87 @@
                 </button>
             </div>
 
+            <!-- 2) التسجيل التلقائي -->
+            <div class="auto-reg-card" id="auto-reg-card">
+                <div class="arc-header">
+                    <div class="arc-icon" id="arc-icon">✅</div>
+                    <div class="arc-info">
+                        <div class="arc-title" id="arc-title">التسجيل التلقائي مفعّل</div>
+                        <div class="arc-desc" id="arc-desc">أي مستخدم جديد يمكنه الدخول مباشرة بعد التوثيق بدون موافقة إدارية.</div>
+                    </div>
+                </div>
+                <button class="arc-big-toggle" id="arc-toggle-btn" onclick="toggleAutoRegistration()">
+                    🔒 تفعيل الموافقة الإدارية على التسجيل
+                </button>
+            </div>
+
+            <!-- 3) صلاحية الموافقة على التسجيلات -->
+            <div class="perm-section">
+                <h4>📥 صلاحية الموافقة على التسجيلات الجديدة</h4>
+                <div class="ps-desc">من يمكنه الموافقة أو رفض طلبات التسجيل الجديدة؟ (المالك دائماً لديه الصلاحية، وأي شخص آخر يمنحه المالك)</div>
+                <div style="font-size:12px;font-weight:800;color:#0d47a1;margin:10px 0 6px;">👑 حسب الرتبة:</div>
+                <div id="approval-role-list"></div>
+                <div style="font-size:12px;font-weight:800;color:#0d47a1;margin:12px 0 6px;">👤 حسب المستخدم الفردي:</div>
+                <input type="text" id="approval-user-search" class="search-box" placeholder="🔍 بحث بالاسم..." oninput="filterApprovalUsers()" style="margin-bottom:6px;">
+                <div class="perm-users-list" id="approval-user-list">
+                    <div style="text-align:center;padding:12px;color:#999;font-size:12px;">جاري التحميل...</div>
+                </div>
+            </div>
+
+            <!-- 4) صلاحية تغيير الأسماء -->
+            <div class="perm-section" style="border-color:#e91e63;background:linear-gradient(135deg,#fff,#fce4ec);">
+                <h4 style="color:#ad1457;">✏️ صلاحية تغيير أسماء الآخرين</h4>
+                <div class="ps-desc">من يمكنه تعديل أسماء المستخدمين الآخرين؟ (المالك دائماً لديه الصلاحية، وأي شخص آخر يمنحه المالك)</div>
+                <div style="font-size:12px;font-weight:800;color:#ad1457;margin:10px 0 6px;">👑 حسب الرتبة:</div>
+                <div id="name-change-role-list"></div>
+                <div style="font-size:12px;font-weight:800;color:#ad1457;margin:12px 0 6px;">👤 حسب المستخدم الفردي:</div>
+                <input type="text" id="name-change-user-search" class="search-box" placeholder="🔍 بحث بالاسم..." oninput="filterNameChangeUsers()" style="margin-bottom:6px;">
+                <div class="perm-users-list" id="name-change-user-list">
+                    <div style="text-align:center;padding:12px;color:#999;font-size:12px;">جاري التحميل...</div>
+                </div>
+            </div>
+
             <div style="background:rgba(33,150,243,.08);border-right:3px solid #2196f3;border-radius:8px;padding:10px 12px;font-size:11px;color:#0d47a1;line-height:1.7;margin-top:12px;text-align:right">
                 <strong>ℹ️ ملاحظات:</strong><br>
-                • <b>عند التفعيل:</b> لا يمكن لأي مستخدم جديد الدخول إلا بعد توثيق رقمه.<br>
-                • <b>عند الإيقاف:</b> يمكن لأي مستخدم الدخول بالاسم فقط دون توثيق.<br>
-                • <b>الحماية من النسخ:</b> تبقى فعّالة في كل الحالات.
+                • <b>بوابة التوثيق مفعّلة:</b> يجب توثيق رقم الهاتف أولاً.<br>
+                • <b>التسجيل التلقائي مفعّل:</b> لا حاجة لموافقة إدارية.<br>
+                • <b>التسجيل التلقائي معطّل:</b> يجب موافقة المالك أو من يمنحه المالك.<br>
+                • <b>تغيير الأسماء:</b> المالك دائماً + من يمنحه المالك (بالرتبة أو بالمستخدم الفردي).
             </div>
 
             <button onclick="document.getElementById('security-settings-modal').classList.remove('active')" class="login-btn" style="background:#f0f0f0;color:#555;padding:10px;font-size:13px;margin-top:12px;">إغلاق</button>
         </div>
     </div>
 
-    <!-- ⭐ مودال إعدادات الدردشة العامة -->
+    <div class="modal-slide" id="pending-registrations-modal">
+        <div class="modal-header" style="background:linear-gradient(135deg,#f9a825,#f57c00);color:#fff;">
+            <h3 style="color:#fff;">📥 طلبات التسجيل المعلقة</h3>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <span id="pending-reg-count" style="font-size:11px;background:rgba(255,255,255,.25);padding:3px 10px;border-radius:10px;font-weight:700;">0</span>
+                <button class="modal-close" onclick="closePendingRegistrations()" style="color:#fff;">✕</button>
+            </div>
+        </div>
+        <div style="padding:8px;">
+            <input type="text" id="pending-reg-search" class="search-box" placeholder="🔍 بحث بالاسم..." onkeyup="filterPendingRegistrations()">
+        </div>
+        <div class="modal-body" style="background:#f5f5f5;">
+            <div id="pending-registrations-list"></div>
+        </div>
+    </div>
+
+    <div class="modal-popup" id="change-name-modal">
+        <div class="popup-box" style="max-width:400px;">
+            <h3 style="font-size:16px;font-weight:800;color:#ad1457;">✏️ تغيير اسم المستخدم</h3>
+            <p style="color:#777;margin:8px 0;font-size:13px;">الاسم الحالي: <strong id="cn-current-name" style="color:#1a1a1a;"></strong></p>
+            <input type="text" id="cn-new-name" class="login-input" placeholder="الاسم الجديد..." maxlength="30" style="padding:12px;font-size:15px;">
+            <div id="cn-error" class="login-error-box" style="display:none;"></div>
+            <div style="display:flex;gap:6px;margin-top:8px;">
+                <button onclick="executeChangeName()" class="login-btn" style="background:linear-gradient(135deg,#e91e63,#ad1457);padding:10px;font-size:14px;font-weight:800;">💾 حفظ</button>
+                <button onclick="closeChangeNameModal()" class="login-btn" style="background:#f0f0f0;color:#555;padding:10px;font-size:14px;flex:0 0 80px;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-popup" id="chat-settings-modal">
         <div class="popup-box" style="max-width:420px;">
             <h3 style="font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;">💬 إعدادات الدردشة العامة</h3>
@@ -1667,7 +1814,8 @@
                 <button id="owner-dm-toggle-btn" class="btn-dm-toggle" onclick="toggleOwnerSelfDM()">💌 فتح الخاص لنفسي</button>
                 <button id="owner-premium-btn" class="btn-owner-premium" onclick="openOwnerPremiumModal()">👑 إعدادات المالك الاحترافية</button>
                 <button id="send-alert-btn" class="btn-send-alert" onclick="openAlertComposer()">🚨 إرسال تنبيه للدردشة</button>
-                <button id="open-security-settings-btn" class="btn-security-settings" onclick="openSecuritySettings()">🛡️ الإعدادات الأمنية (بوابة التوثيق)</button>
+                <button id="open-security-settings-btn" class="btn-security-settings" onclick="openSecuritySettings()">🛡️ الإعدادات الأمنية (تسجيل + صلاحيات)</button>
+                <button id="open-pending-reg-btn" class="btn-chat-settings" style="background:linear-gradient(135deg,#f9a825,#f57c00);" onclick="openPendingRegistrations()">📥 طلبات التسجيل المعلقة</button>
                 <button id="open-chat-settings-btn" class="btn-chat-settings" onclick="openChatSettings()">💬 إعدادات الدردشة العامة</button>
                 <button id="open-dm-settings-btn" class="btn-dm-toggle" style="background:linear-gradient(135deg,#6a1b9a,#4a148c);" onclick="openDMSettings()">⚙️ إعدادات الخاص بالرتب</button>
                 <button id="open-media-settings-btn" class="btn-media-settings" onclick="openMediaSettings()">📎 إعدادات الوسائط (صور/فيديو)</button>
@@ -1978,7 +2126,6 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* إعدادات بوت تليجرام */
 const BOT_TOKEN = '8733167556:AAH5RPKI8Gdr7L_TWldEHp91Kz6NESamrUM';
 const TELEGRAM_API = 'https://api.telegram.org/bot' + BOT_TOKEN;
 const BOT_USERNAME = 'veysi_otp_bot';
@@ -2012,10 +2159,21 @@ let myAvatar = localStorage.getItem("avatar") || DEFAULT_ICON;
 let myRole = "user";
 let isBanned = false, isMuted = false, muteEndTime = 0;
 
-/* ⭐ متغيرات الإعدادات الجديدة للمالك */
-let verificationGateEnabled = true;  // بوابة التوثيق
-let chatGlobalSettings = { min_role: 'user' };  // إعدادات الدردشة العامة
-let chatDenialsData = {};  // الحظر الفردي من الدردشة
+let verificationGateEnabled = true;
+let chatGlobalSettings = { min_role: 'user' };
+let chatDenialsData = {};
+
+let autoRegistrationEnabled = true;
+let approvalDelegates = {};
+let approvalRoles = {};
+let nameChangePermissions = { roles: {}, users: {} };
+let pendingRegistrationsCache = {};
+let pendingRegistrationsListener = null;
+let autoRegistrationListener = null;
+let approvalDelegatesListener = null;
+let approvalRolesListener = null;
+let nameChangeRolesListener = null;
+let nameChangeUsersListener = null;
 
 let replyTo = null, targetUserForAction = {};
 let allUsersData = {}, messagesCache = {}, statusesCache = {}, myNotifications = {};
@@ -2358,7 +2516,22 @@ function canManageSettings() { return hasCapability(myFP, 'manage_settings', myR
 function canControlColors() { return hasCapability(myFP, 'control_colors', myRole); }
 function canSendAlerts() { return isOwner(); }
 
-/* ⭐ دوال بوابة التوثيق */
+/* ⭐ NEW (نسخة معدّلة): الموافقة فقط للمالك تلقائياً + من يمنحه المالك */
+function canApproveRegistrations(uid, role) {
+    if (!uid) return false;
+    if (role === 'owner') return true;
+    if (approvalDelegates[uid] === true) return true;
+    if (approvalRoles[role] === true) return true;
+    return false;
+}
+function canChangeOtherNames(uid, role) {
+    if (!uid) return false;
+    if (role === 'owner') return true;
+    if (nameChangePermissions.users[uid] === true) return true;
+    if (nameChangePermissions.roles[role] === true) return true;
+    return false;
+}
+
 function listenVerificationGate() {
     if (verificationGateListener) db.ref('appData/verificationGate').off('value', verificationGateListener);
     verificationGateListener = db.ref('appData/verificationGate').on('value', snap => {
@@ -2410,14 +2583,449 @@ async function toggleVerificationGate() {
         alert(newState ? '✅ تم تفعيل بوابة التوثيق' : '⚠️ تم إيقاف بوابة التوثيق');
     } catch (e) { alert('❌ ' + e.message); }
 }
+
+function listenAutoRegistration() {
+    if (autoRegistrationListener) db.ref('appData/autoRegistration').off('value', autoRegistrationListener);
+    autoRegistrationListener = db.ref('appData/autoRegistration').on('value', snap => {
+        const d = snap.val();
+        if (d === null || d === undefined) autoRegistrationEnabled = true;
+        else if (typeof d === 'boolean') autoRegistrationEnabled = d;
+        else if (typeof d === 'object' && d.enabled !== undefined) autoRegistrationEnabled = d.enabled !== false;
+        else autoRegistrationEnabled = true;
+        updateAutoRegCard();
+    });
+}
+function updateAutoRegCard() {
+    const card = document.getElementById('auto-reg-card');
+    const icon = document.getElementById('arc-icon');
+    const title = document.getElementById('arc-title');
+    const desc = document.getElementById('arc-desc');
+    const btn = document.getElementById('arc-toggle-btn');
+    if (!card || !icon || !title || !desc || !btn) return;
+    if (autoRegistrationEnabled) {
+        card.className = 'auto-reg-card auto-on';
+        icon.textContent = '✅';
+        title.textContent = 'التسجيل التلقائي مفعّل';
+        desc.textContent = 'أي مستخدم جديد يمكنه الدخول مباشرة بعد التوثيق بدون موافقة إدارية.';
+        btn.textContent = '🔒 تفعيل الموافقة الإدارية على التسجيل';
+    } else {
+        card.className = 'auto-reg-card auto-off';
+        icon.textContent = '🔒';
+        title.textContent = 'التسجيل يتطلب موافقة إدارية';
+        desc.textContent = 'أي مستخدم جديد يحتاج موافقة المالك أو من يمنحه المالك الصلاحية قبل الدخول.';
+        btn.textContent = '✅ تفعيل التسجيل التلقائي (بدون موافقة)';
+    }
+}
+async function toggleAutoRegistration() {
+    if (!isOwner()) return alert('⛔ للمالك فقط');
+    const newState = !autoRegistrationEnabled;
+    const msg = newState
+        ? '⚠️ تفعيل التسجيل التلقائي؟\n\nأي مستخدم جديد سيدخل مباشرة بعد التوثيق بدون موافقة إدارية.'
+        : '🔒 تفعيل نظام الموافقة على التسجيل؟\n\nسيحتاج كل مستخدم جديد إلى موافقة من المالك أو من يمنحه المالك الصلاحية.';
+    if (!confirm(msg)) return;
+    try {
+        await db.ref('appData/autoRegistration').set(newState);
+        autoRegistrationEnabled = newState;
+        updateAutoRegCard();
+        alert(newState ? '✅ تم تفعيل التسجيل التلقائي' : '🔒 تم تفعيل نظام الموافقة الإدارية');
+    } catch (e) { alert('❌ ' + e.message); }
+}
+
+function listenApprovalDelegates() {
+    if (approvalDelegatesListener) db.ref('appData/approvalDelegates').off('value', approvalDelegatesListener);
+    approvalDelegatesListener = db.ref('appData/approvalDelegates').on('value', snap => {
+        approvalDelegates = snap.val() || {};
+        renderApprovalUserList();
+    });
+}
+function listenApprovalRoles() {
+    if (approvalRolesListener) db.ref('appData/approvalRoles').off('value', approvalRolesListener);
+    approvalRolesListener = db.ref('appData/approvalRoles').on('value', snap => {
+        approvalRoles = snap.val() || {};
+        renderApprovalRoleList();
+    });
+}
+function renderApprovalRoleList() {
+    const container = document.getElementById('approval-role-list'); if (!container) return;
+    container.innerHTML = '';
+    const roles = [
+        { key: 'mod', label: '🛡️ مشرف' },
+        { key: 'trusted', label: '✅ موثوق' },
+        { key: 'user', label: '👤 عادي' }
+    ];
+    roles.forEach(r => {
+        const el = document.createElement('div');
+        el.className = 'perm-role-row' + (approvalRoles[r.key] === true ? ' selected' : '');
+        el.innerHTML = `<span>${r.label}</span><span class="prr-check">✓</span>`;
+        el.onclick = () => toggleApprovalRole(r.key);
+        container.appendChild(el);
+    });
+}
+async function toggleApprovalRole(roleKey) {
+    if (!isOwner()) return alert('⛔ للمالك فقط');
+    try {
+        if (approvalRoles[roleKey] === true) {
+            await db.ref('appData/approvalRoles/' + roleKey).remove();
+            approvalRoles[roleKey] = false;
+        } else {
+            await db.ref('appData/approvalRoles/' + roleKey).set(true);
+            approvalRoles[roleKey] = true;
+        }
+        renderApprovalRoleList();
+    } catch (e) { alert('❌ ' + e.message); }
+}
+function renderApprovalUserList() {
+    const container = document.getElementById('approval-user-list'); if (!container) return;
+    container.innerHTML = '';
+    const users = [];
+    Object.keys(allUsersData).forEach(k => {
+        if (k === myFP) return;
+        const u = allUsersData[k];
+        if (u.hidden === true) return;
+        if (u.role === 'owner') return;
+        if (!u.name || u.name.trim() === '') return;
+        u.uid = k; users.push(u);
+    });
+    users.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    if (users.length === 0) { container.innerHTML = '<div style="text-align:center;padding:12px;color:#999;font-size:12px;">لا يوجد مستخدمون</div>'; return; }
+    users.forEach(u => {
+        const el = document.createElement('div');
+        const isSel = approvalDelegates[u.uid] === true;
+        el.className = 'perm-user-row' + (isSel ? ' selected' : '');
+        el.dataset.search = (u.name || '').toLowerCase();
+        el.innerHTML = `<img src="${u.avatar || DEFAULT_ICON}" onerror="this.src='${DEFAULT_ICON}'"><span class="pur-name">${escapeHtml(u.name)}</span><span class="pur-check">✓</span>`;
+        el.onclick = () => toggleApprovalUser(u.uid);
+        container.appendChild(el);
+    });
+    filterApprovalUsers();
+}
+function filterApprovalUsers() {
+    const q = (document.getElementById('approval-user-search')?.value || '').toLowerCase();
+    document.querySelectorAll('#approval-user-list .perm-user-row').forEach(el => {
+        el.style.display = (el.dataset.search || '').includes(q) ? 'flex' : 'none';
+    });
+}
+async function toggleApprovalUser(uid) {
+    if (!isOwner()) return alert('⛔ للمالك فقط');
+    try {
+        if (approvalDelegates[uid] === true) {
+            await db.ref('appData/approvalDelegates/' + uid).remove();
+            approvalDelegates[uid] = false;
+        } else {
+            await db.ref('appData/approvalDelegates/' + uid).set(true);
+            approvalDelegates[uid] = true;
+        }
+        renderApprovalUserList();
+    } catch (e) { alert('❌ ' + e.message); }
+}
+
+function listenNameChangePermissions() {
+    if (nameChangeRolesListener) db.ref('appData/nameChangePermissions/roles').off('value', nameChangeRolesListener);
+    nameChangeRolesListener = db.ref('appData/nameChangePermissions/roles').on('value', snap => {
+        nameChangePermissions.roles = snap.val() || {};
+        renderNameChangeRoleList();
+    });
+    if (nameChangeUsersListener) db.ref('appData/nameChangePermissions/users').off('value', nameChangeUsersListener);
+    nameChangeUsersListener = db.ref('appData/nameChangePermissions/users').on('value', snap => {
+        nameChangePermissions.users = snap.val() || {};
+        renderNameChangeUserList();
+    });
+}
+function renderNameChangeRoleList() {
+    const container = document.getElementById('name-change-role-list'); if (!container) return;
+    container.innerHTML = '';
+    const roles = [
+        { key: 'mod', label: '🛡️ مشرف' },
+        { key: 'trusted', label: '✅ موثوق' },
+        { key: 'user', label: '👤 عادي' }
+    ];
+    roles.forEach(r => {
+        const el = document.createElement('div');
+        el.className = 'perm-role-row' + (nameChangePermissions.roles[r.key] === true ? ' selected' : '');
+        el.innerHTML = `<span>${r.label}</span><span class="prr-check">✓</span>`;
+        el.onclick = () => toggleNameChangeRole(r.key);
+        container.appendChild(el);
+    });
+}
+async function toggleNameChangeRole(roleKey) {
+    if (!isOwner()) return alert('⛔ للمالك فقط');
+    try {
+        if (nameChangePermissions.roles[roleKey] === true) {
+            await db.ref('appData/nameChangePermissions/roles/' + roleKey).remove();
+            nameChangePermissions.roles[roleKey] = false;
+        } else {
+            await db.ref('appData/nameChangePermissions/roles/' + roleKey).set(true);
+            nameChangePermissions.roles[roleKey] = true;
+        }
+        renderNameChangeRoleList();
+    } catch (e) { alert('❌ ' + e.message); }
+}
+function renderNameChangeUserList() {
+    const container = document.getElementById('name-change-user-list'); if (!container) return;
+    container.innerHTML = '';
+    const users = [];
+    Object.keys(allUsersData).forEach(k => {
+        if (k === myFP) return;
+        const u = allUsersData[k];
+        if (u.hidden === true) return;
+        if (u.role === 'owner') return;
+        if (!u.name || u.name.trim() === '') return;
+        u.uid = k; users.push(u);
+    });
+    users.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    if (users.length === 0) { container.innerHTML = '<div style="text-align:center;padding:12px;color:#999;font-size:12px;">لا يوجد مستخدمون</div>'; return; }
+    users.forEach(u => {
+        const el = document.createElement('div');
+        const isSel = nameChangePermissions.users[u.uid] === true;
+        el.className = 'perm-user-row' + (isSel ? ' selected' : '');
+        el.dataset.search = (u.name || '').toLowerCase();
+        el.innerHTML = `<img src="${u.avatar || DEFAULT_ICON}" onerror="this.src='${DEFAULT_ICON}'"><span class="pur-name">${escapeHtml(u.name)}</span><span class="pur-check">✓</span>`;
+        el.onclick = () => toggleNameChangeUser(u.uid);
+        container.appendChild(el);
+    });
+    filterNameChangeUsers();
+}
+function filterNameChangeUsers() {
+    const q = (document.getElementById('name-change-user-search')?.value || '').toLowerCase();
+    document.querySelectorAll('#name-change-user-list .perm-user-row').forEach(el => {
+        el.style.display = (el.dataset.search || '').includes(q) ? 'flex' : 'none';
+    });
+}
+async function toggleNameChangeUser(uid) {
+    if (!isOwner()) return alert('⛔ للمالك فقط');
+    try {
+        if (nameChangePermissions.users[uid] === true) {
+            await db.ref('appData/nameChangePermissions/users/' + uid).remove();
+            nameChangePermissions.users[uid] = false;
+        } else {
+            await db.ref('appData/nameChangePermissions/users/' + uid).set(true);
+            nameChangePermissions.users[uid] = true;
+        }
+        renderNameChangeUserList();
+    } catch (e) { alert('❌ ' + e.message); }
+}
+
 function openSecuritySettings() {
     if (!isOwner()) return alert('⛔ للمالك فقط');
     updateVerifyStatusCard();
+    updateAutoRegCard();
+    renderApprovalRoleList();
+    renderApprovalUserList();
+    renderNameChangeRoleList();
+    renderNameChangeUserList();
+    const s1 = document.getElementById('approval-user-search'); if (s1) s1.value = '';
+    const s2 = document.getElementById('name-change-user-search'); if (s2) s2.value = '';
     document.getElementById('security-settings-modal').classList.add('active');
     document.getElementById('modal-overlay').classList.add('show');
 }
 
-/* ⭐ دوال إعدادات الدردشة العامة (تحديد الرتبة) */
+function listenPendingRegistrations() {
+    if (pendingRegistrationsListener) db.ref('pending_registrations').off('value', pendingRegistrationsListener);
+    pendingRegistrationsListener = db.ref('pending_registrations').on('value', snap => {
+        pendingRegistrationsCache = snap.val() || {};
+        updatePendingBadge();
+        if (document.getElementById('pending-registrations-modal').classList.contains('active')) renderPendingRegistrations();
+    });
+}
+function updatePendingBadge() {
+    if (!canApproveRegistrations(myFP, myRole)) {
+        const btn = document.getElementById('pending-reg-btn'); if (btn) btn.style.display = 'none';
+        return;
+    }
+    const btn = document.getElementById('pending-reg-btn'); if (!btn) return;
+    btn.style.display = 'inline-flex';
+    const badge = document.getElementById('pending-badge'); if (!badge) return;
+    let pendingCount = 0;
+    Object.keys(pendingRegistrationsCache).forEach(k => {
+        const r = pendingRegistrationsCache[k];
+        if (r && r.status === 'pending') pendingCount++;
+    });
+    if (pendingCount > 0) { badge.textContent = pendingCount > 99 ? '99+' : pendingCount; badge.classList.add('active'); }
+    else badge.classList.remove('active');
+}
+function openPendingRegistrations() {
+    if (!canApproveRegistrations(myFP, myRole)) return alert('⛔ ليس لديك صلاحية الموافقة');
+    document.getElementById('pending-registrations-modal').classList.add('active');
+    document.getElementById('modal-overlay').classList.add('show');
+    renderPendingRegistrations();
+}
+function closePendingRegistrations() {
+    document.getElementById('pending-registrations-modal').classList.remove('active');
+    document.getElementById('modal-overlay').classList.remove('show');
+}
+function renderPendingRegistrations() {
+    const list = document.getElementById('pending-registrations-list'); if (!list) return;
+    list.innerHTML = '';
+    const arr = Object.entries(pendingRegistrationsCache).map(([fp, r]) => ({ fp, ...r }));
+    if (arr.length === 0) { list.innerHTML = '<div class="pending-reg-empty">📭 لا توجد طلبات تسجيل</div>'; document.getElementById('pending-reg-count').textContent = '0'; return; }
+    const pendingArr = arr.filter(r => r.status === 'pending').sort((a, b) => (b.requestedAt || 0) - (a.requestedAt || 0));
+    const doneArr = arr.filter(r => r.status !== 'pending').sort((a, b) => (b.requestedAt || 0) - (a.requestedAt || 0)).slice(0, 20);
+    const ordered = [...pendingArr, ...doneArr];
+    document.getElementById('pending-reg-count').textContent = pendingArr.length;
+    ordered.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'pending-reg-card' + (r.status === 'rejected' ? ' status-rejected' : '') + (r.status === 'approved' ? ' status-approved' : '');
+        card.dataset.search = (r.name || '').toLowerCase();
+        let statusInfo = '';
+        if (r.status === 'rejected') statusInfo = `<span style="color:#c62828;font-size:10px;font-weight:700;">❌ مرفوض</span>`;
+        else if (r.status === 'approved') statusInfo = `<span style="color:#2e7d32;font-size:10px;font-weight:700;">✅ مقبول</span>`;
+        const actionHtml = r.status === 'pending'
+            ? `<div class="prc-actions"><button class="prc-btn approve" data-approve="${r.fp}">✅ موافقة</button><button class="prc-btn reject" data-reject="${r.fp}">❌ رفض</button></div>`
+            : `<div class="prc-actions">${statusInfo}</div>`;
+        card.innerHTML = `<img src="${r.avatar || DEFAULT_ICON}" onerror="this.src='${DEFAULT_ICON}'"><div class="prc-info"><div class="prc-name">${escapeHtml(r.name || 'بدون اسم')}</div><div class="prc-time">🕒 ${formatDateShort(r.requestedAt || Date.now())}</div>${r.phone ? `<div class="prc-phone">📱 ${escapeHtml(r.phone)}</div>` : ''}</div>${actionHtml}`;
+        list.appendChild(card);
+    });
+}
+function filterPendingRegistrations() {
+    const q = document.getElementById('pending-reg-search').value.toLowerCase();
+    document.querySelectorAll('#pending-registrations-list .pending-reg-card').forEach(c => {
+        c.style.display = (c.dataset.search || '').includes(q) ? 'flex' : 'none';
+    });
+}
+async function approveRegistration(fp) {
+    if (!canApproveRegistrations(myFP, myRole)) return alert('⛔ ليس لديك صلاحية');
+    const req = pendingRegistrationsCache[fp];
+    if (!req) return alert('⚠️ الطلب غير موجود');
+    try {
+        await db.ref('pending_registrations/' + fp).update({
+            status: 'approved',
+            approvedBy: myFP,
+            approvedByName: myName || 'مجهول',
+            approvedAt: Date.now()
+        });
+        await logAdminAction('approve_registration', fp, req.name || 'مجهول', {});
+        await db.ref('notifications/' + fp).push({ from: myName, fromAvatar: myAvatar, type: 'registration_approved', time: Date.now(), seen: false });
+        alert('✅ تمت الموافقة');
+        renderPendingRegistrations();
+    } catch (e) { alert('❌ ' + e.message); }
+}
+async function rejectRegistration(fp) {
+    if (!canApproveRegistrations(myFP, myRole)) return alert('⛔ ليس لديك صلاحية');
+    const req = pendingRegistrationsCache[fp];
+    if (!req) return alert('⚠️ الطلب غير موجود');
+    if (!confirm('رفض طلب "' + (req.name || 'مجهول') + '"؟')) return;
+    try {
+        await db.ref('pending_registrations/' + fp).update({
+            status: 'rejected',
+            rejectedBy: myFP,
+            rejectedByName: myName || 'مجهول',
+            rejectedAt: Date.now()
+        });
+        await logAdminAction('reject_registration', fp, req.name || 'مجهول', {});
+        alert('❌ تم الرفض');
+        renderPendingRegistrations();
+    } catch (e) { alert('❌ ' + e.message); }
+}
+document.addEventListener('click', function(e) {
+    const approveBtn = e.target.closest('button[data-approve]');
+    if (approveBtn) { e.preventDefault(); e.stopPropagation(); approveRegistration(approveBtn.dataset.approve); return; }
+    const rejectBtn = e.target.closest('button[data-reject]');
+    if (rejectBtn) { e.preventDefault(); e.stopPropagation(); rejectRegistration(rejectBtn.dataset.reject); return; }
+});
+
+async function requestRegistrationApproval(name, avatar) {
+    try {
+        await db.ref('pending_registrations/' + myFP).set({
+            name: name,
+            avatar: avatar || DEFAULT_ICON,
+            fp: myFP,
+            phone: tgVerifiedPhone || null,
+            requestedAt: Date.now(),
+            status: 'pending'
+        });
+        await logAdminAction('registration_request', myFP, name, {});
+        const approvers = Object.keys(allUsersData).filter(k => canApproveRegistrations(k, allUsersData[k].role));
+        approvers.forEach(uid => {
+            db.ref('notifications/' + uid).push({ from: name, fromAvatar: avatar || DEFAULT_ICON, type: 'new_registration_request', fp: myFP, name: name, time: Date.now(), seen: false });
+        });
+        return true;
+    } catch (e) { return false; }
+}
+function showPendingApprovalScreen() {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('verify-screen').classList.remove('active');
+    document.getElementById('ban-screen').style.display = 'none';
+    document.getElementById('maintenance-screen').style.display = 'none';
+    document.getElementById('deleted-screen').style.display = 'none';
+    document.getElementById('device-block-overlay').classList.remove('active');
+    document.getElementById('pending-approval-screen').classList.add('active');
+    updatePendingDetails();
+}
+async function updatePendingDetails() {
+    const box = document.getElementById('pending-details-content'); if (!box) return;
+    try {
+        const snap = await db.ref('pending_registrations/' + myFP).once('value');
+        const d = snap.val();
+        if (!d) { box.innerHTML = 'لا يوجد طلب'; return; }
+        box.innerHTML = `👤 الاسم: <strong>${escapeHtml(d.name || '-')}</strong><br>📱 الرقم: <strong style="direction:ltr;display:inline-block;">${escapeHtml(d.phone || '-')}</strong><br>🕒 الوقت: ${formatDateFull(d.requestedAt || Date.now())}<br>📌 الحالة: <strong style="color:${d.status === 'pending' ? '#f9a825' : d.status === 'approved' ? '#4caf50' : '#ef5350'};">${d.status === 'pending' ? '⏳ قيد المراجعة' : d.status === 'approved' ? '✅ مقبول' : '❌ مرفوض'}</strong>`;
+    } catch (e) { box.textContent = 'خطأ في التحميل'; }
+}
+async function checkPendingApprovalStatus() {
+    try {
+        const snap = await db.ref('pending_registrations/' + myFP).once('value');
+        const d = snap.val();
+        if (!d) { alert('⚠️ لم يتم العثور على طلبك، جاري إعادة التوجيه...'); location.reload(); return; }
+        if (d.status === 'approved') {
+            document.getElementById('pending-approval-screen').classList.remove('active');
+            const storedName = localStorage.getItem("name") || "";
+            if (storedName && validateName(storedName).valid) { myName = validateName(storedName).name; }
+            else if (d.name && validateName(d.name).valid) { myName = validateName(d.name).name; localStorage.setItem('name', myName); }
+            const s = await checkSecurity(myFP, myName);
+            if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
+            if (s.muted) isMuted = true;
+            await linkFingerprint(myFP, myName);
+            await db.ref('pending_registrations/' + myFP).remove().catch(() => {});
+            enterChat();
+        } else if (d.status === 'rejected') {
+            alert('❌ تم رفض طلب تسجيلك من قِبل الإدارة.');
+            await db.ref('pending_registrations/' + myFP).remove().catch(() => {});
+            setTimeout(() => location.reload(), 800);
+        } else {
+            updatePendingDetails();
+            alert('⏳ لا يزال طلبك قيد المراجعة. يرجى الانتظار.');
+        }
+    } catch (e) { alert('❌ خطأ: ' + e.message); }
+}
+async function cancelPendingRequest() {
+    if (!confirm('إلغاء طلب التسجيل؟')) return;
+    try { await db.ref('pending_registrations/' + myFP).remove(); } catch (e) {}
+    location.reload();
+}
+function startPendingApprovalListener() {
+    if (window._pendingApprovalListener) db.ref('pending_registrations/' + myFP).off('value', window._pendingApprovalListener);
+    window._pendingApprovalListener = db.ref('pending_registrations/' + myFP).on('value', async snap => {
+        const d = snap.val();
+        if (!d) return;
+        if (d.status === 'approved') {
+            const scr = document.getElementById('pending-approval-screen');
+            if (scr && scr.classList.contains('active')) {
+                await db.ref('pending_registrations/' + myFP).remove().catch(() => {});
+                const storedName = localStorage.getItem("name") || "";
+                if (storedName && validateName(storedName).valid) myName = validateName(storedName).name;
+                else if (d.name && validateName(d.name).valid) { myName = validateName(d.name).name; localStorage.setItem('name', myName); }
+                const s = await checkSecurity(myFP, myName);
+                if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
+                if (s.muted) isMuted = true;
+                await linkFingerprint(myFP, myName);
+                document.getElementById('pending-approval-screen').classList.remove('active');
+                playStatusSound();
+                alert('🎉 تمت الموافقة على تسجيلك!');
+                enterChat();
+            }
+        } else if (d.status === 'rejected') {
+            const scr = document.getElementById('pending-approval-screen');
+            if (scr && scr.classList.contains('active')) {
+                await db.ref('pending_registrations/' + myFP).remove().catch(() => {});
+                alert('❌ تم رفض طلب تسجيلك من قِبل الإدارة.');
+                setTimeout(() => location.reload(), 500);
+            }
+        } else {
+            updatePendingDetails();
+        }
+    });
+}
+
 function listenChatSettings() {
     if (chatSettingsListener) db.ref('chat_settings/min_role').off('value', chatSettingsListener);
     chatSettingsListener = db.ref('chat_settings/min_role').on('value', snap => {
@@ -2464,13 +3072,9 @@ async function setChatMinRole(role) {
     } catch (e) { alert('❌ ' + e.message); }
 }
 
-/* ⭐ دوال مساعدة */
 function roleRank(r) { return { user: 0, trusted: 1, mod: 2, manager: 3, owner: 4 }[r] || 0; }
 function getRoleLabel(role) { return { owner: '👑 مالك', manager: '💎 مدير', mod: '🛡️ مشرف', trusted: '✅ موثوق', user: '👤 عادي' }[role] || role; }
 
-/* ==========================================================================
-   دوال التوثيق عبر تليجرام
-   ========================================================================== */
 function showVerifyMsg(message, type) {
     const box = document.getElementById('verify-msg');
     if (!box) return;
@@ -2496,6 +3100,7 @@ function showVerifyScreen() {
     document.getElementById('ban-screen').style.display = 'none';
     document.getElementById('maintenance-screen').style.display = 'none';
     document.getElementById('deleted-screen').style.display = 'none';
+    document.getElementById('pending-approval-screen').classList.remove('active');
     document.getElementById('device-block-overlay').classList.remove('active');
     document.getElementById('verify-screen').classList.add('active');
     goToVerifyStep1();
@@ -2666,6 +3271,7 @@ function showDeviceBlock(reason) {
     document.getElementById('ban-screen').style.display = 'none';
     document.getElementById('maintenance-screen').style.display = 'none';
     document.getElementById('deleted-screen').style.display = 'none';
+    document.getElementById('pending-approval-screen').classList.remove('active');
     const overlay = document.getElementById('device-block-overlay');
     if (!overlay) return;
     document.getElementById('device-block-reason').textContent = reason || 'تم اكتشاف محاولة نسخ أو تلاعب بالبيانات.';
@@ -2717,9 +3323,6 @@ async function resetDeviceAndRetry() {
     } catch(e) { alert('❌ فشل: ' + e.message); }
 }
 
-/* ==========================================================================
-   الأصوات والاهتزاز
-   ========================================================================== */
 let audioContext = null, audioUnlocked = false;
 function unlockAudio() {
     try {
@@ -2766,6 +3369,7 @@ function playSoundForType(type) {
         case 'status_seen': playSeenSound(); break;
         case 'report': playStatusSound(); break;
         case 'alert': playOwnerAlertSound(); break;
+        case 'new_registration_request': playStatusSound(); break;
         default: playNotificationSound();
     }
 }
@@ -2789,7 +3393,7 @@ function showInAppNotification(opts) {
     setTimeout(() => { if (notif.parentNode) notif.remove(); }, 5000);
 }
 function notifyUser(title, body, icon, type, onClick, skipSound) {
-    const prefMap = { dm: 'dm', chat: 'chat', status: 'status', status_seen: 'seen', new_status: 'status', report: 'chat', media: 'chat', warning: 'chat', alert: 'chat' };
+    const prefMap = { dm: 'dm', chat: 'chat', status: 'status', status_seen: 'seen', new_status: 'status', report: 'chat', media: 'chat', warning: 'chat', alert: 'chat', new_registration_request: 'chat' };
     const prefKey = prefMap[type];
     if (prefKey && currentNotificationPrefs[prefKey] === false) return;
     if (notificationMode === 'fcm') { if (!document.hidden) showInAppNotification({ title, body, icon, type, emoji: getEmojiForType(type), onClick, skipSound: skipSound === true }); return; }
@@ -2801,7 +3405,7 @@ function notifyUser(title, body, icon, type, onClick, skipSound) {
         } catch (e) {}
     }
 }
-function getEmojiForType(type) { return { dm: '💌', chat: '💬', status: '📸', status_seen: '👁️', new_status: '📸', report: '🚩', media: '📎', general: '🔔', warning: '⚠️', alert: '🚨' }[type] || '🔔'; }
+function getEmojiForType(type) { return { dm: '💌', chat: '💬', status: '📸', status_seen: '👁️', new_status: '📸', report: '🚩', media: '📎', general: '🔔', warning: '⚠️', alert: '🚨', new_registration_request: '📥' }[type] || '🔔'; }
 
 let heartbeatInterval = null;
 let presenceCheckInterval = null;
@@ -2851,6 +3455,8 @@ let myTypingTimeout = null;
 let dmReadReceiptsListener = null;
 let dmPresenceListener = null;
 
+let cnTargetUid = null;
+
 function startInAppNotificationListeners() {
     if (inAppNotifListeners.dms) db.ref('dm_inbox/' + myFP).off('child_changed', inAppNotifListeners.dms);
     let lastPlayedDMTime = 0;
@@ -2894,6 +3500,15 @@ function startInAppNotificationListeners() {
             if (currentNotificationPrefs.sound) { playStatusSound(); vibrateDevice(); }
             if (canManageReports() && document.hidden && notificationMode === 'fcm') return;
             notifyUser('🚩 بلاغ جديد', 'على: ' + (n.targetName || 'مجهول'), n.fromAvatar || DEFAULT_ICON, 'report', () => { if (canManageReports()) { closeAllModals(); toggleReportsModal(); } }, true);
+        } else if (n.type === 'new_registration_request') {
+            if (currentNotificationPrefs.sound) { playStatusSound(); vibrateDevice(); }
+            notifyUser('📥 طلب تسجيل جديد', n.name || 'مجهول', n.fromAvatar || DEFAULT_ICON, 'new_registration_request', () => { openPendingRegistrations(); }, true);
+        } else if (n.type === 'registration_approved') {
+            if (currentNotificationPrefs.sound) { playStatusSound(); vibrateDevice(); }
+            notifyUser('✅ تمت الموافقة', 'تمت الموافقة على طلب تسجيلك', n.fromAvatar || DEFAULT_ICON, 'status', null, true);
+        } else if (n.type === 'name_changed') {
+            if (currentNotificationPrefs.sound) { playStatusSound(); vibrateDevice(); }
+            notifyUser('✏️ تغيير الاسم', 'من "' + (n.oldName || '') + '" إلى "' + (n.newName || '') + '"', n.fromAvatar || DEFAULT_ICON, 'status', null, true);
         } else if (n.statusKey) {
             if (currentNotificationPrefs.sound) { playSeenSound(); vibrateDevice(); }
             if (document.hidden && notificationMode === 'fcm') return;
@@ -3063,7 +3678,7 @@ function updateFCMButton() {
     const btn = document.getElementById('fcm-btn'); if (!btn) return;
     if (ENV.isWebView || notificationMode === 'inapp') { btn.style.display = 'none'; return; }
     if (!ENV.hasNotification) { btn.style.display = 'none'; return; }
-    if (Notification.permission === 'granted') { btn.style.display = 'none'; } else { btn.style.display = 'inline-block'; btn.style.animation = 'pulseFCM 1.5s infinite'; }
+    if (Notification.permission === 'granted') { btn.style.display = 'none'; } else { btn.style.display = 'inline-flex'; btn.style.animation = 'pulseFCM 1.5s infinite'; }
     updateNotifStatusBadge();
 }
 async function autoRequestNotificationPermission() {
@@ -3590,10 +4205,14 @@ function renderCapabilitiesList(uid, role) {
         let stateClass = 'default', stateText = '⚪ افتراضي', stateColor = '#9e9e9e';
         if (state === 'allow') { stateClass = 'allow'; stateText = '✅ سماح'; stateColor = '#4caf50'; }
         else if (state === 'deny') { stateClass = 'deny'; stateText = '❌ حظر'; stateColor = '#ef5350'; }
-        row.innerHTML = `<div class="cap-icon">${def.icon}</div><div class="cap-info"><div class="cap-name">${def.name}</div><div class="cap-desc">${def.desc}</div></div><button class="cap-btn ${stateClass}" style="background:${stateColor};" onclick="cycleCapability('${uid}','${def.key}')">${stateText}</button>`;
+        row.innerHTML = `<div class="cap-icon">${def.icon}</div><div class="cap-info"><div class="cap-name">${def.name}</div><div class="cap-desc">${def.desc}</div></div><button class="cap-btn ${stateClass}" style="background:${stateColor};" data-cap-uid="${uid}" data-cap-key="${def.key}">${stateText}</button>`;
         list.appendChild(row);
     });
 }
+document.addEventListener('click', function(e) {
+    const capBtn = e.target.closest('button[data-cap-uid]');
+    if (capBtn) { e.preventDefault(); e.stopPropagation(); cycleCapability(capBtn.dataset.capUid, capBtn.dataset.capKey); }
+});
 async function cycleCapability(uid, capKey) {
     if (!isOwner()) return alert('⛔');
     const u = allUsersData[uid]; if (!u) return;
@@ -3638,9 +4257,6 @@ async function denyAllCapabilities(uid) {
     } catch(e) { alert('❌ ' + e.message); }
 }
 
-/* ==========================================================================
-   init
-   ========================================================================== */
 async function init() {
     document.getElementById('loading-screen').style.display = 'none';
     myFP = await getDeviceFingerprint();
@@ -3652,8 +4268,12 @@ async function init() {
     listenVerificationGate();
     listenChatSettings();
     listenChatDenials();
+    listenAutoRegistration();
+    listenApprovalDelegates();
+    listenApprovalRoles();
+    listenNameChangePermissions();
+    listenPendingRegistrations();
 
-    // ✅ معالج النقر المفوض لأزرار التحكم بالمستخدمين — يعمل مع أي اسم (بما فيه علامات تنصيص وأحرف خاصة)
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('button[data-uc-action]');
         if (!btn) return;
@@ -3695,6 +4315,8 @@ async function init() {
             if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
             if (s.muted) isMuted = true;
             await linkFingerprint(myFP, myName);
+            const canEnter = await checkAndHandleRegistration(myFP, myName);
+            if (!canEnter) return;
             enterChat();
         } else {
             localStorage.removeItem("name"); myName = '';
@@ -3705,6 +4327,44 @@ async function init() {
         document.getElementById('login-screen').style.display = 'flex';
     }
 }
+
+async function checkAndHandleRegistration(fp, name) {
+    try {
+        const existingSnap = await db.ref('users/' + fp).once('value');
+        const existingData = existingSnap.val();
+        if (existingData && existingData.createdAt) return true;
+    } catch (e) {}
+    if (autoRegistrationEnabled) return true;
+    try {
+        const reqSnap = await db.ref('pending_registrations/' + fp).once('value');
+        const req = reqSnap.val();
+        if (req && req.status === 'approved') {
+            await db.ref('pending_registrations/' + fp).remove().catch(() => {});
+            return true;
+        }
+        if (req && req.status === 'pending') {
+            showPendingApprovalScreen();
+            startPendingApprovalListener();
+            return false;
+        }
+        if (req && req.status === 'rejected') {
+            await db.ref('pending_registrations/' + fp).remove().catch(() => {});
+            alert('❌ تم رفض طلب تسجيلك سابقاً. يمكنك إعادة المحاولة.');
+            return false;
+        }
+        const ok = await requestRegistrationApproval(name, myAvatar);
+        if (ok) {
+            showPendingApprovalScreen();
+            startPendingApprovalListener();
+            return false;
+        }
+        return false;
+    } catch (e) {
+        alert('❌ خطأ في التحقق من التسجيل: ' + e.message);
+        return false;
+    }
+}
+
 function proceedAfterVerification() {
     const storedName = localStorage.getItem("name") || "";
     if (storedName) {
@@ -3716,6 +4376,8 @@ function proceedAfterVerification() {
                 if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
                 if (s.muted) isMuted = true;
                 await linkFingerprint(myFP, myName);
+                const canEnter = await checkAndHandleRegistration(myFP, myName);
+                if (!canEnter) return;
                 enterChat();
             })();
             return;
@@ -3737,6 +4399,8 @@ document.getElementById('login-btn').onclick = async () => {
     myName = n; localStorage.setItem("name", myName);
     if (s.muted) isMuted = true;
     await linkFingerprint(myFP, myName);
+    const canEnter = await checkAndHandleRegistration(myFP, myName);
+    if (!canEnter) { document.getElementById('login-screen').style.display = 'none'; return; }
     enterChat();
 };
 document.getElementById('username-input')?.addEventListener('input', function() {
@@ -3749,6 +4413,7 @@ document.getElementById('alert-text-input')?.addEventListener('input', function(
 function enterChat() {
     document.getElementById('login-screen').style.display = 'none';
     hideVerifyScreen();
+    document.getElementById('pending-approval-screen').classList.remove('active');
     startHeartbeat(); startPresenceChecker(); startDeletionWatcher(); startForceLogoutWatcher();
     db.ref('users/' + myFP + '/createdAt').once('value', snap => { if (!snap.exists()) db.ref('users/' + myFP + '/createdAt').set(Date.now()); });
     db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
@@ -3779,15 +4444,16 @@ function enterChat() {
         if (isBeingDeleted) return;
         myRole = s.val() || "user";
         updateUI(); refreshMyDMPermission(); refreshMyMediaPermission(); refreshMyStatusPermission();
+        updatePendingBadge();
         renderMessages();
         if (document.getElementById('users-modal').classList.contains('active')) updateUsersList();
         const hiddenControl = document.getElementById('hidden-owner-control');
         if (myRole === 'owner') {
             hiddenControl.style.display = 'block';
             db.ref('users/' + myFP + '/hidden').once('value', snap => { isHidden = snap.val() || false; updateHiddenButton(); });
-            document.getElementById('reports-btn').style.display = 'inline-block';
+            document.getElementById('reports-btn').style.display = 'inline-flex';
             listenReports();
-            document.getElementById('dm-monitor-btn').style.display = 'inline-block';
+            document.getElementById('dm-monitor-btn').style.display = 'inline-flex';
             const alertBtn = document.getElementById('alert-btn');
             if (alertBtn) alertBtn.style.display = 'flex';
         } else {
@@ -3816,6 +4482,7 @@ function enterChat() {
                 else if (d.type === 'chat') setTimeout(() => switchTab('chat'), 500);
                 else if (d.type === 'new_status') setTimeout(() => switchTab('status'), 500);
                 else if (d.type === 'alert') setTimeout(() => switchTab('chat'), 500);
+                else if (d.type === 'new_registration_request') setTimeout(() => openPendingRegistrations(), 500);
             }
         });
     }
@@ -3825,6 +4492,7 @@ function enterChat() {
         else { updateFCMButton(); updateNotifStatusBadge(); }
     }, 1500);
     setTimeout(() => { activateGeneralEffects(); }, 300);
+    updatePendingBadge();
 }
 
 function listenMaintenance() {
@@ -4053,7 +4721,6 @@ function renderDMList() {
         else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">🛡️ مشرف</span>';
         else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">✅ موثوق</span>';
         let lockIcon = ''; if (!isDMOn) lockIcon = '<div class="dm-lock-badge">🔒</div>';
-        // ✅ زر الإعدادات يستخدم data-attributes بدل onclick — آمن مع أي اسم
         let settingsBtn = '';
         if (isOwner()) settingsBtn = `<button class="dm-settings-btn" data-uc-action="cycleUserDMPermission" data-uc-uid="${escAttr(u.uid)}" data-uc-name="${escAttr(u.name || '')}">⚙️</button>`;
         const onlineDot = isOnline ? '<div class="dm-online-dot"></div>' : '';
@@ -4219,16 +4886,16 @@ function renderDMMessage(m, append, isRecent) {
     let inner = '';
     if (m.replyTo && m.replyTo.sender) { const rpText = m.replyTo.text || '📎 وسائط'; inner += `<div class="dm-reply-info" onclick="scrollToDMMessage('${m.replyTo.key || ''}')"><div class="dm-rp-sender">↩ ${escapeHtml(m.replyTo.sender)}</div><div class="dm-rp-text">${escapeHtml(rpText)}</div></div>`; }
     if (m.media) {
-        if (m.type === 'video') inner += `<div class="dm-media-container" onclick="openViewer('${m.media}','video','${escapeHtml(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><video src="${m.media}"></video><div class="dm-play-icon">▶</div></div>`;
-        else if (m.type === 'image') inner += `<div class="dm-media-container" onclick="openViewer('${m.media}','image','${escapeHtml(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><img src="${m.media}"></div>`;
+        if (m.type === 'video') inner += `<div class="dm-media-container" onclick="openViewer('${escJsAttr(m.media)}','video','${escJsAttr(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><video src="${m.media}"></video><div class="dm-play-icon">▶</div></div>`;
+        else if (m.type === 'image') inner += `<div class="dm-media-container" onclick="openViewer('${escJsAttr(m.media)}','image','${escJsAttr(isMine ? (myName||'أنا') : (currentDMChat ? currentDMChat.name : 'مستخدم'))}')"><img src="${m.media}"></div>`;
     }
     if (m.text) inner += `<div>${escapeHtml(m.text)}</div>`;
     let tickHtml = '';
     if (isMine) { if (m.read) tickHtml = '<span class="tick-double read">✓✓</span>'; else tickHtml = '<span class="tick-single">✓</span>'; }
     inner += `<div class="dm-time">${formatTime(m.time)} ${tickHtml}</div>`;
     let acts = '<div class="dm-msg-actions">';
-    acts += `<button class="dm-action-btn reply" onclick="startDMReply('${msgKey}')">↩ رد</button>`;
-    if (isMine) acts += `<button class="dm-action-btn del" onclick="deleteDMMessage('${msgKey}')">🗑️</button>`;
+    acts += `<button class="dm-action-btn reply" onclick="startDMReply('${escJsAttr(msgKey)}')">↩ رد</button>`;
+    if (isMine) acts += `<button class="dm-action-btn del" onclick="deleteDMMessage('${escJsAttr(msgKey)}')">🗑️</button>`;
     acts += '</div>';
     div.innerHTML = '<div class="dm-bubble ' + (isMine ? 'mine' : 'others') + '">' + inner + '</div>' + acts;
     if (animSettings.glowEffect) div.classList.add('effect-glow-pulse');
@@ -4369,6 +5036,9 @@ async function purgeUserEverywhere(uid, name, avatar) {
     updates['user_capabilities/' + uid] = null;
     updates['phone_bindings_by_fp/' + uid] = null;
     updates['chat_denials/' + uid] = null;
+    updates['pending_registrations/' + uid] = null;
+    updates['appData/approvalDelegates/' + uid] = null;
+    updates['appData/nameChangePermissions/users/' + uid] = null;
     if (name && name.trim() && name !== 'مجهول') { updates['name_links/' + name.toLowerCase()] = null; }
     updates['fp_links/' + uid] = null;
     try { const msgs = await db.ref('messages').orderByChild('uid').equalTo(uid).once('value'); if (msgs.exists()) msgs.forEach(c => { updates['messages/' + c.key] = null; }); } catch(e) {}
@@ -4503,7 +5173,7 @@ function startListeners() {
         if (!messagesCache[k]) { messagesCache[k] = v; const ks = Object.keys(messagesCache); if (ks.length > 300) { const o = ks.sort((a, b) => (Number(messagesCache[a].time) || 0) - (Number(messagesCache[b].time) || 0))[0]; delete messagesCache[o]; } renderMessages(); }
     });
     db.ref('messages').on('child_removed', s => { if (isBeingDeleted) return; const k = s.key; if (messagesCache[k]) { delete messagesCache[k]; animatedMsgIds.delete(k); const el = document.getElementById('msg-' + k); if (el) el.remove(); else renderMessages(); } });
-    db.ref('users').on('value', s => { if (isBeingDeleted) return; const d = {}; s.forEach(c => { d[c.key] = c.val() }); allUsersData = d; updateOnlineBadge(); if (currentDMChat) updateDMChatHeaderStatus(); scheduleUsersRender(); });
+    db.ref('users').on('value', s => { if (isBeingDeleted) return; const d = {}; s.forEach(c => { d[c.key] = c.val() }); allUsersData = d; updateOnlineBadge(); if (currentDMChat) updateDMChatHeaderStatus(); scheduleUsersRender(); updatePendingBadge(); if (document.getElementById('security-settings-modal').classList.contains('active')) { renderApprovalUserList(); renderNameChangeUserList(); } });
     db.ref('statuses').on('value', s => { if (isBeingDeleted) return; statusesCache = {}; s.forEach(c => { statusesCache[c.key] = c.val() }); scheduleStatusesRender(); });
     db.ref('notifications/' + myFP).on('value', s => { if (isBeingDeleted) return; myNotifications = {}; if (s.exists()) s.forEach(c => { myNotifications[c.key] = c.val() }); scheduleNotificationsRender(); });
     loadDMUsersList(); loadMediaUsersList(); loadStatusUsersList();
@@ -4570,8 +5240,7 @@ function buildMessageElement(k, m, isInitial) {
     else if (dr === 'mod') badge = '<span class="role-badge mod">🛡️ مشرف</span>';
     else if (dr === 'trusted') badge = '<span class="role-badge trusted">✅ موثوق</span>';
     let qh = '';
-    if (m.replyTo && m.replyTo.sender) { const qt = m.replyTo.text || 'وسائط'; qh = '<div class="quoted-msg" onclick="scrollToMessage(\'' + m.replyTo.key + '\')" style="background:rgba(0,0,0,0.04);border-right:2.5px solid var(--primary);padding:2px 5px;margin-bottom:3px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--font-main);"><div style="font-weight:700;color:var(--primary);font-size:9px;">↩ ' + escapeHtml(m.replyTo.sender) + '</div><div style="color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(qt) + '</div></div>'; }
-    // ✅ استخدام escJsAttr للوسائط والاسم (يمنع كسر onclick مع أي اسم)
+    if (m.replyTo && m.replyTo.sender) { const qt = m.replyTo.text || 'وسائط'; qh = '<div class="quoted-msg" onclick="scrollToMessage(\'' + escJsAttr(m.replyTo.key) + '\')" style="background:rgba(0,0,0,0.04);border-right:2.5px solid var(--primary);padding:2px 5px;margin-bottom:3px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--font-main);"><div style="font-weight:700;color:var(--primary);font-size:9px;">↩ ' + escapeHtml(m.replyTo.sender) + '</div><div style="color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(qt) + '</div></div>'; }
     const safeMedia = m.media ? escJsAttr(m.media) : '';
     const safeNameForViewer = escJsAttr(dn);
     let mh = '';
@@ -4593,11 +5262,11 @@ function buildMessageElement(k, m, isInitial) {
     const targetCanDM = canUserDM(m.uid, dr);
     const canDM = !isMine && iCanDM && targetCanDM;
     acts += '<div class="msg-actions">';
-    if (!isMine && !isOwner()) acts += '<button class="action-sm report" onclick="openReportModal(\'message\',\'' + (m.uid || '') + '\',\'' + escJsAttr(dn) + '\',\'' + k + '\')"> إبلاغ</button>';
-    if (canDM) acts += '<button class="action-sm dm" onclick="openDMChat(\'' + m.uid + '\')">💌 خاص</button>';
-    if (!isMine) acts += '<button class="action-sm reply" onclick="startReply(\'' + k + '\')">رد ↩</button>';
+    if (!isMine && !isOwner()) acts += '<button class="action-sm report" onclick="openReportModal(\'message\',\'' + escJsAttr(m.uid || '') + '\',\'' + escJsAttr(dn) + '\',\'' + escJsAttr(k) + '\')"> إبلاغ</button>';
+    if (canDM) acts += '<button class="action-sm dm" onclick="openDMChat(\'' + escJsAttr(m.uid) + '\')">💌 خاص</button>';
+    if (!isMine) acts += '<button class="action-sm reply" onclick="startReply(\'' + escJsAttr(k) + '\')">رد ↩</button>';
     if (isOwner() && !isMine) acts += '<button class="action-sm alert" onclick="quickAlertUser(\'' + escJsAttr(m.uid || '') + '\',\'' + escJsAttr(dn) + '\')">🚨 تنبيه</button>';
-    if (cd) acts += '<button class="action-sm del" onclick="deleteMessage(\'' + k + '\')">🗑️</button>';
+    if (cd) acts += '<button class="action-sm del" onclick="deleteMessage(\'' + escJsAttr(k) + '\')">🗑️</button>';
     if (cb) acts += '<button class="action-sm ban" onclick="banUser(\'' + escJsAttr(m.uid) + '\',\'' + escJsAttr(dn) + '\')">حظر</button>';
     if (cm) acts += '<button class="action-sm mute" onclick="openMuteMenu(\'' + escJsAttr(m.uid) + '\',\'' + escJsAttr(dn) + '\')">كتم</button>';
     if (cp) acts += '<button class="action-sm promote" onclick="openRoleMenu(\'' + escJsAttr(m.uid) + '\',\'' + escJsAttr(dn) + '\')">رتبة</button>';
@@ -4760,7 +5429,6 @@ async function deleteMessage(k) {
 function scrollToMessage(k) { const e = document.getElementById('msg-' + k); if (e) { e.scrollIntoView({ behavior: 'smooth', block: 'center' }); e.style.background = 'rgba(255,235,59,0.3)'; setTimeout(() => e.style.background = 'transparent', 1000); } }
 function playYouTube(v, c) { c.innerHTML = '<iframe src="https://www.youtube.com/embed/' + v + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
 
-// ✅ دالة أزرار التحكم — تستخدم data-attributes بدل onclick لتجنّب كسر JavaScript بأي اسم
 function updateUserControls(u, d) {
     const e = document.getElementById('uact-' + u); if (!e) return;
     const isUnknown = isUserUnknown(d);
@@ -4802,7 +5470,6 @@ function updateUserControls(u, d) {
                 bt += `<button class="ctrl-btn alert" data-uc-action="quickAlertUser" data-uc-uid="${safeUid}" data-uc-name="${safeName}" title="تنبيه">🚨</button>`;
 
                 if (d.role !== 'owner') {
-                    // الخاص
                     const isDMOn = canUserDM(u, d.role);
                     const isExplicitDeny = dmDenialsData[u] === true;
                     const isExplicitAllow = allDMUsersData[u] === true;
@@ -4811,7 +5478,6 @@ function updateUserControls(u, d) {
                     else if (isExplicitAllow || isDMOn) { dmCls = 'dm'; dmIcon = '💌'; }
                     bt += `<button class="ctrl-btn ${dmCls}" data-uc-action="cycleUserDMPermission" data-uc-uid="${safeUid}" data-uc-name="${safeName}" title="الخاص">${dmIcon}</button>`;
 
-                    // الوسائط
                     const isMediaOn = canUserSendMedia(u, d.role);
                     const isMediaDeny = mediaDenialsData[u] === true;
                     const isMediaAllow = allMediaUsersData[u] === true;
@@ -4820,7 +5486,6 @@ function updateUserControls(u, d) {
                     else if (isMediaAllow || isMediaOn) { mediaCls = 'media'; mediaIcon = '📎'; }
                     bt += `<button class="ctrl-btn ${mediaCls}" data-uc-action="cycleUserMediaPermission" data-uc-uid="${safeUid}" data-uc-name="${safeName}" title="الوسائط">${mediaIcon}</button>`;
 
-                    // الحالات
                     const isStatusOn = canUserPostStatus(u, d.role);
                     const isStatusDeny = statusDenialsData[u] === true;
                     const isStatusAllow = allStatusUsersData[u] === true;
@@ -4842,20 +5507,21 @@ function updateOnlineBadge() { if (isBeingDeleted) return; let on = 0; Object.ke
 function updateUI() {
     if (isBeingDeleted) return;
     document.getElementById('clear-chat-btn').style.display = canClearChat() ? 'inline-block' : 'none';
-    document.getElementById('btn-users').style.display = ['trusted', 'mod', 'manager', 'owner'].includes(myRole) ? 'block' : 'none';
+    document.getElementById('btn-users').style.display = ['trusted', 'mod', 'manager', 'owner'].includes(myRole) ? 'inline-flex' : 'none';
     document.getElementById('add-status-btn').style.display = myStatusEnabled ? 'flex' : 'none';
     document.getElementById('media-btn').style.display = myMediaEnabled ? 'flex' : 'none';
     document.getElementById('youtube-btn').style.display = 'flex';
     const alertBtn = document.getElementById('alert-btn'); if (alertBtn) alertBtn.style.display = canSendAlerts() ? 'flex' : 'none';
-    const dmBtn = document.getElementById('dm-btn'); if (dmBtn) dmBtn.style.display = myDMEnabled ? 'inline-block' : 'none';
-    if (canManageReports()) { document.getElementById('reports-btn').style.display = 'inline-block'; listenReports(); } else document.getElementById('reports-btn').style.display = 'none';
-    if (canMonitorDM()) document.getElementById('dm-monitor-btn').style.display = 'inline-block'; else document.getElementById('dm-monitor-btn').style.display = 'none';
+    const dmBtn = document.getElementById('dm-btn'); if (dmBtn) dmBtn.style.display = myDMEnabled ? 'inline-flex' : 'none';
+    if (canManageReports()) { document.getElementById('reports-btn').style.display = 'inline-flex'; listenReports(); } else document.getElementById('reports-btn').style.display = 'none';
+    if (canMonitorDM()) document.getElementById('dm-monitor-btn').style.display = 'inline-flex'; else document.getElementById('dm-monitor-btn').style.display = 'none';
     updateProfileButtonsByCapabilities();
     updateFCMButton(); updateSoundButton();
     updateProfileDMBtn();
     updateUnknownUsersBtnVisibility();
     updateDMMediaBtnVisibility();
     updateChatInputState();
+    updatePendingBadge();
 }
 function updateChatInputState() {
     const input = document.getElementById('message-input');
@@ -4884,6 +5550,7 @@ function updateProfileButtonsByCapabilities() {
     const ownerPremiumBtn = document.getElementById('owner-premium-btn'); if (ownerPremiumBtn) ownerPremiumBtn.style.display = isOwner() ? '' : 'none';
     const sendAlertBtn = document.getElementById('send-alert-btn'); if (sendAlertBtn) sendAlertBtn.style.display = canSendAlerts() ? '' : 'none';
     const securityBtn = document.getElementById('open-security-settings-btn'); if (securityBtn) securityBtn.style.display = isOwner() ? '' : 'none';
+    const pendingRegBtn = document.getElementById('open-pending-reg-btn'); if (pendingRegBtn) pendingRegBtn.style.display = canApproveRegistrations(myFP, myRole) ? '' : 'none';
     const chatSettingsBtn = document.getElementById('open-chat-settings-btn'); if (chatSettingsBtn) chatSettingsBtn.style.display = isOwner() ? '' : 'none';
     const hiddenControl = document.getElementById('hidden-owner-control');
     if (hiddenControl) { const anyVisible = isOwner() || canManageSettings() || canUseWarnings(); hiddenControl.style.display = anyVisible ? 'block' : 'none'; }
@@ -4891,7 +5558,6 @@ function updateProfileButtonsByCapabilities() {
 function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { updateChatInputState(); b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
 function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
 
-// ✅ تحديث دالة فتح قائمة المستخدمين لتحديثها فوراً عند الفتح
 function toggleUsers() {
     const modal = document.getElementById('users-modal');
     modal.classList.toggle('active');
@@ -4900,7 +5566,7 @@ function toggleUsers() {
     updateUnknownUsersBtnVisibility();
 }
 function closeAllModals() {
-    ['users-modal','notifications-modal','reports-modal','dm-list-modal','notification-settings-modal','profile-actions-modal','dm-monitor-modal','dm-monitor-view-modal','dm-settings-modal','media-settings-modal','status-settings-modal','warning-history-modal','warning-readers-modal','bg-settings-modal','anim-settings-modal','effects-settings-modal','theme-settings-modal','capabilities-modal','owner-premium-modal','alert-composer-modal','security-settings-modal','chat-settings-modal'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('active'); });
+    ['users-modal','notifications-modal','reports-modal','dm-list-modal','notification-settings-modal','profile-actions-modal','dm-monitor-modal','dm-monitor-view-modal','dm-settings-modal','media-settings-modal','status-settings-modal','warning-history-modal','warning-readers-modal','bg-settings-modal','anim-settings-modal','effects-settings-modal','theme-settings-modal','capabilities-modal','owner-premium-modal','alert-composer-modal','security-settings-modal','chat-settings-modal','pending-registrations-modal'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('active'); });
     document.getElementById('modal-overlay').classList.remove('show');
     document.querySelectorAll('.modal-popup').forEach(m => m.classList.remove('active'));
     closeColorControl();
@@ -4918,12 +5584,61 @@ function openProfileActions(uid, name, avatar) {
     const targetCanReceive = canUserDM(uid, targetRole);
     if (targetCanReceive) { dmBtn.style.display = 'block'; if (myDMEnabled) { dmBtn.innerHTML = '💌 رسالة خاصة'; dmBtn.style.background = '#9c27b0'; dmBtn.classList.remove('pa-dm-btn-locked'); } else { dmBtn.innerHTML = '🔒 رسالة خاصة'; dmBtn.style.background = '#9e9e9e'; dmBtn.classList.add('pa-dm-btn-locked'); } }
     else { dmBtn.style.display = 'block'; dmBtn.innerHTML = '🔒 رسالة خاصة (مغلق)'; dmBtn.style.background = '#9e9e9e'; dmBtn.classList.add('pa-dm-btn-locked'); }
+    const cnBtn = document.getElementById('pa-change-name-btn');
+    if (cnBtn) { cnBtn.style.display = canChangeOtherNames(myFP, myRole) ? 'block' : 'none'; }
     document.getElementById('profile-actions-modal').classList.add('active');
     document.getElementById('modal-overlay').classList.add('show');
 }
 function closeProfileActions() { document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); paTargetUid = null; paTargetName = null; paTargetAvatar = null; }
 function paViewImage() { const avatar = paTargetAvatar, name = paTargetName; if (!avatar) return; document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); paTargetUid = null; paTargetName = null; paTargetAvatar = null; setTimeout(() => { openViewer(avatar, 'image', name); }, 200); }
 function paDM() { const targetUid = paTargetUid, targetName = paTargetName; if (!targetUid) return alert('⚠️'); const targetRole = allUsersData[targetUid]?.role || 'user'; const targetCanReceive = canUserDM(targetUid, targetRole); if (!targetCanReceive) { closeProfileActions(); return alert('🔒'); } if (!myDMEnabled) { closeProfileActions(); return alert('🔒 خاصك مغلق'); } document.getElementById('profile-actions-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); paTargetUid = null; paTargetName = null; paTargetAvatar = null; setTimeout(() => { openDMChat(targetUid); }, 250); }
+function paChangeName() {
+    const targetUid = paTargetUid;
+    if (!targetUid) return alert('⚠️');
+    if (!canChangeOtherNames(myFP, myRole)) return alert('⛔ ليس لديك صلاحية تغيير الأسماء');
+    const targetRole = allUsersData[targetUid]?.role || 'user';
+    if (targetRole === 'owner' && !isOwner()) return alert('⛔ لا يمكنك تغيير اسم المالك');
+    cnTargetUid = targetUid;
+    document.getElementById('cn-current-name').textContent = allUsersData[targetUid]?.name || 'غير معروف';
+    document.getElementById('cn-new-name').value = '';
+    document.getElementById('cn-error').style.display = 'none';
+    document.getElementById('change-name-modal').classList.add('active');
+    document.getElementById('modal-overlay').classList.add('show');
+}
+function closeChangeNameModal() {
+    document.getElementById('change-name-modal').classList.remove('active');
+    document.getElementById('modal-overlay').classList.remove('show');
+    cnTargetUid = null;
+}
+async function executeChangeName() {
+    if (!cnTargetUid) return;
+    if (!canChangeOtherNames(myFP, myRole)) return alert('⛔ ليس لديك صلاحية');
+    const targetRole = allUsersData[cnTargetUid]?.role || 'user';
+    if (targetRole === 'owner' && !isOwner()) return alert('⛔ لا يمكنك تغيير اسم المالك');
+    const newName = document.getElementById('cn-new-name').value.trim();
+    const errBox = document.getElementById('cn-error');
+    const validation = validateName(newName);
+    if (!validation.valid) { errBox.style.display = 'block'; errBox.textContent = '❌ ' + validation.reason; return; }
+    errBox.style.display = 'none';
+    const oldName = allUsersData[cnTargetUid]?.name || 'غير معروف';
+    try {
+        await db.ref('users/' + cnTargetUid + '/name').set(validation.name);
+        await logAdminAction('change_other_name', cnTargetUid, oldName, { old_name: oldName, new_name: validation.name });
+        await db.ref('notifications/' + cnTargetUid).push({
+            from: myName || 'الإدارة',
+            fromAvatar: myAvatar || DEFAULT_ICON,
+            type: 'name_changed',
+            oldName: oldName,
+            newName: validation.name,
+            byName: myName,
+            time: Date.now(),
+            seen: false
+        });
+        alert('✅ تم تغيير الاسم من "' + oldName + '" إلى "' + validation.name + '"');
+        closeChangeNameModal();
+        closeProfileActions();
+    } catch (e) { alert('❌ ' + e.message); }
+}
 async function banUser(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canBan(myRole, tr)) return alert('⛔'); if (!confirm('⚠️ حظر "' + n + '"؟')) return; await db.ref('bans/' + u).set(true); await logAdminAction('ban', u, n, { target_role: tr }); alert("✅"); }
 async function unbanUser(u, n) { if (!isOwner()) return alert('⛔'); if (!confirm('فك الحظر عن "' + n + '"؟')) return; await db.ref('bans/' + u).remove(); await logAdminAction('unban', u, n, {}); alert("✅"); }
 function openMuteMenu(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canMute(myRole, tr)) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('mute-target-name').textContent = n; document.getElementById('mute-modal').classList.add('active'); }
@@ -5103,7 +5818,13 @@ function renderNotifications() {
         db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); };
         const safeFn = escJsAttr(fn);
         const safeFa = escJsAttr(fa);
-        d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + safeFa + '\',\'image\',\'' + safeFn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>';
+        let notifTitle = '', notifIcon = '📸', notifBody = formatDate(n.time);
+        if (n.type === 'registration_approved') { notifTitle = '✅ تمت الموافقة على تسجيلك'; notifIcon = '✅'; notifBody = 'مرحباً بك! ' + formatDate(n.time); }
+        else if (n.type === 'name_changed') { notifTitle = '✏️ تم تغيير اسمك'; notifBody = 'من "' + (n.oldName || '') + '" إلى "' + (n.newName || '') + '" بواسطة ' + (n.byName || 'الإدارة'); notifIcon = '✏️'; }
+        else if (n.type === 'new_registration_request') { notifTitle = '📥 طلب تسجيل جديد'; notifBody = 'من: ' + (n.name || 'مجهول'); notifIcon = '📥'; }
+        else if (n.type === 'new_report') { notifTitle = '🚩 بلاغ جديد'; notifBody = 'على: ' + (n.targetName || 'مجهول'); notifIcon = '🚩'; }
+        else { notifTitle = '👁️ ' + escapeHtml(fn) + ' شاهد حالتك'; notifIcon = '📸'; }
+        d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + safeFa + '\',\'image\',\'' + safeFn + '\')"><div class="user-details"><h4>' + notifIcon + ' ' + notifTitle + '</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + notifBody + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">' + notifIcon + '</span></div>';
         d.appendChild(db2);
         l.appendChild(d);
     });
@@ -5759,14 +6480,13 @@ function showChatAlert(alert) {
     setTimeout(() => { box.scrollTop = box.scrollHeight; }, 50);
 }
 
-// ✅ دوال التهريب — escAttr لسياق HTML attribute، escJsAttr لسياق JavaScript
 function escAttr(str) {
     if (str == null) return '';
     return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+        .replace(/&/g, '&')
+        .replace(/"/g, '"')
+        .replace(/</g, '<')
+        .replace(/>/g, '>');
 }
 function escJsAttr(str) {
     if (str == null) return '';
@@ -5776,10 +6496,10 @@ function escJsAttr(str) {
         .replace(/\n/g, '\\n')
         .replace(/\r/g, '\\r');
     return js
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+        .replace(/&/g, '&')
+        .replace(/"/g, '"')
+        .replace(/</g, '<')
+        .replace(/>/g, '>');
 }
 function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML }
 function formatTime(t) { return new Date(t).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) }
