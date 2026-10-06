@@ -85,13 +85,13 @@
         #pending-approval-screen .pa-info{background:rgba(249,168,37,.1);border:1.5px solid rgba(249,168,37,.3);border-radius:14px;padding:14px 18px;font-size:13px;line-height:1.8;color:#ffe0b2;margin-bottom:16px;max-width:380px;width:100%}
         #pending-approval-screen .pa-info strong{color:#f9a825;display:block;margin-bottom:4px}
 
-        /* ⭐ HEADER — نسخة محسّنة تعرض كل الأيقونات على جميع الشاشات */
-        header{background:var(--header-bg);color:var(--header-text);padding:4px 8px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.15);min-height:40px;flex-shrink:0;position:relative;transition:background .3s ease,color .3s ease;gap:6px}
-        .header-title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap}
+        /* ⭐ HEADER — محسّن لعرض كل الأيقونات + شارة المتصلين كاملة */
+        header{background:var(--header-bg);color:var(--header-text);padding:4px 6px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.15);min-height:42px;flex-shrink:0;position:relative;transition:background .3s ease,color .3s ease;gap:4px}
+        .header-title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:4px;flex-shrink:0;white-space:nowrap;padding:2px 0}
         .header-title button{background:rgba(255,255,255,.15);border:0;color:var(--header-text);padding:2px 8px;border-radius:8px;font-size:10px;cursor:pointer;display:none;font-family:var(--font-main)}
-        .header-actions{display:flex;gap:1px;align-items:center;flex-wrap:nowrap;flex-shrink:1;min-width:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding:1px 0}
+        .header-actions{display:flex;gap:2px;align-items:center;flex-wrap:nowrap;flex-shrink:1;min-width:0;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0}
         .header-actions::-webkit-scrollbar{display:none;width:0;height:0}
-        .icon-btn{background:0;border:0;color:var(--header-text);font-size:15px;cursor:pointer;padding:4px 4px;border-radius:6px;transition:background .2s;position:relative;flex-shrink:0;min-width:26px;height:28px;display:flex;justify-content:center;align-items:center;line-height:1}
+        .icon-btn{background:0;border:0;color:var(--header-text);font-size:16px;cursor:pointer;padding:4px 5px;border-radius:8px;transition:background .2s;position:relative;flex-shrink:0;min-width:28px;height:30px;display:inline-flex;justify-content:center;align-items:center;line-height:1;gap:2px}
         .icon-btn:active{background:rgba(255,255,255,.15)}
         #reports-btn .notif-badge,#dm-btn .notif-badge{background:#ff3b30}
         #dm-btn{display:none}
@@ -444,8 +444,12 @@
         #status-viewer .viewer-info{color:#fff;text-align:center;margin-top:10px;font-size:13px;max-width:90%;font-family:var(--font-main)}
         #status-viewer .viewer-info .seen-by{font-size:11px;color:#aaa;margin-top:4px}
         #status-viewer .viewer-info .seen-by .seen-user{color:#fff;cursor:pointer;display:inline-block;margin:0 2px;padding:2px 5px;border-radius:3px;background:rgba(255,255,255,.06);font-weight:600}
-        .notif-badge{position:absolute;top:0;right:0;background:#ff3b30;color:#fff;font-size:8px;padding:0 4px;border-radius:8px;min-width:14px;text-align:center;font-weight:700;display:none;line-height:14px;font-family:var(--font-main)}
-        .notif-badge.active{display:block}
+        .notif-badge{position:absolute;top:-1px;right:-1px;background:#ff3b30;color:#fff;font-size:9px;padding:0 5px;border-radius:9px;min-width:16px;text-align:center;font-weight:800;display:none;line-height:16px;font-family:var(--font-main);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+        .notif-badge.active{display:inline-block}
+        /* ⭐ شارة المتصلين ضمن زر المستخدمين - عرض كامل بدون قص */
+        #btn-users{display:inline-flex;align-items:center;gap:3px;padding:4px 6px}
+        #btn-users #online-badge{position:relative;top:auto;right:auto;display:none;min-width:20px;padding:0 6px;line-height:16px;font-size:10px;font-weight:800;border-radius:9px;background:#25D366;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4);margin:0}
+        #btn-users #online-badge.active{display:inline-block}
         .bottom-nav{display:flex;justify-content:space-around;align-items:center;background:var(--bottom-nav-bg);padding:4px 0;border-top:1px solid #e0e0e0;flex-shrink:0;position:relative;z-index:10}
         .nav-item{display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:3px 12px;border-radius:6px;position:relative;background:0;border:0;font-family:var(--font-main)}
         .nav-item .nav-icon{font-size:20px;line-height:1;color:var(--bottom-nav-text)}
@@ -850,7 +854,8 @@
         #dm-monitor-view-body .monitor-reply-info .mr-sender{font-weight:700;color:#9c27b0}
         #dm-monitor-view-body .monitor-reply-info .mr-text{color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         @media(max-width:480px){.bubble{font-size:13px;padding:5px 8px}.sender-name{font-size:11px}.sender-avatar{width:18px;height:18px}.op-grid{grid-template-columns:repeat(2,1fr)}.name-anim-grid{grid-template-columns:repeat(2,1fr)}}
-        @media(max-width:380px){.icon-btn{font-size:14px;padding:3px 3px;min-width:24px;height:26px}.header-title{font-size:12px}}
+        @media(max-width:400px){.icon-btn{font-size:14px;padding:3px 3px;min-width:26px;height:28px}.header-title{font-size:12px}.header-title span{display:none}.header-title::after{content:'💬';font-size:16px}}
+        @media(max-width:360px){.icon-btn{font-size:13px;min-width:24px;padding:3px 2px}}
         @supports(height:100dvh){.app-container{height:100dvh;max-height:100dvh}}
         #chat-messages::-webkit-scrollbar,#dm-chat-messages::-webkit-scrollbar{width:3px}
         #chat-messages::-webkit-scrollbar-thumb,#dm-chat-messages::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:3px}
@@ -919,9 +924,6 @@
         .pending-reg-card.status-rejected{background:#fff5f5;border-color:#ffcdd2;opacity:.7}
         .pending-reg-card.status-approved{background:#f1f8f1;border-color:#c8e6c9;opacity:.7}
         .pending-reg-empty{text-align:center;padding:20px;color:#999;font-size:13px;font-family:var(--font-main)}
-
-        #pending-badge{position:absolute;top:0;right:0;background:#ff3b30;color:#fff;font-size:8px;padding:0 4px;border-radius:8px;min-width:14px;text-align:center;font-weight:700;display:none;line-height:14px;font-family:var(--font-main)}
-        #pending-badge.active{display:block}
     </style>
 </head><body>
 
@@ -1070,7 +1072,10 @@
             <button class="icon-btn" id="fcm-btn" onclick="requestNotificationPermission()" title="تفعيل الإشعارات">📲</button>
             <button class="icon-btn" onclick="openNotifications()" id="notif-btn">🔔<span class="notif-badge" id="notif-badge">0</span></button>
             <button class="icon-btn" onclick="openProfile()">👤</button>
-            <button id="btn-users" class="icon-btn" onclick="toggleUsers()" style="display:none;">👥<span id="online-badge" class="notif-badge" style="position:relative;top:auto;right:auto;display:none;min-width:auto;padding:0 4px;line-height:14px;font-size:8px;">0</span></button>
+            <button id="btn-users" class="icon-btn" onclick="toggleUsers()" style="display:none;">
+                <span>👥</span>
+                <span id="online-badge" class="notif-badge">0</span>
+            </button>
         </div>
     </header>
 
@@ -1437,13 +1442,12 @@
         </div>
     </div>
 
-    <!-- ⭐ مودال الإعدادات الأمنية الموسّع -->
+    <!-- مودال الإعدادات الأمنية - مع الميزات الكاملة (تسجيل + صلاحيات) -->
     <div class="modal-popup" id="security-settings-modal">
         <div class="popup-box" style="max-width:600px;max-height:92vh;">
             <h3 style="font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;color:#2e7d32;margin-bottom:4px;">🛡️ الإعدادات الأمنية</h3>
             <p style="font-size:11px;color:#999;margin:6px 0 14px;line-height:1.6;">بوابة التوثيق + التسجيل التلقائي + منح صلاحيات الموافقة وتغيير الأسماء</p>
 
-            <!-- 1) بوابة التوثيق -->
             <div class="verify-status-card" id="verify-status-card">
                 <div class="vsc-header">
                     <div class="vsc-icon" id="vsc-icon">🟢</div>
@@ -1457,7 +1461,6 @@
                 </button>
             </div>
 
-            <!-- 2) التسجيل التلقائي -->
             <div class="auto-reg-card" id="auto-reg-card">
                 <div class="arc-header">
                     <div class="arc-icon" id="arc-icon">✅</div>
@@ -1471,7 +1474,7 @@
                 </button>
             </div>
 
-            <!-- 3) صلاحية الموافقة على التسجيلات -->
+            <!-- صلاحية الموافقة على التسجيلات (مع المالك فقط + إضافة المدير للقائمة) -->
             <div class="perm-section">
                 <h4>📥 صلاحية الموافقة على التسجيلات الجديدة</h4>
                 <div class="ps-desc">من يمكنه الموافقة أو رفض طلبات التسجيل الجديدة؟ (المالك دائماً لديه الصلاحية، وأي شخص آخر يمنحه المالك)</div>
@@ -1484,7 +1487,7 @@
                 </div>
             </div>
 
-            <!-- 4) صلاحية تغيير الأسماء -->
+            <!-- صلاحية تغيير الأسماء (مع المالك فقط + إضافة المدير للقائمة) -->
             <div class="perm-section" style="border-color:#e91e63;background:linear-gradient(135deg,#fff,#fce4ec);">
                 <h4 style="color:#ad1457;">✏️ صلاحية تغيير أسماء الآخرين</h4>
                 <div class="ps-desc">من يمكنه تعديل أسماء المستخدمين الآخرين؟ (المالك دائماً لديه الصلاحية، وأي شخص آخر يمنحه المالك)</div>
@@ -2110,9 +2113,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 
 <script>
-/* ==========================================================================
-   قاعدة البيانات
-   ========================================================================== */
 const firebaseConfig = {
     apiKey: "AIzaSyD9qPQHL_BBAeJ-fXtgoRr5rXPMetvN3W8",
     authDomain: "sory-1ab08.firebaseapp.com",
@@ -2516,7 +2516,7 @@ function canManageSettings() { return hasCapability(myFP, 'manage_settings', myR
 function canControlColors() { return hasCapability(myFP, 'control_colors', myRole); }
 function canSendAlerts() { return isOwner(); }
 
-/* ⭐ NEW (نسخة معدّلة): الموافقة فقط للمالك تلقائياً + من يمنحه المالك */
+/* ⭐ صلاحية الموافقة: المالك فقط تلقائياً + من يمنحه المالك (رتبة أو فردي) */
 function canApproveRegistrations(uid, role) {
     if (!uid) return false;
     if (role === 'owner') return true;
@@ -2645,10 +2645,12 @@ function listenApprovalRoles() {
         renderApprovalRoleList();
     });
 }
+/* ⭐ قائمة الرتب: الآن تشمل المدير أيضاً (المالك يمكنه منح الصلاحية لأي رتبة بما فيها المدير) */
 function renderApprovalRoleList() {
     const container = document.getElementById('approval-role-list'); if (!container) return;
     container.innerHTML = '';
     const roles = [
+        { key: 'manager', label: '💎 مدير' },
         { key: 'mod', label: '🛡️ مشرف' },
         { key: 'trusted', label: '✅ موثوق' },
         { key: 'user', label: '👤 عادي' }
@@ -2731,10 +2733,12 @@ function listenNameChangePermissions() {
         renderNameChangeUserList();
     });
 }
+/* ⭐ قائمة الرتب: الآن تشمل المدير أيضاً */
 function renderNameChangeRoleList() {
     const container = document.getElementById('name-change-role-list'); if (!container) return;
     container.innerHTML = '';
     const roles = [
+        { key: 'manager', label: '💎 مدير' },
         { key: 'mod', label: '🛡️ مشرف' },
         { key: 'trusted', label: '✅ موثوق' },
         { key: 'user', label: '👤 عادي' }
@@ -2887,12 +2891,7 @@ async function approveRegistration(fp) {
     const req = pendingRegistrationsCache[fp];
     if (!req) return alert('⚠️ الطلب غير موجود');
     try {
-        await db.ref('pending_registrations/' + fp).update({
-            status: 'approved',
-            approvedBy: myFP,
-            approvedByName: myName || 'مجهول',
-            approvedAt: Date.now()
-        });
+        await db.ref('pending_registrations/' + fp).update({ status: 'approved', approvedBy: myFP, approvedByName: myName || 'مجهول', approvedAt: Date.now() });
         await logAdminAction('approve_registration', fp, req.name || 'مجهول', {});
         await db.ref('notifications/' + fp).push({ from: myName, fromAvatar: myAvatar, type: 'registration_approved', time: Date.now(), seen: false });
         alert('✅ تمت الموافقة');
@@ -2905,12 +2904,7 @@ async function rejectRegistration(fp) {
     if (!req) return alert('⚠️ الطلب غير موجود');
     if (!confirm('رفض طلب "' + (req.name || 'مجهول') + '"؟')) return;
     try {
-        await db.ref('pending_registrations/' + fp).update({
-            status: 'rejected',
-            rejectedBy: myFP,
-            rejectedByName: myName || 'مجهول',
-            rejectedAt: Date.now()
-        });
+        await db.ref('pending_registrations/' + fp).update({ status: 'rejected', rejectedBy: myFP, rejectedByName: myName || 'مجهول', rejectedAt: Date.now() });
         await logAdminAction('reject_registration', fp, req.name || 'مجهول', {});
         alert('❌ تم الرفض');
         renderPendingRegistrations();
@@ -2925,18 +2919,11 @@ document.addEventListener('click', function(e) {
 
 async function requestRegistrationApproval(name, avatar) {
     try {
-        await db.ref('pending_registrations/' + myFP).set({
-            name: name,
-            avatar: avatar || DEFAULT_ICON,
-            fp: myFP,
-            phone: tgVerifiedPhone || null,
-            requestedAt: Date.now(),
-            status: 'pending'
-        });
+        await db.ref('pending_registrations/' + myFP).set({ name, avatar: avatar || DEFAULT_ICON, fp: myFP, phone: tgVerifiedPhone || null, requestedAt: Date.now(), status: 'pending' });
         await logAdminAction('registration_request', myFP, name, {});
         const approvers = Object.keys(allUsersData).filter(k => canApproveRegistrations(k, allUsersData[k].role));
         approvers.forEach(uid => {
-            db.ref('notifications/' + uid).push({ from: name, fromAvatar: avatar || DEFAULT_ICON, type: 'new_registration_request', fp: myFP, name: name, time: Date.now(), seen: false });
+            db.ref('notifications/' + uid).push({ from: name, fromAvatar: avatar || DEFAULT_ICON, type: 'new_registration_request', fp: myFP, name, time: Date.now(), seen: false });
         });
         return true;
     } catch (e) { return false; }
@@ -3110,30 +3097,13 @@ function hideVerifyScreen() {
 }
 async function sendTelegramMessage(chatId, text) {
     try {
-        const response = await fetch(TELEGRAM_API + '/sendMessage', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
-        });
+        const response = await fetch(TELEGRAM_API + '/sendMessage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' }) });
         return await response.json();
     } catch (e) { return null; }
 }
 async function sendTelegramMessageWithButton(chatId, text) {
     try {
-        const response = await fetch(TELEGRAM_API + '/sendMessage', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: chatId,
-                text: text,
-                parse_mode: 'HTML',
-                reply_markup: {
-                    keyboard: [[{ text: "📱 مشاركة رقم الهاتف الموثق", request_contact: true }]],
-                    resize_keyboard: true,
-                    one_time_keyboard: true
-                }
-            })
-        });
+        const response = await fetch(TELEGRAM_API + '/sendMessage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML', reply_markup: { keyboard: [[{ text: "📱 مشاركة رقم الهاتف الموثق", request_contact: true }]], resize_keyboard: true, one_time_keyboard: true } }) });
         return await response.json();
     } catch (e) { return null; }
 }
@@ -3147,19 +3117,12 @@ async function initTelegramVerification(evt) {
     try {
         const response = await fetch(TELEGRAM_API + '/getUpdates?allowed_updates=["message"]');
         const data = await response.json();
-        if (!data.ok || !data.result || data.result.length === 0) {
-            throw new Error('يرجى فتح البوت (@' + BOT_USERNAME + ') في تليجرام وإرسال /start أولاً ثم حاول مرة أخرى.');
-        }
+        if (!data.ok || !data.result || data.result.length === 0) throw new Error('يرجى فتح البوت (@' + BOT_USERNAME + ') في تليجرام وإرسال /start أولاً ثم حاول مرة أخرى.');
         const lastUpdate = data.result[data.result.length - 1];
         const lastMsg = lastUpdate && lastUpdate.message;
-        if (!lastMsg || !lastMsg.chat) {
-            throw new Error('لم يتم العثور على محادثة نشطة. أرسل /start للبوت أولاً.');
-        }
+        if (!lastMsg || !lastMsg.chat) throw new Error('لم يتم العثور على محادثة نشطة. أرسل /start للبوت أولاً.');
         tgUserChatId = String(lastMsg.chat.id);
-        await sendTelegramMessageWithButton(
-            tgUserChatId,
-            "مرحباً بك في <b>فيسي برو</b> 💬\n\nاضغط على الزر أدناه <b>(مشاركة رقم الهاتف الموثق)</b> لتسجيل الدخول تلقائياً:"
-        );
+        await sendTelegramMessageWithButton(tgUserChatId, "مرحباً بك في <b>فيسي برو</b> 💬\n\nاضغط على الزر أدناه <b>(مشاركة رقم الهاتف الموثق)</b> لتسجيل الدخول تلقائياً:");
         document.getElementById('verify-step-start').style.display = 'none';
         document.getElementById('verify-step-link').style.display = 'block';
         document.getElementById('vstep1').className = 'verify-step-dot done';
@@ -3187,15 +3150,10 @@ async function checkTelegramContactAndLogin(evt) {
         for (const update of data.result) {
             const msg = update.message;
             if (msg && msg.chat && String(msg.chat.id) === String(tgUserChatId)) {
-                if (msg.contact && msg.contact.phone_number) {
-                    foundContact = '+' + msg.contact.phone_number.replace(/^\+/, '');
-                    break;
-                }
+                if (msg.contact && msg.contact.phone_number) { foundContact = '+' + msg.contact.phone_number.replace(/^\+/, ''); break; }
             }
         }
-        if (!foundContact) {
-            throw new Error('لم تقم بمشاركة الرقم عبر الزر بعد! اضغط على زر "مشاركة رقم الهاتف الموثق" داخل تليجرام أولاً.');
-        }
+        if (!foundContact) throw new Error('لم تقم بمشاركة الرقم عبر الزر بعد! اضغط على زر "مشاركة رقم الهاتف الموثق" داخل تليجرام أولاً.');
         const blockCheck = await checkPhoneBindingAndAntiClone(foundContact);
         if (!blockCheck.ok) {
             showDeviceBlock(blockCheck.reason || 'هذا الرقم مرتبط بجهاز آخر');
@@ -3215,10 +3173,7 @@ async function checkTelegramContactAndLogin(evt) {
         document.getElementById('vstep1').className = 'verify-step-dot done';
         document.getElementById('vstep2').className = 'verify-step-dot done';
         await sendTelegramMessage(tgUserChatId, '🎉 تم تسجيل دخولك بنجاح تلقائياً إلى فيسي برو!\n📱 الرقم الموثق: ' + tgVerifiedPhone);
-        setTimeout(() => {
-            hideVerifyScreen();
-            proceedAfterVerification();
-        }, 1500);
+        setTimeout(() => { hideVerifyScreen(); proceedAfterVerification(); }, 1500);
     } catch (error) {
         showVerifyMsg(error.message, 'error');
     } finally {
@@ -3227,16 +3182,9 @@ async function checkTelegramContactAndLogin(evt) {
     }
 }
 function skipVerificationIfAllowed() {
-    if (verificationGateEnabled) {
-        alert('🔒 بوابة التوثيق مفعّلة — يجب إكمال التوثيق');
-        return;
-    }
-    localStorage.removeItem('vpro_phone');
-    localStorage.removeItem('vpro_verified_at');
-    localStorage.removeItem('vpro_chat_id');
-    localStorage.removeItem('vpro_bound_fp');
-    hideVerifyScreen();
-    proceedAfterVerification();
+    if (verificationGateEnabled) { alert('🔒 بوابة التوثيق مفعّلة — يجب إكمال التوثيق'); return; }
+    localStorage.removeItem('vpro_phone'); localStorage.removeItem('vpro_verified_at'); localStorage.removeItem('vpro_chat_id'); localStorage.removeItem('vpro_bound_fp');
+    hideVerifyScreen(); proceedAfterVerification();
 }
 async function checkPhoneBindingAndAntiClone(phone) {
     try {
@@ -3245,19 +3193,11 @@ async function checkPhoneBindingAndAntiClone(phone) {
         const snap = await db.ref('phone_bindings/' + cleanPhone).once('value');
         const data = snap.val();
         if (!data) {
-            await db.ref('phone_bindings/' + cleanPhone).set({
-                fp: myFP, phone: cleanPhone, name: myName || '',
-                createdAt: Date.now(), lastUsedAt: Date.now(),
-                userAgent: (navigator.userAgent || '').substring(0, 200),
-                platform: ENV.isWebView ? 'webview' : 'web'
-            });
+            await db.ref('phone_bindings/' + cleanPhone).set({ fp: myFP, phone: cleanPhone, name: myName || '', createdAt: Date.now(), lastUsedAt: Date.now(), userAgent: (navigator.userAgent || '').substring(0, 200), platform: ENV.isWebView ? 'webview' : 'web' });
             return { ok: true, isNew: true };
         }
         if (data.fp && data.fp !== myFP) {
-            await db.ref('security_logs/phone_mismatch').push({
-                phone: cleanPhone, originalFp: data.fp, attemptedFp: myFP,
-                attemptedAt: Date.now(), userAgent: (navigator.userAgent || '').substring(0, 200)
-            }).catch(() => {});
+            await db.ref('security_logs/phone_mismatch').push({ phone: cleanPhone, originalFp: data.fp, attemptedFp: myFP, attemptedAt: Date.now(), userAgent: (navigator.userAgent || '').substring(0, 200) }).catch(() => {});
             return { ok: false, reason: 'هذا الرقم موثق على جهاز آخر ولا يمكن استخدامه هنا.' };
         }
         await db.ref('phone_bindings/' + cleanPhone).update({ lastUsedAt: Date.now(), name: myName || data.name || '' });
@@ -3290,26 +3230,15 @@ async function checkVerifiedSession() {
         const data = snap.val();
         if (!data || !data.fp) { clearVerifiedSession(); return false; }
         if (data.fp !== myFP) {
-            await db.ref('security_logs/session_fp_change').push({
-                phone: cleanPhone, originalFp: data.fp, currentFp: myFP,
-                savedFp: savedFp || 'none', at: Date.now(),
-                ua: (navigator.userAgent || '').substring(0, 200)
-            }).catch(() => {});
-            clearVerifiedSession();
-            return false;
+            await db.ref('security_logs/session_fp_change').push({ phone: cleanPhone, originalFp: data.fp, currentFp: myFP, savedFp: savedFp || 'none', at: Date.now(), ua: (navigator.userAgent || '').substring(0, 200) }).catch(() => {});
+            clearVerifiedSession(); return false;
         }
-        tgVerifiedPhone = savedPhone;
-        tgVerifiedAt = savedAt;
+        tgVerifiedPhone = savedPhone; tgVerifiedAt = savedAt;
         return true;
     } catch (e) { return false; }
 }
 function clearVerifiedSession() {
-    try {
-        localStorage.removeItem('vpro_phone');
-        localStorage.removeItem('vpro_verified_at');
-        localStorage.removeItem('vpro_chat_id');
-        localStorage.removeItem('vpro_bound_fp');
-    } catch (e) {}
+    try { localStorage.removeItem('vpro_phone'); localStorage.removeItem('vpro_verified_at'); localStorage.removeItem('vpro_chat_id'); localStorage.removeItem('vpro_bound_fp'); } catch (e) {}
 }
 async function resetDeviceAndRetry() {
     if (!confirm('⚠️ إعادة تعيين الجلسة؟\n\nستحتاج إلى توثيق رقمك من جديد عبر بوت تليجرام.')) return;
@@ -3364,8 +3293,7 @@ function playSoundForType(type) {
     switch (type) {
         case 'dm': playReceiveDMSound(); break;
         case 'chat': playReceiveChatSound(); break;
-        case 'status':
-        case 'new_status': playStatusSound(); break;
+        case 'status': case 'new_status': playStatusSound(); break;
         case 'status_seen': playSeenSound(); break;
         case 'report': playStatusSound(); break;
         case 'alert': playOwnerAlertSound(); break;
@@ -3454,7 +3382,6 @@ let typingListeners = {};
 let myTypingTimeout = null;
 let dmReadReceiptsListener = null;
 let dmPresenceListener = null;
-
 let cnTargetUid = null;
 
 function startInAppNotificationListeners() {
@@ -3655,10 +3582,7 @@ async function initFCM() {
         swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
         messaging = firebase.messaging();
         try { messaging.useServiceWorker(swRegistration); } catch (e) {}
-        messaging.onMessage((payload) => {
-            const n = payload.notification || {}, d = payload.data || {};
-            notifyUser(n.title || d.title || 'فيسي برو', n.body || d.body || '', n.icon || d.icon || DEFAULT_ICON, d.type || 'general', () => { window.focus(); });
-        });
+        messaging.onMessage((payload) => { const n = payload.notification || {}, d = payload.data || {}; notifyUser(n.title || d.title || 'فيسي برو', n.body || d.body || '', n.icon || d.icon || DEFAULT_ICON, d.type || 'general', () => { window.focus(); }); });
         messaging.onTokenRefresh(async () => { fcmToken = null; await saveFCMToken(); });
         if (Notification.permission === 'granted') await saveFCMToken();
         updateFCMButton(); updateNotifStatusBadge();
@@ -3870,13 +3794,8 @@ function openAnimSettings() {
     document.getElementById('anim-settings-modal').classList.add('active');
 }
 function selectAnim(kind, value) {
-    if (kind === 'arrive') {
-        tempAnimSettings.arrive = value;
-        document.querySelectorAll('#arrive-anim-grid .anim-option').forEach(el => { el.classList.toggle('selected', el.dataset.anim === value); });
-    } else {
-        tempAnimSettings.send = value;
-        document.querySelectorAll('#send-anim-grid .anim-option').forEach(el => { el.classList.toggle('selected', el.dataset.anim === value); });
-    }
+    if (kind === 'arrive') { tempAnimSettings.arrive = value; document.querySelectorAll('#arrive-anim-grid .anim-option').forEach(el => { el.classList.toggle('selected', el.dataset.anim === value); }); }
+    else { tempAnimSettings.send = value; document.querySelectorAll('#send-anim-grid .anim-option').forEach(el => { el.classList.toggle('selected', el.dataset.anim === value); }); }
 }
 function toggleEffect(kind) {
     if (kind === 'glow') tempAnimSettings.glowEffect = document.getElementById('effect-glow-toggle').checked;
@@ -4338,31 +4257,13 @@ async function checkAndHandleRegistration(fp, name) {
     try {
         const reqSnap = await db.ref('pending_registrations/' + fp).once('value');
         const req = reqSnap.val();
-        if (req && req.status === 'approved') {
-            await db.ref('pending_registrations/' + fp).remove().catch(() => {});
-            return true;
-        }
-        if (req && req.status === 'pending') {
-            showPendingApprovalScreen();
-            startPendingApprovalListener();
-            return false;
-        }
-        if (req && req.status === 'rejected') {
-            await db.ref('pending_registrations/' + fp).remove().catch(() => {});
-            alert('❌ تم رفض طلب تسجيلك سابقاً. يمكنك إعادة المحاولة.');
-            return false;
-        }
+        if (req && req.status === 'approved') { await db.ref('pending_registrations/' + fp).remove().catch(() => {}); return true; }
+        if (req && req.status === 'pending') { showPendingApprovalScreen(); startPendingApprovalListener(); return false; }
+        if (req && req.status === 'rejected') { await db.ref('pending_registrations/' + fp).remove().catch(() => {}); alert('❌ تم رفض طلب تسجيلك سابقاً. يمكنك إعادة المحاولة.'); return false; }
         const ok = await requestRegistrationApproval(name, myAvatar);
-        if (ok) {
-            showPendingApprovalScreen();
-            startPendingApprovalListener();
-            return false;
-        }
+        if (ok) { showPendingApprovalScreen(); startPendingApprovalListener(); return false; }
         return false;
-    } catch (e) {
-        alert('❌ خطأ في التحقق من التسجيل: ' + e.message);
-        return false;
-    }
+    } catch (e) { alert('❌ خطأ في التحقق من التسجيل: ' + e.message); return false; }
 }
 
 function proceedAfterVerification() {
@@ -4435,10 +4336,7 @@ function enterChat() {
     db.ref('users/' + myFP + '/avatar').on('value', s => {
         if (isBeingDeleted) return;
         const newAvatar = s.val();
-        if (newAvatar && newAvatar !== myAvatar) {
-            myAvatar = newAvatar; localStorage.setItem('avatar', myAvatar); renderMessages();
-            if (document.getElementById('users-modal').classList.contains('active')) updateUsersList();
-        }
+        if (newAvatar && newAvatar !== myAvatar) { myAvatar = newAvatar; localStorage.setItem('avatar', myAvatar); renderMessages(); if (document.getElementById('users-modal').classList.contains('active')) updateUsersList(); }
     });
     db.ref('users/' + myFP + '/role').on('value', s => {
         if (isBeingDeleted) return;
@@ -4685,12 +4583,7 @@ function renderDMList() {
     const l = document.getElementById('dm-users-list'); if (!l) return;
     l.innerHTML = '';
     const users = [];
-    Object.keys(allUsersData).forEach(k => {
-        if (k === myFP) return;
-        const u = allUsersData[k];
-        if (u.hidden === true && myRole !== 'owner') return;
-        u.uid = k; u._dmCanReceive = canUserDM(k, u.role); users.push(u);
-    });
+    Object.keys(allUsersData).forEach(k => { if (k === myFP) return; const u = allUsersData[k]; if (u.hidden === true && myRole !== 'owner') return; u.uid = k; u._dmCanReceive = canUserDM(k, u.role); users.push(u); });
     users.sort((a, b) => {
         const aTime = (dmUnreadCounts[a.uid] && Number(dmUnreadCounts[a.uid].lastTime)) || 0;
         const bTime = (dmUnreadCounts[b.uid] && Number(dmUnreadCounts[b.uid].lastTime)) || 0;
@@ -5336,7 +5229,7 @@ function _updateUsersListReal() {
     const sortedUsers = [...onlineValid, ...offlineValid, ...unknownUsers];
     const onlineCount = users.filter(u => u._effectiveStatus === 'online' || u._effectiveStatus === 'away').length;
     const ob = document.getElementById('online-badge');
-    if (ob) { ob.textContent = onlineCount; ob.style.display = onlineCount > 0 ? 'block' : 'none'; }
+    if (ob) { ob.textContent = onlineCount; if (onlineCount > 0) ob.classList.add('active'); else ob.classList.remove('active'); }
     const currentCards = l.querySelectorAll('.user-card');
     const currentIds = Array.from(currentCards).map(el => el.dataset.uid);
     currentIds.forEach(id => { const u = allUsersData[id]; if (!u || (u.hidden === true && id !== myFP)) { const el = l.querySelector('.user-card[data-uid="' + id + '"]'); if (el) el.remove(); } });
@@ -5503,7 +5396,7 @@ function updateUserControls(u, d) {
 }
 function filterUsers() { const t = document.getElementById('user-search').value.toLowerCase(); document.querySelectorAll('.user-card').forEach(c => { const n = c.querySelector('.user-details h4')?.innerText?.toLowerCase() || ''; c.style.display = n.includes(t) ? 'flex' : 'none'; }); }
 function updateStatusBadge() { if (isBeingDeleted) return; const now = Date.now(), exp = 864e5; let unseen = 0; Object.keys(statusesCache).forEach(k => { const s = statusesCache[k]; if (now - s.time > exp) { db.ref('statuses/' + k).remove(); return; } if (s.uid !== myFP) { const sb = s.seenBy || {}; if (!sb[myFP]) unseen++; } }); const b = document.getElementById('status-unseen-count'); if (unseen > 0) { b.textContent = unseen; b.classList.add('active'); } else b.classList.remove('active'); }
-function updateOnlineBadge() { if (isBeingDeleted) return; let on = 0; Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (u.hidden === true && k !== myFP) return; if (isUserOnline(u)) on++; }); const b = document.getElementById('online-badge'); if (!b) return; b.textContent = on; b.style.display = on > 0 ? 'block' : 'none'; }
+function updateOnlineBadge() { if (isBeingDeleted) return; let on = 0; Object.keys(allUsersData).forEach(k => { const u = allUsersData[k]; if (u.hidden === true && k !== myFP) return; if (isUserOnline(u)) on++; }); const b = document.getElementById('online-badge'); if (!b) return; b.textContent = on; if (on > 0) b.classList.add('active'); else b.classList.remove('active'); }
 function updateUI() {
     if (isBeingDeleted) return;
     document.getElementById('clear-chat-btn').style.display = canClearChat() ? 'inline-block' : 'none';
@@ -5624,16 +5517,7 @@ async function executeChangeName() {
     try {
         await db.ref('users/' + cnTargetUid + '/name').set(validation.name);
         await logAdminAction('change_other_name', cnTargetUid, oldName, { old_name: oldName, new_name: validation.name });
-        await db.ref('notifications/' + cnTargetUid).push({
-            from: myName || 'الإدارة',
-            fromAvatar: myAvatar || DEFAULT_ICON,
-            type: 'name_changed',
-            oldName: oldName,
-            newName: validation.name,
-            byName: myName,
-            time: Date.now(),
-            seen: false
-        });
+        await db.ref('notifications/' + cnTargetUid).push({ from: myName || 'الإدارة', fromAvatar: myAvatar || DEFAULT_ICON, type: 'name_changed', oldName: oldName, newName: validation.name, byName: myName, time: Date.now(), seen: false });
         alert('✅ تم تغيير الاسم من "' + oldName + '" إلى "' + validation.name + '"');
         closeChangeNameModal();
         closeProfileActions();
@@ -5920,7 +5804,7 @@ async function submitReport() {
     const messageKey = document.getElementById('report-message-key').value;
     const statusKey = document.getElementById('report-status-key').value;
     let reason = document.getElementById('report-reason-input').value.trim();
-    if (!reason) { const tl = { message: 'رسالة', status: 'حالة' }; reason = 'بلاغ تلقائي'; }
+    if (!reason) { reason = 'بلاغ تلقائي'; }
     if (!targetUid || targetUid === 'undefined' || targetUid === 'null') { if (targetName) { let found = Object.keys(allUsersData).find(k => (allUsersData[k].name || '').trim().toLowerCase() === (targetName || '').trim().toLowerCase()); if (found) targetUid = found; } if (!targetUid) targetUid = 'legacy_' + btoa(unescape(encodeURIComponent(targetName || 'unknown'))).replace(/=/g, ''); }
     if (!targetName || targetName.trim() === '' || targetName === 'مستخدم مجهول' || targetName === 'مستخدم محذوف') { let foundName = null; if (messageKey && messagesCache[messageKey] && messagesCache[messageKey].sender) foundName = messagesCache[messageKey].sender; if (!foundName && statusKey && statusesCache[statusKey] && statusesCache[statusKey].sender) foundName = statusesCache[statusKey].sender; if (foundName) targetName = foundName; }
     if (!targetName || targetName.trim() === '') targetName = 'مستخدم محذوف';
@@ -6483,10 +6367,10 @@ function showChatAlert(alert) {
 function escAttr(str) {
     if (str == null) return '';
     return String(str)
-        .replace(/&/g, '&')
-        .replace(/"/g, '"')
-        .replace(/</g, '<')
-        .replace(/>/g, '>');
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
 }
 function escJsAttr(str) {
     if (str == null) return '';
@@ -6496,10 +6380,10 @@ function escJsAttr(str) {
         .replace(/\n/g, '\\n')
         .replace(/\r/g, '\\r');
     return js
-        .replace(/&/g, '&')
-        .replace(/"/g, '"')
-        .replace(/</g, '<')
-        .replace(/>/g, '>');
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
 }
 function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML }
 function formatTime(t) { return new Date(t).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) }
