@@ -2433,11 +2433,8 @@ function listenChatDenials() {
     });
 }
 function canUserChat(uid, role) {
-    // إذا كان محظوراً فردياً من الدردشة
     if (chatDenialsData[uid] === true) return false;
-    // المالك دائماً يستطيع
     if (role === 'owner') return true;
-    // فحص الرتبة
     return roleRank(role || 'user') >= roleRank(chatGlobalSettings.min_role || 'user');
 }
 function openChatSettings() {
@@ -3656,6 +3653,32 @@ async function init() {
     listenChatSettings();
     listenChatDenials();
 
+    // ✅ معالج النقر المفوض لأزرار التحكم بالمستخدمين — يعمل مع أي اسم (بما فيه علامات تنصيص وأحرف خاصة)
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button[data-uc-action]');
+        if (!btn) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const action = btn.dataset.ucAction;
+        const uid    = btn.dataset.ucUid;
+        const name   = btn.dataset.ucName || '';
+        switch (action) {
+            case 'deleteUnknownUser':         deleteUnknownUser(uid); break;
+            case 'banUser':                   banUser(uid, name); break;
+            case 'unbanUser':                 unbanUser(uid, name); break;
+            case 'openMuteMenu':              openMuteMenu(uid, name); break;
+            case 'unmuteUser':                unmuteUser(uid, name); break;
+            case 'openRoleMenu':              openRoleMenu(uid, name); break;
+            case 'openCapabilitiesModal':     openCapabilitiesModal(uid); break;
+            case 'openColorControl':          openColorControl(uid); break;
+            case 'quickAlertUser':            quickAlertUser(uid, name); break;
+            case 'cycleUserDMPermission':     cycleUserDMPermission(uid, name); break;
+            case 'cycleUserMediaPermission':  cycleUserMediaPermission(uid, name); break;
+            case 'cycleUserStatusPermission': cycleUserStatusPermission(uid, name); break;
+            case 'permanentDeleteUser':       permanentDeleteUser(uid, name); break;
+        }
+    });
+
     await new Promise(r => setTimeout(r, 800));
 
     const isVerified = await checkVerifiedSession();
@@ -4030,7 +4053,9 @@ function renderDMList() {
         else if (u.role === 'mod') roleBadge = '<span class="role-badge mod">🛡️ مشرف</span>';
         else if (u.role === 'trusted') roleBadge = '<span class="role-badge trusted">✅ موثوق</span>';
         let lockIcon = ''; if (!isDMOn) lockIcon = '<div class="dm-lock-badge">🔒</div>';
-        let settingsBtn = ''; if (isOwner()) settingsBtn = `<button class="dm-settings-btn" onclick="event.stopPropagation();cycleUserDMPermission('${u.uid}','${escapeHtml(u.name).replace(/'/g, "\\'")}')">⚙️</button>`;
+        // ✅ زر الإعدادات يستخدم data-attributes بدل onclick — آمن مع أي اسم
+        let settingsBtn = '';
+        if (isOwner()) settingsBtn = `<button class="dm-settings-btn" data-uc-action="cycleUserDMPermission" data-uc-uid="${escAttr(u.uid)}" data-uc-name="${escAttr(u.name || '')}">⚙️</button>`;
         const onlineDot = isOnline ? '<div class="dm-online-dot"></div>' : '';
         const timeLabel = lastTime ? formatDateShort(lastTime) : '';
         let unreadBadge = '';
@@ -4546,10 +4571,13 @@ function buildMessageElement(k, m, isInitial) {
     else if (dr === 'trusted') badge = '<span class="role-badge trusted">✅ موثوق</span>';
     let qh = '';
     if (m.replyTo && m.replyTo.sender) { const qt = m.replyTo.text || 'وسائط'; qh = '<div class="quoted-msg" onclick="scrollToMessage(\'' + m.replyTo.key + '\')" style="background:rgba(0,0,0,0.04);border-right:2.5px solid var(--primary);padding:2px 5px;margin-bottom:3px;border-radius:3px;cursor:pointer;font-size:10px;font-family:var(--font-main);"><div style="font-weight:700;color:var(--primary);font-size:9px;">↩ ' + escapeHtml(m.replyTo.sender) + '</div><div style="color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(qt) + '</div></div>'; }
+    // ✅ استخدام escJsAttr للوسائط والاسم (يمنع كسر onclick مع أي اسم)
+    const safeMedia = m.media ? escJsAttr(m.media) : '';
+    const safeNameForViewer = escJsAttr(dn);
     let mh = '';
     if (m.media) {
-        if (m.type === 'video') mh = '<div class="media-container" onclick="openViewer(\'' + m.media + '\',\'video\',\'' + dn + '\')"><video src="' + m.media + '" class="msg-img"></video><div class="play-icon">▶</div></div>';
-        else if (m.type === 'image') mh = '<div class="media-container" onclick="openViewer(\'' + m.media + '\',\'image\',\'' + dn + '\')"><img src="' + m.media + '" class="msg-img"></div>';
+        if (m.type === 'video') mh = '<div class="media-container" onclick="openViewer(\'' + safeMedia + '\',\'video\',\'' + safeNameForViewer + '\')"><video src="' + m.media + '" class="msg-img"></video><div class="play-icon">▶</div></div>';
+        else if (m.type === 'image') mh = '<div class="media-container" onclick="openViewer(\'' + safeMedia + '\',\'image\',\'' + safeNameForViewer + '\')"><img src="' + m.media + '" class="msg-img"></div>';
         else if (m.type === 'youtube') { const y = m.youtubeId || extractYouTubeId(m.media); if (y) mh = '<div class="youtube-container" onclick="playYouTube(\'' + y + '\', this)"><img src="' + getYouTubeThumbnail(y) + '" class="youtube-thumbnail"><div class="youtube-label">▶ YouTube</div><div class="youtube-play-overlay"></div></div>'; }
     }
     let th = '';
@@ -4565,27 +4593,29 @@ function buildMessageElement(k, m, isInitial) {
     const targetCanDM = canUserDM(m.uid, dr);
     const canDM = !isMine && iCanDM && targetCanDM;
     acts += '<div class="msg-actions">';
-    if (!isMine && !isOwner()) acts += '<button class="action-sm report" onclick="openReportModal(\'message\',\'' + (m.uid || '') + '\',\'' + dn.replace(/'/g, "\\'") + '\',\'' + k + '\')"> إبلاغ</button>';
+    if (!isMine && !isOwner()) acts += '<button class="action-sm report" onclick="openReportModal(\'message\',\'' + (m.uid || '') + '\',\'' + escJsAttr(dn) + '\',\'' + k + '\')"> إبلاغ</button>';
     if (canDM) acts += '<button class="action-sm dm" onclick="openDMChat(\'' + m.uid + '\')">💌 خاص</button>';
     if (!isMine) acts += '<button class="action-sm reply" onclick="startReply(\'' + k + '\')">رد ↩</button>';
-    if (isOwner() && !isMine) acts += '<button class="action-sm alert" onclick="quickAlertUser(\'' + (m.uid || '') + '\',\'' + dn.replace(/'/g, "\\'") + '\')">🚨 تنبيه</button>';
+    if (isOwner() && !isMine) acts += '<button class="action-sm alert" onclick="quickAlertUser(\'' + escJsAttr(m.uid || '') + '\',\'' + escJsAttr(dn) + '\')">🚨 تنبيه</button>';
     if (cd) acts += '<button class="action-sm del" onclick="deleteMessage(\'' + k + '\')">🗑️</button>';
-    if (cb) acts += '<button class="action-sm ban" onclick="banUser(\'' + m.uid + '\',\'' + dn + '\')">حظر</button>';
-    if (cm) acts += '<button class="action-sm mute" onclick="openMuteMenu(\'' + m.uid + '\',\'' + dn + '\')">كتم</button>';
-    if (cp) acts += '<button class="action-sm promote" onclick="openRoleMenu(\'' + m.uid + '\',\'' + dn + '\')">رتبة</button>';
-    if (cc) acts += '<button class="action-sm" style="background:#e91e63;font-size:9px;padding:2px 6px;" onclick="openColorControl(\'' + m.uid + '\')">🎨</button>';
+    if (cb) acts += '<button class="action-sm ban" onclick="banUser(\'' + escJsAttr(m.uid) + '\',\'' + escJsAttr(dn) + '\')">حظر</button>';
+    if (cm) acts += '<button class="action-sm mute" onclick="openMuteMenu(\'' + escJsAttr(m.uid) + '\',\'' + escJsAttr(dn) + '\')">كتم</button>';
+    if (cp) acts += '<button class="action-sm promote" onclick="openRoleMenu(\'' + escJsAttr(m.uid) + '\',\'' + escJsAttr(dn) + '\')">رتبة</button>';
+    if (cc) acts += '<button class="action-sm" style="background:#e91e63;font-size:9px;padding:2px 6px;" onclick="openColorControl(\'' + escJsAttr(m.uid) + '\')">🎨</button>';
     acts += '</div>';
     const sns = snc ? 'color:' + snc + ';' : '', gc2 = gc && gc !== 'none' ? 'glow ' + gc : '';
     const animId = getNameAnim(m.uid);
     const animObj = NAME_ANIM_MAP[animId];
     const animClass = animObj && animObj.className ? animObj.className : '';
-    const safeName = dn.replace(/'/g, "\\'");
+    const safeNameForActions = escJsAttr(dn);
+    const safeUidForActions = escJsAttr(m.uid || '');
+    const safeAvatarForActions = escJsAttr(da);
     const isOwnerMsg = dr === 'owner';
     const ownerFrameClass = isOwnerMsg ? getOwnerFrameClass() : '';
     const ownerAvatarClass = isOwnerMsg ? 'owner-avatar-special' : '';
     const finalAvatarClass = ownerFrameClass ? ownerFrameClass : ownerAvatarClass;
     const ownerCrown = isOwnerMsg ? '<span class="owner-crown-badge">👑</span>' : '';
-    div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar ' + finalAvatarClass + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '" onclick="openProfileActions(\'' + (m.uid || '') + '\',\'' + safeName + '\',\'' + da + '\')">' + ownerCrown + '<span class="name-text ' + animClass + '">' + escapeHtml(dn) + '</span>' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '<span class="tick-single">✓</span>' : '') + '</div></div>' + acts;
+    div.innerHTML = '<div class="bubble ' + bc + '" style="' + bs + '"><div class="sender-info"><img src="' + da + '" class="sender-avatar ' + finalAvatarClass + '" onclick="openProfileActions(\'' + safeUidForActions + '\',\'' + safeNameForActions + '\',\'' + safeAvatarForActions + '\')"><span class="sender-name ' + (isMine ? 'mine-name' : '') + ' ' + gc2 + '" style="' + sns + '" onclick="openProfileActions(\'' + safeUidForActions + '\',\'' + safeNameForActions + '\',\'' + safeAvatarForActions + '\')">' + ownerCrown + '<span class="name-text ' + animClass + '">' + escapeHtml(dn) + '</span>' + badge + '</span></div>' + qh + mh + th + '<div class="msg-time" style="' + (bs.includes('color: white') ? 'color: rgba(255,255,255,0.6);' : '') + '">' + formatTime(m.time) + ' ' + (isMine ? '<span class="tick-single">✓</span>' : '') + '</div></div>' + acts;
     if (animSettings.glowEffect) div.classList.add('effect-glow-pulse');
     if (animSettings.heartEffect) div.classList.add('effect-heartbeat');
     return div;
@@ -4622,6 +4652,7 @@ function renderMessages() {
 }
 let _usersListScheduled = false;
 function updateUsersList() { if (isBeingDeleted) return; if (_usersListScheduled) return; _usersListScheduled = true; requestAnimationFrame(() => { _usersListScheduled = false; _updateUsersListReal(); }); }
+
 function _updateUsersListReal() {
     if (isBeingDeleted) return;
     const l = document.getElementById('users-list'); if (!l) return;
@@ -4667,12 +4698,17 @@ function _updateUsersListReal() {
             const statusEl = existing.querySelector('.user-status');
             if (statusEl) statusEl.className = 'user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline');
             const nameEl = existing.querySelector('.user-details h4');
-            if (nameEl) { nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + displayNameHtml + ' ' + roleBadge + ' ' + invalidBadgeHtml + ' ' + hiddenBadge; nameEl.onclick = () => openProfileActions(u.uid, isUnknown ? (u.name || 'بدون اسم') : escapeHtml(u.name), avatar); }
+            if (nameEl) {
+                nameEl.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + displayNameHtml + ' ' + roleBadge + ' ' + invalidBadgeHtml + ' ' + hiddenBadge;
+                nameEl.onclick = () => openProfileActions(u.uid, isUnknown ? (u.name || 'بدون اسم') : u.name, avatar);
+            }
             const lastSeenEl = existing.querySelector('.last-seen');
             if (lastSeenEl) lastSeenEl.textContent = statusText + (isOnline ? ' - ' + formatDate(u.lastSeen) : '');
             const avatarEl = existing.querySelector('.user-avatar');
-            if (avatarEl && avatarEl.src !== avatar) avatarEl.src = avatar;
-            if (avatarEl) avatarEl.onclick = () => openProfileActions(u.uid, isUnknown ? (u.name || 'بدون اسم') : escapeHtml(u.name), avatar);
+            if (avatarEl) {
+                if (avatarEl.src !== avatar) avatarEl.src = avatar;
+                avatarEl.onclick = () => openProfileActions(u.uid, isUnknown ? (u.name || 'بدون اسم') : u.name, avatar);
+            }
             const actionsEl = existing.querySelector('.user-actions');
             if (actionsEl) { actionsEl.id = 'uact-' + u.uid; updateUserControls(u.uid, u); }
             const currentIndex = Array.from(l.children).indexOf(existing);
@@ -4680,8 +4716,26 @@ function _updateUsersListReal() {
         } else {
             const card = document.createElement('div');
             card.className = 'user-card' + (isUnknown ? ' invalid-name' : ''); card.dataset.uid = u.uid; card.dataset.role = u.role || 'user';
-            const displayNameForClick = isUnknown ? (u.name || 'بدون اسم') : u.name;
-            card.innerHTML = `<div class="user-info"><img src="${avatar}" class="user-avatar" onclick="openProfileActions('${u.uid}','${escapeHtml(displayNameForClick).replace(/'/g, "\\'")}','${avatar}')"><div class="user-details"><h4 onclick="openProfileActions('${u.uid}','${escapeHtml(displayNameForClick).replace(/'/g, "\\'")}','${avatar}')"><span class="user-status ${isOnline ? (isAway ? 'away' : 'online') : 'offline'}"></span> ${displayNameHtml} ${roleBadge} ${invalidBadgeHtml} ${hiddenBadge}</h4><div class="last-seen">${statusText}${isOnline ? ' - ' + formatDate(u.lastSeen) : ''}</div></div></div><div class="user-actions" id="uact-${u.uid}"></div>`;
+            const cardAvatar = document.createElement('img');
+            cardAvatar.src = avatar;
+            cardAvatar.className = 'user-avatar';
+            cardAvatar.onclick = () => openProfileActions(u.uid, isUnknown ? (u.name || 'بدون اسم') : u.name, avatar);
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'user-info';
+            infoDiv.appendChild(cardAvatar);
+            const detDiv = document.createElement('div');
+            detDiv.className = 'user-details';
+            const h4 = document.createElement('h4');
+            h4.innerHTML = '<span class="user-status ' + (isOnline ? (isAway ? 'away' : 'online') : 'offline') + '"></span> ' + displayNameHtml + ' ' + roleBadge + ' ' + invalidBadgeHtml + ' ' + hiddenBadge;
+            h4.onclick = () => openProfileActions(u.uid, isUnknown ? (u.name || 'بدون اسم') : u.name, avatar);
+            const ls = document.createElement('div');
+            ls.className = 'last-seen';
+            ls.textContent = statusText + (isOnline ? ' - ' + formatDate(u.lastSeen) : '');
+            detDiv.appendChild(h4); detDiv.appendChild(ls);
+            infoDiv.appendChild(detDiv);
+            const actsDiv = document.createElement('div');
+            actsDiv.className = 'user-actions'; actsDiv.id = 'uact-' + u.uid;
+            card.appendChild(infoDiv); card.appendChild(actsDiv);
             if (idx < l.children.length) l.insertBefore(card, l.children[idx]); else l.appendChild(card);
             updateUserControls(u.uid, u);
         }
@@ -4705,42 +4759,77 @@ async function deleteMessage(k) {
 }
 function scrollToMessage(k) { const e = document.getElementById('msg-' + k); if (e) { e.scrollIntoView({ behavior: 'smooth', block: 'center' }); e.style.background = 'rgba(255,235,59,0.3)'; setTimeout(() => e.style.background = 'transparent', 1000); } }
 function playYouTube(v, c) { c.innerHTML = '<iframe src="https://www.youtube.com/embed/' + v + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
+
+// ✅ دالة أزرار التحكم — تستخدم data-attributes بدل onclick لتجنّب كسر JavaScript بأي اسم
 function updateUserControls(u, d) {
     const e = document.getElementById('uact-' + u); if (!e) return;
     const isUnknown = isUserUnknown(d);
     if (!canBan(myRole, d.role) && !canMute(myRole, d.role) && !canAssignRole(myRole, d.role) && !isOwner()) { e.innerHTML = ''; return; }
+
+    const safeUid  = escAttr(u);
+    const safeName = escAttr(d.name || 'مجهول');
+
     db.ref('bans/' + u).once('value', b => {
         const ib = b.exists(); let bt = '';
-        if (isUnknown && canDeleteUser()) bt += '<button class="ctrl-btn delete-unknown" onclick="deleteUnknownUser(\'' + u + '\')" title="حذف">🗑️</button>';
-        if (canBan(myRole, d.role)) { if (ib) { if (isOwner()) bt += '<button class="ctrl-btn unban" onclick="unbanUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">↺</button>'; } else bt += '<button class="ctrl-btn ban" onclick="banUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🚫</button>'; }
+
+        if (isUnknown && canDeleteUser())
+            bt += `<button class="ctrl-btn delete-unknown" data-uc-action="deleteUnknownUser" data-uc-uid="${safeUid}" title="حذف">🗑️</button>`;
+
+        if (canBan(myRole, d.role)) {
+            if (ib) { if (isOwner())
+                bt += `<button class="ctrl-btn unban" data-uc-action="unbanUser" data-uc-uid="${safeUid}" data-uc-name="${safeName}">↺</button>`; }
+            else
+                bt += `<button class="ctrl-btn ban" data-uc-action="banUser" data-uc-uid="${safeUid}" data-uc-name="${safeName}">🚫</button>`;
+        }
+
         db.ref('mutes/' + u).once('value', m => {
-            let im = false; if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
-            if (canMute(myRole, d.role)) { if (im) bt += '<button class="ctrl-btn unmute" onclick="unmuteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🔊</button>'; else bt += '<button class="ctrl-btn mute" onclick="openMuteMenu(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">🔇</button>'; }
-            if (canAssignRole(myRole, d.role)) bt += '<button class="ctrl-btn role" onclick="openRoleMenu(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')">⚙️</button>';
+            let im = false;
+            if (m.exists()) { const d2 = m.val(); if (d2.endTime > Date.now() || d2.endTime === 9999999999999) im = true; }
+
+            if (canMute(myRole, d.role)) {
+                if (im)
+                    bt += `<button class="ctrl-btn unmute" data-uc-action="unmuteUser" data-uc-uid="${safeUid}" data-uc-name="${safeName}">🔊</button>`;
+                else
+                    bt += `<button class="ctrl-btn mute" data-uc-action="openMuteMenu" data-uc-uid="${safeUid}" data-uc-name="${safeName}">🔇</button>`;
+            }
+
+            if (canAssignRole(myRole, d.role))
+                bt += `<button class="ctrl-btn role" data-uc-action="openRoleMenu" data-uc-uid="${safeUid}" data-uc-name="${safeName}">⚙️</button>`;
+
             if (isOwner()) {
-                bt += '<button class="ctrl-btn cap" onclick="openCapabilitiesModal(\'' + u + '\')" title="الصلاحيات">🛡️</button>';
-                bt += '<button class="ctrl-btn color" onclick="openColorControl(\'' + u + '\')" title="الألوان">🎨</button>';
-                bt += '<button class="ctrl-btn alert" onclick="quickAlertUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="تنبيه">🚨</button>';
+                bt += `<button class="ctrl-btn cap"   data-uc-action="openCapabilitiesModal" data-uc-uid="${safeUid}" title="الصلاحيات">🛡️</button>`;
+                bt += `<button class="ctrl-btn color" data-uc-action="openColorControl" data-uc-uid="${safeUid}" title="الألوان">🎨</button>`;
+                bt += `<button class="ctrl-btn alert" data-uc-action="quickAlertUser" data-uc-uid="${safeUid}" data-uc-name="${safeName}" title="تنبيه">🚨</button>`;
+
                 if (d.role !== 'owner') {
+                    // الخاص
                     const isDMOn = canUserDM(u, d.role);
                     const isExplicitDeny = dmDenialsData[u] === true;
                     const isExplicitAllow = allDMUsersData[u] === true;
                     let dmCls = 'dm-off', dmIcon = '🔒';
-                    if (isExplicitDeny) { dmCls = 'dm-deny'; dmIcon = '🚫'; } else if (isExplicitAllow) { dmCls = 'dm'; dmIcon = '💌'; } else if (isDMOn) { dmCls = 'dm'; dmIcon = '💌'; }
-                    bt += '<button class="ctrl-btn ' + dmCls + '" onclick="cycleUserDMPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الخاص">' + dmIcon + '</button>';
+                    if (isExplicitDeny) { dmCls = 'dm-deny'; dmIcon = '🚫'; }
+                    else if (isExplicitAllow || isDMOn) { dmCls = 'dm'; dmIcon = '💌'; }
+                    bt += `<button class="ctrl-btn ${dmCls}" data-uc-action="cycleUserDMPermission" data-uc-uid="${safeUid}" data-uc-name="${safeName}" title="الخاص">${dmIcon}</button>`;
+
+                    // الوسائط
                     const isMediaOn = canUserSendMedia(u, d.role);
                     const isMediaDeny = mediaDenialsData[u] === true;
                     const isMediaAllow = allMediaUsersData[u] === true;
                     let mediaCls = 'media-off', mediaIcon = '📎';
-                    if (isMediaDeny) { mediaCls = 'media-deny'; mediaIcon = '🚫'; } else if (isMediaAllow) { mediaCls = 'media'; mediaIcon = '📎'; } else if (isMediaOn) { mediaCls = 'media'; mediaIcon = '📎'; }
-                    bt += '<button class="ctrl-btn ' + mediaCls + '" onclick="cycleUserMediaPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الوسائط">' + mediaIcon + '</button>';
+                    if (isMediaDeny) { mediaCls = 'media-deny'; mediaIcon = '🚫'; }
+                    else if (isMediaAllow || isMediaOn) { mediaCls = 'media'; mediaIcon = '📎'; }
+                    bt += `<button class="ctrl-btn ${mediaCls}" data-uc-action="cycleUserMediaPermission" data-uc-uid="${safeUid}" data-uc-name="${safeName}" title="الوسائط">${mediaIcon}</button>`;
+
+                    // الحالات
                     const isStatusOn = canUserPostStatus(u, d.role);
                     const isStatusDeny = statusDenialsData[u] === true;
                     const isStatusAllow = allStatusUsersData[u] === true;
                     let statusCls = 'status-off', statusIcon = '📸';
-                    if (isStatusDeny) { statusCls = 'status-deny'; statusIcon = '🚫'; } else if (isStatusAllow) { statusCls = 'status'; statusIcon = '📸'; } else if (isStatusOn) { statusCls = 'status'; statusIcon = '📸'; }
-                    bt += '<button class="ctrl-btn ' + statusCls + '" onclick="cycleUserStatusPermission(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="الحالات">' + statusIcon + '</button>';
-                    bt += '<button class="ctrl-btn delete-user" onclick="permanentDeleteUser(\'' + u + '\',\'' + (d.name || 'مجهول') + '\')" title="حذف">🗑️</button>';
+                    if (isStatusDeny) { statusCls = 'status-deny'; statusIcon = '🚫'; }
+                    else if (isStatusAllow || isStatusOn) { statusCls = 'status'; statusIcon = '📸'; }
+                    bt += `<button class="ctrl-btn ${statusCls}" data-uc-action="cycleUserStatusPermission" data-uc-uid="${safeUid}" data-uc-name="${safeName}" title="الحالات">${statusIcon}</button>`;
+
+                    bt += `<button class="ctrl-btn delete-user" data-uc-action="permanentDeleteUser" data-uc-uid="${safeUid}" data-uc-name="${safeName}" title="حذف">🗑️</button>`;
                 }
             }
             e.innerHTML = bt;
@@ -4766,7 +4855,6 @@ function updateUI() {
     updateProfileDMBtn();
     updateUnknownUsersBtnVisibility();
     updateDMMediaBtnVisibility();
-    // ⭐ تحديث حالة إمكانية الدردشة
     updateChatInputState();
 }
 function updateChatInputState() {
@@ -4802,7 +4890,15 @@ function updateProfileButtonsByCapabilities() {
 }
 function updateMuteUI() { const i = document.getElementById('message-input'), b = document.getElementById('mute-banner'); if (isMuted) { i.placeholder = "🔇 مكتوم"; i.disabled = true; b.classList.add('active'); updateCountdown(); } else { updateChatInputState(); b.classList.remove('active'); if (countdownInterval) clearInterval(countdownInterval); } }
 function updateCountdown() { const e = document.getElementById('mute-countdown'); if (!isMuted) { e.textContent = "--:--"; return; } if (muteEndTime === 9999999999999) { e.textContent = "دائم ⛔"; return; } const tick = () => { if (!isMuted) return; const r = muteEndTime - Date.now(); if (r <= 0) { e.textContent = "جارٍ الفك..."; return; } const mins = Math.floor((r % 36e5) / 6e4), secs = Math.floor((r % 6e4) / 1e3); e.textContent = mins + ':' + secs.toString().padStart(2, '0'); }; tick(); if (countdownInterval) clearInterval(countdownInterval); countdownInterval = setInterval(tick, 1e3); }
-function toggleUsers() { document.getElementById('users-modal').classList.toggle('active'); document.getElementById('modal-overlay').classList.toggle('show'); updateUnknownUsersBtnVisibility(); }
+
+// ✅ تحديث دالة فتح قائمة المستخدمين لتحديثها فوراً عند الفتح
+function toggleUsers() {
+    const modal = document.getElementById('users-modal');
+    modal.classList.toggle('active');
+    document.getElementById('modal-overlay').classList.toggle('show');
+    if (modal.classList.contains('active')) updateUsersList();
+    updateUnknownUsersBtnVisibility();
+}
 function closeAllModals() {
     ['users-modal','notifications-modal','reports-modal','dm-list-modal','notification-settings-modal','profile-actions-modal','dm-monitor-modal','dm-monitor-view-modal','dm-settings-modal','media-settings-modal','status-settings-modal','warning-history-modal','warning-readers-modal','bg-settings-modal','anim-settings-modal','effects-settings-modal','theme-settings-modal','capabilities-modal','owner-premium-modal','alert-composer-modal','security-settings-modal','chat-settings-modal'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('active'); });
     document.getElementById('modal-overlay').classList.remove('show');
@@ -4911,7 +5007,7 @@ function renderStatuses() {
         const c = document.createElement('div');
         c.className = 'status-user-card ' + (hasUnseen ? 'unseen' : 'seen');
         c.onclick = () => viewUserStatuses(uid, d.statuses);
-        c.innerHTML = '<div class="status-avatar-wrapper"><img src="' + da + '" class="status-avatar" onclick="event.stopPropagation();openViewer(\'' + da + '\',\'image\',\'' + dn + '\')"><div class="status-ring"></div></div><div class="status-user-info"><div class="status-username">' + escapeHtml(dn) + (isMine ? '<span style="font-size:10px;color:#999;font-family:var(--font-main);">(حالتي)</span>' : '') + '</div><div class="status-time">' + formatDateShort(ls.time) + '</div><div class="status-preview">' + (ls.text || '📸') + '</div></div>' + (ts > 1 ? '<div class="status-count ' + (hasUnseen ? '' : 'seen') + '">' + ts + '</div>' : '');
+        c.innerHTML = '<div class="status-avatar-wrapper"><img src="' + da + '" class="status-avatar" onclick="event.stopPropagation();openViewer(\'' + escJsAttr(da) + '\',\'image\',\'' + escJsAttr(dn) + '\')"><div class="status-ring"></div></div><div class="status-user-info"><div class="status-username">' + escapeHtml(dn) + (isMine ? '<span style="font-size:10px;color:#999;font-family:var(--font-main);">(حالتي)</span>' : '') + '</div><div class="status-time">' + formatDateShort(ls.time) + '</div><div class="status-preview">' + (ls.text || '📸') + '</div></div>' + (ts > 1 ? '<div class="status-count ' + (hasUnseen ? '' : 'seen') + '">' + ts + '</div>' : '');
         l.appendChild(c);
     });
 }
@@ -4932,7 +5028,15 @@ function showStatusAtIndex(i) {
     if (s.media) { if (s.type === 'video') c.innerHTML = '<video src="' + s.media + '" controls autoplay playsinline></video>'; else c.innerHTML = '<img src="' + s.media + '">'; }
     else c.innerHTML = '<div style="color:#fff;font-size:18px;text-align:center;padding:20px;min-width:120px;min-height:60px;display:flex;align-items:center;justify-content:center;font-family:var(--font-main);">' + (s.text || '📸') + '</div>';
     const sb = s.seenBy || {}, vw = Object.keys(sb);
-    if (vw.length > 0) { const ns = vw.map(id => { const d = sb[id]; return '<span class="seen-user" onclick="event.stopPropagation();openViewer(\'' + (d.avatar || DEFAULT_ICON) + '\',\'image\',\'' + (d.name || 'مجهول') + '\')">' + (d.name || 'مجهول') + '</span>'; }).join('، '); se.innerHTML = '👁️ شاهدها: ' + ns; } else se.textContent = '👁️ لا مشاهدات';
+    if (vw.length > 0) {
+        const ns = vw.map(id => {
+            const d = sb[id];
+            const safeDN = escJsAttr(d.name || 'مجهول');
+            const safeAV = escJsAttr(d.avatar || DEFAULT_ICON);
+            return '<span class="seen-user" onclick="event.stopPropagation();openViewer(\'' + safeAV + '\',\'image\',\'' + safeDN + '\')">' + escapeHtml(d.name || 'مجهول') + '</span>';
+        }).join('، ');
+        se.innerHTML = '👁️ شاهدها: ' + ns;
+    } else se.textContent = '👁️ لا مشاهدات';
     if (canDeleteStatus(s.uid)) {
         db2.style.display = 'inline-block';
         db2.onclick = async (e) => {
@@ -4984,7 +5088,26 @@ async function publishStatus() {
 }
 function openNotifications() { document.getElementById('notifications-modal').classList.add('active'); document.getElementById('modal-overlay').classList.add('show'); renderNotifications(); }
 function closeNotifications() { document.getElementById('notifications-modal').classList.remove('active'); document.getElementById('modal-overlay').classList.remove('show'); }
-function renderNotifications() { if (isBeingDeleted) return; const l = document.getElementById('notifications-list'); l.innerHTML = ''; const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null); if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; } ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0)); ns.forEach(k => { const n = myNotifications[k]; if (!n) return; const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey; const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer'; d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); }; const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;'; db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); }; d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + fa + '\',\'image\',\'' + fn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>'; d.appendChild(db2); l.appendChild(d); }); }
+function renderNotifications() {
+    if (isBeingDeleted) return;
+    const l = document.getElementById('notifications-list'); l.innerHTML = '';
+    const ns = Object.keys(myNotifications).filter(k => myNotifications[k] !== null);
+    if (ns.length === 0) { l.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0;font-size:14px;font-family:var(--font-main);">📭 لا توجد إشعارات</div>'; return; }
+    ns.sort((a, b) => (myNotifications[b].time || 0) - (myNotifications[a].time || 0));
+    ns.forEach(k => {
+        const n = myNotifications[k]; if (!n) return;
+        const fn = n.from || 'مجهول', fa = n.fromAvatar || DEFAULT_ICON, sk = n.statusKey;
+        const d = document.createElement('div'); d.className = 'user-card'; d.style.cursor = 'pointer';
+        d.onclick = () => { if (sk && statusesCache[sk]) { const s = statusesCache[sk], uid = s.uid, us = []; Object.keys(statusesCache).forEach(k2 => { if (statusesCache[k2].uid === uid) us.push({ key: k2, ...statusesCache[k2] }); }); if (us.length > 0) { db.ref('notifications/' + myFP + '/' + k).remove(); closeNotifications(); if (currentTab !== 'status') switchTab('status'); setTimeout(() => viewUserStatuses(uid, us), 300); } } else db.ref('notifications/' + myFP + '/' + k).remove(); };
+        const db2 = document.createElement('button'); db2.textContent = '✕'; db2.style.cssText = 'background:0;border:0;color:#999;font-size:15px;cursor:pointer;padding:0 4px;';
+        db2.onclick = (e) => { e.stopPropagation(); if (confirm("حذف الإشعار؟")) db.ref('notifications/' + myFP + '/' + k).remove(); };
+        const safeFn = escJsAttr(fn);
+        const safeFa = escJsAttr(fa);
+        d.innerHTML = '<div class="user-info" style="flex:1;"><img src="' + fa + '" class="user-avatar" onclick="event.stopPropagation();openViewer(\'' + safeFa + '\',\'image\',\'' + safeFn + '\')"><div class="user-details"><h4>👁️ <strong>' + escapeHtml(fn) + '</strong> شاهد حالتك</h4><div style="font-size:10px;color:#777;font-family:var(--font-main);">' + formatDate(n.time) + '</div></div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:15px;color:var(--primary);">📸</span></div>';
+        d.appendChild(db2);
+        l.appendChild(d);
+    });
+}
 function clearAllNotifications() { if (confirm("مسح الكل؟")) db.ref('notifications/' + myFP).remove(); }
 function updateNotifBadge() { if (isBeingDeleted) return; const c = Object.keys(myNotifications).filter(k => myNotifications[k] !== null).length, b = document.getElementById('notif-badge'); if (c > 0) { b.textContent = c; b.classList.add('active'); } else b.classList.remove('active'); }
 function openYouTubeModal() { document.getElementById('youtube-modal').classList.add('active'); document.getElementById('yt-link-input').focus(); }
@@ -5129,8 +5252,13 @@ function renderReports() {
         } else if (!isPending) actionsHtml = `<div class="report-actions"><span class="action-btn-sm action-resolved">${r.actionTaken ? '⚡ ' + r.actionTaken : '✅ تم الحل'}</span></div>`;
         let deleteBtn = ''; if (canManageReports()) deleteBtn = `<button class="action-btn-sm action-delete" style="margin-top:5px;" onclick="deleteReport('${r.key}')">🗑️ حذف البلاغ</button>`;
         let msgPreview = '';
+        const safePreviewName = escJsAttr(displayTargetName);
+        const safePreviewMedia = r.messageSnapshot && r.messageSnapshot.media ? escJsAttr(r.messageSnapshot.media) : '';
         if (r.messageSnapshot) {
-            if (r.messageSnapshot.media) { if (r.messageSnapshot.media_type === 'image') msgPreview = `<img src="${escapeHtml(r.messageSnapshot.media)}" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','image','${escapeHtml(displayTargetName)}')" onerror="this.style.display='none'">`; else if (r.messageSnapshot.media_type === 'video') msgPreview = `🎥 <strong>فيديو</strong> <button class="action-btn-sm action-preview" onclick="openViewer('${escapeHtml(r.messageSnapshot.media)}','video','${escapeHtml(displayTargetName)}')">معاينة</button>`; }
+            if (r.messageSnapshot.media) {
+                if (r.messageSnapshot.media_type === 'image') msgPreview = `<img src="${escapeHtml(r.messageSnapshot.media)}" onclick="openViewer('${safePreviewMedia}','image','${safePreviewName}')" onerror="this.style.display='none'">`;
+                else if (r.messageSnapshot.media_type === 'video') msgPreview = `🎥 <strong>فيديو</strong> <button class="action-btn-sm action-preview" onclick="openViewer('${safePreviewMedia}','video','${safePreviewName}')">معاينة</button>`;
+            }
             if (r.messageSnapshot.text) msgPreview += (msgPreview ? '<br>' : '') + escapeHtml(r.messageSnapshot.text);
         } else msgPreview = 'لا يوجد محتوى';
         card.innerHTML = `<div class="report-header"><span class="reporter">👤 ${escapeHtml(r.reporterName)}</span><span>→</span><span class="target">🎯 ${escapeHtml(displayTargetName)}</span><span class="report-status status-${r.status}">${statusText}</span></div><div style="font-size:11px;color:#666;margin:4px 0;">${typeIcons[rt] || '📌'} نوع البلاغ: ${typeNames[rt] || rt}</div><div class="report-reason">📝 ${escapeHtml(r.reason)}</div><div class="report-msg">${typeIcons[rt] || '📌'} ${msgPreview}</div>${r.ownerComment ? `<div class="report-comment"><strong>👑 المالك:</strong> ${escapeHtml(r.ownerComment)}</div>` : ''}<div style="font-size:10px;color:#999;margin-top:4px;">🕒 ${formatDate(r.createdAt)}</div><div class="report-actions">${actionsHtml}</div>${deleteBtn}`;
@@ -5629,6 +5757,29 @@ function showChatAlert(alert) {
     div.innerHTML = `<div class="alert-bubble"><div class="alert-title">🚨 تنبيه رسمي 🚨</div><div class="alert-text">${escapeHtml(alert.text)}</div><div class="alert-sender-info"><img src="${alert.senderAvatar || DEFAULT_ICON}" onerror="this.src='${DEFAULT_ICON}'"><span>من: <strong>${escapeHtml(alert.sender || 'المالك')}</strong></span></div><div class="alert-target">${targetLabel}</div></div>`;
     box.appendChild(div);
     setTimeout(() => { box.scrollTop = box.scrollHeight; }, 50);
+}
+
+// ✅ دوال التهريب — escAttr لسياق HTML attribute، escJsAttr لسياق JavaScript
+function escAttr(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+function escJsAttr(str) {
+    if (str == null) return '';
+    let js = String(str)
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r');
+    return js
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
 }
 function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML }
 function formatTime(t) { return new Date(t).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) }
