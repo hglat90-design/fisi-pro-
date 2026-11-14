@@ -32,43 +32,18 @@
         .login-btn{width:100%;padding:15px;background:var(--primary);color:#fff;border:0;border-radius:15px;font-weight:700;cursor:pointer;font-size:18px;font-family:var(--font-main);transition:transform .2s}
         .login-btn:active{transform:scale(.97)}
 
-        #verify-screen{position:absolute;top:0;left:0;width:100%;height:100%;z-index:9999;display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px 18px;background:linear-gradient(160deg,#0d1f1c 0%,#0a2e26 50%,#071915 100%);color:#fff;overflow-y:auto;text-align:center}
-        #verify-screen.active{display:flex;animation:verifyFadeIn .4s ease}
         @keyframes verifyFadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
-        .verify-logo{font-size:60px;margin-bottom:6px;filter:drop-shadow(0 4px 20px rgba(0,200,160,.5));animation:verifyLogoPulse 2.5s ease-in-out infinite}
-        @keyframes verifyLogoPulse{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.08) rotate(-3deg)}}
-        .verify-title{font-size:30px;font-weight:900;color:#00d4a8;margin-bottom:4px;letter-spacing:1px;text-shadow:0 0 30px rgba(0,212,168,.6)}
-        .verify-subtitle{font-size:13px;color:#7fdcc6;margin-bottom:24px;font-weight:600;letter-spacing:.5px}
-        .verify-card{width:100%;max-width:420px;background:rgba(255,255,255,.04);border:1.5px solid rgba(0,212,168,.25);border-radius:22px;padding:22px 20px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:right;margin-bottom:12px}
-        .verify-steps-indicator{display:flex;justify-content:center;gap:12px;margin-bottom:22px}
-        .verify-step-dot{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-weight:800;color:#6b8f83;font-size:14px;border:2px solid rgba(255,255,255,.08);transition:all .3s}
-        .verify-step-dot.active{background:linear-gradient(135deg,#00d4a8,#00a884);color:#fff;border-color:transparent;transform:scale(1.12);box-shadow:0 0 20px rgba(0,212,168,.6)}
-        .verify-step-dot.done{background:linear-gradient(135deg,#4caf50,#2e7d32);color:#fff;border-color:transparent}
-        .verify-step-dot.done::before{content:'✓';font-weight:900}
-        .verify-step-dot.done span{display:none}
-        .verify-hint{background:rgba(0,212,168,.08);border:1.5px solid rgba(0,212,168,.25);border-radius:14px;padding:14px 16px;margin-bottom:16px;font-size:12.5px;color:#b8f0e4;line-height:1.8;text-align:right;font-weight:500}
-        .verify-hint strong{color:#00d4a8;display:block;margin-bottom:6px;font-size:13.5px}
+        /* ✅ (v2F) أزرار عامة تخدم شاشات الانتظار — تم حذف كل CSS توثيق تيليجرام نهائياً */
         .verify-btn{width:100%;padding:15px;background:linear-gradient(135deg,#00d4a8,#00a884);color:#fff;border:0;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;font-family:var(--font-main);transition:all .2s;margin-top:10px;letter-spacing:.3px;box-shadow:0 8px 24px rgba(0,212,168,.35);position:relative;overflow:hidden}
         .verify-btn:active{transform:scale(.97);box-shadow:0 4px 14px rgba(0,212,168,.4)}
         .verify-btn:disabled{background:#3a4a45;color:#7a8b85;cursor:not-allowed;box-shadow:none;transform:none}
-        .verify-btn-tg{background:linear-gradient(135deg,#0088cc,#006699);box-shadow:0 8px 24px rgba(0,136,204,.35)}
         .verify-btn-secondary{background:rgba(255,255,255,.06);color:#b8f0e4;border:1.5px solid rgba(255,255,255,.12);box-shadow:none;margin-top:8px;font-size:14px;padding:12px}
         .verify-btn-secondary:hover{background:rgba(255,255,255,.1)}
-        .verify-msg{padding:12px 14px;border-radius:12px;margin-bottom:14px;font-size:12.5px;font-weight:700;font-family:var(--font-main);display:none;text-align:right;line-height:1.6}
-        .verify-msg.error{background:rgba(244,67,54,.12);color:#ff8a80;border:1.5px solid rgba(244,67,54,.35);display:block}
-        .verify-msg.success{background:rgba(76,175,80,.12);color:#a5d6a7;border:1.5px solid rgba(76,175,80,.35);display:block}
-        .verify-msg.info{background:rgba(33,150,243,.12);color:#90caf9;border:1.5px solid rgba(33,150,243,.35);display:block}
-        .verify-spinner{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:verifySpin .8s linear infinite;vertical-align:middle;margin-left:6px}
-        @keyframes verifySpin{to{transform:rotate(360deg)}}
-        .verify-telegram-box{background:linear-gradient(135deg,rgba(0,136,204,.15),rgba(0,102,153,.08));border:2px dashed rgba(0,136,204,.5);border-radius:16px;padding:18px 16px;margin:14px 0;text-align:center}
-        .verify-telegram-box h3{color:#4fc3f7;font-size:16px;margin-bottom:10px;font-weight:800}
-        .verify-telegram-box p{color:#b8f0e4;font-size:12.5px;line-height:1.7;margin-bottom:12px}
-        .verify-telegram-box .verify-btn-tg{margin-top:0}
-        .verify-user-info{background:rgba(76,175,80,.1);border:1.5px solid rgba(76,175,80,.3);border-radius:12px;padding:12px 14px;margin-top:14px;font-size:13px;color:#c8f5c8;text-align:center;line-height:1.8}
-        .verify-user-info strong{color:#fff}
-        .verify-user-info .phone{color:#00d4a8;font-weight:800;direction:ltr;display:inline-block;letter-spacing:.5px}
-        .verify-footer{font-size:10.5px;color:#6b8f83;margin-top:18px;text-align:center;line-height:1.7}
-        .verify-footer .lock{color:#00d4a8;font-size:12px}
+        /* ✅ (v2F) أزرار شاشة الدخول الجديدة بنمط السيرفر */
+        .login-btn-ghost{background:linear-gradient(135deg,#546e7a,#37474f)!important;margin-top:10px}
+        .login-btn-device{background:linear-gradient(135deg,#1e88e5,#1565c0)!important;margin-top:10px}
+        .login-btn-ghost2{background:linear-gradient(135deg,#00897b,#00695c)!important;margin-top:10px;padding:12px;font-size:15px}
+        .login-stack{display:flex;flex-direction:column;width:100%;max-width:420px}
         .device-block-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a0000,#3a0000);z-index:99999999;display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px;color:#fff;text-align:center}
         .device-block-overlay.active{display:flex;animation:verifyFadeIn .4s}
         .device-block-overlay .dbi{font-size:80px;margin-bottom:20px;animation:warningPulse 1.8s infinite}
@@ -861,21 +836,35 @@
         #chat-messages::-webkit-scrollbar-thumb,#dm-chat-messages::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:3px}
         .hidden-owner-badge{background:#e91e63;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-right:6px;font-weight:700;display:inline-block}
 
-        .verify-status-card{background:linear-gradient(135deg,#fff,#f0faf7);border:2px solid var(--primary);border-radius:16px;padding:16px;margin-bottom:14px;text-align:right;font-family:var(--font-main)}
-        .verify-status-card.enabled{border-color:#4caf50;background:linear-gradient(135deg,#f1f8f1,#e8f5e9)}
-        .verify-status-card.disabled{border-color:#ff9800;background:linear-gradient(135deg,#fff8e1,#fff3e0)}
-        .verify-status-card .vsc-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(0,0,0,.08)}
-        .verify-status-card .vsc-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;transition:all .3s}
-        .verify-status-card.enabled .vsc-icon{background:linear-gradient(135deg,#4caf50,#2e7d32);box-shadow:0 0 20px rgba(76,175,80,.4)}
-        .verify-status-card.disabled .vsc-icon{background:linear-gradient(135deg,#ff9800,#f57c00);box-shadow:0 0 20px rgba(255,152,0,.4)}
-        .verify-status-card .vsc-info{flex:1;min-width:0}
-        .verify-status-card .vsc-title{font-weight:900;font-size:15px;color:#2e7d32;margin-bottom:4px}
-        .verify-status-card.disabled .vsc-title{color:#e65100}
-        .verify-status-card .vsc-desc{font-size:11.5px;color:#555;line-height:1.6}
-        .verify-status-card .vsc-big-toggle{width:100%;padding:14px;border:0;border-radius:12px;font-family:var(--font-main);font-size:14px;font-weight:900;cursor:pointer;color:#fff;margin-top:6px;letter-spacing:.3px;transition:all .2s}
-        .verify-status-card .vsc-big-toggle:active{transform:scale(.97)}
-        .verify-status-card.enabled .vsc-big-toggle{background:linear-gradient(135deg,#d32f2f,#b71c1c);box-shadow:0 6px 20px rgba(211,47,47,.4)}
-        .verify-status-card.disabled .vsc-big-toggle{background:linear-gradient(135deg,#4caf50,#2e7d32);box-shadow:0 6px 20px rgba(76,175,80,.4)}
+        /* ✅ (v2F) CSS محادثة الزائر قبل الدخول — نفس نمط شاشة القفل بالسيرفر */
+        #guest-support-screen{position:absolute;top:0;left:0;width:100%;height:100%;z-index:9998;display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px;background:linear-gradient(160deg,#0d1f1c,#071915);color:#fff}
+        #guest-support-screen.active{display:flex;animation:verifyFadeIn .4s}
+        .gs-card{width:100%;max-width:420px;background:rgba(255,255,255,.05);border:1.5px solid rgba(0,212,168,.3);border-radius:20px;padding:18px 16px;backdrop-filter:blur(10px);text-align:right;display:flex;flex-direction:column;max-height:82vh}
+        .gs-head{font-size:15px;font-weight:900;color:#00d4a8;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+        .gs-sub{font-size:11.5px;color:#7fdcc6;line-height:1.7;margin-bottom:10px}
+        .gs-list{flex:1;overflow-y:auto;min-height:160px;max-height:44vh;background:rgba(0,0,0,.25);border-radius:12px;padding:10px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px}
+        .gs-empty{color:#6b8f83;font-size:12px;text-align:center;padding:18px 0}
+        .gs-msg{max-width:85%;padding:8px 12px;border-radius:12px;font-size:12.5px;line-height:1.6;word-break:break-word;white-space:pre-wrap}
+        .gs-msg.me{align-self:flex-start;background:linear-gradient(135deg,#00897b,#00695c);color:#fff;border-bottom-left-radius:4px}
+        .gs-msg.admin{align-self:flex-end;background:rgba(255,255,255,.1);color:#e0f2f1;border-bottom-right-radius:4px}
+        .gs-msg small{display:block;font-size:9.5px;opacity:.75;margin-top:3px}
+        .gs-row{display:flex;gap:8px}
+        .gs-row input{flex:1;padding:12px 14px;border-radius:12px;border:1.5px solid rgba(0,212,168,.35);background:rgba(0,0,0,.3);color:#fff;font-family:var(--font-main);font-size:13.5px;outline:0}
+        .gs-row button{width:46px;border:0;border-radius:12px;background:linear-gradient(135deg,#00d4a8,#00a884);color:#fff;font-size:16px;cursor:pointer}
+        .gs-back{margin-top:10px;background:none;border:0;color:#7fdcc6;font-family:var(--font-main);font-size:12.5px;cursor:pointer;text-align:center}
+        .lk-live{font-size:10px;color:#00e676;font-weight:800;display:inline-flex;align-items:center;gap:4px}
+        .lk-live i{font-style:normal;animation:warningPulse 1.6s infinite}
+        /* ✅ (v2F) CSS لوحة كشف الحسابات */
+        .acc-stat{flex:1;background:rgba(0,128,105,.08);border:1.5px solid rgba(0,128,105,.25);border-radius:12px;padding:10px 6px;text-align:center}
+        .acc-stat b{display:block;font-size:17px;color:#00695c}
+        .acc-stat span{font-size:10px;color:#666;font-weight:700}
+        .acc-card{background:#fff;border:1.5px solid #e8eceb;border-radius:14px;padding:10px 12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+        .acc-card.multi{border-color:#ef5350;background:#fff5f5}
+        .acc-chip{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 8px;border-radius:8px;margin:2px 2px 0 0}
+        .acc-fp{font-size:9.5px;color:#90a4ae;direction:ltr;text-align:left;cursor:pointer;font-family:monospace;word-break:break-all}
+        .acc-multibanner{background:linear-gradient(135deg,#fff5f5,#ffebee);border:2px solid #ef5350;border-radius:14px;padding:12px 14px;margin-bottom:10px}
+        .acc-guestmsg{background:#f7fafc;border:1.5px solid #cfd8dc;border-radius:12px;padding:10px 12px;margin-bottom:8px}
+
 
         .auto-reg-card{background:linear-gradient(135deg,#fff,#f3e5f5);border:2px solid #9c27b0;border-radius:16px;padding:16px;margin-bottom:14px;text-align:right;font-family:var(--font-main)}
         .auto-reg-card.auto-on{border-color:#4caf50;background:linear-gradient(135deg,#f1f8f1,#e8f5e9)}
@@ -929,59 +918,7 @@
 
 <div class="app-container" id="app">
 
-    <div id="verify-screen">
-        <div class="verify-logo">💬</div>
-        <div class="verify-title">فيسي برو</div>
-        <div class="verify-subtitle">🔐 دخول حصري بتوثيق عبر كود البوت</div>
-        <div class="verify-card">
-            <div class="verify-steps-indicator">
-                <div class="verify-step-dot active" id="vstep1"><span>1</span></div>
-                <div class="verify-step-dot" id="vstep2"><span>2</span></div>
-            </div>
-            <div id="verify-msg" class="verify-msg"></div>
-            <div id="verify-step-start">
-                <div class="verify-hint">
-                    <strong>⚠️ تحذير أمني:</strong>
-                    الدخول إلى الغرفة يتم <b>حصرياً</b> عبر توثيق رقم الهاتف من بوت تليجرام الرسمي.
-                </div>
-                <button class="verify-btn verify-btn-tg" id="verify-start-btn" onclick="initTelegramVerification(event)">
-                    🚀 بدء التوثيق عبر بوت تليجرام
-                </button>
-                <button class="verify-btn verify-btn-secondary" onclick="skipVerificationIfAllowed()" id="verify-skip-btn" style="display:none;margin-top:14px;background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;border-color:transparent;font-weight:800;box-shadow:0 6px 20px rgba(255,152,0,.35)">
-                    ⚡ تخطي التوثيق والدخول بالاسم
-                </button>
-            </div>
-            <div id="verify-step-link" style="display:none;">
-                <div class="verify-telegram-box">
-                    <h3>🤖 الخطوة الأخيرة</h3>
-                    <p>اضغط على الزر أدناه لفتح بوت تليجرام الرسمي، ثم اضغط داخل البوت على زر <b>"مشاركة رقم الهاتف الموثق"</b>.</p>
-                    <a href="https://t.me/veysi_otp_bot" target="_blank" rel="noopener noreferrer" class="verify-btn verify-btn-tg" style="text-decoration:none;display:block;">
-                        💬 فتح البوت الآن
-                    </a>
-                </div>
-                <button class="verify-btn" id="verify-check-btn" onclick="checkTelegramContactAndLogin(event)">
-                    ✅ تم مشاركة الرقم، دخول تلقائي 🚀
-                </button>
-                <button class="verify-btn verify-btn-secondary" onclick="goToVerifyStep1()">
-                    ⬅️ رجوع
-                </button>
-            </div>
-            <div id="verify-step-success" style="display:none;">
-                <div class="verify-user-info">
-                    <div style="font-size:52px;margin-bottom:10px;">🎉</div>
-                    <div style="font-size:18px;font-weight:900;margin-bottom:8px;color:#fff;">تم التوثيق بنجاح!</div>
-                    <div>📱 رقمك الموثق:</div>
-                    <div class="phone" id="verified-phone-display">-</div>
-                    <div style="margin-top:10px;font-size:11px;color:#a5d6a7;">✓ جاري تسجيل الدخول...</div>
-                </div>
-            </div>
-        </div>
-        <div class="verify-footer">
-            <div class="lock">🔒 اتصال آمن ومشفر 100%</div>
-            <div>الدخول محمي ببصمة الجهاز + توثيق رقم الهاتف</div>
-        </div>
-    </div>
-
+    <!-- ✅ (v2F) تم حذف شاشة توثيق تيليجرام نهائياً بطلب المالك -->
     <div class="device-block-overlay" id="device-block-overlay">
         <div class="dbi">🚫</div>
         <h1>جهاز غير مصرح به</h1>
@@ -1011,24 +948,49 @@
     </div>
 
     <div id="login-screen">
-        <h2 style="color:var(--primary);margin-bottom:16px;font-weight:900;font-family:var(--font-main);font-size:22px;">💬 فيسي برو</h2>
+        <h2 style="color:var(--primary);margin-bottom:10px;font-weight:900;font-family:var(--font-main);font-size:22px;">💬 فيسي برو</h2>
         <div class="login-hint">
-            <strong>✅ رقم موثق:</strong> <span id="login-phone-badge" style="direction:ltr;display:inline-block;color:#0d47a1;font-weight:900;">-</span><br>
-            يجب إدخال <strong>اسم حقيقي وصحيح</strong> للدخول.
+            <strong>🔒 نفس نظام السيرفر — كل جهاز = حساب واحد:</strong><br>
+            سجّل حساباً جديداً بكلمة مرور، أو ادخل بحسابك، أو استخدم الدخول السريع بالجهاز.
+            <div style="margin-top:6px;"><strong>📱 حالة جهازك:</strong> <span id="login-device-badge" style="color:#0d47a1;font-weight:900;">جاري الفحص...</span></div>
         </div>
         <div class="login-error-box" id="login-error-box">
-            <strong>❌ خطأ في الاسم:</strong>
+            <strong>❌ خطأ:</strong>
             <div id="login-error-text"></div>
         </div>
-        <input type="text" id="username-input" class="login-input" placeholder="اكتب اسمك الحقيقي هنا..." autocomplete="off" maxlength="30">
-        <button id="login-btn" class="login-btn">🚀 دخول</button>
-        <p style="margin-top:8px;font-size:11px;color:#999;font-family:var(--font-main);">سيتم حفظ جلستك في هذا الجهاز</p>
+        <input type="text" id="username-input" class="login-input" placeholder="اسم المستخدم" autocomplete="off" maxlength="30">
+        <input type="password" id="password-input" class="login-input" placeholder="كلمة المرور" autocomplete="off" maxlength="40" style="margin-bottom:8px;">
+        <div class="login-stack">
+            <button id="login-btn" class="login-btn">🚀 دخول</button>
+            <button id="register-btn" class="login-btn login-btn-ghost">🆕 إنشاء حساب</button>
+            <button id="device-login-btn" class="login-btn login-btn-device">📱 دخول سريع (بالجهاز)</button>
+        </div>
+        <button id="guest-support-btn" class="login-btn login-btn-ghost2" style="max-width:420px;">🎧 تواصل مع الإدارة</button>
+        <p style="margin-top:10px;font-size:11px;color:#999;font-family:var(--font-main);">سيتم حفظ جلستك في هذا الجهاز — الجهاز مرتبط بحساب واحد فقط</p>
+    </div>
+
+    <!-- ✅ (v2F) تواصل مع الإدارة قبل الدخول — نفس نمط v67 بالسيرفر -->
+    <div id="guest-support-screen">
+        <div class="gs-card">
+            <div class="gs-head"><i>🎧</i> تواصل مباشر مع الإدارة <span class="lk-live" id="gs-live"><i>●</i> مباشر</span></div>
+            <div class="gs-sub" id="gs-sub">اكتب رسالتك للإدارة وسيصلك الرد هنا فوراً — حتى قبل الدخول أو إنشاء حساب.</div>
+            <div class="gs-list" id="gs-list"><div class="gs-empty">اكتب رسالتك للإدارة هنا وسيصلك الرد في نفس المكان</div></div>
+            <div class="gs-row">
+                <input type="text" id="gs-input" placeholder="اكتب رسالتك للإدارة..." maxlength="2000">
+                <button onclick="sendGuestSupportMsg()" title="إرسال">➤</button>
+            </div>
+            <button class="gs-back" onclick="closeGuestSupport()">رجوع إلى شاشة الدخول</button>
+        </div>
     </div>
 
     <div id="ban-screen">
         <div style="font-size:60px;">⛔</div>
         <h1 style="font-size:22px;font-family:var(--font-main);font-weight:900;">تم حظرك</h1>
-        <p style="font-size:14px;font-family:var(--font-main);">جهازك محظور</p>
+        <p style="font-size:14px;font-family:var(--font-main);">حسابك أو جهازك محظور من قبل الإدارة</p>
+        <div id="ban-reason-box" style="display:none;background:rgba(255,82,82,.12);border:1.5px solid rgba(255,82,82,.4);border-radius:14px;padding:12px 16px;margin:14px auto 6px;max-width:380px;width:100%;font-size:13px;color:#ffcdd2;line-height:1.8;text-align:right;">
+            <i>💬</i> <strong style="color:#ff8a80;">سبب الحظر من الإدارة:</strong><br><span id="ban-reason-text"></span>
+        </div>
+        <button onclick="openGuestSupport('محظور')" style="margin-top:18px;padding:12px 22px;background:linear-gradient(135deg,#00897b,#00695c);color:#fff;border:0;border-radius:12px;font-family:var(--font-main);font-weight:700;font-size:14px;cursor:pointer;">🎧 تواصل مع الإدارة</button>
     </div>
 
     <div id="maintenance-screen">
@@ -1063,6 +1025,9 @@
             </button>
             <button class="icon-btn" id="reports-btn" onclick="toggleReportsModal()" style="display:none;" title="لوحة البلاغات">
                 📋<span class="notif-badge" id="reports-badge">0</span>
+            </button>
+            <button class="icon-btn" id="accounts-btn" onclick="openAccountsModal()" style="display:none;" title="كشف الحسابات والأجهزة — للمالك فقط">
+                🔍<span class="notif-badge" id="guest-badge" style="display:none;">0</span>
             </button>
             <button class="icon-btn" id="dm-btn" onclick="openDMList()" title="الرسائل الخاصة" style="display:none;">
                 💌<span class="notif-badge" id="dm-badge">0</span>
@@ -1154,6 +1119,22 @@
     </div>
 
     <div class="modal-overlay" id="modal-overlay" onclick="closeAllModals()"></div>
+
+    <div class="modal-slide" id="accounts-modal">
+        <div class="modal-header" style="background:#37474f;color:#fff;">
+            <h3 style="color:#fff;">🔍 كشف الحسابات والأجهزة</h3>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <button onclick="renderAccountsList()" style="background:#4caf50;color:#fff;border:0;padding:3px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:var(--font-main);font-weight:600;">🔄</button>
+                <button class="modal-close" onclick="closeAccountsModal()" style="color:#fff;">✕</button>
+            </div>
+        </div>
+        <div style="padding:8px 10px 0;">
+            <input type="text" id="accounts-search" class="search-box" placeholder="🔍 بحث بالاسم أو بصمة الجهاز..." oninput="renderAccountsList()">
+        </div>
+        <div class="modal-body" id="accounts-body">
+            <div style="text-align:center;padding:20px;color:#999;font-size:13px;font-family:var(--font-main);">⏳ جاري التحميل...</div>
+        </div>
+    </div>
 
     <div class="modal-slide" id="users-modal">
         <div class="modal-header">
@@ -1446,21 +1427,9 @@
     <div class="modal-popup" id="security-settings-modal">
         <div class="popup-box" style="max-width:600px;max-height:92vh;">
             <h3 style="font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;color:#2e7d32;margin-bottom:4px;">🛡️ الإعدادات الأمنية</h3>
-            <p style="font-size:11px;color:#999;margin:6px 0 14px;line-height:1.6;">بوابة التوثيق + التسجيل التلقائي + منح صلاحيات الموافقة وتغيير الأسماء</p>
+            <p style="font-size:11px;color:#999;margin:6px 0 14px;line-height:1.6;">التسجيل التلقائي + منح صلاحيات الموافقة وتغيير الأسماء (توثيق تيليجرام أُزيل نهائياً)</p>
 
-            <div class="verify-status-card" id="verify-status-card">
-                <div class="vsc-header">
-                    <div class="vsc-icon" id="vsc-icon">🟢</div>
-                    <div class="vsc-info">
-                        <div class="vsc-title" id="vsc-title">بوابة التوثيق مفعّلة</div>
-                        <div class="vsc-desc" id="vsc-desc">المستخدمون الجدد يجب عليهم توثيق أرقامهم عبر @veysi_otp_bot قبل الدخول.</div>
-                    </div>
-                </div>
-                <button class="vsc-big-toggle" id="vsc-toggle-btn" onclick="toggleVerificationGate()">
-                    ⏸️ إيقاف بوابة التوثيق
-                </button>
-            </div>
-
+            <!-- ✅ (v2F) تم حذف بطاقة بوابة توثيق تيليجرام نهائياً -->
             <div class="auto-reg-card" id="auto-reg-card">
                 <div class="arc-header">
                     <div class="arc-icon" id="arc-icon">✅</div>
@@ -2126,12 +2095,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const BOT_TOKEN = '8733167556:AAH5RPKI8Gdr7L_TWldEHp91Kz6NESamrUM';
-const TELEGRAM_API = 'https://api.telegram.org/bot' + BOT_TOKEN;
-const BOT_USERNAME = 'veysi_otp_bot';
-let tgUserChatId = '';
-let tgVerifiedPhone = '';
-let tgVerifiedAt = 0;
+/* ✅ (v2F) تم حذف بوت تيليجرام نهائياً بطلب المالك — لا توثيق خارجي إطلاقاً */
 
 const VAPID_KEY = 'BDfPDyXH10O6avY5v2zHHmcEswMuxyOPWvBz048dp78RmeQM4Mit_TEE2cdxoAuKrujLT_3Ft_upy1K93zXT3kQ';
 const DEFAULT_ICON = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
@@ -2159,7 +2123,6 @@ let myAvatar = localStorage.getItem("avatar") || DEFAULT_ICON;
 let myRole = "user";
 let isBanned = false, isMuted = false, muteEndTime = 0;
 
-let verificationGateEnabled = true;
 let chatGlobalSettings = { min_role: 'user' };
 let chatDenialsData = {};
 
@@ -2227,7 +2190,6 @@ let selectedAlertUser = null;
 let colorSettingsListener = null;
 let glowSettingsListener = null;
 let nameAnimSettingsListener = null;
-let verificationGateListener = null;
 let chatSettingsListener = null;
 let chatDenialsListener = null;
 
@@ -2532,58 +2494,6 @@ function canChangeOtherNames(uid, role) {
     return false;
 }
 
-function listenVerificationGate() {
-    if (verificationGateListener) db.ref('appData/verificationGate').off('value', verificationGateListener);
-    verificationGateListener = db.ref('appData/verificationGate').on('value', snap => {
-        const d = snap.val();
-        if (d === null || d === undefined) verificationGateEnabled = true;
-        else if (typeof d === 'boolean') verificationGateEnabled = d;
-        else if (typeof d === 'object' && d.enabled !== undefined) verificationGateEnabled = d.enabled !== false;
-        else verificationGateEnabled = true;
-        updateSkipButtonVisibility();
-        updateVerifyStatusCard();
-    });
-}
-function updateSkipButtonVisibility() {
-    const skipBtn = document.getElementById('verify-skip-btn');
-    if (skipBtn) skipBtn.style.display = verificationGateEnabled ? 'none' : 'block';
-}
-function updateVerifyStatusCard() {
-    const card = document.getElementById('verify-status-card');
-    const icon = document.getElementById('vsc-icon');
-    const title = document.getElementById('vsc-title');
-    const desc = document.getElementById('vsc-desc');
-    const btn = document.getElementById('vsc-toggle-btn');
-    if (!card || !icon || !title || !desc || !btn) return;
-    if (verificationGateEnabled) {
-        card.className = 'verify-status-card enabled';
-        icon.textContent = '🟢';
-        title.textContent = 'بوابة التوثيق مفعّلة';
-        desc.textContent = 'المستخدمون الجدد يجب عليهم توثيق أرقامهم عبر @veysi_otp_bot قبل الدخول.';
-        btn.textContent = '⏸️ إيقاف بوابة التوثيق (السماح بالدخول بالاسم فقط)';
-    } else {
-        card.className = 'verify-status-card disabled';
-        icon.textContent = '🟠';
-        title.textContent = 'بوابة التوثيق معطّلة';
-        desc.textContent = 'يمكن لأي مستخدم الدخول بمجرد كتابة اسم صحيح دون الحاجة لتوثيق تليجرام.';
-        btn.textContent = '▶️ تفعيل بوابة التوثيق';
-    }
-}
-async function toggleVerificationGate() {
-    if (!isOwner()) return alert('⛔ للمالك فقط');
-    const newState = !verificationGateEnabled;
-    const msg = newState
-        ? '⚠️ تفعيل بوابة التوثيق؟\n\nسيُطلب من جميع المستخدمين الجدد توثيق رقمهم عبر بوت تليجرام @veysi_otp_bot قبل الدخول.'
-        : '⚠️ إيقاف بوابة التوثيق؟\n\n⚠️ تحذير: هذا سيسمح لأي شخص بالدخول بمجرد كتابة اسم دون أي توثيق!';
-    if (!confirm(msg)) return;
-    try {
-        await db.ref('appData/verificationGate').set(newState);
-        verificationGateEnabled = newState;
-        updateVerifyStatusCard();
-        alert(newState ? '✅ تم تفعيل بوابة التوثيق' : '⚠️ تم إيقاف بوابة التوثيق');
-    } catch (e) { alert('❌ ' + e.message); }
-}
-
 function listenAutoRegistration() {
     if (autoRegistrationListener) db.ref('appData/autoRegistration').off('value', autoRegistrationListener);
     autoRegistrationListener = db.ref('appData/autoRegistration').on('value', snap => {
@@ -2811,7 +2721,6 @@ async function toggleNameChangeUser(uid) {
 
 function openSecuritySettings() {
     if (!isOwner()) return alert('⛔ للمالك فقط');
-    updateVerifyStatusCard();
     updateAutoRegCard();
     renderApprovalRoleList();
     renderApprovalUserList();
@@ -2919,7 +2828,7 @@ document.addEventListener('click', function(e) {
 
 async function requestRegistrationApproval(name, avatar) {
     try {
-        await db.ref('pending_registrations/' + myFP).set({ name, avatar: avatar || DEFAULT_ICON, fp: myFP, phone: tgVerifiedPhone || null, requestedAt: Date.now(), status: 'pending' });
+        await db.ref('pending_registrations/' + myFP).set({ name, avatar: avatar || DEFAULT_ICON, fp: myFP, requestedAt: Date.now(), status: 'pending' });   /* ✅ (v2F) بدون توثيق خارجي */
         await logAdminAction('registration_request', myFP, name, {});
         const approvers = Object.keys(allUsersData).filter(k => canApproveRegistrations(k, allUsersData[k].role));
         approvers.forEach(uid => {
@@ -2931,7 +2840,6 @@ async function requestRegistrationApproval(name, avatar) {
 function showPendingApprovalScreen() {
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('verify-screen').classList.remove('active');
     document.getElementById('ban-screen').style.display = 'none';
     document.getElementById('maintenance-screen').style.display = 'none';
     document.getElementById('deleted-screen').style.display = 'none';
@@ -2958,6 +2866,8 @@ async function checkPendingApprovalStatus() {
             const storedName = localStorage.getItem("name") || "";
             if (storedName && validateName(storedName).valid) { myName = validateName(storedName).name; }
             else if (d.name && validateName(d.name).valid) { myName = validateName(d.name).name; localStorage.setItem('name', myName); }
+            const devGate = await vDevGate(myName);   /* ✅ (v46F) قفل الجهاز أولاً */
+            if (devGate === 'blocked') return;
             const s = await checkSecurity(myFP, myName);
             if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
             if (s.muted) isMuted = true;
@@ -2991,6 +2901,8 @@ function startPendingApprovalListener() {
                 const storedName = localStorage.getItem("name") || "";
                 if (storedName && validateName(storedName).valid) myName = validateName(storedName).name;
                 else if (d.name && validateName(d.name).valid) { myName = validateName(d.name).name; localStorage.setItem('name', myName); }
+                const devGate = await vDevGate(myName);   /* ✅ (v46F) قفل الجهاز أولاً */
+                if (devGate === 'blocked') return;
                 const s = await checkSecurity(myFP, myName);
                 if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
                 if (s.muted) isMuted = true;
@@ -3062,150 +2974,7 @@ async function setChatMinRole(role) {
 function roleRank(r) { return { user: 0, trusted: 1, mod: 2, manager: 3, owner: 4 }[r] || 0; }
 function getRoleLabel(role) { return { owner: '👑 مالك', manager: '💎 مدير', mod: '🛡️ مشرف', trusted: '✅ موثوق', user: '👤 عادي' }[role] || role; }
 
-function showVerifyMsg(message, type) {
-    const box = document.getElementById('verify-msg');
-    if (!box) return;
-    box.className = 'verify-msg ' + (type || 'info');
-    box.textContent = message;
-}
-function hideVerifyMsg() {
-    const box = document.getElementById('verify-msg');
-    if (box) box.className = 'verify-msg';
-}
-function goToVerifyStep1() {
-    document.getElementById('verify-step-start').style.display = 'block';
-    document.getElementById('verify-step-link').style.display = 'none';
-    document.getElementById('verify-step-success').style.display = 'none';
-    document.getElementById('vstep1').className = 'verify-step-dot active';
-    document.getElementById('vstep2').className = 'verify-step-dot';
-    hideVerifyMsg();
-    updateSkipButtonVisibility();
-}
-function showVerifyScreen() {
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('ban-screen').style.display = 'none';
-    document.getElementById('maintenance-screen').style.display = 'none';
-    document.getElementById('deleted-screen').style.display = 'none';
-    document.getElementById('pending-approval-screen').classList.remove('active');
-    document.getElementById('device-block-overlay').classList.remove('active');
-    document.getElementById('verify-screen').classList.add('active');
-    goToVerifyStep1();
-}
-function hideVerifyScreen() {
-    document.getElementById('verify-screen').classList.remove('active');
-}
-async function sendTelegramMessage(chatId, text) {
-    try {
-        const response = await fetch(TELEGRAM_API + '/sendMessage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' }) });
-        return await response.json();
-    } catch (e) { return null; }
-}
-async function sendTelegramMessageWithButton(chatId, text) {
-    try {
-        const response = await fetch(TELEGRAM_API + '/sendMessage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML', reply_markup: { keyboard: [[{ text: "📱 مشاركة رقم الهاتف الموثق", request_contact: true }]], resize_keyboard: true, one_time_keyboard: true } }) });
-        return await response.json();
-    } catch (e) { return null; }
-}
-async function initTelegramVerification(evt) {
-    const btn = evt ? evt.target : document.getElementById('verify-start-btn');
-    if (!btn) return;
-    btn.disabled = true;
-    const oldHtml = btn.innerHTML;
-    btn.innerHTML = '<span class="verify-spinner"></span> جاري الاتصال بالبوت...';
-    hideVerifyMsg();
-    try {
-        const response = await fetch(TELEGRAM_API + '/getUpdates?allowed_updates=["message"]');
-        const data = await response.json();
-        if (!data.ok || !data.result || data.result.length === 0) throw new Error('يرجى فتح البوت (@' + BOT_USERNAME + ') في تليجرام وإرسال /start أولاً ثم حاول مرة أخرى.');
-        const lastUpdate = data.result[data.result.length - 1];
-        const lastMsg = lastUpdate && lastUpdate.message;
-        if (!lastMsg || !lastMsg.chat) throw new Error('لم يتم العثور على محادثة نشطة. أرسل /start للبوت أولاً.');
-        tgUserChatId = String(lastMsg.chat.id);
-        await sendTelegramMessageWithButton(tgUserChatId, "مرحباً بك في <b>فيسي برو</b> 💬\n\nاضغط على الزر أدناه <b>(مشاركة رقم الهاتف الموثق)</b> لتسجيل الدخول تلقائياً:");
-        document.getElementById('verify-step-start').style.display = 'none';
-        document.getElementById('verify-step-link').style.display = 'block';
-        document.getElementById('vstep1').className = 'verify-step-dot done';
-        document.getElementById('vstep2').className = 'verify-step-dot active';
-        hideVerifyMsg();
-    } catch (error) {
-        showVerifyMsg(error.message || 'حدث خطأ. تأكد من إرسال /start للبوت.', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = oldHtml;
-    }
-}
-async function checkTelegramContactAndLogin(evt) {
-    const btn = evt ? evt.target : document.getElementById('verify-check-btn');
-    if (!btn) return;
-    btn.disabled = true;
-    const oldHtml = btn.innerHTML;
-    btn.innerHTML = '<span class="verify-spinner"></span> جاري التحقق والدخول التلقائي...';
-    hideVerifyMsg();
-    try {
-        const response = await fetch(TELEGRAM_API + '/getUpdates?allowed_updates=["message"]');
-        const data = await response.json();
-        if (!data.ok) throw new Error('فشل الاتصال بتليجرام');
-        let foundContact = null;
-        for (const update of data.result) {
-            const msg = update.message;
-            if (msg && msg.chat && String(msg.chat.id) === String(tgUserChatId)) {
-                if (msg.contact && msg.contact.phone_number) { foundContact = '+' + msg.contact.phone_number.replace(/^\+/, ''); break; }
-            }
-        }
-        if (!foundContact) throw new Error('لم تقم بمشاركة الرقم عبر الزر بعد! اضغط على زر "مشاركة رقم الهاتف الموثق" داخل تليجرام أولاً.');
-        const blockCheck = await checkPhoneBindingAndAntiClone(foundContact);
-        if (!blockCheck.ok) {
-            showDeviceBlock(blockCheck.reason || 'هذا الرقم مرتبط بجهاز آخر');
-            await sendTelegramMessage(tgUserChatId, '🚫 تم رفض الدخول: هذا الرقم موثق على جهاز آخر ولا يمكن استخدامه هنا.');
-            return;
-        }
-        tgVerifiedPhone = foundContact;
-        tgVerifiedAt = Date.now();
-        localStorage.setItem('vpro_phone', tgVerifiedPhone);
-        localStorage.setItem('vpro_verified_at', tgVerifiedAt);
-        localStorage.setItem('vpro_chat_id', tgUserChatId);
-        localStorage.setItem('vpro_bound_fp', myFP);
-        document.getElementById('verify-step-start').style.display = 'none';
-        document.getElementById('verify-step-link').style.display = 'none';
-        document.getElementById('verify-step-success').style.display = 'block';
-        document.getElementById('verified-phone-display').textContent = tgVerifiedPhone;
-        document.getElementById('vstep1').className = 'verify-step-dot done';
-        document.getElementById('vstep2').className = 'verify-step-dot done';
-        await sendTelegramMessage(tgUserChatId, '🎉 تم تسجيل دخولك بنجاح تلقائياً إلى فيسي برو!\n📱 الرقم الموثق: ' + tgVerifiedPhone);
-        setTimeout(() => { hideVerifyScreen(); proceedAfterVerification(); }, 1500);
-    } catch (error) {
-        showVerifyMsg(error.message, 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = oldHtml;
-    }
-}
-function skipVerificationIfAllowed() {
-    if (verificationGateEnabled) { alert('🔒 بوابة التوثيق مفعّلة — يجب إكمال التوثيق'); return; }
-    localStorage.removeItem('vpro_phone'); localStorage.removeItem('vpro_verified_at'); localStorage.removeItem('vpro_chat_id'); localStorage.removeItem('vpro_bound_fp');
-    hideVerifyScreen(); proceedAfterVerification();
-}
-async function checkPhoneBindingAndAntiClone(phone) {
-    try {
-        const cleanPhone = phone.replace(/[^0-9+]/g, '');
-        if (!cleanPhone || cleanPhone.length < 8) return { ok: false, reason: 'رقم الهاتف غير صالح' };
-        const snap = await db.ref('phone_bindings/' + cleanPhone).once('value');
-        const data = snap.val();
-        if (!data) {
-            await db.ref('phone_bindings/' + cleanPhone).set({ fp: myFP, phone: cleanPhone, name: myName || '', createdAt: Date.now(), lastUsedAt: Date.now(), userAgent: (navigator.userAgent || '').substring(0, 200), platform: ENV.isWebView ? 'webview' : 'web' });
-            return { ok: true, isNew: true };
-        }
-        if (data.fp && data.fp !== myFP) {
-            await db.ref('security_logs/phone_mismatch').push({ phone: cleanPhone, originalFp: data.fp, attemptedFp: myFP, attemptedAt: Date.now(), userAgent: (navigator.userAgent || '').substring(0, 200) }).catch(() => {});
-            return { ok: false, reason: 'هذا الرقم موثق على جهاز آخر ولا يمكن استخدامه هنا.' };
-        }
-        await db.ref('phone_bindings/' + cleanPhone).update({ lastUsedAt: Date.now(), name: myName || data.name || '' });
-        return { ok: true };
-    } catch (e) { return { ok: false, reason: 'حدث خطأ في التحقق الأمني.' }; }
-}
 function showDeviceBlock(reason) {
-    document.getElementById('verify-screen').classList.remove('active');
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('ban-screen').style.display = 'none';
@@ -3218,32 +2987,9 @@ function showDeviceBlock(reason) {
     overlay.classList.add('active');
     try { if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]); } catch (e) {}
 }
-async function checkVerifiedSession() {
-    if (verificationGateEnabled === false) return true;
-    const savedPhone = localStorage.getItem('vpro_phone');
-    const savedFp = localStorage.getItem('vpro_bound_fp');
-    const savedAt = Number(localStorage.getItem('vpro_verified_at') || 0);
-    if (!savedPhone || savedAt === 0) return false;
-    try {
-        const cleanPhone = savedPhone.replace(/[^0-9+]/g, '');
-        const snap = await db.ref('phone_bindings/' + cleanPhone).once('value');
-        const data = snap.val();
-        if (!data || !data.fp) { clearVerifiedSession(); return false; }
-        if (data.fp !== myFP) {
-            await db.ref('security_logs/session_fp_change').push({ phone: cleanPhone, originalFp: data.fp, currentFp: myFP, savedFp: savedFp || 'none', at: Date.now(), ua: (navigator.userAgent || '').substring(0, 200) }).catch(() => {});
-            clearVerifiedSession(); return false;
-        }
-        tgVerifiedPhone = savedPhone; tgVerifiedAt = savedAt;
-        return true;
-    } catch (e) { return false; }
-}
-function clearVerifiedSession() {
-    try { localStorage.removeItem('vpro_phone'); localStorage.removeItem('vpro_verified_at'); localStorage.removeItem('vpro_chat_id'); localStorage.removeItem('vpro_bound_fp'); } catch (e) {}
-}
 async function resetDeviceAndRetry() {
-    if (!confirm('⚠️ إعادة تعيين الجلسة؟\n\nستحتاج إلى توثيق رقمك من جديد عبر بوت تليجرام.')) return;
+    if (!confirm('⚠️ إعادة تعيين الجلسة؟\n\nستحتاج إلى تسجيل الدخول من جديد.')) return;
     try {
-        clearVerifiedSession();
         try { localStorage.removeItem('fp_cached'); } catch(e) {}
         try { localStorage.removeItem('fp'); } catch(e) {}
         try { sessionStorage.clear(); } catch(e) {}
@@ -4023,9 +3769,110 @@ function openNameSettingsPanel() {
     toggleUsers();
 }
 
-async function getDeviceFingerprint() { try { const f = await FingerprintJS.load(), r = await f.get(); return 'fp_' + r.visitorId } catch (e) { return 'fp_fallback_' + Math.random().toString(36).substr(2, 9) } }
+/* ============================== ✅✅✅ (v46F) قفل الجهاز الحديدي — جهاز واحد = حساب واحد ==============================
+   نفس نظام فيسي برو v46 بالضبط لكن محلياً عبر Firebase:
+   • بصمة عتاد حديدية (كانفس + ويب جي إل + شاشة + عتاد + توقيت) لا تمحها إعادة التثبيت ولا مسح البيانات ولا تطبيقات النسخ
+   • سجل الأجهزة: appData/deviceLock/{بصمة} = الحساب المرتبط — من يدخل من جهاز مرتبط يُكشف فوراً
+     ويُدخل حسابه القديم بنافذة الصح الأخضر الاحترافية (نفس تصميم v46.1)
+   • نفس الحظر بضبط: حظر أو حذف إداري لمستخدم = أجهزته تُقفل نهائياً (appData/bannedDevices)
+   • حذف الحساب بنفسه لا يقفل الجهاز — قرار حر */
+function __hwHash(s) { let h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ('0000000' + (h >>> 0).toString(16)).slice(-8); }
+function __hwCanvas() { try { const c = document.createElement('canvas'); c.width = 220; c.height = 70; const x = c.getContext('2d'); x.textBaseline = 'top'; x.font = '15px Arial'; x.fillStyle = '#f60'; x.fillRect(0, 0, 100, 20); x.fillStyle = '#069'; x.fillText('VeysiPro-DeviceLock-46F', 2, 15); x.fillStyle = 'rgba(102,204,0,.7)'; x.fillText('بصمة الجهاز الحديدية', 4, 36); x.strokeStyle = 'rgb(120,80,200)'; x.beginPath(); x.arc(60, 35, 22, 0, 6.28); x.stroke(); const d = c.toDataURL(); let h = 0; for (var i = 0; i < d.length; i += 3) { h = (Math.imul(h, 31) + d.charCodeAt(i)) | 0; } return h.toString(36); } catch (e) { return 'nc'; } }
+function __hwWebGL() { try { const c = document.createElement('canvas'); const g = c.getContext('webgl') || c.getContext('experimental-webgl'); if (!g) return 'ng'; const dbg = g.getExtension('WEBGL_debug_renderer_info'); const r = dbg ? String(g.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || '') : ''; const v = dbg ? String(g.getParameter(dbg.UNMASKED_VENDOR_WEBGL) || '') : ''; return __hwHash(r + '|' + v); } catch (e) { return 'nw'; } }
+function getHardwareFp() {
+    if (window.__vHwCache) return window.__vHwCache;
+    let s = '';
+    try {
+        const ua = String(navigator.userAgent || '').replace(/\/[\d.]+/g, '').replace(/\s+/g, ' ').trim();
+        s = [ua, navigator.language || '', (Intl.DateTimeFormat().resolvedOptions().timeZone || ''), (screen.width + 'x' + screen.height + 'x' + screen.colorDepth), String(window.devicePixelRatio || 1), String(navigator.hardwareConcurrency || 0), String(navigator.deviceMemory || 0), String(navigator.maxTouchPoints || 0), navigator.platform || '', __hwCanvas(), __hwWebGL()].join('|');
+    } catch (e) { s = String(navigator.userAgent || 'ua'); }
+    const fp = 'hw_' + __hwHash(s);
+    window.__vHwCache = fp;
+    return fp;
+}
+function vDevCandidates() {
+    let ls = null; try { ls = localStorage.getItem('vpro_hw_id'); } catch (e) {}
+    const hw = getHardwareFp();
+    try { if (!ls) localStorage.setItem('vpro_hw_id', hw); } catch (e) {}
+    return (ls && ls !== hw) ? [ls, hw] : [hw];
+}
+function vDevEnsureStyle() {
+    if (window.__vDevStyleDone) return; window.__vDevStyleDone = true;
+    const st = document.createElement('style');
+    st.textContent = '@keyframes vDevIn{from{opacity:0}to{opacity:1}}@keyframes vDevCard{from{opacity:0;transform:translateY(28px) scale(.95)}to{opacity:1;transform:none}}@keyframes vDevPop{0%{transform:scale(.45);opacity:0}62%{transform:scale(1.1);opacity:1}100%{transform:scale(1)}}@keyframes vDevRing{0%{transform:scale(.82);opacity:.8}75%{transform:scale(1.5);opacity:0}100%{transform:scale(1.5);opacity:0}}@keyframes vDevCircle{to{stroke-dashoffset:0}}@keyframes vDevMark{to{stroke-dashoffset:0}}@keyframes vDevGlow{0%,100%{box-shadow:0 0 0 7px rgba(34,197,94,.14),0 10px 30px rgba(34,197,94,.38)}50%{box-shadow:0 0 0 14px rgba(34,197,94,.05),0 10px 40px rgba(34,197,94,.55)}}'
+      + '#v-dev-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483000;background:rgba(4,7,15,.74);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:22px;direction:rtl;animation:vDevIn .16s ease}'
+      + '#v-dev-card{width:100%;max-width:352px;background:linear-gradient(180deg,#1b2330,#141b26);border:1px solid rgba(34,197,94,.42);border-radius:20px;padding:24px 20px 18px;box-shadow:0 24px 70px rgba(0,0,0,.65),0 0 30px rgba(34,197,94,.16);animation:vDevCard .22s cubic-bezier(.2,.9,.3,1.15);text-align:center;font-family:var(--font-main)}'
+      + '#v-dev-icon{position:relative;width:58px;height:58px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#22c55e,#15803d);animation:vDevPop .55s cubic-bezier(.2,.9,.3,1.35) both,vDevGlow 2.4s .7s ease-in-out infinite}'
+      + '#v-dev-icon::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(34,197,94,.55);animation:vDevRing 1.8s ease-out .6s infinite}'
+      + '.v-dev-circle{stroke-dasharray:145;stroke-dashoffset:145;animation:vDevCircle .5s .15s cubic-bezier(.65,0,.45,1) forwards}.v-dev-mark{stroke-dasharray:34;stroke-dashoffset:34;animation:vDevMark .3s .55s cubic-bezier(.65,0,.45,1) forwards}'
+      + '#v-dev-title{font-size:16.5px;font-weight:800;color:#f8fafc;margin:0 0 8px;line-height:1.5}'
+      + '#v-dev-msg{font-size:13.5px;line-height:1.95;color:#8b98a9;white-space:pre-line;word-break:break-word;margin:0 0 16px}'
+      + '#v-dev-ok{width:100%;padding:11.5px 8px;border-radius:12px;font-size:14px;font-weight:800;border:0;cursor:pointer;background:linear-gradient(135deg,#22c55e,#15803d);color:#fff;font-family:var(--font-main)}';
+    document.head.appendChild(st);
+}
+function vDevAlert(msg, title) {
+    return new Promise(function (resolve) {
+        try { vDevEnsureStyle(); } catch (e) {}
+        const old = document.getElementById('v-dev-overlay');
+        if (old && old.parentNode) old.parentNode.removeChild(old);
+        const ov = document.createElement('div'); ov.id = 'v-dev-overlay';
+        ov.innerHTML = '<div id="v-dev-card">'
+          + '<div id="v-dev-icon"><svg viewBox="0 0 52 52" width="34" height="34" aria-hidden="true"><circle class="v-dev-circle" cx="26" cy="26" r="23" fill="none" stroke="rgba(255,255,255,.92)" stroke-width="2.5"/><path class="v-dev-mark" fill="none" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" d="M14.5 27.5l7.5 7.5 15.5-16.5"/></svg></div>'
+          + '<div id="v-dev-title">' + (title || 'تم التعرف على جهازك') + '</div>'
+          + '<div id="v-dev-msg"></div>'
+          + '<button id="v-dev-ok">حسناً</button></div>';
+        ov.querySelector('#v-dev-msg').textContent = String(msg || '');
+        document.body.appendChild(ov);
+        const done = () => { if (ov.parentNode) ov.parentNode.removeChild(ov); resolve(true); };
+        ov.querySelector('#v-dev-ok').addEventListener('click', done);
+        setTimeout(() => { try { ov.querySelector('#v-dev-ok').focus(); } catch (e) {} }, 60);
+    });
+}
+async function vDevGate(wantedName) {
+    /* فحص الجهاز قبل أي دخول: محظور؟ مرتبط بحساب آخر؟ — يُرجع 'blocked' أو 'ok' */
+    try {
+        const cands = vDevCandidates();
+        let hitKey = null;
+        for (const k of cands) {
+            const bd = await db.ref('appData/bannedDevices/' + k).once('value');
+            if (bd.exists()) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return 'blocked'; }
+            if (!hitKey) {
+                const ls = await db.ref('appData/deviceLock/' + k).once('value');
+                if (ls.exists() && (ls.val() || {}).fp) hitKey = k;
+            }
+        }
+        if (!hitKey) { window.__vDevKey = cands[cands.length - 1]; return 'ok'; }
+        window.__vDevKey = hitKey;
+        const lock = (await db.ref('appData/deviceLock/' + hitKey).once('value')).val() || {};
+        const boundFp = lock.fp;
+        if (boundFp === myFP) { if (lock.name) { myName = lock.name; try { localStorage.setItem('name', myName); } catch (e) {} } return 'ok'; }
+        const uSnap = await db.ref('users/' + boundFp).once('value');
+        const u = uSnap.val();
+        if (!u || !u.name) { return 'ok'; }
+        myFP = boundFp; try { localStorage.setItem('fp', myFP); } catch (e) {}
+        myName = u.name; try { localStorage.setItem('name', myName); } catch (e) {}
+        if (u.avatar) { myAvatar = u.avatar; try { localStorage.setItem('avatar', myAvatar); } catch (e) {} }
+        try { localStorage.setItem('vpro_hw_id', hitKey); } catch (e) {}
+        await vDevAlert('هذا الجهاز مرتبط بحساب «' + myName + '».\nتم تسجيل دخولك إليه بنجاح — كل جهاز يملك حساباً واحداً فقط.', 'تم التعرف على جهازك');
+        return 'ok';
+    } catch (e) { try { window.__vDevKey = getHardwareFp(); } catch (e2) {} return 'ok'; }
+}
+function vDevBind() {
+    try {
+        const hw = window.__vDevKey || getHardwareFp();
+        const t = Date.now();
+        db.ref('appData/deviceLock/' + hw).update({ fp: myFP, name: myName || '', boundAt: t }).catch(() => {});
+        let ls = null; try { ls = localStorage.getItem('vpro_hw_id'); } catch (e) {}
+        if (ls && ls !== hw) db.ref('appData/deviceLock/' + ls).update({ fp: myFP, name: myName || '', boundAt: t }).catch(() => {});
+        db.ref('users/' + myFP + '/hwFp').set(hw).catch(() => {});
+    } catch (e) {}
+}
+async function vDevBanDevice(uid, name) { try { const hw = (await db.ref('users/' + uid + '/hwFp').once('value')).val(); if (hw) await db.ref('appData/bannedDevices/' + hw).set({ at: Date.now(), reason: 'حظر/حذف من الإدارة', name: name || '' }); } catch (e) {} }
+async function vDevUnbanDevice(uid) { try { const hw = (await db.ref('users/' + uid + '/hwFp').once('value')).val(); if (hw) await db.ref('appData/bannedDevices/' + hw).remove(); } catch (e) {} }
+async function getDeviceFingerprint() { try { const f = await FingerprintJS.load(), r = await f.get(); return 'fp_' + r.visitorId } catch (e) { try { return 'fp_hw' + __hwHash(getHardwareFp()); } catch (e2) { return 'fp_fallback_' + Math.random().toString(36).substr(2, 9) } } }
 async function checkSecurity(fp, name) {
     const c = { banned: false, muted: false };
+    try { const dk = window.__vDevKey || getHardwareFp(); const bd = await db.ref('appData/bannedDevices/' + dk).once('value'); if (bd.exists()) { c.banned = true; c.deviceBanned = true; return c; } } catch (e) {}
     const b = await db.ref('bans/' + fp).once('value'); if (b.exists()) { c.banned = true; return c }
     const m = await db.ref('mutes/' + fp).once('value'); if (m.exists()) { const d = m.val(); if (d.endTime > Date.now() || d.endTime === 9999999999999) { c.muted = true; muteEndTime = d.endTime } }
     return c;
@@ -4176,15 +4023,478 @@ async function denyAllCapabilities(uid) {
     } catch(e) { alert('❌ ' + e.message); }
 }
 
+
+/* ============================================================
+   ✅✅✅ (v2F) نظام الدخول الجديد — نفس نظام السيرفر بالكامل:
+   - دخول بالاسم + كلمة المرور (تشفير SHA-256 محلي يعمل على http و https)
+   - إنشاء حساب جديد بكلمة مرور
+   - دخول سريع بالجهاز (الجهاز مرتبط بحساب واحد فقط — قفل حديدي)
+   - تواصل مع الإدارة قبل الدخول (رسائل الزوار)
+   - لوحة كشف الحسابات للأجهزة المتعددة (للمالك)
+   - سبب الحظر على شاشة الحظر + مراقب حظر لحظي
+   ============================================================ */
+
+/* ---------- SHA-256 نقي (يعمل بدون WebCrypto — على http و file) ---------- */
+function vSha256Sync(ascii) {
+    function rightRotate(value, amount) { return (value >>> amount) | (value << (32 - amount)); }
+    var mathPow = Math.pow, maxWord = mathPow(2, 32), i, j, result = '';
+    var words = [], asciiBitLength = ascii.length * 8;
+    var hash = vSha256Sync.h = vSha256Sync.h || [];
+    var k = vSha256Sync.k = vSha256Sync.k || [];
+    var primeCounter = k.length, isComposite = {};
+    for (var candidate = 2; primeCounter < 64; candidate++) {
+        if (!isComposite[candidate]) {
+            for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+            hash[primeCounter] = (mathPow(candidate, .5) * maxWord) | 0;
+            k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+        }
+    }
+    ascii += '\x80';
+    while (ascii.length % 64 - 56) ascii += '\x00';
+    for (i = 0; i < ascii.length; i++) {
+        j = ascii.charCodeAt(i);
+        if (j >> 8) return 'v2f_err_nonascii';
+        words[i >> 2] |= j << ((3 - i) % 4) * 8;
+    }
+    words[words.length] = ((asciiBitLength / maxWord) | 0);
+    words[words.length] = (asciiBitLength);
+    for (j = 0; j < words.length;) {
+        var w = words.slice(j, j += 16), oldHash = hash;
+        hash = hash.slice(0, 8);
+        for (i = 0; i < 64; i++) {
+            var w15 = w[i - 15], w2 = w[i - 2], a = hash[0], e = hash[4];
+            var temp1 = hash[7] + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ((e & hash[5]) ^ ((~e) & hash[6])) + k[i]
+                + (w[i] = (i < 16) ? w[i] : (w[i - 16] + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) | 0);
+            var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+            hash = [(temp1 + temp2) | 0].concat(hash);
+            hash[4] = (hash[4] + temp1) | 0;
+        }
+        for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+    }
+    for (i = 0; i < 8; i++) for (j = 3; j + 1; j--) { var b = (hash[i] >> (j * 8)) & 255; result += ((b < 16) ? 0 : '') + b.toString(16); }
+    return result;
+}
+async function vHash(str) {
+    /* ✅ نفس الخوارزمية في كل الأحوال لضمان تطابق الجلسات بين http و https */
+    try { return vSha256Sync(unescape(encodeURIComponent(String(str || '')))); } catch (e) { return 'v2f_err'; }
+}
+
+/* ---------- فهرس أسماء الحسابات (usernames) ---------- */
+function uKey(lower) { return encodeURIComponent(String(lower || '').trim().toLowerCase()); }
+async function claimUsername(lower, fp) { try { if (!lower || !fp) return; await db.ref('usernames/' + uKey(lower)).set(fp); } catch (e) {} }
+async function releaseUsername(lower, fp) {
+    try { if (!lower) return; const cur = (await db.ref('usernames/' + uKey(lower)).once('value')).val(); if (cur === fp) await db.ref('usernames/' + uKey(lower)).remove(); } catch (e) {}
+}
+async function fetchAccountByName(name) {
+    const lower = String(name || '').trim().toLowerCase(); if (!lower) return null;
+    try { const fp = (await db.ref('usernames/' + uKey(lower)).once('value')).val(); if (fp) { const u = (await db.ref('users/' + fp).once('value')).val(); if (u && u.createdAt !== undefined) return { fp: fp, user: u }; } } catch (e) {}
+    try {
+        const s = await db.ref('users').once('value'); let hit = null;
+        s.forEach(c => { const u = c.val() || {}; if (!hit && u.createdAt !== undefined && String(u.name || '').trim().toLowerCase() === lower) hit = { fp: c.key, user: u }; });
+        return hit;
+    } catch (e) { return null; }
+}
+async function applyAccountSecurity(fp, name, pwdHash) {
+    const lower = String(name || '').trim().toLowerCase(); const up = {};
+    if (pwdHash) up.password = pwdHash;
+    if (lower) up.uname = lower;
+    try { if (Object.keys(up).length) await db.ref('users/' + fp).update(up); } catch (e) {}
+    if (lower) await claimUsername(lower, fp);
+}
+
+/* ---------- أدوات شاشة الدخول ---------- */
+function setLoginBusy(busy, label) {
+    ['login-btn', 'register-btn', 'device-login-btn', 'guest-support-btn'].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = busy; });
+    const lb = document.getElementById('login-btn'); if (lb) lb.textContent = busy ? '⏳ ' + (label || 'جاري...') : '🚀 دخول';
+}
+function hideAllAuthScreens() {
+    ['login-screen', 'ban-screen', 'maintenance-screen', 'deleted-screen'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    const pa = document.getElementById('pending-approval-screen'); if (pa) pa.classList.remove('active');
+    const gs = document.getElementById('guest-support-screen'); if (gs) gs.classList.remove('active');
+    const ov = document.getElementById('device-block-overlay'); if (ov) ov.classList.remove('active');
+}
+function showBanScreenWithReason(reason, by) {
+    hideAllAuthScreens();
+    const box = document.getElementById('ban-reason-box');
+    if (box) {
+        if (reason && String(reason).trim()) { const t = document.getElementById('ban-reason-text'); if (t) t.textContent = String(reason) + (by ? (' — بواسطة: ' + by) : ''); box.style.display = 'block'; }
+        else box.style.display = 'none';
+    }
+    document.getElementById('ban-screen').style.display = 'flex';
+}
+function setSession(fp, user) {
+    myFP = fp; try { localStorage.setItem('fp', myFP); } catch (e) {}
+    if (user && user.name) myName = user.name;
+    if (user && user.avatar) myAvatar = user.avatar;
+    try { localStorage.setItem('name', myName); localStorage.setItem('avatar', myAvatar); } catch (e) {}
+    const lower = String((user && user.name) || '').trim().toLowerCase();
+    if (lower) claimUsername(lower, myFP);
+}
+async function refreshDeviceBadge() {
+    const el = document.getElementById('login-device-badge'); if (!el) return;
+    try {
+        const dk = window.__vDevKey || getHardwareFp();
+        const bd = (await db.ref('appData/bannedDevices/' + dk).once('value')).val();
+        if (bd) { el.textContent = '⛔ جهاز محظور من الإدارة'; el.style.color = '#b71c1c'; return; }
+        const lock = (await db.ref('appData/deviceLock/' + dk).once('value')).val();
+        if (lock && lock.fp) {
+            const u = (await db.ref('users/' + lock.fp).once('value')).val();
+            if (u && u.name && u.createdAt !== undefined) { el.textContent = '🔒 مرتبط بحساب «' + u.name + '» — استخدم الدخول السريع'; return; }
+        }
+        const storedFp = localStorage.getItem('fp');
+        if (storedFp) {
+            const u = (await db.ref('users/' + storedFp).once('value')).val();
+            if (u && u.name && u.createdAt !== undefined) { el.textContent = '💾 لديك جلسة محفوظة: «' + u.name + '»'; return; }
+        }
+        el.textContent = '✅ جهاز جديد — يمكنك إنشاء حساب';
+    } catch (e) { el.textContent = '—'; }
+}
+
+/* ---------- 1) دخول بالاسم وكلمة المرور ---------- */
+async function doPasswordLogin() {
+    try {
+        const rawName = document.getElementById('username-input').value;
+        const pass = document.getElementById('password-input').value;
+        const validation = validateName(rawName);
+        if (!validation.valid) return showLoginError(validation.reason);
+        if (!pass) return showLoginError('اكتب كلمة المرور');
+        hideLoginError(); unlockAudio();
+        const n = validation.name;
+        setLoginBusy(true, 'تحقق...');
+        const dk = window.__vDevKey || getHardwareFp();
+        const bd = (await db.ref('appData/bannedDevices/' + dk).once('value')).val();
+        if (bd) { setLoginBusy(false); return showBanScreenWithReason(bd.reason || '', bd.by || ''); }
+        const hit = await fetchAccountByName(n);
+        if (!hit) { setLoginBusy(false); return showLoginError('لا يوجد حساب بهذا الاسم — أنشئ حساباً جديداً أولاً'); }
+        const fp = hit.fp, user = hit.user;
+        if (user.password) { const h = await vHash(pass); if (h !== user.password) { setLoginBusy(false); return showLoginError('كلمة المرور غير صحيحة'); } }
+        else { const h = await vHash(pass); await db.ref('users/' + fp + '/password').set(h).catch(() => {}); }
+        /* قفل الجهاز الحديدي — كل جهاز = حساب واحد (نفس السيرفر) */
+        let lock = null; try { lock = (await db.ref('appData/deviceLock/' + dk).once('value')).val() || null; } catch (e) {}
+        if (lock && lock.fp && lock.fp !== fp) {
+            const boundUser = (await db.ref('users/' + lock.fp).once('value')).val();
+            if (boundUser && boundUser.createdAt !== undefined) {
+                setLoginBusy(false);
+                await vDevAlert('هذا الجهاز مرتبط بحساب «' + (lock.name || boundUser.name || 'حساب') + '».\nكل جهاز يملك حساباً واحداً فقط — استخدم زر «دخول سريع (بالجهاز)» للدخول إلى حساب هذا الجهاز.', '🔒 قفل الجهاز — حساب واحد لكل جهاز');
+                return;
+            }
+            try { await db.ref('appData/deviceLock/' + dk).remove(); } catch (e) {}
+        }
+        const s = await checkSecurity(fp, user.name || '');
+        if (s.banned) { const b = (await db.ref('bans/' + fp).once('value')).val() || {}; setLoginBusy(false); return showBanScreenWithReason((b && b.reason) || '', (b && b.by) || ''); }
+        await claimUsername(n, fp);
+        setSession(fp, user);
+        setLoginBusy(false);
+        enterChat();
+    } catch (e) { setLoginBusy(false); showLoginError('خطأ: ' + (e.message || e)); }
+}
+
+/* ---------- 2) إنشاء حساب جديد (نفس سلوك السيرفر: الجهاز المرتبط يُدخل لحسابه) ---------- */
+async function doRegisterAccount() {
+    try {
+        const rawName = document.getElementById('username-input').value;
+        const pass = document.getElementById('password-input').value;
+        const validation = validateName(rawName);
+        if (!validation.valid) return showLoginError(validation.reason);
+        if (!pass || String(pass).length < 4) return showLoginError('كلمة المرور يجب أن تكون 4 أحرف أو أكثر');
+        hideLoginError(); unlockAudio();
+        const n = validation.name;
+        setLoginBusy(true, 'إنشاء...');
+        const dk = window.__vDevKey || getHardwareFp();
+        const bd = (await db.ref('appData/bannedDevices/' + dk).once('value')).val();
+        if (bd) { setLoginBusy(false); return showBanScreenWithReason(bd.reason || '', bd.by || ''); }
+        /* الجهاز مرتبط بحساب قديم؟ ندخلك إليه مباشرة — نفس السيرفر */
+        let lock = null; try { lock = (await db.ref('appData/deviceLock/' + dk).once('value')).val() || null; } catch (e) {}
+        if (lock && lock.fp) {
+            const boundUser = (await db.ref('users/' + lock.fp).once('value')).val();
+            if (boundUser && boundUser.createdAt !== undefined) {
+                const s0 = await checkSecurity(lock.fp, boundUser.name || '');
+                if (s0.banned) { const b = (await db.ref('bans/' + lock.fp).once('value')).val() || {}; setLoginBusy(false); return showBanScreenWithReason((b && b.reason) || '', (b && b.by) || ''); }
+                setLoginBusy(false);
+                await vDevAlert('هذا الجهاز مرتبط بحساب «' + (lock.name || boundUser.name || 'حساب') + '».\nتم تسجيل دخولك إليه بنجاح — كل جهاز يملك حساباً واحداً فقط.', 'تم التعرف على جهازك');
+                setSession(lock.fp, boundUser);
+                enterChat(); return;
+            }
+        }
+        /* الاسم محجوز؟ */
+        const hit = await fetchAccountByName(n);
+        if (hit && hit.user.password) { setLoginBusy(false); return showLoginError('الاسم «' + n + '» موجود بالفعل — استخدم زر «دخول» بكلمة مرورك'); }
+        if (hit && !hit.user.password) {
+            /* حساب قديم من النسخة السابقة بدون كلمة مرور — استرداد وتأمين بنمط السيرفر */
+            const s1 = await checkSecurity(hit.fp, hit.user.name || '');
+            if (s1.banned) { setLoginBusy(false); return showLoginError('هذا الحساب محظور'); }
+            const h = await vHash(pass);
+            await db.ref('users/' + hit.fp + '/password').set(h).catch(() => {});
+            await claimUsername(n, hit.fp);
+            setLoginBusy(false);
+            await vDevAlert('تم استرداد حساب «' + n + '» القديم وتأمينه بكلمة المرور الجديدة.\nمن الآن استخدم نفس الاسم وكلمة المرور للدخول.', 'تم استرداد حسابك');
+            setSession(hit.fp, hit.user);
+            enterChat(); return;
+        }
+        /* حساب جديد — احترام نظام موافقة التسجيل إن كان مفعلاً */
+        myName = n;
+        const canEnter = await checkAndHandleRegistration(myFP, n);
+        if (!canEnter) {
+            const h = await vHash(pass);
+            await db.ref('pending_registrations/' + myFP + '/pwd').set(h).catch(() => {});
+            try { localStorage.setItem('name', n); } catch (e) {}
+            setLoginBusy(false);
+            return;
+        }
+        const h2 = await vHash(pass);
+        await applyAccountSecurity(myFP, n, h2);
+        try { localStorage.setItem('name', n); } catch (e) {}
+        if (!localStorage.getItem('avatar')) myAvatar = DEFAULT_ICON;
+        setLoginBusy(false);
+        enterChat();
+    } catch (e) { setLoginBusy(false); showLoginError('خطأ: ' + (e.message || e)); }
+}
+
+/* ---------- 3) دخول سريع بالجهاز (نفس سيرفر v46) ---------- */
+async function doDeviceLoginQuick() {
+    try {
+        setLoginBusy(true, 'فحص...');
+        const dk = window.__vDevKey || getHardwareFp();
+        const cands = vDevCandidates();
+        let lastBan = null;
+        for (const k of cands) {
+            const bd = (await db.ref('appData/bannedDevices/' + k).once('value')).val();
+            if (bd) { setLoginBusy(false); return showBanScreenWithReason(bd.reason || '', bd.by || ''); }
+            const lock = (await db.ref('appData/deviceLock/' + k).once('value')).val();
+            if (lock && lock.fp) {
+                const u = (await db.ref('users/' + lock.fp).once('value')).val();
+                if (u && u.createdAt !== undefined) {
+                    const s = await checkSecurity(lock.fp, u.name || '');
+                    if (s.banned) { lastBan = (await db.ref('bans/' + lock.fp).once('value')).val() || {}; continue; }
+                    setLoginBusy(false);
+                    setSession(lock.fp, u);
+                    if (k !== dk) { try { localStorage.setItem('vpro_hw_id', k); } catch (e) {} }
+                    enterChat(); return;
+                } else { try { await db.ref('appData/deviceLock/' + k).remove(); } catch (e) {} }
+            }
+        }
+        setLoginBusy(false);
+        if (lastBan) return showBanScreenWithReason(lastBan.reason || '', lastBan.by || '');
+        showLoginError('هذا الجهاز جديد! أنشئ حساباً جديداً أو ادخل بحسابك من جهازه الأصلي');
+    } catch (e) { setLoginBusy(false); showLoginError('خطأ: ' + (e.message || e)); }
+}
+
+/* ---------- مراقب الحظر اللحظي (نفس نمط السيرفر) ---------- */
+function startBanWatcher() {
+    if (window.__banWatcherRef) { try { db.ref('bans/' + myFP).off('value', window.__banWatcherRef); } catch (e) {} }
+    window.__banWatcherRef = db.ref('bans/' + myFP).on('value', s => {
+        if (isBeingDeleted) return;
+        const b = s.val();
+        if (b) { const bb = (typeof b === 'object' && b) ? b : {}; showBanScreenWithReason(bb.reason || '', bb.by || ''); }
+    });
+}
+
+/* ---------- تواصل مع الإدارة قبل الدخول (رسائل الزوار — نمط v67 بالسيرفر) ---------- */
+let __gsListener = null;
+function guestChannelKey() { try { return window.__vDevKey || getHardwareFp(); } catch (e) { return 'hw_unknown'; } }
+function openGuestSupport(ctx) {
+    hideAllAuthScreens();
+    const scr = document.getElementById('guest-support-screen');
+    if (!scr) return;
+    scr.classList.add('active');
+    const sub = document.getElementById('gs-sub');
+    if (sub) { if (ctx === 'محظور') sub.textContent = 'أنت محظور — اكتب اعتراضك للإدارة هنا وسيصلك الرد في نفس المكان.'; else sub.textContent = 'اكتب رسالتك للإدارة وسيصلك الرد هنا فوراً — حتى قبل الدخول أو إنشاء حساب.'; }
+    const dk = guestChannelKey();
+    try {
+        db.ref('support_guests/' + dk).update({ hw: dk, lastSeenGuest: Date.now(), ua: (navigator.userAgent || '').substring(0, 120) }).catch(() => {});
+        if (__gsListener) { try { db.ref('support_guests/' + dk).off('value', __gsListener); } catch (e) {} }
+        __gsListener = db.ref('support_guests/' + dk).on('value', snap => { renderGsList(snap.val() || {}); });
+    } catch (e) {}
+    setTimeout(() => { const inp = document.getElementById('gs-input'); if (inp) inp.focus(); }, 300);
+}
+function closeGuestSupport() {
+    const scr = document.getElementById('guest-support-screen');
+    if (scr) scr.classList.remove('active');
+    const dk = guestChannelKey();
+    if (__gsListener) { try { db.ref('support_guests/' + dk).off('value', __gsListener); } catch (e) {} __gsListener = null; }
+    document.getElementById('login-screen').style.display = 'flex';
+}
+function renderGsList(data) {
+    const list = document.getElementById('gs-list'); if (!list) return;
+    const msgs = data.msgs || {};
+    const keys = Object.keys(msgs).sort((a, b) => (msgs[a].at || 0) - (msgs[b].at || 0));
+    if (!keys.length) { list.innerHTML = '<div class="gs-empty">اكتب رسالتك للإدارة هنا وسيصلك الرد في نفس المكان</div>'; return; }
+    list.innerHTML = keys.map(k => {
+        const m = msgs[k]; const mine = m.from !== 'admin';
+        const t = m.at ? new Date(m.at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) : '';
+        return '<div class="gs-msg ' + (mine ? 'me' : 'admin') + '">' + escapeHtml(m.text || '') + '<small>' + (mine ? 'أنت' : '🎧 الإدارة') + (t ? ' • ' + t : '') + '</small></div>';
+    }).join('');
+    list.scrollTop = list.scrollHeight;
+}
+async function sendGuestSupportMsg() {
+    const inp = document.getElementById('gs-input'); if (!inp) return;
+    const text = (inp.value || '').trim(); if (!text) return;
+    inp.value = '';
+    const dk = guestChannelKey();
+    const storedName = (localStorage.getItem('name') || '').trim();
+    try {
+        await db.ref('support_guests/' + dk + '/msgs').push({ from: 'guest', text: text.substring(0, 2000), at: Date.now(), name: storedName || 'زائر' });
+        await db.ref('support_guests/' + dk).update({ name: storedName || 'زائر', lastFrom: 'guest', lastAt: Date.now(), hw: dk });
+    } catch (e) { alert('❌ ' + (e.message || e)); }
+}
+
+/* ---------- صلاحيات المالك اللحظية: الحظر/الكتم/رسائل الزوار ---------- */
+let bansCache = {}, mutesCache = {}, supportGuestsCache = {};
+function listenOwnerSecurity() {
+    if (window.__ownerSecOn) return; window.__ownerSecOn = true;
+    db.ref('bans').on('value', s => { bansCache = s.val() || {}; if (document.getElementById('accounts-modal').classList.contains('active')) renderAccountsList(); });
+    db.ref('mutes').on('value', s => { mutesCache = s.val() || {}; if (document.getElementById('accounts-modal').classList.contains('active')) renderAccountsList(); });
+    db.ref('support_guests').on('value', s => {
+        supportGuestsCache = s.val() || {};
+        updateGuestBadge();
+        if (document.getElementById('accounts-modal').classList.contains('active')) renderAccountsList();
+    });
+}
+function updateGuestBadge() {
+    const badge = document.getElementById('guest-badge'); if (!badge) return;
+    let unread = 0;
+    Object.keys(supportGuestsCache).forEach(k => { const g = supportGuestsCache[k]; if (g && g.lastFrom === 'guest' && (g.lastAt || 0) > (g.seenAt || 0)) unread++; });
+    badge.textContent = unread;
+    badge.style.display = unread > 0 ? 'inline-flex' : 'none';
+}
+function openAccountsModal() {
+    if (!isOwner()) return alert('⛔ للمالك فقط');
+    document.getElementById('accounts-modal').classList.add('active');
+    document.getElementById('modal-overlay').classList.add('show');
+    /* تعليم رسائل الزوار كمقروءة */
+    Object.keys(supportGuestsCache).forEach(k => {
+        const g = supportGuestsCache[k];
+        if (g && g.lastFrom === 'guest' && (g.lastAt || 0) > (g.seenAt || 0)) db.ref('support_guests/' + k + '/seenAt').set(Date.now()).catch(() => {});
+    });
+    renderAccountsList();
+}
+function closeAccountsModal() {
+    document.getElementById('accounts-modal').classList.remove('active');
+    document.getElementById('modal-overlay').classList.remove('show');
+}
+function accRoleChip(role) {
+    if (role === 'owner') return '<span class="acc-chip" style="background:rgba(255,215,0,.15);color:#b8860b;">👑 مالك</span>';
+    if (role === 'manager') return '<span class="acc-chip" style="background:rgba(156,39,176,.12);color:#7b1fa2;">💎 مدير</span>';
+    if (role === 'mod') return '<span class="acc-chip" style="background:rgba(33,150,243,.12);color:#1565c0;">🛡️ مشرف</span>';
+    if (role === 'trusted') return '<span class="acc-chip" style="background:rgba(76,175,80,.12);color:#2e7d32;">✅ موثوق</span>';
+    return '<span class="acc-chip" style="background:rgba(96,125,139,.12);color:#546e7a;">👤 عادي</span>';
+}
+function isAccBanned(k) { return !!bansCache[k]; }
+function isAccMuted(k) { const m = mutesCache[k]; if (!m) return false; return (m.endTime || 0) > Date.now() || m.endTime === 9999999999999; }
+function copyAccText(t) {
+    try {
+        if (navigator.clipboard) navigator.clipboard.writeText(String(t)).then(() => alert('✅ تم النسخ'), () => {});
+        else { const ta = document.createElement('textarea'); ta.value = String(t); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); alert('✅ تم النسخ'); }
+    } catch (e) {}
+}
+function renderAccountsList() {
+    const body = document.getElementById('accounts-body'); if (!body) return;
+    const q = (document.getElementById('accounts-search')?.value || '').trim().toLowerCase();
+    const users = [];
+    Object.keys(allUsersData).forEach(k => { const u = allUsersData[k] || {}; u.uid = k; users.push(u); });
+    users.sort((a, b) => (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0));
+    /* إحصائيات */
+    const onlineCount = users.filter(u => isUserOnline(u)).length;
+    const devMap = {};
+    users.forEach(u => { const hw = u.hwFp || ('fp:' + u.uid); if (!devMap[hw]) devMap[hw] = []; devMap[hw].push(u); });
+    const multiDevs = Object.keys(devMap).filter(d => devMap[d].length > 1 && d.indexOf('fp:') !== 0);
+    /* فلترة البحث */
+    let filtered = users;
+    if (q) filtered = users.filter(u => String(u.name || '').toLowerCase().includes(q) || String(u.hwFp || '').toLowerCase().includes(q) || String(u.uid || '').toLowerCase().includes(q));
+    let html = '';
+    html += '<div style="display:flex;gap:8px;margin-bottom:12px;">'
+        + '<div class="acc-stat"><b>' + users.length + '</b><span>إجمالي الحسابات</span></div>'
+        + '<div class="acc-stat"><b>' + onlineCount + '</b><span>متصل الآن</span></div>'
+        + '<div class="acc-stat"><b>' + Object.keys(devMap).length + '</b><span>الأجهزة</span></div>'
+        + '<div class="acc-stat" style="' + (multiDevs.length ? 'border-color:#ef5350;background:rgba(239,83,80,.08);' : '') + '"><b style="' + (multiDevs.length ? 'color:#c62828;' : '') + '">' + multiDevs.length + '</b><span>أجهزة متعددة</span></div>'
+        + '</div>';
+    /* رسائل الزوار */
+    const guestKeys = Object.keys(supportGuestsCache).sort((a, b) => (supportGuestsCache[b].lastAt || 0) - (supportGuestsCache[a].lastAt || 0));
+    if (guestKeys.length) {
+        html += '<div style="font-size:13px;font-weight:900;color:#00695c;margin:6px 0 8px;">🎧 رسائل الزوار من شاشة الدخول (' + guestKeys.length + ')</div>';
+        guestKeys.forEach(k => {
+            const g = supportGuestsCache[k] || {};
+            const msgs = g.msgs || {};
+            const keys = Object.keys(msgs).sort((a, b) => (msgs[a].at || 0) - (msgs[b].at || 0));
+            const last3 = keys.slice(-3);
+            html += '<div class="acc-guestmsg">'
+                + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
+                + '<b style="font-size:12.5px;color:#37474f;">👤 ' + escapeHtml(g.name || 'زائر') + ' <small style="color:#90a4ae;font-weight:400;direction:ltr;">' + escapeHtml(String(k).substring(0, 14)) + '</small></b>'
+                + '<small style="color:#90a4ae;">' + (g.lastAt ? new Date(g.lastAt).toLocaleString('ar-EG') : '') + '</small></div>'
+                + (last3.length ? last3.map(kk => { const m = msgs[kk]; return '<div style="font-size:11.5px;line-height:1.7;margin-bottom:4px;padding-right:8px;border-right:2.5px solid ' + (m.from === 'admin' ? '#4caf50' : '#00897b') + ';"><b style="font-size:9.5px;color:' + (m.from === 'admin' ? '#2e7d32' : '#00695c') + ';">' + (m.from === 'admin' ? 'الإدارة:' : (m.name || 'الزائر') + ':') + '</b> ' + escapeHtml(m.text || '').substring(0, 160) + '</div>'; }).join('') : '<div style="font-size:11px;color:#90a4ae;">لا رسائل</div>')
+                + '<div style="display:flex;gap:6px;margin-top:8px;">'
+                + '<input type="text" id="gs-reply-' + escAttr(k).replace(/[^a-zA-Z0-9]/g, '') + '" placeholder="اكتب رداً للزائر..." style="flex:1;padding:8px 10px;border:1.5px solid #cfd8dc;border-radius:10px;font-family:var(--font-main);font-size:12px;outline:0;" maxlength="2000">'
+                + '<button onclick="replyGuest(\'' + (k + '').replace(/'/g, '') + '\')" style="background:linear-gradient(135deg,#00897b,#00695c);color:#fff;border:0;border-radius:10px;padding:0 14px;font-size:12px;cursor:pointer;font-family:var(--font-main);font-weight:700;">إرسال</button>'
+                + '</div></div>';
+        });
+    }
+    /* أجهزة عليها حسابات متعددة — كشف الحسابات */
+    if (multiDevs.length) {
+        html += '<div class="acc-multibanner"><b style="color:#c62828;font-size:13px;">⚠️ كشف الحسابات — أجهزة عليها حسابات متعددة (' + multiDevs.length + ')</b><div style="font-size:11px;color:#b71c1c;margin-top:4px;line-height:1.7;">نفس الجهاز مُسجّل عليه أكثر من حساب — قد تكون حسابات مشتركة أو محاولات تحايل على «كل جهاز = حساب واحد»</div></div>';
+        multiDevs.forEach(d => {
+            const group = devMap[d];
+            html += '<div class="acc-card multi" style="flex-direction:column;">'
+                + '<div style="font-size:11.5px;font-weight:800;color:#c62828;margin-bottom:6px;">🖥️ جهاز واحد عليه ' + group.length + ' حسابات: ' + group.map(u => escapeHtml(u.name || '؟')).join(' ↔ ') + '</div>'
+                + '<div class="acc-fp" onclick="copyAccText(\'' + escAttr(d) + '\')" title="اضغط للنسخ">' + escAttr(d) + '</div></div>';
+        });
+    }
+    /* كل الحسابات */
+    html += '<div style="font-size:13px;font-weight:900;color:#00695c;margin:10px 0 8px;">👥 كل الحسابات (' + filtered.length + ')</div>';
+    if (!filtered.length) html += '<div style="text-align:center;padding:16px;color:#999;font-size:12px;">لا نتائج</div>';
+    filtered.forEach(u => {
+        const k = u.uid;
+        const online = isUserOnline(u);
+        const banned = isAccBanned(k), muted = isAccMuted(k);
+        const multiHere = multiDevs.includes(u.hwFp || '');
+        const created = u.createdAt ? new Date(Number(u.createdAt)).toLocaleDateString('ar-EG') : '—';
+        const lastSeen = online ? 'متصل الآن' : ((Number(u.lastSeen) || 0) ? 'منذ ' + formatDateShort(Number(u.lastSeen)) : '—');
+        const safeUid = escAttr(k), safeName = escAttr(u.name || '');
+        html += '<div class="acc-card' + (multiHere ? ' multi' : '') + '">'
+            + '<img src="' + (u.avatar || DEFAULT_ICON) + '" onerror="this.src=\'' + DEFAULT_ICON + '\'" style="width:42px;height:42px;border-radius:12px;flex-shrink:0;">'
+            + '<div style="flex:1;min-width:0;">'
+            + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><b style="font-size:13px;">' + escapeHtml(u.name || 'بدون اسم') + '</b>' + accRoleChip(u.role || 'user')
+            + (banned ? '<span class="acc-chip" style="background:rgba(211,47,47,.12);color:#c62828;">🚫 محظور</span>' : '')
+            + (muted ? '<span class="acc-chip" style="background:rgba(245,124,0,.12);color:#e65100;">🔇 مكتوم</span>' : '')
+            + (online ? '<span class="acc-chip" style="background:rgba(37,211,102,.14);color:#128c7e;">🟢 متصل</span>' : '<span class="acc-chip" style="background:rgba(96,125,139,.1);color:#78909c;">⚪ ' + lastSeen + '</span>')
+            + (u.password ? '<span class="acc-chip" style="background:rgba(0,128,105,.1);color:#00695c;">🔑 كلمة مرور</span>' : '<span class="acc-chip" style="background:rgba(183,28,28,.08);color:#c62828;">⚠️ بدون كلمة مرور</span>')
+            + '</div>'
+            + '<div style="font-size:10px;color:#78909c;margin-top:3px;">أنشئ: ' + created + ' • الرسائل بالجهاز مرتبطة تلقائياً</div>'
+            + (u.hwFp ? '<div class="acc-fp" onclick="copyAccText(\'' + escAttr(u.hwFp) + '\')" title="بصمة الجهاز — اضغط للنسخ">🖥️ ' + escAttr(u.hwFp) + '</div>' : '')
+            + (banned && bansCache[k] && bansCache[k].reason ? '<div style="font-size:10px;color:#c62828;margin-top:3px;">💬 سبب الحظر: ' + escapeHtml(String(bansCache[k].reason)) + '</div>' : '')
+            + '<div style="display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;">'
+            + (banned ? '<button class="ctrl-btn" style="background:#e8f5e9;color:#2e7d32;" data-uc-action="unbanUser" data-uc-uid="' + safeUid + '" data-uc-name="' + safeName + '">✅ فك الحظر</button>' : '')
+            + (muted ? '<button class="ctrl-btn" style="background:#e8f5e9;color:#2e7d32;" data-uc-action="unmuteUser" data-uc-uid="' + safeUid + '" data-uc-name="' + safeName + '">🔊 فك الكتم</button>' : '')
+            + (!banned && (u.role || 'user') !== 'owner' ? '<button class="ctrl-btn ban" data-uc-action="banUser" data-uc-uid="' + safeUid + '" data-uc-name="' + safeName + '">🚫 حظر</button>' : '')
+            + '<button class="ctrl-btn" data-uc-action="openMuteMenu" data-uc-uid="' + safeUid + '" data-uc-name="' + safeName + '">🔇 كتم</button>'
+            + '<button class="ctrl-btn" data-uc-action="openRoleMenu" data-uc-uid="' + safeUid + '" data-uc-name="' + safeName + '">💎 رتبة</button>'
+            + '<button class="ctrl-btn" data-uc-action="quickAlertUser" data-uc-uid="' + safeUid + '" data-uc-name="' + safeName + '">⚠️ تنبيه</button>'
+            + '<button class="ctrl-btn delete-user" data-uc-action="permanentDeleteUser" data-uc-uid="' + safeUid + '" data-uc-name="' + safeName + '">🗑️</button>'
+            + '</div></div></div>';
+    });
+    body.innerHTML = html;
+}
+async function replyGuest(k) {
+    const clean = String(k).replace(/[^a-zA-Z0-9]/g, '');
+    const inp = document.getElementById('gs-reply-' + clean); if (!inp) return;
+    const text = (inp.value || '').trim(); if (!text) return;
+    inp.value = '';
+    try {
+        await db.ref('support_guests/' + k + '/msgs').push({ from: 'admin', text: text.substring(0, 2000), at: Date.now(), name: myName });
+        await db.ref('support_guests/' + k).update({ lastFrom: 'admin', lastAt: Date.now(), seenAt: Date.now() });
+        renderAccountsList();
+    } catch (e) { alert('❌ ' + (e.message || e)); }
+}
+
+
 async function init() {
     document.getElementById('loading-screen').style.display = 'none';
     myFP = await getDeviceFingerprint();
     localStorage.setItem("fp", myFP);
+    try { getHardwareFp(); } catch (e) {}   /* ✅ (v46F) تجهيز بصمة العتاد مبكراً */
     listenThemeSettings();
     listenFontSettings(); listenBadWords(); listenChatBgSettings(); listenAnimSettings(); listenEffectsSettings();
     listenOwnerPremiumSettings();
     listenColorSettingsLive(); listenGlowSettingsLive(); listenNameAnimSettingsLive();
-    listenVerificationGate();
     listenChatSettings();
     listenChatDenials();
     listenAutoRegistration();
@@ -4218,32 +4528,49 @@ async function init() {
         }
     });
 
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, 120));   /* ✅ (v46F) تسريع: كان 800ms — المستمعات مستمرة ولا تحتاج انتظاراً طويلاً */
 
-    const isVerified = await checkVerifiedSession();
-    if (!isVerified) { showVerifyScreen(); return; }
-
-    document.getElementById('login-phone-badge').textContent = tgVerifiedPhone || (verificationGateEnabled ? '-' : 'وضع الاسم فقط');
-
+    /* ✅ (v2F) تمت إزالة بوابة التوثيق وجلسة تيليجرام نهائياً */
     const storedName = localStorage.getItem("name") || "";
     if (storedName) {
         const validation = validateName(storedName);
         if (validation.valid) {
             myName = validation.name;
+            const devGate = await vDevGate(myName);   /* ✅ (v46F) قفل الجهاز أولاً */
+            if (devGate === 'blocked') return;
+            /* ✅ (v2F) الجلسة المحفوظة تعمل فقط إذا الحساب موجود فعلاً — نفس نظام السيرفر */
+            const uSnap = await db.ref('users/' + myFP).once('value');
+            const uData = uSnap.val();
+            if (!uData || uData.createdAt === undefined) {
+                const reqSnap = await db.ref('pending_registrations/' + myFP).once('value');
+                const req = reqSnap.val();
+                if (req && (req.status === 'approved' || req.status === 'pending')) {
+                    if (req.status === 'approved' && req.pwd) await applyAccountSecurity(myFP, myName, req.pwd);
+                    const canEnter = await checkAndHandleRegistration(myFP, myName);
+                    if (!canEnter) return;
+                    enterChat();
+                    return;
+                }
+                try { localStorage.removeItem('name'); } catch (e) {}
+                myName = '';
+                document.getElementById('login-screen').style.display = 'flex';
+                refreshDeviceBadge();
+                return;
+            }
             const s = await checkSecurity(myFP, myName);
-            if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
+            if (s.banned) { const b = (await db.ref('bans/' + myFP).once('value')).val() || {}; showBanScreenWithReason(b.reason || '', b.by || ''); return; }
             if (s.muted) isMuted = true;
             await linkFingerprint(myFP, myName);
-            const canEnter = await checkAndHandleRegistration(myFP, myName);
-            if (!canEnter) return;
             enterChat();
         } else {
             localStorage.removeItem("name"); myName = '';
             document.getElementById('login-screen').style.display = 'flex';
+            refreshDeviceBadge();
             setTimeout(() => { showLoginError('الاسم المحفوظ غير صالح. ' + validation.reason); }, 200);
         }
     } else {
         document.getElementById('login-screen').style.display = 'flex';
+        refreshDeviceBadge();
     }
 }
 
@@ -4257,7 +4584,10 @@ async function checkAndHandleRegistration(fp, name) {
     try {
         const reqSnap = await db.ref('pending_registrations/' + fp).once('value');
         const req = reqSnap.val();
-        if (req && req.status === 'approved') { await db.ref('pending_registrations/' + fp).remove().catch(() => {}); return true; }
+        if (req && req.status === 'approved') {
+            if (req.pwd) await applyAccountSecurity(fp, req.name || name, req.pwd);   /* ✅ (v2F) تأمين الحساب بكلمة المرور بعد الموافقة */
+            await db.ref('pending_registrations/' + fp).remove().catch(() => {}); return true;
+        }
         if (req && req.status === 'pending') { showPendingApprovalScreen(); startPendingApprovalListener(); return false; }
         if (req && req.status === 'rejected') { await db.ref('pending_registrations/' + fp).remove().catch(() => {}); alert('❌ تم رفض طلب تسجيلك سابقاً. يمكنك إعادة المحاولة.'); return false; }
         const ok = await requestRegistrationApproval(name, myAvatar);
@@ -4266,59 +4596,30 @@ async function checkAndHandleRegistration(fp, name) {
     } catch (e) { alert('❌ خطأ في التحقق من التسجيل: ' + e.message); return false; }
 }
 
-function proceedAfterVerification() {
-    const storedName = localStorage.getItem("name") || "";
-    if (storedName) {
-        const v = validateName(storedName);
-        if (v.valid) {
-            myName = v.name;
-            (async () => {
-                const s = await checkSecurity(myFP, myName);
-                if (s.banned) { isBanned = true; document.getElementById('ban-screen').style.display = 'flex'; return; }
-                if (s.muted) isMuted = true;
-                await linkFingerprint(myFP, myName);
-                const canEnter = await checkAndHandleRegistration(myFP, myName);
-                if (!canEnter) return;
-                enterChat();
-            })();
-            return;
-        } else { localStorage.removeItem("name"); myName = ''; }
-    }
-    document.getElementById('login-phone-badge').textContent = tgVerifiedPhone || (verificationGateEnabled ? '-' : 'وضع الاسم فقط');
-    document.getElementById('login-screen').style.display = 'flex';
-}
-document.getElementById('login-btn').onclick = async () => {
-    const isVerified = await checkVerifiedSession();
-    if (!isVerified) { document.getElementById('login-screen').style.display = 'none'; showVerifyScreen(); return; }
-    const rawName = document.getElementById('username-input').value;
-    const validation = validateName(rawName);
-    if (!validation.valid) { showLoginError(validation.reason); return; }
-    hideLoginError(); unlockAudio();
-    const n = validation.name;
-    const s = await checkSecurity(myFP, n);
-    if (s.banned) { isBanned = true; document.getElementById('login-screen').style.display = 'none'; document.getElementById('ban-screen').style.display = 'flex'; return; }
-    myName = n; localStorage.setItem("name", myName);
-    if (s.muted) isMuted = true;
-    await linkFingerprint(myFP, myName);
-    const canEnter = await checkAndHandleRegistration(myFP, myName);
-    if (!canEnter) { document.getElementById('login-screen').style.display = 'none'; return; }
-    enterChat();
-};
+/* ✅ (v2F) ربط أزرار شاشة الدخول الجديدة — نفس نظام السيرفر: دخول / إنشاء حساب / دخول سريع بالجهاز / تواصل الإدارة */
+document.getElementById('login-btn').onclick = () => doPasswordLogin();
+document.getElementById('register-btn').onclick = () => doRegisterAccount();
+document.getElementById('device-login-btn').onclick = () => doDeviceLoginQuick();
+document.getElementById('guest-support-btn').onclick = () => openGuestSupport('');
+document.getElementById('password-input')?.addEventListener('keypress', e => { if (e.key === 'Enter') doPasswordLogin(); });
 document.getElementById('username-input')?.addEventListener('input', function() {
     if (this.value.trim().length > 0) { const v = validateName(this.value); if (v.valid) hideLoginError(); }
 });
+document.getElementById('gs-input')?.addEventListener('keypress', e => { if (e.key === 'Enter') sendGuestSupportMsg(); });
 document.getElementById('alert-text-input')?.addEventListener('input', function() {
     const counter = document.getElementById('alert-char-counter'); if (counter) counter.textContent = this.value.length + ' / 300';
 });
 
 function enterChat() {
     document.getElementById('login-screen').style.display = 'none';
-    hideVerifyScreen();
     document.getElementById('pending-approval-screen').classList.remove('active');
+    const gsScr = document.getElementById('guest-support-screen'); if (gsScr) gsScr.classList.remove('active');
     startHeartbeat(); startPresenceChecker(); startDeletionWatcher(); startForceLogoutWatcher();
+    startBanWatcher();   /* ✅ (v2F) مراقب الحظر الحي — نفس نمط السيرفر */
     db.ref('users/' + myFP + '/createdAt').once('value', snap => { if (!snap.exists()) db.ref('users/' + myFP + '/createdAt').set(Date.now()); });
     db.ref('users/' + myFP + '/role').once('value', s => { if (!s.exists()) db.ref('users/' + myFP + '/role').set('user'); });
-    db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now(), verifiedPhone: tgVerifiedPhone || null, verifiedAt: tgVerifiedAt || null, fp: myFP });
+    db.ref('users/' + myFP).update({ name: myName, avatar: myAvatar, status: 'online', lastSeen: Date.now(), fp: myFP, hwFp: window.__vDevKey || getHardwareFp() });   /* ✅ (v46F) بصمة الجهاز على الحساب — التوثيق الخارجي أُزيل */
+    vDevBind();   /* ✅ (v46F) ربط هذا الجهاز بهذا الحساب — سجل الأجهزة */
 
     db.ref('users/' + myFP + '/name').on('value', s => {
         if (isBeingDeleted) return;
@@ -4350,6 +4651,8 @@ function enterChat() {
             hiddenControl.style.display = 'block';
             db.ref('users/' + myFP + '/hidden').once('value', snap => { isHidden = snap.val() || false; updateHiddenButton(); });
             document.getElementById('reports-btn').style.display = 'inline-flex';
+            document.getElementById('accounts-btn').style.display = 'inline-flex';   /* ✅ (v2F) زر كشف الحسابات — للمالك فقط */
+            listenOwnerSecurity();   /* ✅ (v2F) حظر/كتم/رسائل الزوار لحظياً */
             listenReports();
             document.getElementById('dm-monitor-btn').style.display = 'inline-flex';
             const alertBtn = document.getElementById('alert-btn');
@@ -4357,6 +4660,7 @@ function enterChat() {
         } else {
             hiddenControl.style.display = 'none';
             document.getElementById('reports-btn').style.display = 'none';
+            const ab = document.getElementById('accounts-btn'); if (ab) ab.style.display = 'none';
             document.getElementById('dm-monitor-btn').style.display = 'none';
             const alertBtn = document.getElementById('alert-btn');
             if (alertBtn) alertBtn.style.display = 'none';
@@ -5011,6 +5315,7 @@ async function permanentDeleteUser(uid, name) {
     if (!confirm('⚠️ تأكيد أخير!')) return;
     const targetAvatar = allUsersData[uid]?.avatar || DEFAULT_ICON;
     try { await logAdminAction('delete_user', uid, name, { target_role: tr }); } catch(e) {}
+    try { await vDevBanDevice(uid, name); } catch(e) {}   /* ✅ (v46F) حذف إداري = قفل جهاز نهائي */
     try { await db.ref('force_logout/' + uid).set({ reason: 'تم حذف حسابك من قبل المالك', type: 'deleted', by: myName, at: Date.now() }); } catch(e) {}
     await new Promise(r => setTimeout(r, 800));
     try { await purgeUserEverywhere(uid, name, targetAvatar); } catch(e) {}
@@ -5026,6 +5331,7 @@ async function deleteUnknownUser(uid) {
     const targetAvatar = u.avatar || DEFAULT_ICON;
     try {
         await logAdminAction('delete_unknown_user', uid, displayName, {});
+        try { await vDevBanDevice(uid, displayName); } catch(e) {}   /* ✅ (v46F) قفل جهاز */
         await db.ref('force_logout/' + uid).set({ reason: 'تم حذف حسابك', type: 'deleted', by: myName, at: Date.now() });
         await new Promise(r => setTimeout(r, 800));
         await purgeUserEverywhere(uid, u.name, targetAvatar);
@@ -5046,6 +5352,7 @@ async function deleteAllUnknownUsers() {
         const target = unknowns[i];
         try {
             await db.ref('force_logout/' + target.uid).set({ reason: 'تم حذف حسابك', type: 'deleted', by: myName, at: Date.now() });
+            try { await vDevBanDevice(target.uid, target.name); } catch(e) {}   /* ✅ (v46F) قفل جهاز */
             await new Promise(r => setTimeout(r, 600));
             await purgeUserEverywhere(target.uid, target.name, target.avatar);
             await db.ref('force_logout/' + target.uid).remove().catch(() => {});
@@ -5523,8 +5830,9 @@ async function executeChangeName() {
         closeProfileActions();
     } catch (e) { alert('❌ ' + e.message); }
 }
-async function banUser(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canBan(myRole, tr)) return alert('⛔'); if (!confirm('⚠️ حظر "' + n + '"؟')) return; await db.ref('bans/' + u).set(true); await logAdminAction('ban', u, n, { target_role: tr }); alert("✅"); }
-async function unbanUser(u, n) { if (!isOwner()) return alert('⛔'); if (!confirm('فك الحظر عن "' + n + '"؟')) return; await db.ref('bans/' + u).remove(); await logAdminAction('unban', u, n, {}); alert("✅"); }
+async function banUser(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canBan(myRole, tr)) return alert('⛔'); if (!confirm('⚠️ حظر "' + n + '"؟')) return; const _r = (prompt('سبب الحظر (اختياري — يظهر للمحظور على شاشة الحظر):') || '').trim(); await db.ref('bans/' + u).set({ by: myName, at: Date.now(), reason: _r }); await vDevBanDevice(u, n); await logAdminAction('ban', u, n, { target_role: tr, reason: _r }); alert("✅"); }
+async function unbanUser(u, n) { if (!isOwner()) return alert('⛔'); if (!confirm('فك الحظر عن "' + n + '"؟')) return; await db.ref('bans/' + u).remove(); await vDevUnbanDevice(u); await logAdminAction('unban', u, n, {}); alert("✅"); }
+async function unbanUser(u, n) { if (!isOwner()) return alert('⛔'); if (!confirm('فك الحظر عن "' + n + '"؟')) return; await db.ref('bans/' + u).remove(); await vDevUnbanDevice(u); await logAdminAction('unban', u, n, {}); alert("✅"); }
 function openMuteMenu(u, n) { const tr = allUsersData[u]?.role || 'user'; if (!canMute(myRole, tr)) return alert('⛔'); targetUserForAction = { uid: u, name: n }; document.getElementById('mute-target-name').textContent = n; document.getElementById('mute-modal').classList.add('active'); }
 async function applyMute(m) { const et = m === 999999 ? 9999999999999 : Date.now() + m * 6e4; const data = { endTime: et, by: myName, at: Date.now() }; const { uid, name } = targetUserForAction; await db.ref('mutes/' + uid).set(data); await logAdminAction('mute', uid, name, {}); document.getElementById('mute-modal').classList.remove('active'); alert("✅"); }
 async function unmuteUser(u, n) { if (!confirm('فك الكتم عن "' + n + '"؟')) return; await db.ref('mutes/' + u).remove(); await logAdminAction('unmute', u, n, {}); alert("✅"); }
@@ -5893,7 +6201,7 @@ async function resolveReport(action) {
     const updates = { status: action === 'none' ? 'rejected' : 'resolved', actionTaken: action, ownerComment: comment || null, resolvedAt: Date.now() };
     try {
         await db.ref('reports/' + reportId).update(updates);
-        if (action !== 'none') { let targetUid = report.targetId; if (targetUid.startsWith('legacy_')) alert('⚠️ تم حل البلاغ.'); else { if (action === 'ban') { await db.ref('bans/' + targetUid).set(true); await logAdminAction('report_ban', targetUid, report.targetName, {}); } else if (action === 'mute') { await db.ref('mutes/' + targetUid).set({ endTime: Date.now() + 3600000, by: myName, at: Date.now() }); await logAdminAction('report_mute', targetUid, report.targetName, {}); } } }
+        if (action !== 'none') { let targetUid = report.targetId; if (targetUid.startsWith('legacy_')) alert('⚠️ تم حل البلاغ.'); else { if (action === 'ban') { await db.ref('bans/' + targetUid).set({ by: myName, at: Date.now(), reason: (comment || 'حظر نتيجة بلاغ موثق') }); await logAdminAction('report_ban', targetUid, report.targetName, {}); } else if (action === 'mute') { await db.ref('mutes/' + targetUid).set({ endTime: Date.now() + 3600000, by: myName, at: Date.now() }); await logAdminAction('report_mute', targetUid, report.targetName, {}); } } }
         else await logAdminAction('report_reject', report.targetId, report.targetName, {});
         document.getElementById('resolve-modal').classList.remove('active'); alert('✅'); renderReports(); updateReportsBadge();
     } catch (e) { alert('❌ ' + e.message); }
